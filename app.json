@@ -1,5 +1,5 @@
 {
-  "name": "NRSV",
+  "name": "Lock Bible",
   "slug": "NRSV",
   "scheme": "nrsv",
   "version": "1.0.0",
@@ -9,8 +9,6 @@
   "updates": {
     "fallbackToCacheTimeout": 0
   },
-  "newArchEnabled": true,
-  "jsEngine": "hermes",
   "assetBundlePatterns": [
     "**/*"
   ],
@@ -21,13 +19,16 @@
       "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
       "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
     },
-    "allowBackup": false,
-    "edgeToEdgeEnabled": true
+    "allowBackup": false
   },
   "ios": {
     "icon": "./assets/images/app-icon-ios.png",
     "supportsTablet": true,
-    "bundleIdentifier": "com.nrsv.verse"
+    "bundleIdentifier": "com.nrsv.verse",
+    "appleTeamId": "QZ44N522NQ",
+    "config": {
+      "usesNonExemptEncryption": false
+    }
   },
   "web": {
     "favicon": "./assets/images/app-icon-web-favicon.png",
@@ -64,6 +65,28 @@
   "extra": {
     "ignite": {
       "version": "11.5.0"
+    },
+    "router": {},
+    "eas": {
+      "build": {
+        "experimental": {
+          "ios": {
+            "appExtensions": [
+              {
+                "bundleIdentifier": "com.nrsv.verse.widget",
+                "targetName": "VerseWidget",
+                "entitlements": {
+                  "com.apple.security.application-groups": [
+                    "group.com.nrsv.verse"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "projectId": "043ec1d0-2b2d-43cc-ac8c-ba07f5ed686b"
     }
-  }
+  },
+  "owner": "antonmihail"
 }

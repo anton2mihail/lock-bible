@@ -90,3 +90,7 @@ web-build/
 # Dependency Graph Visualizations
 app-dependency-graph.svg
 app-dependency-graph.png
+# Bible data build cache (large USFX source — regenerate via scripts/build-bible-data.mjs)
+scripts/.cache/
+
+.expo/

@@ -35,7 +35,15 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
           },
         ],
       },
+      // Shared container the app and the lock-screen widget both use. Must match
+      // targets/widget/expo-target.config.js and src/services/widget/widgetBridge.ts.
+      entitlements: {
+        ...(config.ios?.entitlements ?? {}),
+        "com.apple.security.application-groups": ["group.com.nrsv.verse"],
+      },
     },
-    plugins: [...existingPlugins],
+    // @bacons/apple-targets discovers the WidgetKit extension in targets/widget
+    // and wires it into the generated Xcode project on every prebuild.
+    plugins: [...existingPlugins, "@bacons/apple-targets"],
   }
 }
