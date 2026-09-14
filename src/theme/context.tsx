@@ -33,6 +33,7 @@ export type ThemeContextType = {
   setThemeContextOverride: (newTheme: ThemeContextModeT) => void
   theme: Theme
   themeContext: ImmutableThemeContextModeT
+  themeContextOverride: ThemeContextModeT
   themed: ThemedFnT
 }
 
@@ -125,6 +126,7 @@ export const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     navigationTheme,
     theme,
     themeContext,
+    themeContextOverride: themeScheme as ThemeContextModeT,
     setThemeContextOverride,
     themed,
   }

@@ -1,5 +1,5 @@
-import { VerseOfDayScreen } from "@/screens/VerseOfDayScreen"
+import { TodayScreen } from "@/screens/companion/TodayScreen"
 
 export default function TodayRoute() {
-  return <VerseOfDayScreen />
+  return <TodayScreen />
 }

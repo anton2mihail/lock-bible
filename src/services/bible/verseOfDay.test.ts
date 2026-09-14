@@ -6,6 +6,7 @@ import {
   scopeMatches,
   selectVerse,
   verseIndexForDate,
+  verseIndexForSlot,
 } from "./verseOfDay"
 
 function makePool(groups: BookGroup[]): WidgetVerse[] {
@@ -56,7 +57,22 @@ describe("verseOfDay rotation", () => {
     const b = new Date(2026, 5, 26, 8, 15)
     const ia = verseIndexForDate(a, pool.length, 15)
     const ib = verseIndexForDate(b, pool.length, 15)
-    expect(ib).toBe((ia + 1) % pool.length)
+    expect(ib).not.toBe(ia)
+  })
+
+  it.each([2, 5, 82, 7_953, 30_076, 38_029])(
+    "visits all %i scoped verses exactly once before repeating",
+    (count) => {
+      const cycle = Array.from({ length: count }, (_, slot) => verseIndexForSlot(slot, count))
+      expect(new Set(cycle).size).toBe(count)
+      expect(verseIndexForSlot(count, count)).toBe(cycle[0])
+    },
+  )
+
+  it("does not merely walk through the Bible in stored order", () => {
+    const indices = Array.from({ length: 8 }, (_, slot) => verseIndexForSlot(slot, 38_029))
+    expect(indices).not.toEqual(Array.from({ length: 8 }, (_, i) => i))
+    expect(new Set(indices).size).toBe(indices.length)
   })
 
   it("nextRotationDate is in the future and slot-aligned", () => {

@@ -27,5 +27,17 @@ config.resolver.unstable_conditionNames = ["require", "default", "browser"]
 // This helps support certain popular third-party libraries
 // such as Firebase that use the extension cjs.
 config.resolver.sourceExts.push("cjs")
+// Use the portable file watcher; this also supports machines without Watchman.
+config.resolver.useWatchman = false
+
+// Bundle the prebuilt, read-only Scripture search database as an app asset.
+config.resolver.assetExts.push("db", "wasm")
+
+// SQLite's web worker needs shared memory. Native bundles are unaffected.
+config.server.enhanceMiddleware = (middleware) => (request, response, next) => {
+  response.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
+  response.setHeader("Cross-Origin-Opener-Policy", "same-origin")
+  return middleware(request, response, next)
+}
 
 module.exports = config

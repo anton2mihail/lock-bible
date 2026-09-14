@@ -128,195 +128,11 @@
     "chapterCount": 13
   },
   {
-    "code": "EST",
-    "name": "Esther",
-    "longName": "The Book of Esther",
-    "group": "ot",
-    "order": 16,
-    "chapterCount": 10
-  },
-  {
-    "code": "JOB",
-    "name": "Job",
-    "longName": "The Book of Job",
-    "group": "ot",
-    "order": 17,
-    "chapterCount": 42
-  },
-  {
-    "code": "PSA",
-    "name": "Psalms",
-    "longName": "The Psalms",
-    "group": "ot",
-    "order": 18,
-    "chapterCount": 150
-  },
-  {
-    "code": "PRO",
-    "name": "Proverbs",
-    "longName": "The Proverbs",
-    "group": "ot",
-    "order": 19,
-    "chapterCount": 31
-  },
-  {
-    "code": "ECC",
-    "name": "Ecclesiastes",
-    "longName": "Ecclesiates or, The Preacher",
-    "group": "ot",
-    "order": 20,
-    "chapterCount": 12
-  },
-  {
-    "code": "SNG",
-    "name": "Song of Solomon",
-    "longName": "The Song of Solomon",
-    "group": "ot",
-    "order": 21,
-    "chapterCount": 8
-  },
-  {
-    "code": "ISA",
-    "name": "Isaiah",
-    "longName": "The Book of Isaiah",
-    "group": "ot",
-    "order": 22,
-    "chapterCount": 66
-  },
-  {
-    "code": "JER",
-    "name": "Jeremiah",
-    "longName": "The Book of Jeremiah",
-    "group": "ot",
-    "order": 23,
-    "chapterCount": 52
-  },
-  {
-    "code": "LAM",
-    "name": "Lamentations",
-    "longName": "The Lamentations of Jeremiah",
-    "group": "ot",
-    "order": 24,
-    "chapterCount": 5
-  },
-  {
-    "code": "EZK",
-    "name": "Ezekiel",
-    "longName": "The Book of Ezekiel",
-    "group": "ot",
-    "order": 25,
-    "chapterCount": 48
-  },
-  {
-    "code": "DAN",
-    "name": "Daniel",
-    "longName": "The Book of Daniel",
-    "group": "ot",
-    "order": 26,
-    "chapterCount": 12
-  },
-  {
-    "code": "HOS",
-    "name": "Hosea",
-    "longName": "The Book of Hosea",
-    "group": "ot",
-    "order": 27,
-    "chapterCount": 14
-  },
-  {
-    "code": "JOL",
-    "name": "Joel",
-    "longName": "The Book of Joel",
-    "group": "ot",
-    "order": 28,
-    "chapterCount": 3
-  },
-  {
-    "code": "AMO",
-    "name": "Amos",
-    "longName": "The Book of Amos",
-    "group": "ot",
-    "order": 29,
-    "chapterCount": 9
-  },
-  {
-    "code": "OBA",
-    "name": "Obadiah",
-    "longName": "The Book of Obadiah",
-    "group": "ot",
-    "order": 30,
-    "chapterCount": 1
-  },
-  {
-    "code": "JON",
-    "name": "Jonah",
-    "longName": "The Book of Jonah",
-    "group": "ot",
-    "order": 31,
-    "chapterCount": 4
-  },
-  {
-    "code": "MIC",
-    "name": "Micah",
-    "longName": "The Book of Micah",
-    "group": "ot",
-    "order": 32,
-    "chapterCount": 7
-  },
-  {
-    "code": "NAM",
-    "name": "Nahum",
-    "longName": "The Book of Nahum",
-    "group": "ot",
-    "order": 33,
-    "chapterCount": 3
-  },
-  {
-    "code": "HAB",
-    "name": "Habakkuk",
-    "longName": "The Book of Habakkuk",
-    "group": "ot",
-    "order": 34,
-    "chapterCount": 3
-  },
-  {
-    "code": "ZEP",
-    "name": "Zephaniah",
-    "longName": "The Book of Zephaniah",
-    "group": "ot",
-    "order": 35,
-    "chapterCount": 3
-  },
-  {
-    "code": "HAG",
-    "name": "Haggai",
-    "longName": "The Book of Haggai",
-    "group": "ot",
-    "order": 36,
-    "chapterCount": 2
-  },
-  {
-    "code": "ZEC",
-    "name": "Zechariah",
-    "longName": "The Book of Zechariah",
-    "group": "ot",
-    "order": 37,
-    "chapterCount": 14
-  },
-  {
-    "code": "MAL",
-    "name": "Malachi",
-    "longName": "The Book of Malachi",
-    "group": "ot",
-    "order": 38,
-    "chapterCount": 4
-  },
-  {
     "code": "TOB",
     "name": "Tobit",
     "longName": "Tobit",
     "group": "deutero",
-    "order": 39,
+    "order": 16,
     "chapterCount": 14
   },
   {
@@ -324,47 +140,23 @@
     "name": "Judith",
     "longName": "Judith",
     "group": "deutero",
-    "order": 40,
+    "order": 17,
     "chapterCount": 16
   },
   {
-    "code": "ESG",
-    "name": "Esther (Greek)",
-    "longName": "Esther (Greek)",
-    "group": "deutero",
-    "order": 41,
+    "code": "EST",
+    "name": "Esther",
+    "longName": "The Book of Esther",
+    "group": "ot",
+    "order": 18,
     "chapterCount": 10
-  },
-  {
-    "code": "WIS",
-    "name": "Wisdom",
-    "longName": "The Wisdom of Solomon",
-    "group": "deutero",
-    "order": 42,
-    "chapterCount": 19
-  },
-  {
-    "code": "SIR",
-    "name": "Sirach",
-    "longName": "The Wisdom of Jesus the Son of Sirach, or Ecclesiasticus",
-    "group": "deutero",
-    "order": 43,
-    "chapterCount": 51
-  },
-  {
-    "code": "BAR",
-    "name": "Baruch",
-    "longName": "Baruch",
-    "group": "deutero",
-    "order": 44,
-    "chapterCount": 6
   },
   {
     "code": "1MA",
     "name": "1 Maccabees",
     "longName": "The First Book of the Maccabees",
     "group": "deutero",
-    "order": 45,
+    "order": 19,
     "chapterCount": 16
   },
   {
@@ -372,71 +164,215 @@
     "name": "2 Maccabees",
     "longName": "The Second Book of the Maccabees",
     "group": "deutero",
-    "order": 46,
+    "order": 20,
     "chapterCount": 15
   },
   {
-    "code": "1ES",
-    "name": "1 Esdras",
-    "longName": "The First Book of Esdras",
+    "code": "JOB",
+    "name": "Job",
+    "longName": "The Book of Job",
+    "group": "ot",
+    "order": 21,
+    "chapterCount": 42
+  },
+  {
+    "code": "PSA",
+    "name": "Psalms",
+    "longName": "The Psalms",
+    "group": "ot",
+    "order": 22,
+    "chapterCount": 150
+  },
+  {
+    "code": "PRO",
+    "name": "Proverbs",
+    "longName": "The Proverbs",
+    "group": "ot",
+    "order": 23,
+    "chapterCount": 31
+  },
+  {
+    "code": "ECC",
+    "name": "Ecclesiastes",
+    "longName": "Ecclesiates or, The Preacher",
+    "group": "ot",
+    "order": 24,
+    "chapterCount": 12
+  },
+  {
+    "code": "SNG",
+    "name": "Song of Solomon",
+    "longName": "The Song of Solomon",
+    "group": "ot",
+    "order": 25,
+    "chapterCount": 8
+  },
+  {
+    "code": "WIS",
+    "name": "Wisdom",
+    "longName": "The Wisdom of Solomon",
     "group": "deutero",
-    "order": 47,
+    "order": 26,
+    "chapterCount": 19
+  },
+  {
+    "code": "SIR",
+    "name": "Sirach",
+    "longName": "The Wisdom of Jesus the Son of Sirach, or Ecclesiasticus",
+    "group": "deutero",
+    "order": 27,
+    "chapterCount": 51
+  },
+  {
+    "code": "ISA",
+    "name": "Isaiah",
+    "longName": "The Book of Isaiah",
+    "group": "ot",
+    "order": 28,
+    "chapterCount": 66
+  },
+  {
+    "code": "JER",
+    "name": "Jeremiah",
+    "longName": "The Book of Jeremiah",
+    "group": "ot",
+    "order": 29,
+    "chapterCount": 52
+  },
+  {
+    "code": "LAM",
+    "name": "Lamentations",
+    "longName": "The Lamentations of Jeremiah",
+    "group": "ot",
+    "order": 30,
+    "chapterCount": 5
+  },
+  {
+    "code": "BAR",
+    "name": "Baruch",
+    "longName": "Baruch",
+    "group": "deutero",
+    "order": 31,
+    "chapterCount": 6
+  },
+  {
+    "code": "EZK",
+    "name": "Ezekiel",
+    "longName": "The Book of Ezekiel",
+    "group": "ot",
+    "order": 32,
+    "chapterCount": 48
+  },
+  {
+    "code": "DAN",
+    "name": "Daniel",
+    "longName": "The Book of Daniel",
+    "group": "ot",
+    "order": 33,
+    "chapterCount": 14
+  },
+  {
+    "code": "HOS",
+    "name": "Hosea",
+    "longName": "The Book of Hosea",
+    "group": "ot",
+    "order": 34,
+    "chapterCount": 14
+  },
+  {
+    "code": "JOL",
+    "name": "Joel",
+    "longName": "The Book of Joel",
+    "group": "ot",
+    "order": 35,
+    "chapterCount": 3
+  },
+  {
+    "code": "AMO",
+    "name": "Amos",
+    "longName": "The Book of Amos",
+    "group": "ot",
+    "order": 36,
     "chapterCount": 9
   },
   {
-    "code": "MAN",
-    "name": "Prayer of Manasses",
-    "longName": "The Prayer of Manasses King of Judah when He was Held Captive in Babylon",
-    "group": "deutero",
-    "order": 48,
+    "code": "OBA",
+    "name": "Obadiah",
+    "longName": "The Book of Obadiah",
+    "group": "ot",
+    "order": 37,
     "chapterCount": 1
   },
   {
-    "code": "PS2",
-    "name": "Psalm 151",
-    "longName": "Psalm 151",
-    "group": "deutero",
-    "order": 49,
-    "chapterCount": 1
+    "code": "JON",
+    "name": "Jonah",
+    "longName": "The Book of Jonah",
+    "group": "ot",
+    "order": 38,
+    "chapterCount": 4
   },
   {
-    "code": "3MA",
-    "name": "3 Maccabees",
-    "longName": "The Third Book of the Maccabees",
-    "group": "deutero",
-    "order": 50,
+    "code": "MIC",
+    "name": "Micah",
+    "longName": "The Book of Micah",
+    "group": "ot",
+    "order": 39,
     "chapterCount": 7
   },
   {
-    "code": "2ES",
-    "name": "2 Esdras",
-    "longName": "The Second Book of Esdras",
-    "group": "deutero",
-    "order": 51,
-    "chapterCount": 16
+    "code": "NAM",
+    "name": "Nahum",
+    "longName": "The Book of Nahum",
+    "group": "ot",
+    "order": 40,
+    "chapterCount": 3
   },
   {
-    "code": "4MA",
-    "name": "4 Maccabees",
-    "longName": "The Fourth Book of the Maccabees",
-    "group": "deutero",
-    "order": 52,
-    "chapterCount": 18
+    "code": "HAB",
+    "name": "Habakkuk",
+    "longName": "The Book of Habakkuk",
+    "group": "ot",
+    "order": 41,
+    "chapterCount": 3
   },
   {
-    "code": "DAG",
-    "name": "Daniel (Greek)",
-    "longName": "The Book of Daniel with Greek Portions",
-    "group": "deutero",
-    "order": 53,
+    "code": "ZEP",
+    "name": "Zephaniah",
+    "longName": "The Book of Zephaniah",
+    "group": "ot",
+    "order": 42,
+    "chapterCount": 3
+  },
+  {
+    "code": "HAG",
+    "name": "Haggai",
+    "longName": "The Book of Haggai",
+    "group": "ot",
+    "order": 43,
+    "chapterCount": 2
+  },
+  {
+    "code": "ZEC",
+    "name": "Zechariah",
+    "longName": "The Book of Zechariah",
+    "group": "ot",
+    "order": 44,
     "chapterCount": 14
+  },
+  {
+    "code": "MAL",
+    "name": "Malachi",
+    "longName": "The Book of Malachi",
+    "group": "ot",
+    "order": 45,
+    "chapterCount": 4
   },
   {
     "code": "MAT",
     "name": "Matthew",
     "longName": "The Good News According to Matthew",
     "group": "nt",
-    "order": 54,
+    "order": 46,
     "chapterCount": 28
   },
   {
@@ -444,7 +380,7 @@
     "name": "Mark",
     "longName": "The Good News According to Mark",
     "group": "nt",
-    "order": 55,
+    "order": 47,
     "chapterCount": 16
   },
   {
@@ -452,7 +388,7 @@
     "name": "Luke",
     "longName": "The Good News According to Luke",
     "group": "nt",
-    "order": 56,
+    "order": 48,
     "chapterCount": 24
   },
   {
@@ -460,7 +396,7 @@
     "name": "John",
     "longName": "The Good News According to John",
     "group": "nt",
-    "order": 57,
+    "order": 49,
     "chapterCount": 21
   },
   {
@@ -468,7 +404,7 @@
     "name": "Acts",
     "longName": "The Acts of the Apostles",
     "group": "nt",
-    "order": 58,
+    "order": 50,
     "chapterCount": 28
   },
   {
@@ -476,7 +412,7 @@
     "name": "Romans",
     "longName": "Paul’s Letter to the Romans",
     "group": "nt",
-    "order": 59,
+    "order": 51,
     "chapterCount": 16
   },
   {
@@ -484,7 +420,7 @@
     "name": "1 Corinthians",
     "longName": "Paul’s First Letter to the Corinthians",
     "group": "nt",
-    "order": 60,
+    "order": 52,
     "chapterCount": 16
   },
   {
@@ -492,7 +428,7 @@
     "name": "2 Corinthians",
     "longName": "Paul’s Second Letter to the Corinthians",
     "group": "nt",
-    "order": 61,
+    "order": 53,
     "chapterCount": 13
   },
   {
@@ -500,7 +436,7 @@
     "name": "Galatians",
     "longName": "Paul’s Letter to the Galatians",
     "group": "nt",
-    "order": 62,
+    "order": 54,
     "chapterCount": 6
   },
   {
@@ -508,7 +444,7 @@
     "name": "Ephesians",
     "longName": "Paul’s Letter to the Ephesians",
     "group": "nt",
-    "order": 63,
+    "order": 55,
     "chapterCount": 6
   },
   {
@@ -516,7 +452,7 @@
     "name": "Philippians",
     "longName": "Paul’s Letter to the Philippians",
     "group": "nt",
-    "order": 64,
+    "order": 56,
     "chapterCount": 4
   },
   {
@@ -524,7 +460,7 @@
     "name": "Colossians",
     "longName": "Paul’s Letter to the Colossians",
     "group": "nt",
-    "order": 65,
+    "order": 57,
     "chapterCount": 4
   },
   {
@@ -532,7 +468,7 @@
     "name": "1 Thessalonians",
     "longName": "Paul’s First Letter to the Thessalonians",
     "group": "nt",
-    "order": 66,
+    "order": 58,
     "chapterCount": 5
   },
   {
@@ -540,7 +476,7 @@
     "name": "2 Thessalonians",
     "longName": "Paul’s Second Letter to the Thessalonians",
     "group": "nt",
-    "order": 67,
+    "order": 59,
     "chapterCount": 3
   },
   {
@@ -548,7 +484,7 @@
     "name": "1 Timothy",
     "longName": "Paul’s First Letter to Timothy",
     "group": "nt",
-    "order": 68,
+    "order": 60,
     "chapterCount": 6
   },
   {
@@ -556,7 +492,7 @@
     "name": "2 Timothy",
     "longName": "Paul’s Second Letter to Timothy",
     "group": "nt",
-    "order": 69,
+    "order": 61,
     "chapterCount": 4
   },
   {
@@ -564,7 +500,7 @@
     "name": "Titus",
     "longName": "Paul’s Letter to Titus",
     "group": "nt",
-    "order": 70,
+    "order": 62,
     "chapterCount": 3
   },
   {
@@ -572,7 +508,7 @@
     "name": "Philemon",
     "longName": "Paul’s Letter to Philemon",
     "group": "nt",
-    "order": 71,
+    "order": 63,
     "chapterCount": 1
   },
   {
@@ -580,7 +516,7 @@
     "name": "Hebrews",
     "longName": "The Letter to the Hebrews",
     "group": "nt",
-    "order": 72,
+    "order": 64,
     "chapterCount": 13
   },
   {
@@ -588,7 +524,7 @@
     "name": "James",
     "longName": "The Letter from James",
     "group": "nt",
-    "order": 73,
+    "order": 65,
     "chapterCount": 5
   },
   {
@@ -596,7 +532,7 @@
     "name": "1 Peter",
     "longName": "Peter’s First Letter",
     "group": "nt",
-    "order": 74,
+    "order": 66,
     "chapterCount": 5
   },
   {
@@ -604,7 +540,7 @@
     "name": "2 Peter",
     "longName": "Peter’s Second Letter",
     "group": "nt",
-    "order": 75,
+    "order": 67,
     "chapterCount": 3
   },
   {
@@ -612,7 +548,7 @@
     "name": "1 John",
     "longName": "John’s First Letter",
     "group": "nt",
-    "order": 76,
+    "order": 68,
     "chapterCount": 5
   },
   {
@@ -620,7 +556,7 @@
     "name": "2 John",
     "longName": "John’s Second Letter",
     "group": "nt",
-    "order": 77,
+    "order": 69,
     "chapterCount": 1
   },
   {
@@ -628,7 +564,7 @@
     "name": "3 John",
     "longName": "John’s Third Letter",
     "group": "nt",
-    "order": 78,
+    "order": 70,
     "chapterCount": 1
   },
   {
@@ -636,7 +572,7 @@
     "name": "Jude",
     "longName": "The Letter from Jude",
     "group": "nt",
-    "order": 79,
+    "order": 71,
     "chapterCount": 1
   },
   {
@@ -644,7 +580,7 @@
     "name": "Revelation",
     "longName": "The Revelation to John",
     "group": "nt",
-    "order": 80,
+    "order": 72,
     "chapterCount": 22
   }
 ]

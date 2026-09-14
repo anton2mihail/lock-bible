@@ -44,6 +44,7 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
     },
     // @bacons/apple-targets discovers the WidgetKit extension in targets/widget
     // and wires it into the generated Xcode project on every prebuild.
-    plugins: [...existingPlugins, "@bacons/apple-targets"],
+    // Entitlement mods run in reverse registration order; remove APNs last.
+    plugins: ["./plugins/withLocalNotificationsOnly", ...existingPlugins, "@bacons/apple-targets"],
   }
 }

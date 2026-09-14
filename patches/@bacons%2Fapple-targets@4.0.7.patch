@@ -1,0 +1,21 @@
+--- a/build/with-xcode-changes.js
++++ b/build/with-xcode-changes.js
+@@ -215,12 +215,13 @@
+             config.removeFromProject();
+         });
+         // Remove existing build configuration list
+-        targetToUpdate.props.buildConfigurationList
+-            .getReferrers()
+-            .forEach((ref) => {
+-            ref.removeReference(targetToUpdate.props.buildConfigurationList.uuid);
++        // Removing references clears the target's property. Keep the object
++        // until it has been removed, so repeated prebuilds remain safe.
++        const previousConfigurationList = targetToUpdate.props.buildConfigurationList;
++        previousConfigurationList.getReferrers().forEach((ref) => {
++            ref.removeReference(previousConfigurationList.uuid);
+         });
+-        targetToUpdate.props.buildConfigurationList.removeFromProject();
++        previousConfigurationList.removeFromProject();
+         // Create new build phases
+         targetToUpdate.props.buildConfigurationList =
+             (0, configuration_list_1.createConfigurationListForType)(project, props);

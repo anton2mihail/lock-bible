@@ -1,0 +1,75 @@
+appId: ${MAESTRO_APP_ID}
+onFlowStart:
+  - runFlow: ../shared/_OnFlowStart.yaml
+---
+- tapOn:
+    id: "tab-settings"
+- scrollUntilVisible:
+    element:
+      id: "translation-douay-rheims"
+    direction: DOWN
+- assertVisible: "World English Bible — Catholic Edition"
+- assertVisible: "Douay–Rheims 1899 American Edition"
+- assertVisible: "Clementine Vulgate 1598 — Latin"
+- tapOn:
+    id: "translation-douay-rheims"
+- tapOn:
+    id: "tab-today"
+- assertVisible: "DRB"
+- tapOn:
+    id: "tab-settings"
+- scrollUntilVisible:
+    element:
+      id: "translation-vulgate"
+    direction: DOWN
+- tapOn:
+    id: "translation-vulgate"
+- tapOn:
+    id: "tab-today"
+- assertVisible: "VUL"
+- tapOn:
+    id: "tab-read"
+- tapOn: "Search Scripture"
+- inputText: "John 3:16"
+- assertVisible:
+    id: "search-result-JHN-3-16"
+- assertVisible: ".*Sic enim Deus dilexit mundum.*"
+- tapOn: "Close search"
+- tapOn:
+    id: "tab-pray"
+- assertVisible: "27 novenas"
+- tapOn: "Search novenas"
+- inputText: "Little Way"
+- assertVisible:
+    id: "novena-st-therese"
+- eraseText: 20
+- inputText: "urgent need"
+- assertVisible:
+    id: "novena-our-lady-perpetual-help"
+- tapOn:
+    id: "novena-our-lady-perpetual-help"
+- assertVisible: "Our Lady of Perpetual Help Novena"
+- assertVisible: ".*June 27.*"
+- tapOn:
+    id: "novena-back"
+- tapOn: "Search novenas"
+- eraseText: 30
+- inputText: "mental health"
+- assertVisible:
+    id: "novena-st-dymphna"
+- assertVisible:
+    id: "novena-mental-health"
+- eraseText: 30
+- inputText: "lost"
+- assertVisible:
+    id: "novena-st-anthony"
+- tapOn:
+    id: "novena-st-anthony"
+- assertVisible: "St. Anthony of Padua Novena"
+- assertVisible: ".*June 13.*"
+- scrollUntilVisible:
+    element:
+      text: "Mark day 1 complete"
+    direction: DOWN
+- tapOn: "Mark day 1 complete"
+- assertVisible: "Mark day 2 complete"

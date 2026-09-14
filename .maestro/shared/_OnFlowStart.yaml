@@ -31,9 +31,13 @@ appId: ${MAESTRO_APP_ID}
 # this uses the default maestro timeout and moves on if it doesn't see the text.
 - runFlow:
     when:
-      visible: 'Development servers'
+      visible: "Development servers"
     commands:
-      # this regex allows for different hosts and ports
-      - tapOn: "http://.*:.*" 
+      # Target the caller's Metro port when several local Expo projects run.
+      - tapOn: "http://.*:${MAESTRO_METRO_PORT}"
       - waitForAnimationToEnd
-      - tapOn: "Close" # dismiss the bottom sheet
+      - runFlow:
+          when:
+            visible: "Close"
+          commands:
+            - tapOn: "Close" # dismiss the bottom sheet when Expo shows it

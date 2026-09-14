@@ -1,0 +1,52 @@
+appId: ${MAESTRO_APP_ID}
+onFlowStart:
+  - runFlow: ../shared/_OnFlowStart.yaml
+---
+- runFlow:
+    when:
+      visible: "Got it"
+    commands:
+      - tapOn: "Got it"
+- tapOn:
+    id: "tab-read"
+- tapOn: "Search Scripture"
+- inputText: "John 3:16"
+- assertVisible:
+    id: "search-result-JHN-3-16"
+- tapOn:
+    id: "search-result-JHN-3-16"
+- assertVisible:
+    id: "reader-context-verse"
+- tapOn:
+    id: "reader-context-verse"
+- assertVisible: "John 3:16"
+- tapOn: "Copy John 3:16"
+- assertVisible: "Passage copied"
+- tapOn: "Bookmark John 3:16"
+- assertVisible: "Bookmark saved"
+- tapOn: "Highlight John 3:16"
+- tapOn: "Apply gold highlight"
+- assertVisible: "Gold highlight applied"
+- tapOn: "Note John 3:16"
+- inputText: "A private reflection"
+- tapOn: "Save"
+- tapOn:
+    id: "tab-saved"
+- assertVisible:
+    id: "saved-item-note-JHN-3-16-16"
+- assertVisible:
+    id: "saved-item-highlight-JHN-3-16-16"
+- assertVisible:
+    id: "saved-item-bookmark-JHN-3-16-16"
+- tapOn:
+    id: "saved-filter-note"
+- assertVisible:
+    id: "saved-item-note-JHN-3-16-16"
+- tapOn:
+    id: "delete-saved-note-JHN-3-16-16"
+- assertVisible:
+    id: "saved-undo"
+- tapOn:
+    id: "saved-undo"
+- assertVisible:
+    id: "saved-item-note-JHN-3-16-16"

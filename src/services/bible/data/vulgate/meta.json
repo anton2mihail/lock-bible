@@ -1,0 +1,10 @@
+{
+  "id": "vulgate",
+  "name": "Clementine Vulgate",
+  "fullName": "Clementine Vulgate 1598 — Latin",
+  "abbreviation": "VUL",
+  "language": "la",
+  "isPublicDomain": true,
+  "attribution": "Scripture text is from the public-domain Clementine Vulgate of 1598 in Latin.",
+  "copyrightNotice": "Public Domain. Source files courtesy of eBible.org."
+}

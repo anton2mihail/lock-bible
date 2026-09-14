@@ -1,0 +1,586 @@
+[
+  {
+    "code": "GEN",
+    "name": "GENESIS",
+    "longName": "INCIPIT LIBER BERESIT ID EST GENESIS",
+    "group": "ot",
+    "order": 0,
+    "chapterCount": 50
+  },
+  {
+    "code": "EXO",
+    "name": "EXODUS",
+    "longName": "INCIPIT LIBER ELLESMOTH ID EST EXODUS",
+    "group": "ot",
+    "order": 1,
+    "chapterCount": 40
+  },
+  {
+    "code": "LEV",
+    "name": "LEVITICUS",
+    "longName": "INCIPIT LIBER VAIECRA ID EST LEVITICUS",
+    "group": "ot",
+    "order": 2,
+    "chapterCount": 27
+  },
+  {
+    "code": "NUM",
+    "name": "LIBER NUMERI",
+    "longName": "INCIPIT LIBER VAIEDABBER ID EST NUMERI",
+    "group": "ot",
+    "order": 3,
+    "chapterCount": 36
+  },
+  {
+    "code": "DEU",
+    "name": "DEUTERONOMII",
+    "longName": "INCIPIT LIBER HELLEADDABARIM ID EST DEUTERONOMIUM",
+    "group": "ot",
+    "order": 4,
+    "chapterCount": 34
+  },
+  {
+    "code": "JOS",
+    "name": "IOSUE",
+    "longName": "INCIPIT LIBER IOSUE BENNUN ID EST IESU NAVE",
+    "group": "ot",
+    "order": 5,
+    "chapterCount": 24
+  },
+  {
+    "code": "JDG",
+    "name": "IUDICUM",
+    "longName": "INCIPIT LIBER SOPTHIM ID EST IUDICUM",
+    "group": "ot",
+    "order": 6,
+    "chapterCount": 21
+  },
+  {
+    "code": "RUT",
+    "name": "RUTH",
+    "longName": "INCIPIT LIBER RUTH",
+    "group": "ot",
+    "order": 7,
+    "chapterCount": 4
+  },
+  {
+    "code": "1SA",
+    "name": "I SAMUELIS",
+    "longName": "INCIPIT LIBER I SAMUHELIS ID EST REGUM PRIMUS",
+    "group": "ot",
+    "order": 8,
+    "chapterCount": 31
+  },
+  {
+    "code": "2SA",
+    "name": "II SAMUELIS",
+    "longName": "INCIPIT LIBER II SAMUHELIS ID EST REGUM SECUNDIS",
+    "group": "ot",
+    "order": 9,
+    "chapterCount": 24
+  },
+  {
+    "code": "1KI",
+    "name": "I REGUM",
+    "longName": "INCIPIT LIBER MALACHIM ID EST REGUM TERTIUS ET QUARTUS",
+    "group": "ot",
+    "order": 10,
+    "chapterCount": 22
+  },
+  {
+    "code": "2KI",
+    "name": "II REGUM",
+    "longName": "INCIPIT LIBER MALACHIM ID EST REGUM QUARTUS",
+    "group": "ot",
+    "order": 11,
+    "chapterCount": 25
+  },
+  {
+    "code": "1CH",
+    "name": "I PARALIPOMENON",
+    "longName": "INCIPIT LIBER DABREIAMIN ID EST VERBA DEIRUM QUI GRÆCE DICITUR PARALIPOMENON",
+    "group": "ot",
+    "order": 12,
+    "chapterCount": 29
+  },
+  {
+    "code": "2CH",
+    "name": "II PARALIPOMENON",
+    "longName": "LIBER SECUNDUS PARALIPOMENON",
+    "group": "ot",
+    "order": 13,
+    "chapterCount": 36
+  },
+  {
+    "code": "EZR",
+    "name": "ESDRÆ",
+    "longName": "INCIPIT LIBER ESDRÆ",
+    "group": "ot",
+    "order": 14,
+    "chapterCount": 10
+  },
+  {
+    "code": "NEH",
+    "name": "NEHEMIÆ",
+    "longName": "II ESDRÆ ID EST LIBER NEHEMIÆ",
+    "group": "ot",
+    "order": 15,
+    "chapterCount": 13
+  },
+  {
+    "code": "TOB",
+    "name": "TOBIÆ",
+    "longName": "INCIPIT LIBER TOBIÆ",
+    "group": "deutero",
+    "order": 16,
+    "chapterCount": 14
+  },
+  {
+    "code": "JDT",
+    "name": "IUDITH",
+    "longName": "INCIPIT LIBER IUDITH",
+    "group": "deutero",
+    "order": 17,
+    "chapterCount": 16
+  },
+  {
+    "code": "EST",
+    "name": "ESTHER",
+    "longName": "INCIPIT LIBER HESTER",
+    "group": "ot",
+    "order": 18,
+    "chapterCount": 16
+  },
+  {
+    "code": "1MA",
+    "name": "PRIMUS MACCHABEORUM",
+    "longName": "INCIPIT LIBER PRIMUS MACCHABEORUM",
+    "group": "deutero",
+    "order": 19,
+    "chapterCount": 16
+  },
+  {
+    "code": "2MA",
+    "name": "MACCHABEORUM SECUNDUS",
+    "longName": "MACCHABEORUM INCIPIT LIBER SECUNDUS",
+    "group": "deutero",
+    "order": 20,
+    "chapterCount": 15
+  },
+  {
+    "code": "JOB",
+    "name": "JOB",
+    "longName": "INCIPIT LIBER JOB",
+    "group": "ot",
+    "order": 21,
+    "chapterCount": 42
+  },
+  {
+    "code": "PSA",
+    "name": "PSALMORUM",
+    "longName": "INCIPIT LIBER PSALMORUM IUXTA HEBRAICUM TRANSLATUS",
+    "group": "ot",
+    "order": 22,
+    "chapterCount": 150
+  },
+  {
+    "code": "PRO",
+    "name": "PROVERBIORUM",
+    "longName": "INCIPIT LIBER PROVERBIORUM SALOMONIS",
+    "group": "ot",
+    "order": 23,
+    "chapterCount": 31
+  },
+  {
+    "code": "ECC",
+    "name": "ECCLESIASTES",
+    "longName": "INCIPIT LIBER ECCLESIASTES",
+    "group": "ot",
+    "order": 24,
+    "chapterCount": 12
+  },
+  {
+    "code": "SNG",
+    "name": "CANTICUM CANTICORUM",
+    "longName": "INCIPIT LIBER CANTICUM CANTICORUM",
+    "group": "ot",
+    "order": 25,
+    "chapterCount": 8
+  },
+  {
+    "code": "WIS",
+    "name": "SAPIENTIÆ SOLOMONIS",
+    "longName": "INCIPIT LIBER SAPIENTIÆ SOLOMONIS",
+    "group": "deutero",
+    "order": 26,
+    "chapterCount": 19
+  },
+  {
+    "code": "SIR",
+    "name": "IESU FILII SIRACH",
+    "longName": "INCIPIT LIBER IESU FILII SIRACH",
+    "group": "deutero",
+    "order": 27,
+    "chapterCount": 51
+  },
+  {
+    "code": "ISA",
+    "name": "ISAIÆ",
+    "longName": "INCIPIT LIBER ISAIÆ PROPHETÆ",
+    "group": "ot",
+    "order": 28,
+    "chapterCount": 66
+  },
+  {
+    "code": "JER",
+    "name": "JEREMIÆ",
+    "longName": "INCIPIT LIBER JEREMIÆ PROPHETÆ",
+    "group": "ot",
+    "order": 29,
+    "chapterCount": 52
+  },
+  {
+    "code": "LAM",
+    "name": "LAMENTATIONES",
+    "longName": "LAMENTATIONES",
+    "group": "ot",
+    "order": 30,
+    "chapterCount": 5
+  },
+  {
+    "code": "BAR",
+    "name": "BARUCH",
+    "longName": "INCIPIT LIBER BARUCH",
+    "group": "deutero",
+    "order": 31,
+    "chapterCount": 6
+  },
+  {
+    "code": "EZK",
+    "name": "HIEZECHIELIS PROPHETÆ",
+    "longName": "INCIPIT LIBER HIEZECHIELIS PROPHETÆ",
+    "group": "ot",
+    "order": 32,
+    "chapterCount": 48
+  },
+  {
+    "code": "DAN",
+    "name": "DANIHELIS PROPHETÆ",
+    "longName": "INCIPIT LIBER DANIHELIS PROPHETÆ",
+    "group": "ot",
+    "order": 33,
+    "chapterCount": 14
+  },
+  {
+    "code": "HOS",
+    "name": "OSEE PROPHETA",
+    "longName": "INCIPIT OSEE PROPHETA",
+    "group": "ot",
+    "order": 34,
+    "chapterCount": 14
+  },
+  {
+    "code": "JOL",
+    "name": "JOËL PROPHETA",
+    "longName": "INCIPIT JOËL PROPHETA",
+    "group": "ot",
+    "order": 35,
+    "chapterCount": 3
+  },
+  {
+    "code": "AMO",
+    "name": "AMOS PROPHETA",
+    "longName": "INCIPIT AMOS PROPHETA",
+    "group": "ot",
+    "order": 36,
+    "chapterCount": 9
+  },
+  {
+    "code": "OBA",
+    "name": "ABDIAS PROPHETA",
+    "longName": "INCIPIT ABDIAS PROPHETA",
+    "group": "ot",
+    "order": 37,
+    "chapterCount": 1
+  },
+  {
+    "code": "JON",
+    "name": "JONAS PROPHETA",
+    "longName": "INCIPIT JONAS PROPHETA",
+    "group": "ot",
+    "order": 38,
+    "chapterCount": 4
+  },
+  {
+    "code": "MIC",
+    "name": "MICHA PROPHETA",
+    "longName": "INCIPIT MICHA PROPHETA",
+    "group": "ot",
+    "order": 39,
+    "chapterCount": 7
+  },
+  {
+    "code": "NAM",
+    "name": "NAHUM PROPHETA",
+    "longName": "INCIPIT NAHUM PROPHETA",
+    "group": "ot",
+    "order": 40,
+    "chapterCount": 3
+  },
+  {
+    "code": "HAB",
+    "name": "HABACUC PROPHETA",
+    "longName": "INCIPIT HABACUC PROPHETA",
+    "group": "ot",
+    "order": 41,
+    "chapterCount": 3
+  },
+  {
+    "code": "ZEP",
+    "name": "SOFONIAS PROPHETA",
+    "longName": "INCIPIT SOFONIAS PROPHETA",
+    "group": "ot",
+    "order": 42,
+    "chapterCount": 3
+  },
+  {
+    "code": "HAG",
+    "name": "AGGÆI PROPHETÆ",
+    "longName": "INCIPIT AGGÆI PROPHETÆ",
+    "group": "ot",
+    "order": 43,
+    "chapterCount": 2
+  },
+  {
+    "code": "ZEC",
+    "name": "ZACCHARIAS PROPHETA",
+    "longName": "INCIPIT ZACCHARIAS PROPHETA",
+    "group": "ot",
+    "order": 44,
+    "chapterCount": 14
+  },
+  {
+    "code": "MAL",
+    "name": "MALACHI PROPHETA",
+    "longName": "INCIPIT MALACHI PROPHETA",
+    "group": "ot",
+    "order": 45,
+    "chapterCount": 4
+  },
+  {
+    "code": "MAT",
+    "name": "MATTHEUM",
+    "longName": "INCIPIT EVANGELIUM SECUNDUM MATTHEUM",
+    "group": "nt",
+    "order": 46,
+    "chapterCount": 28
+  },
+  {
+    "code": "MRK",
+    "name": "MARCUM",
+    "longName": "INCIPIT SECUNDUM MARCUM",
+    "group": "nt",
+    "order": 47,
+    "chapterCount": 16
+  },
+  {
+    "code": "LUK",
+    "name": "LUCAM",
+    "longName": "INCIPIT SECUNDUM LUCAM",
+    "group": "nt",
+    "order": 48,
+    "chapterCount": 24
+  },
+  {
+    "code": "JHN",
+    "name": "IOHANNEM",
+    "longName": "INCIPIT SECUNDUM IOHANNEM",
+    "group": "nt",
+    "order": 49,
+    "chapterCount": 21
+  },
+  {
+    "code": "ACT",
+    "name": "ACTUUM APOSTOLORUM",
+    "longName": "INCIPIT LIBER ACTUUM APOSTOLORUM",
+    "group": "nt",
+    "order": 50,
+    "chapterCount": 28
+  },
+  {
+    "code": "ROM",
+    "name": "ROMANOS",
+    "longName": "INCIPIT EPISTULA AD ROMANOS",
+    "group": "nt",
+    "order": 51,
+    "chapterCount": 16
+  },
+  {
+    "code": "1CO",
+    "name": "CORINTHIOS I",
+    "longName": "INCIPIT AD CORINTHIOS I",
+    "group": "nt",
+    "order": 52,
+    "chapterCount": 16
+  },
+  {
+    "code": "2CO",
+    "name": "CORINTHIOS II",
+    "longName": "INCIPIT AD CORINTHIOS II",
+    "group": "nt",
+    "order": 53,
+    "chapterCount": 13
+  },
+  {
+    "code": "GAL",
+    "name": "GALATAS",
+    "longName": "INCIPIT AD GALATAS",
+    "group": "nt",
+    "order": 54,
+    "chapterCount": 6
+  },
+  {
+    "code": "EPH",
+    "name": "EPHESIOS",
+    "longName": "INCIPIT AD EPHESIOS",
+    "group": "nt",
+    "order": 55,
+    "chapterCount": 6
+  },
+  {
+    "code": "PHP",
+    "name": "PHILIPPENSES",
+    "longName": "INCIPIT AD PHILIPPENSES",
+    "group": "nt",
+    "order": 56,
+    "chapterCount": 4
+  },
+  {
+    "code": "COL",
+    "name": "COLOSSENES",
+    "longName": "INCIPIT AD COLOSSENES",
+    "group": "nt",
+    "order": 57,
+    "chapterCount": 4
+  },
+  {
+    "code": "1TH",
+    "name": "THESSALONICENSES I",
+    "longName": "INCIPIT AD THESSALONICENSES I",
+    "group": "nt",
+    "order": 58,
+    "chapterCount": 5
+  },
+  {
+    "code": "2TH",
+    "name": "THESSALONICENSES II",
+    "longName": "INCIPIT AD THESSALONICENSES II",
+    "group": "nt",
+    "order": 59,
+    "chapterCount": 3
+  },
+  {
+    "code": "1TI",
+    "name": "TIMOTHEUM I",
+    "longName": "INCIPIT AD TIMOTHEUM I",
+    "group": "nt",
+    "order": 60,
+    "chapterCount": 6
+  },
+  {
+    "code": "2TI",
+    "name": "TIMOTHEUM II",
+    "longName": "INCIPIT AD TIMOTHEUM II",
+    "group": "nt",
+    "order": 61,
+    "chapterCount": 4
+  },
+  {
+    "code": "TIT",
+    "name": "TITUM",
+    "longName": "INCIPIT AD TITUM",
+    "group": "nt",
+    "order": 62,
+    "chapterCount": 3
+  },
+  {
+    "code": "PHM",
+    "name": "PHILEMONEM",
+    "longName": "INCIPIT AD PHILEMONEM",
+    "group": "nt",
+    "order": 63,
+    "chapterCount": 1
+  },
+  {
+    "code": "HEB",
+    "name": "HEBRÆOS",
+    "longName": "INCIPIT AD HEBRÆOS",
+    "group": "nt",
+    "order": 64,
+    "chapterCount": 13
+  },
+  {
+    "code": "JAS",
+    "name": "IACOBI",
+    "longName": "INCIPIT EPISTULA IACOBI",
+    "group": "nt",
+    "order": 65,
+    "chapterCount": 5
+  },
+  {
+    "code": "1PE",
+    "name": "PETRI I",
+    "longName": "INCIPIT EPISTULA PETRI I",
+    "group": "nt",
+    "order": 66,
+    "chapterCount": 5
+  },
+  {
+    "code": "2PE",
+    "name": "PETRI II",
+    "longName": "INCIPIT EPISTULA PETRI II",
+    "group": "nt",
+    "order": 67,
+    "chapterCount": 3
+  },
+  {
+    "code": "1JN",
+    "name": "IOHANNIS I",
+    "longName": "INCIPIT EPISTULA IOHANNIS I",
+    "group": "nt",
+    "order": 68,
+    "chapterCount": 5
+  },
+  {
+    "code": "2JN",
+    "name": "IOHANNIS II",
+    "longName": "INCIPIT EPISTULA IOHANNIS II",
+    "group": "nt",
+    "order": 69,
+    "chapterCount": 1
+  },
+  {
+    "code": "3JN",
+    "name": "IOHANNIS III",
+    "longName": "INCIPIT EPISTULA IOHANNIS III",
+    "group": "nt",
+    "order": 70,
+    "chapterCount": 1
+  },
+  {
+    "code": "JUD",
+    "name": "IUDÆ",
+    "longName": "INCIPIT EPISTULA IUDÆ",
+    "group": "nt",
+    "order": 71,
+    "chapterCount": 1
+  },
+  {
+    "code": "REV",
+    "name": "APOCALYPSIS",
+    "longName": "INCIPIT APOCALYPSIS IOHANNIS APOSTOLI",
+    "group": "nt",
+    "order": 72,
+    "chapterCount": 22
+  }
+]

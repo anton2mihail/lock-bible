@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router"
+import { Feather } from "@expo/vector-icons"
 
-import { Icon } from "@/components/Icon"
 import { useAppTheme } from "@/theme/context"
 
 export default function TabsLayout() {
@@ -22,23 +22,43 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Today",
-          tabBarIcon: ({ color, size }) => <Icon icon="view" color={color} size={size} />,
+          tabBarButtonTestID: "tab-today",
+          tabBarIcon: ({ color, size }) => <Feather name="sun" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="read"
         options={{
           title: "Read",
-          tabBarIcon: ({ color, size }) => <Icon icon="menu" color={color} size={size} />,
+          tabBarButtonTestID: "tab-read",
+          tabBarIcon: ({ color, size }) => <Feather name="book-open" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: "Saved",
+          tabBarButtonTestID: "tab-saved",
+          tabBarIcon: ({ color, size }) => <Feather name="bookmark" color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="pray"
+        options={{
+          title: "Pray",
+          tabBarButtonTestID: "tab-pray",
+          tabBarIcon: ({ color, size }) => <Feather name="heart" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color, size }) => <Icon icon="settings" color={color} size={size} />,
+          tabBarButtonTestID: "tab-settings",
+          tabBarIcon: ({ color, size }) => <Feather name="settings" color={color} size={size} />,
         }}
       />
+      <Tabs.Screen name="search" options={{ href: null }} />
     </Tabs>
   )
 }

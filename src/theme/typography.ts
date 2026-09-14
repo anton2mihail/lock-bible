@@ -3,6 +3,10 @@
 
 import { Platform } from "react-native"
 import {
+  Lora_400Regular as loraRegular,
+  Lora_500Medium as loraMedium,
+} from "@expo-google-fonts/lora"
+import {
   SpaceGrotesk_300Light as spaceGroteskLight,
   SpaceGrotesk_400Regular as spaceGroteskRegular,
   SpaceGrotesk_500Medium as spaceGroteskMedium,
@@ -11,6 +15,8 @@ import {
 } from "@expo-google-fonts/space-grotesk"
 
 export const customFontsToLoad = {
+  loraRegular,
+  loraMedium,
   spaceGroteskLight,
   spaceGroteskRegular,
   spaceGroteskMedium,

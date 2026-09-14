@@ -5,33 +5,132 @@ import WidgetKit
 
 struct Verse: Decodable, Hashable {
   let ref: String
+  let book: String
+  let chapter: Int
+  let verse: String
   let text: String
   let group: String
 
-  enum CodingKeys: String, CodingKey { case ref, text, group }
-
-  init(ref: String, text: String, group: String = "full") {
+  init(
+    ref: String,
+    book: String = "JHN",
+    chapter: Int = 3,
+    verse: String = "16",
+    text: String,
+    group: String = "full"
+  ) {
     self.ref = ref
+    self.book = book
+    self.chapter = chapter
+    self.verse = verse
     self.text = text
     self.group = group
   }
 
   init(from decoder: Decoder) throws {
-    let c = try decoder.container(keyedBy: CodingKeys.self)
-    ref = try c.decode(String.self, forKey: .ref)
-    text = try c.decode(String.self, forKey: .text)
-    group = (try? c.decode(String.self, forKey: .group)) ?? "full"
+    var values = try decoder.unkeyedContainer()
+    ref = try values.decode(String.self)
+    book = try values.decode(String.self)
+    chapter = try values.decode(Int.self)
+    verse = try values.decode(String.self)
+    text = try values.decode(String.self)
+    group = "full"
   }
-}
-
-private struct VersePayload: Decodable {
-  let verses: [Verse]
 }
 
 struct VerseEntry: TimelineEntry {
   let date: Date
   let verse: Verse
   let abbreviation: String
+}
+
+// MARK: - Memory-efficient bundled corpus
+//
+// WidgetKit extensions have a tight memory budget. Build 7 decoded one 8 MB
+// JSON array into 38,029 Swift objects for every provider, which could terminate
+// the extension before it rendered. These resources are memory-mapped and
+// indexed, so a timeline decodes only the verses it will actually display.
+
+fileprivate struct WidgetCorpus {
+  static let fallback = Verse(ref: "John 3:16", text: "For God so loved the world…")
+
+  private let records: Data?
+  private let offsets: Data?
+  private let oldTestamentRows: Data?
+  private let newTestamentRows: Data?
+
+  init(prefix: String) {
+    records = Self.load(prefix, "dat", mapped: true)
+    offsets = Self.load(prefix, "offsets")
+    oldTestamentRows = Self.load(prefix, "ot")
+    newTestamentRows = Self.load(prefix, "nt")
+  }
+
+  private static func load(_ name: String, _ ext: String, mapped: Bool = false) -> Data? {
+    guard let url = Bundle.main.url(forResource: name, withExtension: ext) else { return nil }
+    return try? Data(contentsOf: url, options: mapped ? .mappedIfSafe : [])
+  }
+
+  private static func uint32(_ data: Data?, at index: Int) -> Int? {
+    guard let data else { return nil }
+    let start = index * 4
+    guard start >= 0, start + 3 < data.count else { return nil }
+    return Int(data[start])
+      | (Int(data[start + 1]) << 8)
+      | (Int(data[start + 2]) << 16)
+      | (Int(data[start + 3]) << 24)
+  }
+
+  func supports(_ scope: String) -> Bool {
+    switch scope {
+    case "ot": return (oldTestamentRows?.count ?? 0) >= 4
+    case "nt": return (newTestamentRows?.count ?? 0) >= 4
+    default: return (offsets?.count ?? 0) >= 8
+    }
+  }
+
+  func count(for scope: String) -> Int {
+    switch scope {
+    case "ot": return (oldTestamentRows?.count ?? 0) / 4
+    case "nt": return (newTestamentRows?.count ?? 0) / 4
+    default: return max(0, (offsets?.count ?? 0) / 4 - 1)
+    }
+  }
+
+  private func globalIndex(for scopedIndex: Int, scope: String) -> Int? {
+    switch scope {
+    case "ot": return Self.uint32(oldTestamentRows, at: scopedIndex)
+    case "nt": return Self.uint32(newTestamentRows, at: scopedIndex)
+    default: return scopedIndex
+    }
+  }
+
+  func verse(at scopedIndex: Int, scope: String) -> Verse? {
+    guard let records,
+          let globalIndex = globalIndex(for: scopedIndex, scope: scope),
+          let start = Self.uint32(offsets, at: globalIndex),
+          let end = Self.uint32(offsets, at: globalIndex + 1),
+          start >= 0,
+          end > start,
+          end <= records.count
+    else { return nil }
+
+    return try? JSONDecoder().decode(Verse.self, from: records.subdata(in: start..<end))
+  }
+}
+
+private enum WidgetCorpora {
+  static let webCe = WidgetCorpus(prefix: "web-ce")
+  static let douayRheims = WidgetCorpus(prefix: "douay-rheims")
+  static let vulgate = WidgetCorpus(prefix: "vulgate")
+
+  static func corpus(for translationId: String) -> WidgetCorpus {
+    switch translationId {
+    case "douay-rheims": return douayRheims
+    case "vulgate": return vulgate
+    default: return webCe
+    }
+  }
 }
 
 // MARK: - Shared data + deterministic selection
@@ -43,6 +142,7 @@ struct VerseEntry: TimelineEntry {
 enum VerseStore {
   static let appGroup = "group.com.nrsv.verse"
   static let defaultIntervalMinutes = 1440
+  static let defaultTranslationId = "web-ce"
   static let defaultAbbreviation = "WEB-CE"
   static let defaultScope = "full"
 
@@ -50,49 +150,31 @@ enum VerseStore {
     UserDefaults(suiteName: appGroup)
   }
 
-  /// Full pool: the app-provided (possibly OTA-updated) list if present,
-  /// otherwise the copy bundled into this widget target.
-  static func allVerses() -> [Verse] {
-    if let json = defaults?.string(forKey: "verses"),
-       let data = json.data(using: .utf8),
-       let parsed = try? JSONDecoder().decode([Verse].self, from: data),
-       !parsed.isEmpty {
-      return parsed
-    }
-    return bundledVerses()
-  }
-
-  static func bundledVerses() -> [Verse] {
-    guard let url = Bundle.main.url(forResource: "widgetVerses", withExtension: "json"),
-          let data = try? Data(contentsOf: url),
-          let payload = try? JSONDecoder().decode(VersePayload.self, from: data)
-    else {
-      return [Verse(ref: "John 3:16", text: "For God so loved the world…")]
-    }
-    return payload.verses
-  }
-
   static func scope() -> String {
     defaults?.string(forKey: "scope") ?? defaultScope
   }
 
-  /// Whether a verse's book group belongs to the selected scope. As in the JS
-  /// side, the Old Testament scope includes the deuterocanon.
-  static func matches(_ group: String, _ scope: String) -> Bool {
-    switch scope {
-    case "nt": return group == "nt"
-    case "ot": return group == "ot" || group == "deutero"
-    default: return true
-    }
+  static func translationId() -> String {
+    defaults?.string(forKey: "translationId") ?? defaultTranslationId
   }
 
-  /// The pool after applying the user's testament scope (never empty).
-  static func verses() -> [Verse] {
-    let all = allVerses()
-    let s = scope()
-    if s == "full" { return all }
-    let filtered = all.filter { matches($0.group, s) }
-    return filtered.isEmpty ? all : filtered
+  private static func corpus() -> WidgetCorpus {
+    WidgetCorpora.corpus(for: translationId())
+  }
+
+  /// Fall back to the full corpus if an old or malformed installation is
+  /// missing a scoped index. A verse always renders even when resources fail.
+  static func effectiveScope() -> String {
+    let requested = scope()
+    return corpus().supports(requested) ? requested : defaultScope
+  }
+
+  static func corpusCount(scope: String) -> Int {
+    corpus().count(for: scope)
+  }
+
+  static func verse(at index: Int, scope: String) -> Verse {
+    corpus().verse(at: index, scope: scope) ?? WidgetCorpus.fallback
   }
 
   static func intervalMinutes() -> Int {
@@ -102,6 +184,22 @@ enum VerseStore {
 
   static func abbreviation() -> String {
     defaults?.string(forKey: "abbreviation") ?? defaultAbbreviation
+  }
+
+  /// Opens the exact bundled passage in the app. Only public Scripture
+  /// coordinates are included; no user preference or reading data leaves the device.
+  static func contextURL(for verse: Verse, at date: Date) -> URL? {
+    guard !verse.book.isEmpty, verse.chapter > 0, !verse.verse.isEmpty else { return nil }
+    var components = URLComponents()
+    components.scheme = "nrsv"
+    components.host = "read"
+    components.queryItems = [
+      URLQueryItem(name: "book", value: verse.book),
+      URLQueryItem(name: "chapter", value: String(verse.chapter)),
+      URLQueryItem(name: "verse", value: verse.verse),
+      URLQueryItem(name: "contextRequest", value: String(Int(date.timeIntervalSince1970))),
+    ]
+    return components.url
   }
 
   // --- Deterministic math (mirror of verseOfDay.ts), cadence in MINUTES ---
@@ -117,10 +215,34 @@ enum VerseStore {
     Int(floor(Double(localMinutesSinceEpoch(date)) / Double(interval)))
   }
 
-  static func index(for date: Date, count: Int, interval: Int) -> Int {
+  static let shuffleStride = 104_729
+  static let shuffleOffset = 1_729
+
+  static func greatestCommonDivisor(_ a: Int, _ b: Int) -> Int {
+    var x = abs(a)
+    var y = abs(b)
+    while y != 0 {
+      let remainder = x % y
+      x = y
+      y = remainder
+    }
+    return x
+  }
+
+  static func permutationStride(for count: Int) -> Int {
+    var stride = shuffleStride
+    while greatestCommonDivisor(stride, count) != 1 { stride += 2 }
+    return stride
+  }
+
+  static func index(forSlot slot: Int, count: Int) -> Int {
     guard count > 0 else { return 0 }
-    let slot = rotationSlot(date, interval)
-    return ((slot % count) + count) % count
+    let index = (slot * permutationStride(for: count) + shuffleOffset) % count
+    return (index + count) % count
+  }
+
+  static func index(for date: Date, count: Int, interval: Int) -> Int {
+    index(forSlot: rotationSlot(date, interval), count: count)
   }
 
   /// Absolute instant at which the given rotation slot begins.
@@ -131,30 +253,35 @@ enum VerseStore {
   }
 
   static func entry(for date: Date) -> VerseEntry {
-    let pool = verses()
+    let scope = effectiveScope()
+    let count = corpusCount(scope: scope)
     let interval = intervalMinutes()
-    let idx = index(for: date, count: pool.count, interval: interval)
-    let verse = pool.isEmpty ? Verse(ref: "", text: "") : pool[idx]
+    let idx = index(for: date, count: count, interval: interval)
+    let verse = verse(at: idx, scope: scope)
     return VerseEntry(date: date, verse: verse, abbreviation: abbreviation())
   }
 
   /// A timeline of upcoming verse changes. One entry per rotation boundary, so
   /// WidgetKit swaps verses on schedule with no extra reloads.
   static func timeline(from now: Date) -> [VerseEntry] {
-    let pool = verses()
+    let scope = effectiveScope()
+    let count = corpusCount(scope: scope)
     let interval = intervalMinutes()
-    guard !pool.isEmpty else { return [entry(for: now)] }
+    guard count > 0 else { return [entry(for: now)] }
 
     let abbr = abbreviation()
     let currentSlot = rotationSlot(now, interval)
-    let maxEntries = min(pool.count, 48)
+    let maxEntries = min(count, 48)
 
-    var entries: [VerseEntry] = [entry(for: now)]
+    let currentIndex = index(forSlot: currentSlot, count: count)
+    var entries: [VerseEntry] = [
+      VerseEntry(date: now, verse: verse(at: currentIndex, scope: scope), abbreviation: abbr)
+    ]
     for step in 1..<maxEntries {
       let slot = currentSlot + step
       let date = slotStart(slot, interval, reference: now)
-      let idx = ((slot % pool.count) + pool.count) % pool.count
-      entries.append(VerseEntry(date: date, verse: pool[idx], abbreviation: abbr))
+      let idx = index(forSlot: slot, count: count)
+      entries.append(VerseEntry(date: date, verse: verse(at: idx, scope: scope), abbreviation: abbr))
     }
     return entries
   }
@@ -169,9 +296,9 @@ enum VerseStore {
   /// widget never reloads per tick (the countdown text animates on its own).
   /// This keeps even a 10-minute cadence well within WidgetKit's refresh budget.
   static func timerTimeline(from now: Date) -> [TimerEntry] {
-    let pool = verses()
+    let scope = effectiveScope()
     let interval = intervalMinutes()
-    let count = pool.count
+    let count = corpusCount(scope: scope)
     let currentSlot = rotationSlot(now, interval)
     let maxEntries = max(1, min(count == 0 ? 1 : count, 48))
 
@@ -180,7 +307,9 @@ enum VerseStore {
       let slot = currentSlot + step
       let start = slotStart(slot, interval, reference: now)
       let end = slotStart(slot + 1, interval, reference: now)
-      let nextRef = count == 0 ? "" : pool[(((slot + 1) % count) + count) % count].ref
+      let nextRef = count == 0
+        ? ""
+        : verse(at: index(forSlot: slot + 1, count: count), scope: scope).ref
       entries.append(TimerEntry(date: start, nextChange: end, nextRef: nextRef))
     }
     return entries
@@ -307,6 +436,7 @@ struct VerseWidget: Widget {
     StaticConfiguration(kind: kind, provider: VerseProvider()) { entry in
       VerseWidgetEntryView(entry: entry)
         .modifier(WidgetContainerBackground())
+        .widgetURL(VerseStore.contextURL(for: entry.verse, at: entry.date))
     }
     .configurationDisplayName("Daily Verse")
     .description("A rotating Scripture verse, refreshed throughout the day.")
@@ -431,6 +561,7 @@ struct VerseTimerWidget: Widget {
 struct VerseWidgetBundle: WidgetBundle {
   var body: some Widget {
     VerseWidget()
+    DailyReadingWidget()
     VerseTimerWidget()
   }
 }

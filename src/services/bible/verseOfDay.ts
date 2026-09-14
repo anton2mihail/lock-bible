@@ -8,8 +8,10 @@
  * this exact arithmetic (see targets/widget/VerseWidget.swift).
  *
  * Algorithm: count whole rotation "slots" since the Unix epoch in the device's
- * LOCAL time, then index into the verse pool modulo its length. Cadence is
- * measured in MINUTES so sub-hour rotation (10/15/30 min) is supported.
+ * LOCAL time, then map the slot through a deterministic permutation of the
+ * verse pool. Cadence is measured in MINUTES so sub-hour rotation (10/15/30
+ * min) is supported. The permutation visits every verse exactly once before
+ * repeating, without keeping shuffle state that the app and widget could lose.
  */
 
 import type { BookGroup, WidgetVerse } from "./types"
@@ -28,6 +30,29 @@ export const DEFAULT_VERSE_SCOPE: VerseScope = "full"
 
 const MINUTE_MS = 60_000
 
+// These constants are mirrored in VerseWidget.swift. The stride is adjusted
+// upward when necessary until it is coprime with the active pool size; that
+// makes `(slot * stride + offset) mod count` a full-cycle permutation.
+const SHUFFLE_STRIDE = 104_729
+const SHUFFLE_OFFSET = 1_729
+
+function greatestCommonDivisor(a: number, b: number): number {
+  let x = Math.abs(a)
+  let y = Math.abs(b)
+  while (y !== 0) {
+    const remainder = x % y
+    x = y
+    y = remainder
+  }
+  return x
+}
+
+function permutationStride(count: number): number {
+  let stride = SHUFFLE_STRIDE
+  while (greatestCommonDivisor(stride, count) !== 1) stride += 2
+  return stride
+}
+
 /** Whole minutes since the epoch in the device's local timezone. */
 function localMinutesSinceEpoch(date: Date): number {
   const localMs = date.getTime() - date.getTimezoneOffset() * MINUTE_MS
@@ -39,14 +64,17 @@ export function rotationSlot(date: Date, intervalMinutes: number): number {
   return Math.floor(localMinutesSinceEpoch(date) / intervalMinutes)
 }
 
-/**
- * Index into a verse pool of `count` entries for the given date/cadence.
- * Always returns a value in [0, count). Mirrors the Swift implementation.
- */
-export function verseIndexForDate(date: Date, count: number, intervalMinutes: number): number {
+/** Map a rotation slot into a full-cycle shuffled pool. Mirrors the Swift implementation. */
+export function verseIndexForSlot(slot: number, count: number): number {
   if (count <= 0) return 0
-  const slot = rotationSlot(date, intervalMinutes)
-  return ((slot % count) + count) % count
+  const stride = permutationStride(count)
+  const index = (slot * stride + SHUFFLE_OFFSET) % count
+  return (index + count) % count
+}
+
+/** Index into a shuffled verse pool for the given date/cadence. */
+export function verseIndexForDate(date: Date, count: number, intervalMinutes: number): number {
+  return verseIndexForSlot(rotationSlot(date, intervalMinutes), count)
 }
 
 /** The moment the verse will next change, given the current date and cadence. */

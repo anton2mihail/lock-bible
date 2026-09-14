@@ -1,5 +1,6 @@
 export * from "./types"
 export * from "./verseOfDay"
 export * from "./preferences"
+export * from "./readingPreferences"
 export * from "./translations"
 export * from "./bibleService"
