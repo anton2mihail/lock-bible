@@ -16,3 +16,14 @@ Also in this build: iOS 18 dark and tinted app icons, a splash screen that no
 longer shows the square icon tile, a safe-zone Android adaptive icon with a
 monochrome layer, refreshed App Store screenshots for the five-tab app, and
 removal of the unused Ignite welcome screen and legacy icon assets.
+
+## Build and submission
+
+- Build: https://expo.dev/accounts/antonmihail/projects/NRSV/builds/eabe6b9b-dcaa-4510-b41c-115f05ac73e4
+- Submission: https://expo.dev/accounts/antonmihail/projects/NRSV/submissions/7dd003c0-82c2-4a6d-ae6c-17ecbc05a156
+- App Store Connect: https://appstoreconnect.apple.com/apps/6784763639/distribution
+
+App Store Connect metadata updated on September 14, 2026: app name
+"John 1:1 – Lock Bible", version string 1.2.2, six iPhone 6.9" and four iPad 13"
+screenshots from `marketing/screenshots/framed/`, new What's New text, and
+reviewer notes that explain both fixes.
