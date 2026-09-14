@@ -2,7 +2,7 @@
   "name": "John 1:1",
   "slug": "NRSV",
   "scheme": "nrsv",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
   "icon": "./assets/artwork/john-icon.png",
@@ -19,16 +19,21 @@
       "android.permission.SCHEDULE_EXACT_ALARM"
     ],
     "adaptiveIcon": {
-      "foregroundImage": "./assets/artwork/john-icon.png",
-      "backgroundColor": "#2F1D2C"
+      "foregroundImage": "./assets/artwork/john-adaptive-foreground.png",
+      "backgroundImage": "./assets/artwork/john-adaptive-background.png",
+      "monochromeImage": "./assets/artwork/john-adaptive-monochrome.png"
     },
     "allowBackup": false
   },
   "ios": {
-    "icon": "./assets/artwork/john-icon.png",
+    "icon": {
+      "light": "./assets/artwork/john-icon.png",
+      "dark": "./assets/artwork/john-icon-dark.png",
+      "tinted": "./assets/artwork/john-icon-tinted.png"
+    },
     "supportsTablet": true,
     "bundleIdentifier": "com.nrsv.verse",
-    "buildNumber": "14",
+    "buildNumber": "15",
     "appleTeamId": "QZ44N522NQ",
     "config": {
       "usesNonExemptEncryption": false
@@ -45,13 +50,13 @@
     [
       "expo-video",
       {
-        "supportsPictureInPicture": true
+        "supportsPictureInPicture": false
       }
     ],
     [
       "expo-audio",
       {
-        "enableBackgroundPlayback": true,
+        "enableBackgroundPlayback": false,
         "microphonePermission": false,
         "recordAudioAndroid": false
       }
@@ -60,10 +65,13 @@
     [
       "expo-splash-screen",
       {
-        "image": "./assets/artwork/john-icon.png",
-        "imageWidth": 160,
+        "image": "./assets/artwork/john-splash.png",
+        "imageWidth": 120,
         "resizeMode": "contain",
-        "backgroundColor": "#2F1D2C"
+        "backgroundColor": "#371026",
+        "dark": {
+          "backgroundColor": "#371026"
+        }
       }
     ],
     [

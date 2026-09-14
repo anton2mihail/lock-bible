@@ -52,3 +52,13 @@ Implementation references: [WidgetKit timelines](https://developer.apple.com/doc
 and [Expo notifications](https://docs.expo.dev/versions/latest/sdk/notifications/).
 The icon was generated with the built-in image tool; its exact prompt is in
 `prompts/john-icon-chi-rho.txt`.
+Run `python3 scripts/build-john-icon-variants.py` (Pillow + numpy) after
+replacing it: the script lifts the Chi Rho off its plum field and regenerates the
+iOS 18 dark and tinted icons, the transparent splash mark, the Android adaptive
+foreground/background/monochrome layers, and the web favicon.
+
+## Store screenshots
+
+`marketing/capture-screenshots.yaml` is a Maestro flow that captures the raw
+iPhone 17 Pro Max and iPad Pro 13" simulator screens; `marketing/frame-screenshots.py`
+frames them into the App Store slide sets under `marketing/screenshots/framed/`.

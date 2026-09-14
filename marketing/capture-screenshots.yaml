@@ -1,0 +1,75 @@
+# Captures the raw App Store screenshots that marketing/frame-screenshots.py frames.
+# Install a Release build on an iPhone 17 Pro Max and an iPad Pro 13" simulator, then:
+#   maestro --device <udid> test -e OUT=marketing/screenshots/raw marketing/capture-screenshots.yaml
+# Rename the iPad outputs with the ipad- prefix (ipad-01-today, ipad-02-read,
+# ipad-03-settings, ipad-04-pray). 04-lockscreen is captured by hand.
+# Set a clean status bar first: xcrun simctl status_bar <udid> override --time 9:41 ...
+appId: com.nrsv.verse
+---
+- repeat:
+    while:
+      visible: "Cancel"
+    commands:
+      - tapOn: "Cancel"
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible: "Make room for prayer"
+    timeout: 20000
+- takeScreenshot: ${OUT}/01-today
+- tapOn:
+    id: "tab-read"
+- extendedWaitUntil:
+    visible: "Read the Bible"
+    timeout: 10000
+- takeScreenshot: ${OUT}/02-read-home
+- tapOn: "Search Scripture"
+- inputText: "John 1"
+- extendedWaitUntil:
+    visible:
+      id: "search-result-JHN-1-1"
+    timeout: 10000
+- tapOn:
+    id: "search-result-JHN-1-1"
+- extendedWaitUntil:
+    visible:
+      id: "reader-verse-block"
+    timeout: 10000
+- hideKeyboard
+- swipe:
+    direction: DOWN
+    duration: 300
+- swipe:
+    direction: DOWN
+    duration: 300
+- takeScreenshot: ${OUT}/02-read
+- tapOn:
+    id: "tab-pray"
+- extendedWaitUntil:
+    visible:
+      text: ".*Pray the Rosary.*"
+    timeout: 10000
+- takeScreenshot: ${OUT}/06-pray
+- tapOn:
+    text: ".*Pray the Rosary.*"
+- extendedWaitUntil:
+    visible:
+      text: ".*SUGGESTED TODAY.*"
+    timeout: 10000
+- takeScreenshot: ${OUT}/07-rosary
+- tapOn:
+    id: "tab-settings"
+- extendedWaitUntil:
+    visible:
+      text: ".*Translation.*"
+    timeout: 10000
+- takeScreenshot: ${OUT}/03-settings
+- tapOn:
+    id: "tab-today"
+- tapOn:
+    text: ".*Today.s readings.*"
+- extendedWaitUntil:
+    visible:
+      text: ".*Listen to the Word.*"
+    timeout: 10000
+- takeScreenshot: ${OUT}/05-readings

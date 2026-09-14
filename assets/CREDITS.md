@@ -5,12 +5,11 @@
 The production icon, splash mark, favicon, devotional paintings, saint portraits,
 Rosary mysteries and sharing backgrounds are generated artwork. Prompts are
 recorded in `docs/john/prompts/`. These are devotional illustrations, not
-historical portraits. The current icon is `artwork/john-icon.png`.
-
-Legacy icons retained in `images/` use Material Design Icons by Pictogrammers
-(Apache License 2.0): https://pictogrammers.com/library/mdi/icon/book-bible/.
-The old `scripts/build-app-icons.py` produces those legacy assets, not the
-current generated icon.
+historical portraits. The current icon is `artwork/john-icon.png`; every other
+icon and splash asset (`john-icon-dark.png`, `john-icon-tinted.png`,
+`john-splash.png`, the `john-adaptive-*.png` Android layers and
+`images/john-favicon.png`) is derived from it by
+`scripts/build-john-icon-variants.py`.
 
 ## Calendar and reading references
 
@@ -45,7 +44,5 @@ distribution license.
 
 ## Other bundled images
 
-`logo*.png` and `welcome-face*.png` are original Ignite boilerplate demo assets
-(Infinite Red), now only referenced by the unrouted `WelcomeScreen` — safe to
-remove. `sad-face*.png` is still referenced by the `EmptyState` component, so
-leave it (or replace it if you use `EmptyState` anywhere).
+`sad-face*.png` is an original Ignite boilerplate asset (Infinite Red) still
+referenced by the `EmptyState` component.
