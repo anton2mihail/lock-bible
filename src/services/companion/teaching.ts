@@ -7,7 +7,7 @@ export type Teaching = {
   catechism: string
   url: string
   reflection: string
-  artwork: "mary" | "prayer" | "scripture"
+  artwork: "mary" | "prayer" | "scripture" | "eucharist" | "confession"
 }
 const base = "https://www.vatican.va/content/catechism/en/"
 export const TEACHINGS: Teaching[] = [
@@ -15,7 +15,7 @@ export const TEACHINGS: Teaching[] = [
     id: "eucharist",
     title: "The Eucharist",
     subtitle: "Christ gives himself to us",
-    artwork: "scripture",
+    artwork: "eucharist",
     summary:
       "Catholics place the Eucharist at the center of the Church’s life. In the celebration of Mass, we receive Christ’s gift of himself and are drawn into communion with him and with one another. Reading the accounts of the Last Supper helps us approach this gift with gratitude.",
     references: ["Luke 22:14–20", "John 6:51–58", "1 Corinthians 11:23–26"],
@@ -29,7 +29,7 @@ export const TEACHINGS: Teaching[] = [
     id: "forgiveness",
     title: "Forgiveness & reconciliation",
     subtitle: "Return to the Father’s mercy",
-    artwork: "prayer",
+    artwork: "confession",
     summary:
       "Forgiveness begins with God’s mercy. Jesus forgives sins and entrusts a ministry of reconciliation to his apostles. In the sacrament of Penance, Catholics confess their sins and receive absolution through a priest. The return of the prodigal son offers a picture of a welcome we do not have to earn.",
     references: ["Luke 15:11–32", "John 20:19–23", "Matthew 18:21–35"],

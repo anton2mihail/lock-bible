@@ -8,8 +8,8 @@ Vesper name.
 Implemented: a liturgical Today page, daily reading references, Sunday preparation
 with locally saved reflections, a five-step Lectio Divina guide, everyday prayers
 and favorites, Scripture and Catechism topics, a guided confession examination,
-and illustrated Scripture sharing cards. Rosary mysteries and novena saints have
-new devotional artwork.
+and illustrated Scripture sharing cards. Rosary mysteries, liturgical seasons, sacraments, Marian titles, and novena saints
+have dedicated devotional artwork.
 
 The calendar uses the United States Roman Rite (Sunday Ascension); local
 observances can differ. Bundled reading references cover all of 2026 and 2027;
