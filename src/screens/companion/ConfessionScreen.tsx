@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
-import { AppState, Image, Linking, View } from "react-native"
+import { AppState, Linking, View } from "react-native"
 import { useFocusEffect, useRouter } from "expo-router"
 
 import { Button } from "@/components/Button"
 import {
-  art,
   companionStyles as s,
   Muted,
   Page,
@@ -39,7 +38,6 @@ export function ConfessionScreen() {
       title={step.title}
       eyebrow={`Prepare for Confession / ${index + 1} of ${CONFESSION_STEPS.length}`}
     >
-      {index === 0 && <Image source={art.confession} style={s.heroImage} accessible={false} />}
       <Text text={step.body} style={s.body} />
       {index === 0 && (
         <>

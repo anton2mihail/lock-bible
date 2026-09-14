@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react"
-import { Image, View } from "react-native"
+import { View } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 
 import { Button } from "@/components/Button"
-import { art, companionStyles as s, Muted, Page, Panel } from "@/components/companion/Companion"
+import { companionStyles as s, Muted, Page, Panel } from "@/components/companion/Companion"
 import { Text } from "@/components/Text"
 import { getActiveTranslationMeta, getCurrentVerse } from "@/services/bible"
 import { type PassageParams, resolvePassage } from "@/services/companion/passage"
@@ -91,7 +91,6 @@ export function LectioScreen() {
       eyebrow={`Lectio divina / ${index + 1} of ${STEPS.length}`}
       subtitle={passage.reference}
     >
-      {index === 0 && <Image source={art.scripture} style={s.heroImage} accessible={false} />}
       <Panel>
         <Text text={step.name} style={s.eyebrow} />
         <Text text={step.prompt} style={s.body} />

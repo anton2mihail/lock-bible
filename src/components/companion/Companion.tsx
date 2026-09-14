@@ -13,17 +13,11 @@ export const art = {
   prayer: require("../../../assets/artwork/prayer.jpg"),
   mary: require("../../../assets/artwork/mary.jpg"),
   advent: require("../../../assets/artwork/advent.jpg"),
-  christmas: require("../../../assets/artwork/christmas.jpg"),
-  lent: require("../../../assets/artwork/lent.jpg"),
-  triduum: require("../../../assets/artwork/triduum.jpg"),
-  easter: require("../../../assets/artwork/easter.jpg"),
-  ordinary: require("../../../assets/artwork/ordinary.jpg"),
-  eucharist: require("../../../assets/artwork/eucharist.jpg"),
-  confession: require("../../../assets/artwork/confession.jpg"),
-  morning: require("../../../assets/artwork/morning.jpg"),
-  evening: require("../../../assets/artwork/evening.jpg"),
-  departed: require("../../../assets/artwork/departed.jpg"),
-  "mental-health": require("../../../assets/artwork/mental-health.jpg"),
+  christmas: require("../../../assets/artwork/joyful-3.jpg"),
+  lent: require("../../../assets/artwork/sorrowful-1.jpg"),
+  triduum: require("../../../assets/artwork/sorrowful-5.jpg"),
+  easter: require("../../../assets/artwork/glorious-1.jpg"),
+  ordinary: require("../../../assets/artwork/scripture.jpg"),
 }
 // Shared styles are consumed by companion screens across files.
 // eslint-disable-next-line react-native/no-unused-styles

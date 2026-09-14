@@ -1,38 +1,5 @@
 import type { ImageSourcePropType } from "react-native"
 
-export const devotionArt: Record<string, ImageSourcePropType> = {
-  "our-lady-perpetual-help": require("../../../assets/artwork/our-lady-perpetual-help.jpg"),
-  "sacred-heart": require("../../../assets/artwork/sacred-heart.jpg"),
-  "holy-spirit": require("../../../assets/artwork/holy-spirit.jpg"),
-  "divine-mercy": require("../../../assets/artwork/divine-mercy.jpg"),
-  "miraculous-medal": require("../../../assets/artwork/miraculous-medal.jpg"),
-  "immaculate-conception": require("../../../assets/artwork/immaculate-conception.jpg"),
-  "our-lady-lourdes": require("../../../assets/artwork/our-lady-lourdes.jpg"),
-  "our-lady-fatima": require("../../../assets/artwork/our-lady-fatima.jpg"),
-  "our-lady-guadalupe": require("../../../assets/artwork/our-lady-guadalupe.jpg"),
-  "holy-souls": require("../../../assets/artwork/holy-souls.jpg"),
-  "christ-the-king": require("../../../assets/artwork/christ-the-king.jpg"),
-  "respect-life": require("../../../assets/artwork/respect-life.jpg"),
-  "mental-health": require("../../../assets/artwork/mental-health.jpg"),
-}
-
-const prayerImages: Record<string, ImageSourcePropType> = {
-  morning: require("../../../assets/artwork/morning.jpg"),
-  evening: require("../../../assets/artwork/evening.jpg"),
-  meals: require("../../../assets/artwork/eucharist.jpg"),
-  angelus: require("../../../assets/artwork/mary.jpg"),
-  "hail-mary": require("../../../assets/artwork/mary.jpg"),
-  "regina-caeli": require("../../../assets/artwork/mary.jpg"),
-  contrition: require("../../../assets/artwork/confession.jpg"),
-  anxiety: require("../../../assets/artwork/mental-health.jpg"),
-  departed: require("../../../assets/artwork/departed.jpg"),
-  suffering: require("../../../assets/artwork/departed.jpg"),
-}
-
-export function prayerArt(id: string): ImageSourcePropType {
-  return prayerImages[id] ?? require("../../../assets/artwork/prayer.jpg")
-}
-
 export const saintArt: Record<string, ImageSourcePropType> = {
   "st-padre-pio": require("../../../assets/artwork/st-padre-pio.jpg"),
   "st-jude": require("../../../assets/artwork/st-jude.jpg"),
@@ -86,8 +53,11 @@ export const rosaryCover = {
 }
 export function novenaArt(id: string): ImageSourcePropType {
   if (saintArt[id]) return saintArt[id]
-  if (devotionArt[id]) return devotionArt[id]
+  if (id === "holy-spirit") return mysteryArt.glorious[2]
   if (id === "assumption") return mysteryArt.glorious[3]
-  if (id.includes("lady")) return require("../../../assets/artwork/mary.jpg")
+  if (id === "sacred-heart" || id === "divine-mercy" || id === "christ-the-king")
+    return mysteryArt.glorious[0]
+  if (id.includes("lady") || id === "miraculous-medal" || id === "immaculate-conception")
+    return require("../../../assets/artwork/mary.jpg")
   return require("../../../assets/artwork/prayer.jpg")
 }

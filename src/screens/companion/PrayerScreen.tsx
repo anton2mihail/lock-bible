@@ -5,6 +5,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
 import { Button } from "@/components/Button"
 import {
   ActionRow,
+  art,
   companionStyles as s,
   Muted,
   Page,
@@ -12,9 +13,8 @@ import {
 } from "@/components/companion/Companion"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
-import { prayerArt } from "@/services/companion/artwork"
-import { favoritePrayers, toggleFavoritePrayer } from "@/services/companion/preferences"
 import { getPrayer, PRAYERS } from "@/services/companion/prayers"
+import { favoritePrayers, toggleFavoritePrayer } from "@/services/companion/preferences"
 
 export function PrayerScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>(),
@@ -34,7 +34,15 @@ export function PrayerScreen() {
   if (prayer)
     return (
       <Page title={prayer.title} eyebrow={prayer.category} subtitle={prayer.subtitle}>
-        <Image source={prayerArt(prayer.id)} style={s.heroImage} accessible={false} />
+        <Image
+          source={
+            prayer.id === "angelus" || prayer.id === "hail-mary" || prayer.id === "regina-caeli"
+              ? art.mary
+              : art.prayer
+          }
+          style={s.heroImage}
+          accessible={false}
+        />
         <Text text={prayer.text} style={s.serif} selectable />
         {prayer.id === "angelus" && (
           <ActionRow

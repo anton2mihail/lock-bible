@@ -2,11 +2,10 @@
 
 ## John 1:1 artwork and icon
 
-The production icon, splash mark, favicon, liturgical seasons, sacraments,
-devotional paintings, saint portraits, Rosary mysteries and sharing backgrounds
-are generated artwork. Prompts are recorded in `docs/john/prompts/`. These are
-devotional illustrations, not historical portraits. The current icon is
-`artwork/john-icon.png`.
+The production icon, splash mark, favicon, devotional paintings, saint portraits,
+Rosary mysteries and sharing backgrounds are generated artwork. Prompts are
+recorded in `docs/john/prompts/`. These are devotional illustrations, not
+historical portraits. The current icon is `artwork/john-icon.png`.
 
 Legacy icons retained in `images/` use Material Design Icons by Pictogrammers
 (Apache License 2.0): https://pictogrammers.com/library/mdi/icon/book-bible/.
