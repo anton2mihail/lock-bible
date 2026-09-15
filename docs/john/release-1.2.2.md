@@ -27,3 +27,7 @@ App Store Connect metadata updated on September 14, 2026: app name
 "John 1:1 – Lock Bible", version string 1.2.2, six iPhone 6.9" and four iPad 13"
 screenshots from `marketing/screenshots/framed/`, new What's New text, and
 reviewer notes that explain both fixes.
+
+Resubmitted to App Review on September 14, 2026 at 9:00 PM (same submission id
+816b627b-c4ea-4b4b-9a58-75c8435f6293, now carrying 1.2.2 (15)). Status: Waiting
+for Review. The version is set to release automatically after approval.
