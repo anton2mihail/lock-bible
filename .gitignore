@@ -94,3 +94,7 @@ app-dependency-graph.png
 scripts/.cache/
 
 .expo/
+.ccel-cache/
+
+# Playwright CLI page snapshots and console logs
+.playwright-cli/

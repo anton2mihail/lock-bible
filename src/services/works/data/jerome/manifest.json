@@ -1,0 +1,26 @@
+[
+  {
+    "id": "the-letters-of-st-jerome",
+    "title": "The Letters of St. Jerome",
+    "order": 1,
+    "sectionCount": 150,
+    "words": 260298,
+    "book": null
+  },
+  {
+    "id": "treatises",
+    "title": "Treatises",
+    "order": 2,
+    "sectionCount": 13,
+    "words": 165132,
+    "book": null
+  },
+  {
+    "id": "prefaces",
+    "title": "Prefaces",
+    "order": 3,
+    "sectionCount": 33,
+    "words": 16459,
+    "book": null
+  }
+]

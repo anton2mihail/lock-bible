@@ -1,0 +1,394 @@
+[
+  {
+    "id": "the-confessions",
+    "title": "The Confessions",
+    "order": 1,
+    "sectionCount": 13,
+    "words": 122840,
+    "book": null
+  },
+  {
+    "id": "the-letters-of-st-augustine",
+    "title": "The Letters of St Augustine",
+    "order": 2,
+    "sectionCount": 168,
+    "words": 350463,
+    "book": null
+  },
+  {
+    "id": "city-of-god",
+    "title": "City of God",
+    "order": 3,
+    "sectionCount": 688,
+    "words": 438455,
+    "book": null
+  },
+  {
+    "id": "on-christian-doctrine",
+    "title": "On Christian Doctrine",
+    "order": 4,
+    "sectionCount": 155,
+    "words": 67555,
+    "book": null
+  },
+  {
+    "id": "on-the-holy-trinity",
+    "title": "On the Holy Trinity",
+    "order": 5,
+    "sectionCount": 242,
+    "words": 184622,
+    "book": null
+  },
+  {
+    "id": "the-enchiridion",
+    "title": "The Enchiridion",
+    "order": 6,
+    "sectionCount": 124,
+    "words": 34598,
+    "book": null
+  },
+  {
+    "id": "on-the-catechising-of-the-uninstructed",
+    "title": "On the Catechising of the Uninstructed",
+    "order": 7,
+    "sectionCount": 28,
+    "words": 27649,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-faith-and-the-creed",
+    "title": "A Treatise on Faith and the Creed",
+    "order": 8,
+    "sectionCount": 11,
+    "words": 10045,
+    "book": null
+  },
+  {
+    "id": "concerning-faith-of-things-not-seen",
+    "title": "Concerning Faith of Things Not Seen",
+    "order": 9,
+    "sectionCount": 12,
+    "words": 5570,
+    "book": null
+  },
+  {
+    "id": "on-the-profit-of-believing",
+    "title": "On the Profit of Believing",
+    "order": 10,
+    "sectionCount": 37,
+    "words": 16995,
+    "book": null
+  },
+  {
+    "id": "on-the-creed",
+    "title": "On the Creed",
+    "order": 11,
+    "sectionCount": 18,
+    "words": 5680,
+    "book": null
+  },
+  {
+    "id": "on-continence",
+    "title": "On Continence",
+    "order": 12,
+    "sectionCount": 33,
+    "words": 13156,
+    "book": null
+  },
+  {
+    "id": "on-the-good-of-marriage",
+    "title": "On the Good of Marriage",
+    "order": 13,
+    "sectionCount": 36,
+    "words": 13390,
+    "book": null
+  },
+  {
+    "id": "of-holy-virginity",
+    "title": "Of Holy Virginity",
+    "order": 14,
+    "sectionCount": 58,
+    "words": 18882,
+    "book": null
+  },
+  {
+    "id": "on-the-good-of-widowhood",
+    "title": "On the Good of Widowhood",
+    "order": 15,
+    "sectionCount": 30,
+    "words": 11748,
+    "book": null
+  },
+  {
+    "id": "on-lying",
+    "title": "On Lying",
+    "order": 16,
+    "sectionCount": 44,
+    "words": 18820,
+    "book": null
+  },
+  {
+    "id": "against-lying",
+    "title": "Against Lying",
+    "order": 17,
+    "sectionCount": 42,
+    "words": 18456,
+    "book": null
+  },
+  {
+    "id": "of-the-work-of-monks",
+    "title": "Of the Work of Monks",
+    "order": 18,
+    "sectionCount": 42,
+    "words": 19399,
+    "book": null
+  },
+  {
+    "id": "on-patience",
+    "title": "On Patience",
+    "order": 19,
+    "sectionCount": 27,
+    "words": 7953,
+    "book": null
+  },
+  {
+    "id": "on-care-to-be-had-for-the-dead",
+    "title": "On Care to Be Had for the Dead",
+    "order": 20,
+    "sectionCount": 24,
+    "words": 10775,
+    "book": null
+  },
+  {
+    "id": "on-the-morals-of-the-catholic-church",
+    "title": "On the Morals of the Catholic Church",
+    "order": 21,
+    "sectionCount": 36,
+    "words": 19554,
+    "book": null
+  },
+  {
+    "id": "on-the-morals-of-the-manich-ans",
+    "title": "On the Morals of the Manichæans",
+    "order": 22,
+    "sectionCount": 21,
+    "words": 19076,
+    "book": null
+  },
+  {
+    "id": "on-two-souls-against-the-manich-ans",
+    "title": "On Two Souls, Against the Manichæans",
+    "order": 23,
+    "sectionCount": 15,
+    "words": 10555,
+    "book": null
+  },
+  {
+    "id": "acts-or-disputation-against-fortunatus-the-manich-an",
+    "title": "Acts or Disputation Against Fortunatus the Manichæan",
+    "order": 24,
+    "sectionCount": 2,
+    "words": 9551,
+    "book": null
+  },
+  {
+    "id": "against-the-epistle-of-manich-us-called-fundamental",
+    "title": "Against the Epistle of Manichæus, Called Fundamental",
+    "order": 25,
+    "sectionCount": 43,
+    "words": 19255,
+    "book": null
+  },
+  {
+    "id": "reply-to-faustus-the-manich-an",
+    "title": "Reply to Faustus the Manichæan",
+    "order": 26,
+    "sectionCount": 34,
+    "words": 170480,
+    "book": null
+  },
+  {
+    "id": "concerning-the-nature-of-good-against-the-manich-ans",
+    "title": "Concerning the Nature of Good, Against the Manichæans",
+    "order": 27,
+    "sectionCount": 49,
+    "words": 11903,
+    "book": null
+  },
+  {
+    "id": "on-baptism-against-the-donatists",
+    "title": "On Baptism, Against the Donatists",
+    "order": 28,
+    "sectionCount": 206,
+    "words": 84642,
+    "book": null
+  },
+  {
+    "id": "answer-to-the-letters-of-petilian-the-donatist",
+    "title": "Answer to the Letters of Petilian, the Donatist",
+    "order": 29,
+    "sectionCount": 199,
+    "words": 97325,
+    "book": null
+  },
+  {
+    "id": "the-correction-of-the-donatists",
+    "title": "The Correction of the Donatists",
+    "order": 30,
+    "sectionCount": 12,
+    "words": 16161,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-merits-and-forgiveness-of-sins-and-on-the-",
+    "title": "A Treatise on the Merits and Forgiveness of Sins, and on the Baptism of Infants",
+    "order": 31,
+    "sectionCount": 156,
+    "words": 56929,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-spirit-and-the-letter",
+    "title": "A Treatise on the Spirit and the Letter",
+    "order": 32,
+    "sectionCount": 68,
+    "words": 28873,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-nature-and-grace",
+    "title": "A Treatise on Nature and Grace",
+    "order": 33,
+    "sectionCount": 86,
+    "words": 28247,
+    "book": null
+  },
+  {
+    "id": "a-treatise-concerning-man-s-perfection-in-righteousness",
+    "title": "A Treatise Concerning Man’s Perfection in Righteousness",
+    "order": 34,
+    "sectionCount": 46,
+    "words": 16044,
+    "book": null
+  },
+  {
+    "id": "a-work-on-the-proceedings-of-pelagius",
+    "title": "A Work on the Proceedings of Pelagius",
+    "order": 35,
+    "sectionCount": 68,
+    "words": 27915,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-grace-of-christ-and-on-original-sin",
+    "title": "A Treatise on the Grace of Christ, and on Original Sin",
+    "order": 36,
+    "sectionCount": 106,
+    "words": 33487,
+    "book": null
+  },
+  {
+    "id": "on-marriage-and-concupiscence",
+    "title": "On Marriage and Concupiscence",
+    "order": 37,
+    "sectionCount": 105,
+    "words": 41151,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-soul-and-its-origin",
+    "title": "A Treatise on the Soul and its Origin",
+    "order": 38,
+    "sectionCount": 126,
+    "words": 53900,
+    "book": null
+  },
+  {
+    "id": "a-treatise-against-two-letters-of-the-pelagians",
+    "title": "A Treatise Against Two Letters of the Pelagians",
+    "order": 39,
+    "sectionCount": 130,
+    "words": 53210,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-grace-and-free-will",
+    "title": "A Treatise on Grace and Free Will",
+    "order": 40,
+    "sectionCount": 50,
+    "words": 24309,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-rebuke-and-grace",
+    "title": "A Treatise on Rebuke and Grace",
+    "order": 41,
+    "sectionCount": 51,
+    "words": 19297,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-predestination-of-the-saints",
+    "title": "A Treatise on the Predestination of the Saints",
+    "order": 42,
+    "sectionCount": 113,
+    "words": 46310,
+    "book": null
+  },
+  {
+    "id": "our-lord-s-sermon-on-the-mount",
+    "title": "Our Lord’s Sermon on the Mount",
+    "order": 43,
+    "sectionCount": 48,
+    "words": 53892,
+    "book": "MAT"
+  },
+  {
+    "id": "the-harmony-of-the-gospels",
+    "title": "The Harmony of the Gospels",
+    "order": 44,
+    "sectionCount": 158,
+    "words": 146099,
+    "book": null
+  },
+  {
+    "id": "sermons-on-selected-lessons-of-the-new-testament",
+    "title": "Sermons on Selected Lessons of the New Testament",
+    "order": 45,
+    "sectionCount": 97,
+    "words": 293297,
+    "book": null
+  },
+  {
+    "id": "lectures-or-tractates-on-the-gospel-according-to-st-john",
+    "title": "Lectures or Tractates on the Gospel According to St. John",
+    "order": 46,
+    "sectionCount": 124,
+    "words": 396917,
+    "book": "JHN"
+  },
+  {
+    "id": "ten-homilies-on-the-first-epistle-of-john",
+    "title": "Ten Homilies on the First Epistle of John",
+    "order": 47,
+    "sectionCount": 17,
+    "words": 60495,
+    "book": "1JN"
+  },
+  {
+    "id": "two-books-of-soliloquies",
+    "title": "Two Books of Soliloquies",
+    "order": 48,
+    "sectionCount": 2,
+    "words": 22457,
+    "book": null
+  },
+  {
+    "id": "expositions-on-the-book-of-psalms",
+    "title": "Expositions on the Book of Psalms",
+    "order": 49,
+    "sectionCount": 150,
+    "words": 646016,
+    "book": "PSA"
+  }
+]

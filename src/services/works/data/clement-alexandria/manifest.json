@@ -1,0 +1,34 @@
+[
+  {
+    "id": "exhortation-to-the-heathen",
+    "title": "Exhortation to the Heathen",
+    "order": 1,
+    "sectionCount": 12,
+    "words": 31622,
+    "book": null
+  },
+  {
+    "id": "the-instructor",
+    "title": "The Instructor",
+    "order": 2,
+    "sectionCount": 39,
+    "words": 75093,
+    "book": null
+  },
+  {
+    "id": "the-stromata-or-miscellanies",
+    "title": "The Stromata, or Miscellanies",
+    "order": 3,
+    "sectionCount": 134,
+    "words": 231524,
+    "book": null
+  },
+  {
+    "id": "who-is-the-rich-man-that-shall-be-saved",
+    "title": "Who is the Rich Man that shall be saved?",
+    "order": 4,
+    "sectionCount": 1,
+    "words": 13166,
+    "book": null
+  }
+]

@@ -7,10 +7,12 @@ import {
   getReaderTextSize,
   getReaderTypeface,
   isWidgetGuideDismissed,
+  setReaderLayout,
   setReaderLineSpacing,
   setReaderLocation,
   setReaderTextSize,
   setReaderTypeface,
+  subscribeToReadingPreferences,
 } from "./readingPreferences"
 
 describe("reading preferences", () => {
@@ -31,6 +33,21 @@ describe("reading preferences", () => {
     expect(getReaderTextSize()).toBe("extraLarge")
     expect(getReaderLineSpacing()).toBe("relaxed")
     expect(getReaderTypeface()).toBe("sans")
+  })
+
+  it("tells subscribers when how Scripture looks changes", () => {
+    const listener = jest.fn()
+    const unsubscribe = subscribeToReadingPreferences(listener)
+
+    setReaderTextSize("large")
+    setReaderLayout("verses")
+    // Where the reader left off is not an appearance change.
+    setReaderLocation({ book: "JHN", chapter: 3, scrollY: 0 })
+    expect(listener).toHaveBeenCalledTimes(2)
+
+    unsubscribe()
+    setReaderTypeface("sans")
+    expect(listener).toHaveBeenCalledTimes(2)
   })
 
   it("persists and sanitizes the last reading location", () => {

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "prologue-of-rufinus",
+    "title": "Prologue of Rufinus",
+    "order": 1,
+    "sectionCount": 1,
+    "words": 1033,
+    "book": null
+  },
+  {
+    "id": "origen-de-principiis",
+    "title": "Origen De Principiis",
+    "order": 2,
+    "sectionCount": 33,
+    "words": 125487,
+    "book": null
+  },
+  {
+    "id": "a-letter-to-origen-from-africanus-about-the-history-of-susan",
+    "title": "A Letter to Origen from Africanus About the History of Susanna",
+    "order": 3,
+    "sectionCount": 1,
+    "words": 512,
+    "book": null
+  },
+  {
+    "id": "a-letter-from-origen-to-africanus",
+    "title": "A Letter from Origen to Africanus",
+    "order": 4,
+    "sectionCount": 1,
+    "words": 6415,
+    "book": null
+  },
+  {
+    "id": "a-letter-from-origen-to-gregory",
+    "title": "A Letter from Origen to Gregory",
+    "order": 5,
+    "sectionCount": 1,
+    "words": 1155,
+    "book": null
+  },
+  {
+    "id": "origen-against-celsus",
+    "title": "Origen Against Celsus",
+    "order": 6,
+    "sectionCount": 622,
+    "words": 238201,
+    "book": null
+  }
+]

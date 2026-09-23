@@ -39,6 +39,12 @@ jest.doMock("react-native-safe-area-context", () => {
   }
 })
 
+// Icon fonts load asynchronously, which only adds act() warnings to tests that
+// find controls by their labels anyway.
+jest.doMock("@expo/vector-icons", () => ({
+  Feather: () => null,
+}))
+
 jest.mock("i18next", () => ({
   currentLocale: "en",
   t: (key: string, params: Record<string, string>) => {

@@ -14,12 +14,14 @@ import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { CONFESSION_SOURCE, CONFESSION_STEPS, EXAMINATION } from "@/services/companion/confession"
 import { ACT_OF_CONTRITION } from "@/services/companion/prayers"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 export function ConfessionScreen() {
   const router = useRouter(),
     [index, setIndex] = useState(0),
     [notes, setNotes] = useState(""),
     [notice, setNotice] = useState("")
+  useAnnouncement(notice)
   const clear = useCallback(() => setNotes(""), [])
   useFocusEffect(useCallback(() => () => clear(), [clear]))
   useEffect(() => {

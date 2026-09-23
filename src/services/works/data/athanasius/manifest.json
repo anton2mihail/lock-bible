@@ -1,0 +1,162 @@
+[
+  {
+    "id": "against-the-heathen-contra-gentes",
+    "title": "Against the Heathen. (Contra Gentes.)",
+    "order": 1,
+    "sectionCount": 47,
+    "words": 23894,
+    "book": null
+  },
+  {
+    "id": "the-incarnation-of-the-word",
+    "title": "The Incarnation of the Word",
+    "order": 2,
+    "sectionCount": 57,
+    "words": 28457,
+    "book": null
+  },
+  {
+    "id": "deposition-of-arius-depositio-arii",
+    "title": "Deposition of Arius. (Depositio Arii.)",
+    "order": 3,
+    "sectionCount": 1,
+    "words": 2082,
+    "book": null
+  },
+  {
+    "id": "letter-of-eusebius-epistola-eusebii",
+    "title": "Letter of Eusebius. (Epistola Eusebii.)",
+    "order": 4,
+    "sectionCount": 2,
+    "words": 5272,
+    "book": null
+  },
+  {
+    "id": "statement-of-faith-expositio-fidei",
+    "title": "Statement of Faith. (Expositio Fidei.)",
+    "order": 5,
+    "sectionCount": 1,
+    "words": 1423,
+    "book": null
+  },
+  {
+    "id": "on-luke-x-22-illud-omnia-c",
+    "title": "On Luke x. 22. (Illud Omnia, &c.)",
+    "order": 6,
+    "sectionCount": 6,
+    "words": 3052,
+    "book": null
+  },
+  {
+    "id": "encyclical-letter-epistola-encyclica",
+    "title": "Encyclical Letter. (Epistola Encyclica.)",
+    "order": 7,
+    "sectionCount": 7,
+    "words": 3994,
+    "book": null
+  },
+  {
+    "id": "defence-against-the-arians-apologia-contra-arianos",
+    "title": "Defence Against the Arians. (Apologia Contra Arianos.)",
+    "order": 8,
+    "sectionCount": 7,
+    "words": 39101,
+    "book": null
+  },
+  {
+    "id": "defence-of-the-nicene-definition-de-decretis",
+    "title": "Defence of the Nicene Definition. (De Decretis.)",
+    "order": 9,
+    "sectionCount": 7,
+    "words": 15349,
+    "book": null
+  },
+  {
+    "id": "defence-of-dionysius-de-sententia-dionysii",
+    "title": "Defence of Dionysius. (De Sententia Dionysii.)",
+    "order": 10,
+    "sectionCount": 1,
+    "words": 9997,
+    "book": null
+  },
+  {
+    "id": "life-of-antony-vita-antoni",
+    "title": "Life of Antony. (Vita Antoni.)",
+    "order": 11,
+    "sectionCount": 46,
+    "words": 24639,
+    "book": null
+  },
+  {
+    "id": "circular-to-bishops-of-egypt-and-libya-ad-episcopos-gypti-et",
+    "title": "Circular to Bishops of Egypt and Libya. (Ad Episcopos Ægypti Et Libyæ Epistola Encyclica.)",
+    "order": 12,
+    "sectionCount": 2,
+    "words": 10889,
+    "book": null
+  },
+  {
+    "id": "apology-to-the-emperor-apologia-ad-constantium",
+    "title": "Apology to the Emperor. (Apologia Ad Constantium.)",
+    "order": 13,
+    "sectionCount": 35,
+    "words": 12584,
+    "book": null
+  },
+  {
+    "id": "defence-of-his-flight-apologia-de-fuga",
+    "title": "Defence of His Flight. (Apologia de Fuga.)",
+    "order": 14,
+    "sectionCount": 27,
+    "words": 8518,
+    "book": null
+  },
+  {
+    "id": "arian-history-historia-arianorum-ad-monachos",
+    "title": "Arian History. (Historia Arianorum ad Monachos.)",
+    "order": 15,
+    "sectionCount": 8,
+    "words": 25776,
+    "book": null
+  },
+  {
+    "id": "against-the-arians-orationes-contra-arianos-iv",
+    "title": "Against the Arians. (Orationes contra Arianos IV.)",
+    "order": 16,
+    "sectionCount": 41,
+    "words": 116466,
+    "book": null
+  },
+  {
+    "id": "on-the-councils-of-ariminum-and-seleucia-de-synodis",
+    "title": "On the Councils of Ariminum and Seleucia. (De Synodis.)",
+    "order": 17,
+    "sectionCount": 3,
+    "words": 24893,
+    "book": null
+  },
+  {
+    "id": "synodal-letter-to-the-people-of-antioch-tomus-ad-antiochenos",
+    "title": "Synodal Letter to the People of Antioch. (Tomus ad Antiochenos.)",
+    "order": 18,
+    "sectionCount": 1,
+    "words": 3980,
+    "book": null
+  },
+  {
+    "id": "synodal-letter-to-the-bishops-of-africa-ad-afros-epistola-sy",
+    "title": "Synodal Letter to the Bishops of Africa. (Ad Afros Epistola Synodica.)",
+    "order": 19,
+    "sectionCount": 1,
+    "words": 4514,
+    "book": null
+  },
+  {
+    "id": "letters-of-athanasius-with-two-ancient-chronicles-of-his-lif",
+    "title": "Letters of Athanasius with Two Ancient Chronicles of His Life",
+    "order": 20,
+    "sectionCount": 52,
+    "words": 70263,
+    "book": null
+  }
+]

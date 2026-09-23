@@ -1,31 +1,23 @@
 import { FC, useCallback, useState } from "react"
-import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { TextStyle, View, ViewStyle } from "react-native"
 import { router } from "expo-router"
 
 import { ActionRow } from "@/components/companion/Companion"
 import { ListItem } from "@/components/ListItem"
+import { ReadingSettings } from "@/components/ReadingSettings"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import {
-  getReaderLineSpacing,
-  getReaderTextSize,
-  getReaderTypeface,
   getRotationInterval,
   getTranslationId,
   getVerseScope,
   listTranslations,
   ROTATION_INTERVALS,
-  setReaderLineSpacing,
-  setReaderTextSize,
-  setReaderTypeface,
   setRotationInterval,
   setTranslationId,
   setVerseScope,
   VERSE_SCOPES,
   type RotationInterval,
-  type ReaderLineSpacing,
-  type ReaderTextSize,
-  type ReaderTypeface,
   type VerseScope,
 } from "@/services/bible"
 import { calendarCoverage } from "@/services/companion/calendar"
@@ -50,45 +42,13 @@ const SCOPE_LABELS: Record<VerseScope, string> = {
   nt: "New Testament",
 }
 
-type AppearancePreference = "system" | "light" | "dark"
-
-const TEXT_SIZE_OPTIONS: readonly { value: ReaderTextSize; label: string }[] = [
-  { value: "small", label: "Small" },
-  { value: "medium", label: "Default" },
-  { value: "large", label: "Large" },
-  { value: "extraLarge", label: "Extra large" },
-]
-
-const LINE_SPACING_OPTIONS: readonly { value: ReaderLineSpacing; label: string }[] = [
-  { value: "compact", label: "Compact" },
-  { value: "comfortable", label: "Comfortable" },
-  { value: "relaxed", label: "Relaxed" },
-]
-
-const TYPEFACE_OPTIONS: readonly { value: ReaderTypeface; label: string }[] = [
-  { value: "serif", label: "Serif" },
-  { value: "sans", label: "Sans" },
-]
-
-const APPEARANCE_OPTIONS: readonly { value: AppearancePreference; label: string }[] = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-]
-
 export const SettingsScreen: FC = function SettingsScreen() {
-  const { setThemeContextOverride, themeContextOverride, themed } = useAppTheme()
+  const { themed } = useAppTheme()
   const translations = listTranslations()
 
   const [translationId, setTranslationIdState] = useState(getTranslationId)
   const [interval, setIntervalState] = useState<RotationInterval>(getRotationInterval)
   const [scope, setScopeState] = useState<VerseScope>(getVerseScope)
-  const [readerTextSize, setReaderTextSizeState] = useState<ReaderTextSize>(getReaderTextSize)
-  const [readerLineSpacing, setReaderLineSpacingState] =
-    useState<ReaderLineSpacing>(getReaderLineSpacing)
-  const [readerTypeface, setReaderTypefaceState] = useState<ReaderTypeface>(getReaderTypeface)
-
-  const appearance: AppearancePreference = themeContextOverride ?? "system"
 
   const onSelectTranslation = useCallback((id: string) => {
     setTranslationId(id)
@@ -112,45 +72,10 @@ export const SettingsScreen: FC = function SettingsScreen() {
 
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={themed($container)}>
-      <Text text="Settings" preset="heading" style={themed($title)} />
+      <Text text="Settings" preset="heading" accessibilityRole="header" style={themed($title)} />
 
       <Section title="Reading" themed={themed}>
-        <PreferencePicker
-          label="Text size"
-          value={readerTextSize}
-          options={TEXT_SIZE_OPTIONS}
-          onSelect={(value) => {
-            setReaderTextSize(value)
-            setReaderTextSizeState(value)
-          }}
-        />
-        <PreferencePicker
-          label="Line spacing"
-          value={readerLineSpacing}
-          options={LINE_SPACING_OPTIONS}
-          onSelect={(value) => {
-            setReaderLineSpacing(value)
-            setReaderLineSpacingState(value)
-          }}
-          topSeparator
-        />
-        <PreferencePicker
-          label="Scripture typeface"
-          value={readerTypeface}
-          options={TYPEFACE_OPTIONS}
-          onSelect={(value) => {
-            setReaderTypeface(value)
-            setReaderTypefaceState(value)
-          }}
-          topSeparator
-        />
-        <PreferencePicker
-          label="Appearance"
-          value={appearance}
-          options={APPEARANCE_OPTIONS}
-          onSelect={(value) => setThemeContextOverride(value === "system" ? undefined : value)}
-          topSeparator
-        />
+        <ReadingSettings />
       </Section>
 
       <Section title="Translation" themed={themed}>
@@ -265,53 +190,13 @@ interface SectionProps {
 function Section({ title, themed, children }: SectionProps) {
   return (
     <View style={themed($section)}>
-      <Text text={title} preset="formLabel" style={themed($sectionLabel)} />
+      <Text
+        text={title}
+        preset="formLabel"
+        accessibilityRole="header"
+        style={themed($sectionLabel)}
+      />
       <View style={themed($sectionBody)}>{children}</View>
-    </View>
-  )
-}
-
-interface PreferencePickerProps<T extends string> {
-  label: string
-  value: T
-  options: readonly { value: T; label: string }[]
-  onSelect: (value: T) => void
-  topSeparator?: boolean
-}
-
-function PreferencePicker<T extends string>({
-  label,
-  value,
-  options,
-  onSelect,
-  topSeparator,
-}: PreferencePickerProps<T>) {
-  const { themed } = useAppTheme()
-  return (
-    <View style={themed([$preference, topSeparator && $preferenceSeparator])}>
-      <Text text={label} size="xs" weight="medium" />
-      <View style={themed($preferenceOptions)} accessibilityRole="radiogroup">
-        {options.map((option) => {
-          const selected = option.value === value
-          return (
-            <TouchableOpacity
-              key={option.value}
-              onPress={() => onSelect(option.value)}
-              style={themed([$preferenceOption, selected && $preferenceOptionSelected])}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: selected }}
-              accessibilityLabel={`${label}, ${option.label}`}
-            >
-              <Text
-                text={option.label}
-                size="xs"
-                weight="medium"
-                style={themed(selected ? $preferenceOptionTextSelected : $preferenceOptionText)}
-              />
-            </TouchableOpacity>
-          )
-        })}
-      </View>
     </View>
   )
 }
@@ -338,43 +223,6 @@ const $sectionBody: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.neutral100,
   borderRadius: 16,
   paddingHorizontal: spacing.md,
-})
-
-const $preference: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.sm,
-  gap: spacing.xs,
-})
-
-const $preferenceSeparator: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderTopWidth: 1,
-  borderTopColor: colors.separator,
-})
-
-const $preferenceOptions: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexDirection: "row",
-  flexWrap: "wrap",
-  gap: spacing.xs,
-})
-
-const $preferenceOption: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  minHeight: 44,
-  justifyContent: "center",
-  paddingHorizontal: spacing.sm,
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 10,
-  backgroundColor: colors.background,
-})
-
-const $preferenceOptionSelected: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: colors.tint,
-  borderColor: colors.tint,
-})
-
-const $preferenceOptionText: ThemedStyle<TextStyle> = ({ colors }) => ({ color: colors.text })
-
-const $preferenceOptionTextSelected: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.palette.neutral100,
 })
 
 const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({

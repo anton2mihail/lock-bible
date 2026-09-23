@@ -43,6 +43,9 @@ const SOURCES = {
       "Scripture quotations are from the World English Bible (Catholic Edition), which is in the public domain.",
     copyrightNotice: "Public Domain. “World English Bible” is a trademark of eBible.org.",
     canonicalReplacements: { EST: "ESG", DAN: "DAG" },
+    // WEB-CE marks real paragraphs, poetry lines and Psalm titles. The other
+    // editions set every verse on its own line, so they carry no structure.
+    keepStructure: true,
   },
   "douay-rheims": {
     id: "douay-rheims",
@@ -254,6 +257,26 @@ const HEADING_ELEMENTS = new Set([
   "id",
 ])
 
+// Structure kept for editions with `keepStructure`. Paragraph styles (USFX
+// `sfm`, else `style`) that begin a new block of text; "nb" continues the
+// previous paragraph and the introduction styles are not Scripture.
+const BLOCK_STYLES = {
+  p: "p",
+  m: "m",
+  pi: "pi",
+  pi1: "pi",
+  mi: "mi",
+  pc: "pc",
+  li: "li",
+  li1: "li",
+}
+// Paragraph styles printed as headings: major sections ("BOOK 1" in the
+// Psalms) and the speakers of the Song of Songs.
+const HEADING_STYLES = { ms: "ms", ms1: "ms", sp: "sp" }
+// Heading elements whose text is kept: Psalm titles and section headings.
+// The other HEADING_ELEMENTS still only end the current verse.
+const KEPT_HEADINGS = { d: "d", s: "s", s1: "s", s2: "s", ms: "ms", ms1: "ms", sp: "sp" }
+
 const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" }
 
 function decodeEntities(s) {
@@ -279,16 +302,63 @@ function attr(raw, name) {
 }
 
 /**
- * Parse the USFX XML into an ordered list of books:
- *   { code, name, longName, group, chapters: [{ c, verses: [{ n, t }] }] }
+ * Where a block that begins at `pos` in a verse's raw buffer starts in its
+ * collapsed text `t`: just past the prefix, skipping the separating space.
  */
-function parseUsfx(xml, bookNames) {
+function textOffset(raw, pos, t) {
+  const before = collapse(raw.slice(0, pos))
+  if (!before) return 0
+  return t[before.length] === " " ? before.length + 1 : before.length
+}
+
+/**
+ * [offset, kind] pairs in document order, trimmed to what a reader can show:
+ * nothing at or past the end, one stanza mark per offset, and when blocks open
+ * back to back with no text between, only the later one.
+ */
+function normalizeBreaks(entries, t) {
+  const out = []
+  for (const [offset, kind] of entries) {
+    if (offset >= t.length) continue
+    const sameOffset = out.filter((entry) => entry[0] === offset)
+    if (kind === "b") {
+      if (!sameOffset.some((entry) => entry[1] === "b")) out.push([offset, kind])
+      continue
+    }
+    const previous = sameOffset.find((entry) => entry[1] !== "b")
+    if (previous) previous[1] = kind
+    else out.push([offset, kind])
+  }
+  return out
+}
+
+/**
+ * Parse the USFX XML into an ordered list of books:
+ *   { code, name, longName, group, chapters: [{ c, verses: [{ n, t, br?, hd? }] }] }
+ *
+ * With `structure`, verses also carry where paragraphs, poetry lines, list
+ * items and stanzas begin (`br`: [offset into t, kind]) and their headings
+ * (`hd`: [kind, text], or [kind, text, offset into t] for one inside the
+ * verse). Heading words are never part of the text.
+ */
+function parseUsfx(xml, bookNames, { structure = false } = {}) {
   const books = []
   let book = null
   let chapter = null
   let verseNum = null
   let buf = ""
   let skipDepth = 0
+
+  // Structure state: block kinds opened at the current verse's start or inside
+  // it, headings before it and inside it, and what was opened between verses
+  // for the next.
+  let verseStart = []
+  let verseMarks = []
+  let verseHeadings = []
+  let verseInnerHeadings = []
+  let pendingKinds = []
+  let pendingHeadings = []
+  let heading = null
 
   // Stack of currently-open element names, so we can match skip elements that
   // contain nested tags before their close.
@@ -297,10 +367,75 @@ function parseUsfx(xml, bookNames) {
   const flushVerse = () => {
     if (book && chapter && verseNum != null) {
       const t = collapse(buf)
-      if (t) chapter.verses.push({ n: verseNum, t })
+      if (t) {
+        const verse = { n: verseNum, t }
+        if (structure) {
+          const marks = verseMarks.map(({ pos, kind }) => [textOffset(buf, pos, t), kind])
+          const br = normalizeBreaks([...verseStart.map((kind) => [0, kind]), ...marks], t)
+          if (br.length) verse.br = br
+          const inner = verseInnerHeadings.map(({ pos, kind, text }) => [
+            kind,
+            text,
+            textOffset(buf, pos, t),
+          ])
+          // A heading before the verse's first word is printed before the verse.
+          const hd = [
+            ...verseHeadings,
+            ...inner.filter(([, , offset]) => offset === 0).map(([kind, text]) => [kind, text]),
+            ...inner.filter(([, , offset]) => offset > 0 && offset < t.length),
+          ]
+          if (hd.length) verse.hd = hd
+          // A block or heading after the verse's last word begins the next verse.
+          pendingKinds = [
+            ...marks.filter(([offset]) => offset >= t.length).map(([, kind]) => kind),
+            ...pendingKinds,
+          ]
+          pendingHeadings = [
+            ...inner
+              .filter(([, , offset]) => offset >= t.length)
+              .map(([kind, text]) => [kind, text]),
+            ...pendingHeadings,
+          ]
+        }
+        chapter.verses.push(verse)
+      } else if (structure) {
+        // An empty verse hands its structure on to the next one.
+        pendingKinds = [...verseStart, ...verseMarks.map((mark) => mark.kind), ...pendingKinds]
+        pendingHeadings = [
+          ...verseHeadings,
+          ...verseInnerHeadings.map(({ kind, text }) => [kind, text]),
+          ...pendingHeadings,
+        ]
+      }
     }
     verseNum = null
     buf = ""
+    verseStart = []
+    verseMarks = []
+    verseHeadings = []
+    verseInnerHeadings = []
+  }
+
+  const openBlock = (kind) => {
+    if (verseNum != null) verseMarks.push({ pos: buf.length, kind })
+    else pendingKinds.push(kind)
+  }
+
+  const finishHeading = () => {
+    const text = collapse(heading.text)
+    if (text) {
+      if (heading.inVerse && verseNum != null) {
+        verseInnerHeadings.push({ pos: heading.pos, kind: heading.kind, text })
+      } else pendingHeadings.push([heading.kind, text])
+    }
+    heading = null
+  }
+
+  // A heading's words are never verse text. Inside a verse (four speaker
+  // changes in the Song of Songs) it keeps its place in the verse instead.
+  const startHeading = (kind, element) => {
+    if (heading) finishHeading()
+    heading = { kind, element, text: "", inVerse: verseNum != null, pos: buf.length }
   }
 
   const tagRe = /<(\/?)([a-zA-Z][\w-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)\s*>/g
@@ -308,7 +443,10 @@ function parseUsfx(xml, bookNames) {
   let m
   while ((m = tagRe.exec(xml))) {
     const text = xml.slice(last, m.index)
-    if (text && skipDepth === 0 && verseNum != null) buf += text
+    if (text && skipDepth === 0) {
+      if (heading) heading.text += text
+      else if (verseNum != null) buf += text
+    }
     last = tagRe.lastIndex
 
     const closing = m[1] === "/"
@@ -323,6 +461,7 @@ function parseUsfx(xml, bookNames) {
     }
 
     if (closing) {
+      if (heading && name === heading.element) finishHeading()
       // pop matching from stack (best-effort)
       const idx = stack.lastIndexOf(name)
       if (idx !== -1) stack.length = idx
@@ -332,6 +471,9 @@ function parseUsfx(xml, bookNames) {
     switch (name) {
       case "book": {
         flushVerse()
+        pendingKinds = []
+        pendingHeadings = []
+        heading = null
         const code = attr(rawAttrs, "id")
         const meta = bookNames[code] || {}
         book = {
@@ -354,16 +496,41 @@ function parseUsfx(xml, bookNames) {
       }
       case "v": {
         flushVerse()
+        if (heading) finishHeading()
         verseNum = attr(rawAttrs, "id") || null
         buf = ""
+        verseStart = pendingKinds
+        verseHeadings = pendingHeadings
+        pendingKinds = []
+        pendingHeadings = []
         break
       }
       case "ve": {
         flushVerse()
         break
       }
+      case "p": {
+        if (!structure) break
+        const style = attr(rawAttrs, "sfm") ?? attr(rawAttrs, "style") ?? "p"
+        if (HEADING_STYLES[style]) startHeading(HEADING_STYLES[style], "p")
+        else if (BLOCK_STYLES[style]) openBlock(BLOCK_STYLES[style])
+        break
+      }
+      case "q": {
+        if (!structure) break
+        const level = Number(attr(rawAttrs, "level") ?? "1")
+        openBlock(`q${Math.min(3, Math.max(1, level || 1))}`)
+        break
+      }
+      case "b": {
+        if (structure) openBlock("b")
+        break
+      }
       default:
-        if (HEADING_ELEMENTS.has(name)) flushVerse()
+        if (HEADING_ELEMENTS.has(name)) {
+          flushVerse()
+          if (structure && KEPT_HEADINGS[name]) startHeading(KEPT_HEADINGS[name], name)
+        }
         break
     }
 
@@ -536,7 +703,10 @@ for (const id of selectedIds) {
   console.log(`Parsing ${source.fullName} ...`)
   const xml = readFileSync(xmlPath, "utf8")
   const bookNames = parseBookNames(readFileSync(namesPath, "utf8"))
-  const books = normalizeCatholicCanon(parseUsfx(xml, bookNames), source)
+  const books = normalizeCatholicCanon(
+    parseUsfx(xml, bookNames, { structure: source.keepStructure === true }),
+    source,
+  )
 
   let totalVerses = 0
   for (const book of books)

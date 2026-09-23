@@ -15,6 +15,7 @@ import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { getPrayer, PRAYERS } from "@/services/companion/prayers"
 import { favoritePrayers, toggleFavoritePrayer } from "@/services/companion/preferences"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 export function PrayerScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>(),
@@ -23,6 +24,7 @@ export function PrayerScreen() {
   const [favorites, setFavorites] = useState(favoritePrayers),
     [query, setQuery] = useState(""),
     [feedback, setFeedback] = useState("")
+  useAnnouncement(feedback)
   useFocusEffect(useCallback(() => setFavorites(favoritePrayers()), []))
   if (id && !prayer)
     return (

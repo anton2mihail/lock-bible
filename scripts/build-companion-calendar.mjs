@@ -2,10 +2,11 @@
  * bun scripts/build-companion-calendar.mjs /path/to/catholic-readings-api
  * Source snapshot: cpbjr/catholic-readings-api @ 973e9864eb0f15accadfc48750f5b243a95b7a2c (MIT).
  */
+import { UnitedStates_En } from "@romcal/calendar.united-states"
 import fs from "node:fs/promises"
 import path from "node:path"
 import { Romcal } from "romcal"
-import { UnitedStates_En } from "@romcal/calendar.united-states"
+
 const source = process.argv[2]
 if (!source) throw Error("Provide a local catholic-readings-api checkout")
 const out = new URL("../src/services/companion/data/", import.meta.url)
@@ -40,7 +41,15 @@ for (let year = 2025; year <= 2032; year++) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date)) throw Error("Invalid date " + filename)
     const readings = Object.entries(labels).flatMap(([key, label]) =>
       typeof data.readings?.[key] === "string" && data.readings[key].trim()
-        ? [{ label, reference: key === "psalm" && /^\d+:/.test(data.readings[key].trim()) ? `Psalm ${data.readings[key].trim()}` : data.readings[key].trim() }]
+        ? [
+            {
+              label,
+              reference:
+                key === "psalm" && /^\d+:/.test(data.readings[key].trim())
+                  ? `Psalm ${data.readings[key].trim()}`
+                  : data.readings[key].trim(),
+            },
+          ]
         : [],
     )
     if (!readings.some((x) => x.label === "Gospel")) throw Error("Missing Gospel " + data.date)

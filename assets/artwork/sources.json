@@ -1,0 +1,258 @@
+{
+  "sorrows-1": {
+    "subject": "The Prophecy of Simeon",
+    "file": "File:Meister des Marienlebens candlemas.jpg",
+    "artist": "Master of the Life of the Virgin",
+    "year": "c. 1460–1480",
+    "top": 0.0,
+    "bottom": 1.0
+  },
+  "sorrows-2": {
+    "subject": "The Flight into Egypt",
+    "file": "File:Vittore Carpaccio - Fuga in Egitto (Washington).jpg",
+    "artist": "Vittore Carpaccio",
+    "year": "1500",
+    "top": 0.0,
+    "bottom": 1.0
+  },
+  "sorrows-3": {
+    "subject": "The Loss of the Child Jesus in the Temple",
+    "file": "File:William Holman Hunt - The Finding of the Saviour in the Temple - Google Art Project.jpg",
+    "artist": "William Holman Hunt",
+    "year": "1854–1860",
+    "top": 0.0,
+    "bottom": 1.0
+  },
+  "sorrows-4": {
+    "subject": "Mary Meets Jesus on the Way to Calvary",
+    "file": "File:Christ Falling on the Way to Calvary - Raphael.jpg",
+    "artist": "Raphael",
+    "year": "c. 1516",
+    "top": 0.45,
+    "bottom": 1.0
+  },
+  "sorrows-5": {
+    "subject": "The Crucifixion and Death of Jesus",
+    "file": "File:Mantegna, Andrea - crucifixion - Louvre from Predella San Zeno Altarpiece Verona, louvre.jpg",
+    "artist": "Andrea Mantegna",
+    "year": "1457–1459",
+    "top": 0.0,
+    "bottom": 1.0
+  },
+  "sorrows-6": {
+    "subject": "Mary Receives the Body of Jesus",
+    "file": "File:Rogier van der Weyden - Pietà - Google Art Project.jpg",
+    "artist": "Rogier van der Weyden",
+    "year": "c. 1441",
+    "top": 0.0,
+    "bottom": 1.0
+  },
+  "sorrows-7": {
+    "subject": "The Burial of Jesus",
+    "file": "File:Raffael-grablegung-christi.jpg",
+    "artist": "Raphael",
+    "year": "1507",
+    "top": 0.16,
+    "bottom": 0.94
+  },
+  "joyful-3": {
+    "subject": "The Nativity",
+    "file": "File:Adoration of the Shepherds, Murillo (Prado Museum).jpg",
+    "artist": "Bartolomé Esteban Murillo",
+    "year": "circa 1650",
+    "top": 0.1,
+    "bottom": 0.91
+  },
+  "joyful-5": {
+    "subject": "The Finding in the Temple",
+    "file": "File:Albrecht Dürer - Jesus among the Doctors - Google Art Project.jpg",
+    "artist": "Albrecht Dürer",
+    "year": "1506",
+    "top": 0.0,
+    "bottom": 0.83
+  },
+  "sorrowful-1": {
+    "subject": "The Agony in the Garden",
+    "file": "File:El Greco 019.jpg",
+    "artist": "El Greco and workshop",
+    "year": "1590s",
+    "top": 0.06,
+    "bottom": 0.88
+  },
+  "joyful-1": {
+    "subject": "The Annunciation",
+    "file": "File:Fra Angelico - Annunciation.jpg",
+    "artist": "Fra Angelico",
+    "year": "c. 1440–1445",
+    "top": 0.03,
+    "bottom": 0.95
+  },
+  "joyful-4": {
+    "subject": "The Presentation in the Temple",
+    "file": "File:Presentation of Jesus at the Temple by Fra Angelico (San Marco Cell 10).jpg",
+    "artist": "Fra Angelico",
+    "year": "between 1439 and 1443",
+    "top": 0.17,
+    "bottom": 0.75
+  },
+  "sorrowful-2": {
+    "subject": "The Scourging at the Pillar",
+    "file": "File:Isenmann, Colmar Altarpiece (Flagellation).jpg",
+    "artist": "Caspar Isenmann",
+    "year": "c. 1465",
+    "top": 0.04,
+    "bottom": 1.0
+  },
+  "sorrowful-3": {
+    "subject": "The Crowning with Thorns",
+    "file": "File:The Crowning with Thorns-Caravaggio (1602).jpg",
+    "artist": "Caravaggio",
+    "year": "circa 1602/04",
+    "top": 0.02,
+    "bottom": 0.89
+  },
+  "sorrowful-4": {
+    "subject": "The Carrying of the Cross",
+    "file": "File:Christ Carrying the Cross 1580.jpg",
+    "artist": "El Greco",
+    "year": "1580s",
+    "top": 0.04,
+    "bottom": 0.52
+  },
+  "sorrowful-5": {
+    "subject": "The Crucifixion",
+    "file": "File:Calvary - Giovanni Bellini - Louvre RF 1970-39.jpg",
+    "artist": "Giovanni Bellini",
+    "year": "c. 1465–1470",
+    "top": 0.0,
+    "bottom": 0.61
+  },
+  "glorious-3": {
+    "subject": "The Descent of the Holy Spirit",
+    "file": "File:Pentecostés (El Greco, c. 1600) Prado.jpg",
+    "artist": "El Greco",
+    "year": "circa 1600",
+    "top": 0.06,
+    "bottom": 0.37
+  },
+  "glorious-4": {
+    "subject": "The Assumption of Mary",
+    "file": "File:Matteo di Giovanni - The Assumption of the Virgin - 1474.png",
+    "artist": "Matteo di Giovanni",
+    "year": "1474",
+    "top": 0.255,
+    "bottom": 0.612
+  },
+  "glorious-5": {
+    "subject": "The Coronation of Mary",
+    "file": "File:Diego Velázquez - Coronation of the Virgin - Prado.jpg",
+    "artist": "Diego Velázquez",
+    "year": "c. 1635–1636",
+    "top": 0.02,
+    "bottom": 0.521
+  },
+  "luminous-1": {
+    "subject": "The Baptism of Jesus",
+    "file": "File:Verrocchio, Leonardo da Vinci - Battesimo di Cristo - Google Art Project.jpg",
+    "artist": "Andrea del Verrocchio and Leonardo da Vinci",
+    "year": "c. 1475",
+    "top": 0.03,
+    "bottom": 0.597
+  },
+  "luminous-4": {
+    "subject": "The Transfiguration",
+    "file": "File:Paris 1er - Musée du Louvre - Exposition Naples à Paris - La Transfiguration (Giovanni Bellini).jpg",
+    "artist": "Giovanni Bellini",
+    "year": "c. 1487",
+    "top": 0.0,
+    "bottom": 0.878
+  },
+  "st-benedict": {
+    "subject": "Saint Benedict",
+    "file": "File:A Miracle of Saint Benedict A17552.jpg",
+    "artist": "French 15th Century",
+    "year": "circa 1480",
+    "top": 0.22,
+    "bottom": 0.785
+  },
+  "st-francis-assisi": {
+    "subject": "Saint Francis of Assisi",
+    "file": "File:Attributed to Jan van Eyck, Netherlandish (active Bruges), c. 1395 - 1441 - Saint Francis of Assisi Receiving the Stigmata - Google Art Project.jpg",
+    "artist": "Attributed to Jan van Eyck",
+    "year": "c. 1430–1432",
+    "top": 0.05,
+    "bottom": 0.825
+  },
+  "st-monica": {
+    "subject": "Saint Monica",
+    "file": "File:Luis Tristán de Escamilla - St Monica - WGA23069.jpg",
+    "artist": "Luis Tristán de Escamilla",
+    "year": "1616",
+    "top": 0.05,
+    "bottom": 0.753
+  },
+  "st-joseph": {
+    "subject": "Saint Joseph",
+    "file": "File:La Tour.jpg",
+    "artist": "Georges de La Tour",
+    "year": "1640s",
+    "top": 0.02,
+    "bottom": 0.586
+  },
+  "st-anne": {
+    "subject": "Saint Anne",
+    "file": "File:St Anne Teaching the Virgin to Read - MNK XII-A-264 (331827).jpg",
+    "artist": "Unknown",
+    "year": "17th century",
+    "top": 0.18,
+    "bottom": 0.75
+  },
+  "st-anthony": {
+    "subject": "Saint Anthony of Padua",
+    "file": "File:Francisco de Zurbarán - Sto Antonio de Padua.jpg",
+    "artist": "Francisco de Zurbarán",
+    "year": "from 1627 until 1630",
+    "top": 0.03,
+    "bottom": 0.464
+  },
+  "luminous-5": {
+    "subject": "The Institution of the Eucharist",
+    "file": "File:Last Supper by Leonardo da Vinci.jpg",
+    "artist": "Leonardo da Vinci",
+    "year": "1495–1498",
+    "top": 0.0,
+    "bottom": 0.9
+  },
+  "mary": {
+    "subject": "The Blessed Virgin Mary",
+    "file": "File:Sassoferrato - Jungfrun i bön.jpg",
+    "artist": "Il Sassoferrato",
+    "year": "between 1640 and 1650",
+    "top": 0.11,
+    "bottom": 0.645
+  },
+  "prayer": {
+    "subject": "Prayer",
+    "file": "File:JEAN-FRANÇOIS MILLET - El Ángelus (Museo de Orsay, 1857-1859. Óleo sobre lienzo, 55.5 x 66 cm).jpg",
+    "artist": "Jean-François Millet",
+    "year": "from 1857 until 1859",
+    "top": 0.12,
+    "bottom": 0.92
+  },
+  "scripture": {
+    "subject": "Scripture",
+    "file": "File:The Four Evangelists (Abraham Bloemaert).jpg",
+    "artist": "Abraham Bloemaert",
+    "year": "between 1612 and 1615",
+    "top": 0.03,
+    "bottom": 0.8
+  },
+  "luminous-2": {
+    "subject": "The Wedding at Cana",
+    "file": "File:Julius Schnorr von Carolsfeld 002.jpg",
+    "artist": "Julius Schnorr von Carolsfeld",
+    "year": "1819",
+    "top": 0.0,
+    "bottom": 1.0
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "select-orations-of-saint-gregory-nazianzen",
+    "title": "Select Orations of Saint Gregory Nazianzen",
+    "order": 1,
+    "sectionCount": 24,
+    "words": 193419,
+    "book": null
+  },
+  {
+    "id": "select-letters-of-saint-gregory-nazianzen",
+    "title": "Select Letters of Saint Gregory Nazianzen",
+    "order": 2,
+    "sectionCount": 99,
+    "words": 36148,
+    "book": null
+  }
+]

@@ -2,7 +2,7 @@
   "name": "John 1:1",
   "slug": "NRSV",
   "scheme": "nrsv",
-  "version": "1.2.2",
+  "version": "1.5.0",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
   "icon": "./assets/artwork/john-icon.png",
@@ -33,7 +33,7 @@
     },
     "supportsTablet": true,
     "bundleIdentifier": "com.nrsv.verse",
-    "buildNumber": "15",
+    "buildNumber": "18",
     "appleTeamId": "QZ44N522NQ",
     "config": {
       "usesNonExemptEncryption": false

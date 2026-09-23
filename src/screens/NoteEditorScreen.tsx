@@ -17,6 +17,7 @@ import {
 } from "@/services/library"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 export const NoteEditorScreen: FC = function NoteEditorScreen() {
   const params = useLocalSearchParams<{
@@ -32,6 +33,7 @@ export const NoteEditorScreen: FC = function NoteEditorScreen() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
+  useAnnouncement(error, "assertive")
 
   const selection = useMemo(() => {
     const book = listBooks().find((candidate) => candidate.code === params.book)

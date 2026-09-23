@@ -1,0 +1,50 @@
+[
+  {
+    "id": "against-heresies-book-i",
+    "title": "Against Heresies: Book I",
+    "order": 1,
+    "sectionCount": 32,
+    "words": 36791,
+    "book": null
+  },
+  {
+    "id": "against-heresies-book-ii",
+    "title": "Against Heresies: Book II",
+    "order": 2,
+    "sectionCount": 36,
+    "words": 47236,
+    "book": null
+  },
+  {
+    "id": "against-heresies-book-iii",
+    "title": "Against Heresies: Book III",
+    "order": 3,
+    "sectionCount": 26,
+    "words": 39799,
+    "book": null
+  },
+  {
+    "id": "against-heresies-book-iv",
+    "title": "Against Heresies: Book IV",
+    "order": 4,
+    "sectionCount": 42,
+    "words": 54782,
+    "book": null
+  },
+  {
+    "id": "against-heresies-book-v",
+    "title": "Against Heresies: Book V",
+    "order": 5,
+    "sectionCount": 37,
+    "words": 36454,
+    "book": null
+  },
+  {
+    "id": "fragments-from-the-lost-writings-of-iren-us",
+    "title": "Fragments from the Lost Writings of Irenæus",
+    "order": 6,
+    "sectionCount": 55,
+    "words": 7746,
+    "book": null
+  }
+]

@@ -66,7 +66,9 @@ export const VerseOfDayScreen: FC = function VerseOfDayScreen() {
 
   const onReadInContext = useCallback(() => {
     if (!verse) return
-    router.push({
+    // This screen is on the root stack; pushing /read would stack a second tab
+    // navigator. dismissTo returns to the existing one instead.
+    router.dismissTo({
       pathname: "/read",
       params: {
         book: verse.book,

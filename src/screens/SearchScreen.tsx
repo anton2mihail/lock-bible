@@ -22,6 +22,7 @@ import {
 import { useSearchDatabase } from "@/services/database"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 const SCOPES: readonly { value: SearchScope; label: string }[] = [
   { value: "all", label: "All" },
@@ -81,8 +82,11 @@ export const SearchScreen: FC = function SearchScreen() {
     [query, response.correctedQuery],
   )
 
+  // Search sits on the root stack, above the tabs. Pushing /read from here would
+  // stack a second copy of the tab navigator; dismissTo returns to the existing
+  // one and hands the Read tab the passage.
   const openResult = (result: BibleSearchResult) => {
-    router.push({
+    router.dismissTo({
       pathname: "/read",
       params: {
         book: result.bookCode,
@@ -113,13 +117,29 @@ export const SearchScreen: FC = function SearchScreen() {
     : hasQuery && !isSearching
       ? "No passages found. Try fewer words or check the reference."
       : "Search by reference, keyword, or exact phrase."
+  const resultCount = response.results.length
+  const resultCountText = `${resultCount}${resultCount === 60 ? "+" : ""} ${resultCount === 1 ? "result" : "results"}`
+  // How each finished search went, for VoiceOver; TalkBack reads the live regions.
+  useAnnouncement(
+    hasQuery &&
+      !isSearching &&
+      (error ||
+        (resultCount
+          ? [
+              response.correctedQuery && `Showing results for ${response.correctedQuery}`,
+              resultCountText,
+            ]
+              .filter(Boolean)
+              .join(". ")
+          : "No passages found")),
+  )
 
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screen)}>
       <View style={themed($titleRow)}>
         <Text text="Search Scripture" preset="heading" accessibilityRole="header" />
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace("/read"))}
           style={themed($cancelButton)}
           accessibilityRole="button"
           accessibilityLabel="Close search"
@@ -182,7 +202,7 @@ export const SearchScreen: FC = function SearchScreen() {
       )}
       {response.results.length > 0 && (
         <Text
-          text={`${response.results.length}${response.results.length === 60 ? "+" : ""} results`}
+          text={resultCountText}
           size="xs"
           style={themed($resultCount)}
           accessibilityLiveRegion="polite"

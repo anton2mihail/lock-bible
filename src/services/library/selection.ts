@@ -41,7 +41,9 @@ export function selectionFromReference(
   startVerse: string,
   endVerse = startVerse,
 ): PassageSelection | null {
-  const chapter = getBook(book.code).chapters.find((candidate) => candidate.c === chapterNumber)
+  const chapter = getBook(book.code, translationId).chapters.find(
+    (candidate) => candidate.c === chapterNumber,
+  )
   if (!chapter) return null
   const startIndex = chapter.verses.findIndex((verse) => verse.n === startVerse)
   const endIndex = chapter.verses.findIndex((verse) => verse.n === endVerse)

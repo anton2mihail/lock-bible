@@ -1,0 +1,26 @@
+[
+  {
+    "id": "de-spiritu-sancto",
+    "title": "De Spiritu Sancto",
+    "order": 1,
+    "sectionCount": 31,
+    "words": 35259,
+    "book": null
+  },
+  {
+    "id": "the-hex-meron",
+    "title": "The Hexæmeron",
+    "order": 2,
+    "sectionCount": 9,
+    "words": 43336,
+    "book": null
+  },
+  {
+    "id": "the-letters",
+    "title": "The Letters",
+    "order": 3,
+    "sectionCount": 352,
+    "words": 168690,
+    "book": null
+  }
+]

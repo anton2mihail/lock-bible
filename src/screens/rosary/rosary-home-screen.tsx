@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from "react"
-import { Image, Pressable, TextStyle, View, ViewStyle } from "react-native"
+import { Image, Linking, Pressable, TextStyle, View, ViewStyle } from "react-native"
 import { useFocusEffect, useRouter } from "expo-router"
 
 import { Button } from "@/components/Button"
@@ -8,11 +8,15 @@ import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { rosaryCover } from "@/services/companion/artwork"
 import {
+  getRosaryMediaEpisode,
   getRosaryReminderSettings,
   getRosaryReminderSummary,
   getSuggestedRosaryMysterySet,
+  hasApprovedRosaryMedia,
   ROSARY_MEDIA_EPISODES,
   ROSARY_MYSTERY_SETS,
+  SEVEN_SORROWS,
+  WORD_ON_FIRE_ROSARY_URL,
   type RosaryMysterySet,
 } from "@/services/rosary"
 import { useAppTheme } from "@/theme/context"
@@ -35,6 +39,18 @@ export const RosaryHomeScreen: FC = function RosaryHomeScreen() {
       router.push({ pathname: "/pray/rosary-guide", params: { set: set.id } }),
     [router],
   )
+
+  // Nothing is approved to play in the app yet, so release builds open the
+  // official video rather than an empty player.
+  const suggestedEpisode = getRosaryMediaEpisode(suggestedSet.id)
+  const playsInApp = __DEV__ || hasApprovedRosaryMedia(suggestedEpisode)
+  const openBarronRosary = useCallback(() => {
+    if (playsInApp) {
+      router.push({ pathname: "/pray/rosary-media", params: { episode: suggestedSet.id } })
+      return
+    }
+    Linking.openURL(suggestedEpisode?.officialUrl ?? WORD_ON_FIRE_ROSARY_URL).catch(() => {})
+  }, [playsInApp, router, suggestedEpisode, suggestedSet.id])
 
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={themed($container)}>
@@ -141,6 +157,40 @@ export const RosaryHomeScreen: FC = function RosaryHomeScreen() {
 
       <View style={themed($section)}>
         <View style={themed($sectionHeading)}>
+          <Text text="Our Lady of Sorrows" preset="subheading" />
+          <Text text="A second, older way of praying with Mary" size="xxs" style={themed($meta)} />
+        </View>
+        <Pressable
+          onPress={() =>
+            router.push({ pathname: "/pray/rosary-guide", params: { set: SEVEN_SORROWS.id } })
+          }
+          accessibilityRole="button"
+          accessibilityLabel={`${SEVEN_SORROWS.title}. ${SEVEN_SORROWS.customaryDays}. ${SEVEN_SORROWS.description}`}
+          testID="rosary-seven-sorrows"
+          style={({ pressed }) => themed([$setCard, pressed && $pressed])}
+        >
+          <Image source={rosaryCover["seven-sorrows"]} style={$cover} accessible={false} />
+          <View style={$flex}>
+            <Text text={SEVEN_SORROWS.title} weight="semiBold" selectable />
+            <Text
+              text={SEVEN_SORROWS.customaryDays}
+              size="xxs"
+              style={themed($eyebrow)}
+              selectable
+            />
+            <Text text={SEVEN_SORROWS.description} size="xs" style={themed($subtitle)} selectable />
+          </View>
+          <Text text="›" size="xl" style={themed($chevron)} />
+        </Pressable>
+        <Text
+          text="Seven sorrows · one Our Father and seven Hail Marys each · about 15 minutes"
+          size="xxs"
+          style={themed($meta)}
+        />
+      </View>
+
+      <View style={themed($section)}>
+        <View style={themed($sectionHeading)}>
           <Text text="The Rosary with Bishop Barron" preset="subheading" />
           <Text
             text="Watch the Rosary on Word on Fire’s official channels. An internet connection is needed."
@@ -150,11 +200,13 @@ export const RosaryHomeScreen: FC = function RosaryHomeScreen() {
           />
         </View>
         <Pressable
-          onPress={() =>
-            router.push({ pathname: "/pray/rosary-media", params: { episode: suggestedSet.id } })
+          onPress={openBarronRosary}
+          accessibilityRole={playsInApp ? "button" : "link"}
+          accessibilityLabel={
+            playsInApp
+              ? `Open ${suggestedSet.title} media`
+              : `Watch the ${suggestedSet.shortTitle} Mysteries with Bishop Barron on YouTube`
           }
-          accessibilityRole="button"
-          accessibilityLabel={`Open ${suggestedSet.title} media`}
           style={({ pressed }) => themed([$mediaCard, pressed && $pressed])}
         >
           <View style={themed($playMark)}>
@@ -167,18 +219,32 @@ export const RosaryHomeScreen: FC = function RosaryHomeScreen() {
               style={themed($mediaTitle)}
             />
             <Text
-              text="Bishop Robert Barron · Word on Fire"
+              text={
+                playsInApp
+                  ? "Bishop Robert Barron · Word on Fire"
+                  : "Bishop Robert Barron · opens on YouTube"
+              }
               size="xs"
               style={themed($mediaSubtitle)}
             />
           </View>
-          <Text text="›" size="xl" style={themed($chevron)} />
+          <Text text={playsInApp ? "›" : "↗"} size="xl" style={themed($chevron)} />
         </Pressable>
-        <Text
-          text={`${ROSARY_MEDIA_EPISODES.length} episodes catalogued from the official series`}
-          size="xxs"
-          style={themed($meta)}
-        />
+        {playsInApp ? (
+          <Text
+            text={`${ROSARY_MEDIA_EPISODES.length} episodes catalogued from the official series`}
+            size="xxs"
+            style={themed($meta)}
+          />
+        ) : (
+          <Text
+            text="More from the series at wordonfire.org ↗"
+            size="xxs"
+            style={themed([$meta, $tintText])}
+            accessibilityRole="link"
+            onPress={() => Linking.openURL(WORD_ON_FIRE_ROSARY_URL).catch(() => {})}
+          />
+        )}
       </View>
     </Screen>
   )

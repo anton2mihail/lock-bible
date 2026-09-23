@@ -1,7 +1,8 @@
+import { StyleSheet } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
-import { fireEvent, render, waitFor } from "@testing-library/react-native"
+import { act, fireEvent, render, waitFor } from "@testing-library/react-native"
 
-import { setReaderLocation } from "@/services/bible"
+import { setReaderLayout, setReaderLocation, setTranslationId } from "@/services/bible"
 import { ThemeProvider } from "@/theme/context"
 import { clear } from "@/utils/storage"
 
@@ -19,19 +20,35 @@ const mockScrollTo = jest.fn()
 const mockRouterPush = jest.fn()
 const mockClipboardSet = jest.fn()
 const mockToggleBookmark = jest.fn().mockResolvedValue(true)
+const mockIsPassageBookmarked = jest.fn().mockResolvedValue(false)
 const mockApplyHighlight = jest.fn().mockResolvedValue(undefined)
 const mockClearHighlight = jest.fn().mockResolvedValue(undefined)
 const mockGetChapterHighlights = jest.fn().mockResolvedValue({})
 const mockLibraryDatabase = {}
+const mockFocusCallbacks = new Set<() => void | (() => void)>()
 
 jest.mock("expo-router", () => ({
   useLocalSearchParams: () => mockParams,
   useRouter: () => ({ push: mockRouterPush }),
   useFocusEffect: (callback: () => void | (() => void)) => {
     const React = jest.requireActual("react")
-    React.useEffect(callback, [callback])
+    React.useEffect(() => {
+      mockFocusCallbacks.add(callback)
+      const cleanup = callback()
+      return () => {
+        mockFocusCallbacks.delete(callback)
+        if (typeof cleanup === "function") cleanup()
+      }
+    }, [callback])
   },
 }))
+
+/** The Read tab stays mounted; coming back to it only re-runs focus effects. */
+function refocusReader() {
+  act(() => {
+    mockFocusCallbacks.forEach((callback) => callback())
+  })
+}
 
 jest.mock("expo-clipboard", () => ({
   setStringAsync: (...args: unknown[]) => mockClipboardSet(...args),
@@ -46,6 +63,7 @@ jest.mock("@/services/library", () => {
   return {
     ...actual,
     toggleBookmark: (...args: unknown[]) => mockToggleBookmark(...args),
+    isPassageBookmarked: (...args: unknown[]) => mockIsPassageBookmarked(...args),
     applyHighlight: (...args: unknown[]) => mockApplyHighlight(...args),
     clearHighlight: (...args: unknown[]) => mockClearHighlight(...args),
     getChapterHighlights: (...args: unknown[]) => mockGetChapterHighlights(...args),
@@ -97,6 +115,7 @@ describe("ReaderScreen context navigation", () => {
     mockRouterPush.mockClear()
     mockClipboardSet.mockClear()
     mockToggleBookmark.mockClear()
+    mockIsPassageBookmarked.mockReset().mockResolvedValue(false)
     mockApplyHighlight.mockClear()
     mockClearHighlight.mockClear()
     mockGetChapterHighlights.mockClear()
@@ -128,15 +147,63 @@ describe("ReaderScreen context navigation", () => {
     await waitFor(() => expect(screen.getByText(/For God so loved the world/)).toBeDefined())
   })
 
-  it("offers the saved chapter as an explicit Continue Reading action", async () => {
+  it("reopens the chapter the reader left, where they left it", async () => {
     setReaderLocation({ book: "JHN", chapter: 3, scrollY: 240 })
     const screen = render(reader())
 
+    expect(screen.getByText("John 3")).toBeDefined()
+    await waitFor(() => expect(mockScrollTo).toHaveBeenCalledWith({ y: 240, animated: false }))
+
+    // The book list is a step back, and still offers the way back in.
+    fireEvent.press(screen.getByLabelText("Back to John chapters"))
+    fireEvent.press(screen.getByLabelText("Back to books"))
     expect(screen.getByText("Continue reading")).toBeDefined()
     fireEvent.press(screen.getByLabelText("Continue reading John chapter 3"))
-
     await waitFor(() => expect(screen.getByText("John 3")).toBeDefined())
-    await waitFor(() => expect(mockScrollTo).toHaveBeenCalledWith({ y: 240, animated: false }))
+  })
+
+  it("opens the book and chapter picker from the chapter title", async () => {
+    mockParams = { book: "JHN", chapter: "3", contextRequest: "title-test" }
+    const screen = render(reader())
+    await waitFor(() => expect(screen.getByText("John 3")).toBeDefined())
+
+    fireEvent.press(screen.getByTestId("reader-title"))
+
+    expect(mockRouterPush).toHaveBeenCalledWith({
+      pathname: "/go-to",
+      params: { book: "JHN", chapter: "3" },
+    })
+  })
+
+  it("shows the open chapter in a translation chosen in Settings", async () => {
+    mockParams = { book: "JHN", chapter: "1", contextRequest: "translation-test" }
+    const screen = render(reader())
+    await waitFor(() => expect(screen.getByText(/hasn’t overcome it/)).toBeDefined())
+
+    // Move on from the requested chapter, so a switch must not replay the request.
+    fireEvent.press(screen.getByLabelText("Next chapter, John chapter 2"))
+    await waitFor(() => expect(screen.getByText(/wedding in Cana/)).toBeDefined())
+
+    setTranslationId("douay-rheims")
+    refocusReader()
+
+    await waitFor(() => expect(screen.getByText(/marriage in Cana/)).toBeDefined())
+    expect(screen.getByText("John 2")).toBeDefined()
+  })
+
+  it("explains verse selection only until the reader has used it", async () => {
+    const hint = "Tap a verse to select it. Tap another verse to select a range."
+    mockParams = { book: "JHN", chapter: "3", contextRequest: "hint-test" }
+    const screen = render(reader())
+    await waitFor(() => expect(screen.getByText("John 3")).toBeDefined())
+    expect(screen.getByText(hint)).toBeDefined()
+
+    fireEvent.press(screen.getByTestId("reader-verse-16"))
+    fireEvent.press(screen.getByLabelText("Clear passage selection"))
+    fireEvent.press(screen.getByLabelText("Next chapter, John chapter 4"))
+
+    await waitFor(() => expect(screen.getByText("John 4")).toBeDefined())
+    expect(screen.queryByText(hint)).toBeNull()
   })
 
   it("moves directly to the next chapter", async () => {
@@ -149,7 +216,8 @@ describe("ReaderScreen context navigation", () => {
     await waitFor(() => expect(screen.getByText("John 4")).toBeDefined())
   })
 
-  it("scrolls a linked context verse into view after layout", async () => {
+  it("scrolls a linked context verse into view after layout, verse by verse", async () => {
+    setReaderLayout("verses")
     mockParams = { book: "JHN", chapter: "3", verse: "16", contextRequest: "scroll-test" }
     const screen = render(reader())
     await waitFor(() => expect(screen.getByTestId("reader-context-verse")).toBeDefined())
@@ -162,6 +230,39 @@ describe("ReaderScreen context navigation", () => {
     })
 
     await waitFor(() => expect(mockScrollTo).toHaveBeenCalledWith({ y: 576, animated: true }))
+  })
+
+  it("scrolls to the line where a linked verse begins inside a paragraph", async () => {
+    mockParams = { book: "JHN", chapter: "3", verse: "16", contextRequest: "paragraph-scroll" }
+    const screen = render(reader())
+    await waitFor(() => expect(screen.getByTestId("reader-context-block")).toBeDefined())
+
+    fireEvent(screen.getByTestId("reader-verse-block"), "layout", {
+      nativeEvent: { layout: { x: 0, y: 120, width: 300, height: 900 } },
+    })
+    fireEvent(screen.getByTestId("reader-context-block"), "layout", {
+      nativeEvent: { layout: { x: 0, y: 480, width: 300, height: 400 } },
+    })
+    // John 3:16 continues the paragraph that verse 10 begins, so it is not on
+    // the block's first line.
+    fireEvent(screen.getByTestId("reader-context-block-text"), "textLayout", {
+      nativeEvent: {
+        lines: [
+          { text: "N", x: 0, y: 0, width: 10, height: 30, ascender: 0, capHeight: 0 },
+          {
+            text: "x".repeat(5000),
+            x: 0,
+            y: 36,
+            width: 300,
+            height: 30,
+            ascender: 0,
+            capHeight: 0,
+          },
+        ],
+      },
+    })
+
+    await waitFor(() => expect(mockScrollTo).toHaveBeenCalledWith({ y: 612, animated: true }))
   })
 
   it("selects a single verse and extends it to a contiguous range", async () => {
@@ -188,10 +289,20 @@ describe("ReaderScreen context navigation", () => {
     fireEvent.press(screen.getByTestId("reader-verse-16"))
     fireEvent.press(screen.getByLabelText("Bookmark John 3:16"))
     await waitFor(() => expect(mockToggleBookmark).toHaveBeenCalled())
+    // The toolbar now shows the passage as bookmarked.
+    await waitFor(() =>
+      expect(screen.getByLabelText("Bookmark John 3:16").props.accessibilityState).toEqual({
+        selected: true,
+      }),
+    )
+    expect(screen.getByText("Saved")).toBeDefined()
 
-    fireEvent.press(screen.getByLabelText("Highlight John 3:16"))
+    // Colours apply in one tap, and the applied one becomes the way to remove it.
     fireEvent.press(screen.getByLabelText("Apply gold highlight"))
     await waitFor(() => expect(mockApplyHighlight).toHaveBeenCalled())
+    await waitFor(() => expect(screen.getByLabelText("Remove gold highlight")).toBeDefined())
+    fireEvent.press(screen.getByLabelText("Remove gold highlight"))
+    await waitFor(() => expect(mockClearHighlight).toHaveBeenCalled())
 
     fireEvent.press(screen.getByLabelText("Note John 3:16"))
     expect(mockRouterPush).toHaveBeenCalledWith(
@@ -200,5 +311,40 @@ describe("ReaderScreen context navigation", () => {
         params: expect.objectContaining({ book: "JHN", chapter: "3", startVerse: "16" }),
       }),
     )
+  })
+
+  it("shows a passage that is already bookmarked, so a second tap reads as removal", async () => {
+    mockIsPassageBookmarked.mockResolvedValue(true)
+    mockToggleBookmark.mockResolvedValueOnce(false)
+    mockParams = { book: "JHN", chapter: "3", contextRequest: "bookmarked-test" }
+    const screen = render(reader())
+    await waitFor(() => expect(screen.getByText("John 3")).toBeDefined())
+
+    fireEvent.press(screen.getByTestId("reader-verse-16"))
+    await waitFor(() => expect(screen.getByText("Saved")).toBeDefined())
+
+    fireEvent.press(screen.getByLabelText("Bookmark John 3:16"))
+    await waitFor(() => expect(screen.getByText("Bookmark removed")).toBeDefined())
+    expect(screen.getByLabelText("Bookmark John 3:16").props.accessibilityState).toEqual({
+      selected: false,
+    })
+  })
+
+  it("restyles the chapter from the Aa sheet as each option is chosen", async () => {
+    setReaderLayout("verses")
+    mockParams = { book: "JHN", chapter: "3", contextRequest: "text-settings-test" }
+    const screen = render(reader())
+    await waitFor(() => expect(screen.getByText("John 3")).toBeDefined())
+    const verseFontSize = () =>
+      StyleSheet.flatten(screen.getByText(/For God so loved the world/).props.style).fontSize
+    expect(verseFontSize()).toBe(18)
+
+    fireEvent.press(screen.getByLabelText("Text settings"))
+    fireEvent.press(screen.getByLabelText("Text size, Extra large"))
+
+    // The chapter behind the sheet follows at once, before the sheet closes.
+    expect(verseFontSize()).toBe(24)
+    fireEvent.press(screen.getByLabelText("Done"))
+    expect(screen.queryByTestId("text-settings-sheet")).toBeNull()
   })
 })

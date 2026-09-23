@@ -265,7 +265,8 @@ const $inputStyle: ThemedStyle<TextStyle> = ({ colors, typography, spacing }) =>
   fontFamily: typography.primary.normal,
   color: colors.text,
   fontSize: 16,
-  height: 24,
+  // A floor rather than a fixed height, so large text sizes aren't clipped.
+  minHeight: 24,
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
   paddingVertical: 0,
   paddingHorizontal: 0,
@@ -279,14 +280,14 @@ const $helperStyle: ThemedStyle<TextStyle> = ({ spacing }) => ({
 
 const $rightAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginEnd: spacing.xs,
-  height: 40,
+  minHeight: 40,
   justifyContent: "center",
   alignItems: "center",
 })
 
 const $leftAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginStart: spacing.xs,
-  height: 40,
+  minHeight: 40,
   justifyContent: "center",
   alignItems: "center",
 })

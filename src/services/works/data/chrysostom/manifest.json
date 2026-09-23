@@ -1,0 +1,290 @@
+[
+  {
+    "id": "homilies-on-the-gospel-of-st-matthew",
+    "title": "Homilies on the Gospel of St. Matthew",
+    "order": 1,
+    "sectionCount": 90,
+    "words": 432590,
+    "book": "MAT"
+  },
+  {
+    "id": "homilies-on-acts",
+    "title": "Homilies on Acts",
+    "order": 2,
+    "sectionCount": 55,
+    "words": 249485,
+    "book": "ACT"
+  },
+  {
+    "id": "homilies-on-romans",
+    "title": "Homilies on Romans",
+    "order": 3,
+    "sectionCount": 32,
+    "words": 198531,
+    "book": "ROM"
+  },
+  {
+    "id": "homilies-on-first-corinthians",
+    "title": "Homilies on First Corinthians",
+    "order": 4,
+    "sectionCount": 45,
+    "words": 246811,
+    "book": "1CO"
+  },
+  {
+    "id": "homilies-on-second-corinthians",
+    "title": "Homilies on Second Corinthians",
+    "order": 5,
+    "sectionCount": 30,
+    "words": 132791,
+    "book": "2CO"
+  },
+  {
+    "id": "homilies-on-ephesians",
+    "title": "Homilies on Ephesians",
+    "order": 6,
+    "sectionCount": 25,
+    "words": 110481,
+    "book": "EPH"
+  },
+  {
+    "id": "homilies-on-philippians",
+    "title": "Homilies on Philippians",
+    "order": 7,
+    "sectionCount": 16,
+    "words": 69609,
+    "book": "PHP"
+  },
+  {
+    "id": "homilies-on-colossians",
+    "title": "Homilies on Colossians",
+    "order": 8,
+    "sectionCount": 12,
+    "words": 57423,
+    "book": "COL"
+  },
+  {
+    "id": "homilies-on-first-thessalonians",
+    "title": "Homilies on First Thessalonians",
+    "order": 9,
+    "sectionCount": 11,
+    "words": 47486,
+    "book": "1TH"
+  },
+  {
+    "id": "homilies-on-second-thessalonians",
+    "title": "Homilies on Second Thessalonians",
+    "order": 10,
+    "sectionCount": 5,
+    "words": 19651,
+    "book": "2TH"
+  },
+  {
+    "id": "homilies-on-first-timothy",
+    "title": "Homilies on First Timothy",
+    "order": 11,
+    "sectionCount": 19,
+    "words": 59292,
+    "book": "1TI"
+  },
+  {
+    "id": "homilies-on-second-timothy",
+    "title": "Homilies on Second Timothy",
+    "order": 12,
+    "sectionCount": 10,
+    "words": 39503,
+    "book": "2TI"
+  },
+  {
+    "id": "homilies-on-titus",
+    "title": "Homilies on Titus",
+    "order": 13,
+    "sectionCount": 6,
+    "words": 21855,
+    "book": "TIT"
+  },
+  {
+    "id": "homilies-on-philemon",
+    "title": "Homilies on Philemon",
+    "order": 14,
+    "sectionCount": 4,
+    "words": 10965,
+    "book": "PHM"
+  },
+  {
+    "id": "commentary-on-galatians",
+    "title": "Commentary on Galatians",
+    "order": 15,
+    "sectionCount": 6,
+    "words": 39435,
+    "book": "GAL"
+  },
+  {
+    "id": "homilies-on-the-gospel-of-john",
+    "title": "Homilies on the Gospel of John",
+    "order": 16,
+    "sectionCount": 88,
+    "words": 283924,
+    "book": "JHN"
+  },
+  {
+    "id": "homilies-on-the-epistle-to-the-hebrews",
+    "title": "Homilies on the Epistle to the Hebrews",
+    "order": 17,
+    "sectionCount": 35,
+    "words": 139720,
+    "book": "HEB"
+  },
+  {
+    "id": "homilies-on-the-statues",
+    "title": "Homilies on the Statues",
+    "order": 18,
+    "sectionCount": 20,
+    "words": 123637,
+    "book": null
+  },
+  {
+    "id": "no-one-can-harm-the-man-who-does-not-injure-himself",
+    "title": "No One Can Harm the Man Who Does Not Injure Himself",
+    "order": 19,
+    "sectionCount": 1,
+    "words": 11837,
+    "book": null
+  },
+  {
+    "id": "two-letters-to-theodore-after-his-fall",
+    "title": "Two Letters to Theodore After His Fall",
+    "order": 20,
+    "sectionCount": 1,
+    "words": 23981,
+    "book": null
+  },
+  {
+    "id": "letter-to-a-young-widow",
+    "title": "Letter to a Young Widow",
+    "order": 21,
+    "sectionCount": 1,
+    "words": 6737,
+    "book": null
+  },
+  {
+    "id": "homily-on-st-ignatius",
+    "title": "Homily on St. Ignatius",
+    "order": 22,
+    "sectionCount": 1,
+    "words": 5290,
+    "book": null
+  },
+  {
+    "id": "homily-on-st-babylas",
+    "title": "Homily on St. Babylas",
+    "order": 23,
+    "sectionCount": 1,
+    "words": 2793,
+    "book": null
+  },
+  {
+    "id": "homily-concerning-lowliness-of-mind",
+    "title": "Homily Concerning \"Lowliness of Mind\"",
+    "order": 24,
+    "sectionCount": 1,
+    "words": 6294,
+    "book": null
+  },
+  {
+    "id": "instructions-to-catechumens",
+    "title": "Instructions to Catechumens",
+    "order": 25,
+    "sectionCount": 1,
+    "words": 11340,
+    "book": null
+  },
+  {
+    "id": "three-homilies-on-the-power-of-satan",
+    "title": "Three Homilies on the Power of Satan",
+    "order": 26,
+    "sectionCount": 1,
+    "words": 17679,
+    "book": null
+  },
+  {
+    "id": "homily-on-the-passage-father-if-it-be-possible",
+    "title": "Homily on the Passage \"Father, if it be possible . . .\"",
+    "order": 27,
+    "sectionCount": 1,
+    "words": 5657,
+    "book": null
+  },
+  {
+    "id": "homily-on-the-paralytic-lowered-through-the-roof",
+    "title": "Homily on the Paralytic Lowered Through the Roof",
+    "order": 28,
+    "sectionCount": 1,
+    "words": 9213,
+    "book": null
+  },
+  {
+    "id": "homily-on-the-passage-if-your-enemy-hunger-feed-him",
+    "title": "Homily on the Passage \"If your enemy hunger, feed him.\"",
+    "order": 29,
+    "sectionCount": 1,
+    "words": 8804,
+    "book": null
+  },
+  {
+    "id": "homily-against-publishing-the-errors-of-the-brethren",
+    "title": "Homily Against Publishing the Errors of the Brethren",
+    "order": 30,
+    "sectionCount": 1,
+    "words": 6206,
+    "book": null
+  },
+  {
+    "id": "first-homily-on-eutropius",
+    "title": "First Homily on Eutropius",
+    "order": 31,
+    "sectionCount": 1,
+    "words": 2999,
+    "book": null
+  },
+  {
+    "id": "second-homily-on-eutropius-after-his-captivity",
+    "title": "Second Homily on Eutropius (After His Captivity)",
+    "order": 32,
+    "sectionCount": 1,
+    "words": 11771,
+    "book": null
+  },
+  {
+    "id": "four-letters-to-olympias",
+    "title": "Four Letters to Olympias",
+    "order": 33,
+    "sectionCount": 1,
+    "words": 14048,
+    "book": null
+  },
+  {
+    "id": "letter-to-some-priests-of-antioch",
+    "title": "Letter to Some Priests of Antioch",
+    "order": 34,
+    "sectionCount": 1,
+    "words": 539,
+    "book": null
+  },
+  {
+    "id": "correspondence-with-pope-innocent-i",
+    "title": "Correspondence with Pope Innocent I",
+    "order": 35,
+    "sectionCount": 1,
+    "words": 4690,
+    "book": null
+  },
+  {
+    "id": "on-the-priesthood",
+    "title": "On the Priesthood",
+    "order": 36,
+    "sectionCount": 6,
+    "words": 42839,
+    "book": null
+  }
+]

@@ -9,6 +9,7 @@ import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import {
   getRosaryMediaEpisode,
+  hasApprovedRosaryMedia,
   ROSARY_MEDIA_EPISODES,
   WORD_ON_FIRE_PERMISSION_URL,
   WORD_ON_FIRE_ROSARY_URL,
@@ -37,6 +38,9 @@ export const RosaryMediaScreen: FC<RosaryMediaScreenProps> = function RosaryMedi
   const { themed } = useAppTheme()
   const router = useRouter()
   const episode = getRosaryMediaEpisode(episodeId) ?? ROSARY_MEDIA_EPISODES[0]
+  // Release builds have nothing approved to play yet, so they show only the
+  // episodes and the official links; development builds keep the sample player.
+  const showPlayer = __DEV__ || hasApprovedRosaryMedia(episode)
   const [mode, setMode] = useState<"video" | "audio">("video")
   const usingTestVideo = !episode.videoUri && __DEV__
   const usingTestAudio = !episode.audioUri && __DEV__
@@ -105,114 +109,124 @@ export const RosaryMediaScreen: FC<RosaryMediaScreenProps> = function RosaryMedi
         <Text text={episode.subtitle} size="sm" style={themed($subtitle)} selectable />
       </View>
 
-      <View style={themed($modePicker)} accessibilityRole="radiogroup">
-        {(["video", "audio"] as const).map((item) => {
-          const selected = item === mode
-          return (
-            <Pressable
-              key={item}
-              onPress={() => selectMode(item)}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: selected }}
-              style={({ pressed }) =>
-                themed([$modeButton, selected && $modeButtonSelected, pressed && $pressed])
-              }
-            >
-              <Text
-                text={item === "video" ? "Video" : "Audio"}
-                size="xs"
-                weight="semiBold"
-                style={selected && themed($modeTextSelected)}
-              />
-            </Pressable>
-          )
-        })}
-      </View>
+      {showPlayer && (
+        <>
+          <View style={themed($modePicker)} accessibilityRole="radiogroup">
+            {(["video", "audio"] as const).map((item) => {
+              const selected = item === mode
+              return (
+                <Pressable
+                  key={item}
+                  onPress={() => selectMode(item)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: selected }}
+                  style={({ pressed }) =>
+                    themed([$modeButton, selected && $modeButtonSelected, pressed && $pressed])
+                  }
+                >
+                  <Text
+                    text={item === "video" ? "Video" : "Audio"}
+                    size="xs"
+                    weight="semiBold"
+                    style={selected && themed($modeTextSelected)}
+                  />
+                </Pressable>
+              )
+            })}
+          </View>
 
-      {mode === "video" ? (
-        videoUri ? (
-          <View style={themed($playerCard)}>
-            <VideoView
-              player={videoPlayer}
-              nativeControls
-              allowsPictureInPicture
-              contentFit="contain"
-              style={$video}
-            />
-            {usingTestVideo && (
-              <Text
-                text="Development test clip · This is open sample footage, not Bishop Barron’s video."
-                size="xxs"
-                style={themed($testNotice)}
-                selectable
+          {mode === "video" ? (
+            videoUri ? (
+              <View style={themed($playerCard)}>
+                <VideoView
+                  player={videoPlayer}
+                  nativeControls
+                  allowsPictureInPicture
+                  contentFit="contain"
+                  style={$video}
+                />
+                {usingTestVideo && (
+                  <Text
+                    text="Development test clip · This is open sample footage, not Bishop Barron’s video."
+                    size="xxs"
+                    style={themed($testNotice)}
+                    selectable
+                  />
+                )}
+              </View>
+            ) : (
+              <PendingMediaCard kind="video" themed={themed} />
+            )
+          ) : audioUri ? (
+            <View style={themed($audioCard)}>
+              <View style={themed($audioArtwork)} accessibilityElementsHidden>
+                <Text text="✢" size="xxl" style={themed($tintText)} />
+              </View>
+              <View style={themed($audioCopy)}>
+                <Text text={episode.title} preset="subheading" selectable />
+                <Text
+                  text={
+                    usingTestAudio
+                      ? "Development test audio · not Rosary content"
+                      : "Bishop Robert Barron"
+                  }
+                  size="xs"
+                  style={themed($subtitle)}
+                  selectable
+                />
+              </View>
+              <View style={themed($audioTrack)}>
+                <View style={themed([$audioFill, { width: audioProgress }])} />
+              </View>
+              <View style={themed($timeRow)}>
+                <Text
+                  text={formatTime(audioStatus.currentTime)}
+                  size="xxs"
+                  style={$tabularNumbers}
+                />
+                <Text text={formatTime(audioStatus.duration)} size="xxs" style={$tabularNumbers} />
+              </View>
+              <Button
+                text={audioStatus.playing ? "Pause audio" : "Play audio"}
+                preset="reversed"
+                onPress={() => (audioStatus.playing ? audioPlayer.pause() : playAudio())}
               />
-            )}
-          </View>
-        ) : (
-          <PendingMediaCard kind="video" themed={themed} />
-        )
-      ) : audioUri ? (
-        <View style={themed($audioCard)}>
-          <View style={themed($audioArtwork)} accessibilityElementsHidden>
-            <Text text="✢" size="xxl" style={themed($tintText)} />
-          </View>
-          <View style={themed($audioCopy)}>
-            <Text text={episode.title} preset="subheading" selectable />
-            <Text
-              text={
-                usingTestAudio
-                  ? "Development test audio · not Rosary content"
-                  : "Bishop Robert Barron"
-              }
-              size="xs"
-              style={themed($subtitle)}
-              selectable
-            />
-          </View>
-          <View style={themed($audioTrack)}>
-            <View style={themed([$audioFill, { width: audioProgress }])} />
-          </View>
-          <View style={themed($timeRow)}>
-            <Text text={formatTime(audioStatus.currentTime)} size="xxs" style={$tabularNumbers} />
-            <Text text={formatTime(audioStatus.duration)} size="xxs" style={$tabularNumbers} />
-          </View>
-          <Button
-            text={audioStatus.playing ? "Pause audio" : "Play audio"}
-            preset="reversed"
-            onPress={() => (audioStatus.playing ? audioPlayer.pause() : playAudio())}
-          />
-        </View>
-      ) : (
-        <PendingMediaCard kind="audio" themed={themed} />
+            </View>
+          ) : (
+            <PendingMediaCard kind="audio" themed={themed} />
+          )}
+        </>
       )}
 
-      <View style={themed($rightsCard)}>
-        <Text text="PERMISSION PENDING" size="xxs" weight="semiBold" style={themed($eyebrow)} />
-        <Text
-          text="The player is prepared for approved direct media URLs. Word on Fire’s standard permission page says archived on-demand audio and video require permission, so its files are not bundled here yet."
-          size="xs"
-          style={themed($subtitle)}
-          selectable
-        />
-        <View style={themed($rightsLinks)}>
+      {__DEV__ && (
+        <View style={themed($rightsCard)}>
+          <Text text="PERMISSION PENDING" size="xxs" weight="semiBold" style={themed($eyebrow)} />
           <Text
-            text="Official Rosary page"
+            text="The player is prepared for approved direct media URLs. Word on Fire’s standard permission page says archived on-demand audio and video require permission, so its files are not bundled here yet."
             size="xs"
-            weight="semiBold"
-            style={themed($link)}
-            accessibilityRole="link"
-            onPress={() => Linking.openURL(WORD_ON_FIRE_ROSARY_URL).catch(() => {})}
+            style={themed($subtitle)}
+            selectable
           />
-          <Text
-            text="Content permission form"
-            size="xs"
-            weight="semiBold"
-            style={themed($link)}
-            accessibilityRole="link"
-            onPress={() => Linking.openURL(WORD_ON_FIRE_PERMISSION_URL).catch(() => {})}
-          />
+          <View style={themed($rightsLinks)}>
+            <Text
+              text="Official Rosary page"
+              size="xs"
+              weight="semiBold"
+              style={themed($link)}
+              accessibilityRole="link"
+              onPress={() => Linking.openURL(WORD_ON_FIRE_ROSARY_URL).catch(() => {})}
+            />
+            <Text
+              text="Content permission form"
+              size="xs"
+              weight="semiBold"
+              style={themed($link)}
+              accessibilityRole="link"
+              onPress={() => Linking.openURL(WORD_ON_FIRE_PERMISSION_URL).catch(() => {})}
+            />
+          </View>
         </View>
-      </View>
+      )}
 
       <View style={themed($section)}>
         <Text text="All episodes" preset="subheading" />

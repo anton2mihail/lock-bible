@@ -1,0 +1,74 @@
+[
+  {
+    "id": "the-first-apology",
+    "title": "The First Apology",
+    "order": 1,
+    "sectionCount": 72,
+    "words": 20969,
+    "book": null
+  },
+  {
+    "id": "the-second-apology",
+    "title": "The Second Apology",
+    "order": 2,
+    "sectionCount": 16,
+    "words": 4554,
+    "book": null
+  },
+  {
+    "id": "dialogue-with-trypho",
+    "title": "Dialogue with Trypho",
+    "order": 3,
+    "sectionCount": 143,
+    "words": 67231,
+    "book": null
+  },
+  {
+    "id": "the-discourse-to-the-greeks",
+    "title": "The Discourse to the Greeks",
+    "order": 4,
+    "sectionCount": 6,
+    "words": 1452,
+    "book": null
+  },
+  {
+    "id": "hortatory-address-to-the-greeks",
+    "title": "Hortatory Address to the Greeks",
+    "order": 5,
+    "sectionCount": 39,
+    "words": 14754,
+    "book": null
+  },
+  {
+    "id": "on-the-sole-government-of-god",
+    "title": "On the Sole Government of God",
+    "order": 6,
+    "sectionCount": 7,
+    "words": 2898,
+    "book": null
+  },
+  {
+    "id": "on-the-resurrection-fragments",
+    "title": "On the Resurrection, Fragments",
+    "order": 7,
+    "sectionCount": 11,
+    "words": 4619,
+    "book": null
+  },
+  {
+    "id": "other-fragments-from-the-lost-writings-of-justin",
+    "title": "Other Fragments from the Lost Writings of Justin",
+    "order": 8,
+    "sectionCount": 20,
+    "words": 1803,
+    "book": null
+  },
+  {
+    "id": "the-martyrdom-of-justin-martyr",
+    "title": "The Martyrdom of Justin Martyr",
+    "order": 9,
+    "sectionCount": 6,
+    "words": 1053,
+    "book": null
+  }
+]

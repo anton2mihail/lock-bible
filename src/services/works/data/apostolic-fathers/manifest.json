@@ -1,0 +1,170 @@
+[
+  {
+    "id": "first-epistle-to-the-corinthians",
+    "title": "First Epistle to the Corinthians",
+    "order": 1,
+    "sectionCount": 60,
+    "words": 12176,
+    "book": null
+  },
+  {
+    "id": "epistle-to-diognetus",
+    "title": "Epistle to Diognetus",
+    "order": 2,
+    "sectionCount": 13,
+    "words": 4145,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-philippians",
+    "title": "Epistle to the Philippians",
+    "order": 3,
+    "sectionCount": 15,
+    "words": 2253,
+    "book": null
+  },
+  {
+    "id": "the-martyrdom-of-polycarp",
+    "title": "The Martyrdom of Polycarp",
+    "order": 4,
+    "sectionCount": 23,
+    "words": 3581,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-ephesians-shorter-and-longer-versions",
+    "title": "Epistle to the Ephesians: Shorter and Longer Versions",
+    "order": 5,
+    "sectionCount": 23,
+    "words": 6864,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-magnesians-shorter-and-longer-versions",
+    "title": "Epistle to the Magnesians: Shorter and Longer Versions",
+    "order": 6,
+    "sectionCount": 16,
+    "words": 4366,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-trallians-shorter-and-longer-versions",
+    "title": "Epistle to the Trallians: Shorter and Longer Versions",
+    "order": 7,
+    "sectionCount": 14,
+    "words": 4495,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-romans-shorter-and-longer-versions",
+    "title": "Epistle to the Romans: Shorter and Longer Versions",
+    "order": 8,
+    "sectionCount": 11,
+    "words": 3578,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-philadelphians-shorter-and-longer-versions",
+    "title": "Epistle to the Philadelphians: Shorter and Longer Versions",
+    "order": 9,
+    "sectionCount": 12,
+    "words": 4760,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-smyrn-ans-shorter-and-longer-versions",
+    "title": "Epistle to the Smyrnæans: Shorter and Longer Versions",
+    "order": 10,
+    "sectionCount": 14,
+    "words": 4399,
+    "book": null
+  },
+  {
+    "id": "epistle-to-polycarp-shorter-and-longer-versions",
+    "title": "Epistle to Polycarp: Shorter and Longer Versions",
+    "order": 11,
+    "sectionCount": 9,
+    "words": 2670,
+    "book": null
+  },
+  {
+    "id": "epistle-to-polycarp-syriac-version",
+    "title": "Epistle to Polycarp: Syriac Version",
+    "order": 12,
+    "sectionCount": 9,
+    "words": 975,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-ephesians-syriac-version",
+    "title": "Epistle to the Ephesians: Syriac Version",
+    "order": 13,
+    "sectionCount": 10,
+    "words": 776,
+    "book": null
+  },
+  {
+    "id": "epistle-to-the-romans-syriac-version",
+    "title": "Epistle to the Romans: Syriac Version",
+    "order": 14,
+    "sectionCount": 9,
+    "words": 1213,
+    "book": null
+  },
+  {
+    "id": "the-martyrdom-of-ignatius",
+    "title": "The Martyrdom of Ignatius",
+    "order": 15,
+    "sectionCount": 7,
+    "words": 1980,
+    "book": null
+  },
+  {
+    "id": "the-epistle-of-barnabas",
+    "title": "The Epistle of Barnabas",
+    "order": 16,
+    "sectionCount": 21,
+    "words": 9397,
+    "book": null
+  },
+  {
+    "id": "fragments",
+    "title": "Fragments",
+    "order": 17,
+    "sectionCount": 11,
+    "words": 1838,
+    "book": null
+  },
+  {
+    "id": "book-first-visions",
+    "title": "Book First.—Visions",
+    "order": 18,
+    "sectionCount": 6,
+    "words": 8157,
+    "book": null
+  },
+  {
+    "id": "book-second-commandments",
+    "title": "Book Second.—Commandments",
+    "order": 19,
+    "sectionCount": 13,
+    "words": 8226,
+    "book": null
+  },
+  {
+    "id": "book-third-similitudes",
+    "title": "Book Third.—Similitudes",
+    "order": 20,
+    "sectionCount": 11,
+    "words": 20738,
+    "book": null
+  },
+  {
+    "id": "the-teaching-of-the-twelve-apostles",
+    "title": "The Teaching of the Twelve Apostles",
+    "order": 21,
+    "sectionCount": 17,
+    "words": 3403,
+    "book": null
+  }
+]

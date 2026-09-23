@@ -1,0 +1,258 @@
+[
+  {
+    "id": "against-eunomius",
+    "title": "Against Eunomius",
+    "order": 1,
+    "sectionCount": 112,
+    "words": 189759,
+    "book": null
+  },
+  {
+    "id": "answer-to-eunomius-second-book",
+    "title": "Answer to Eunomius' Second Book",
+    "order": 2,
+    "sectionCount": 1,
+    "words": 59086,
+    "book": null
+  },
+  {
+    "id": "on-the-holy-spirit",
+    "title": "On the Holy Spirit",
+    "order": 3,
+    "sectionCount": 0,
+    "words": 0,
+    "book": null
+  },
+  {
+    "id": "on-the-holy-trinity-and-of-the-godhead-of-the-holy-spirit",
+    "title": "On the Holy Trinity, and of the Godhead of the Holy Spirit",
+    "order": 4,
+    "sectionCount": 1,
+    "words": 3570,
+    "book": null
+  },
+  {
+    "id": "on-not-three-gods",
+    "title": "On 'Not Three Gods.'",
+    "order": 5,
+    "sectionCount": 1,
+    "words": 5514,
+    "book": null
+  },
+  {
+    "id": "on-the-faith",
+    "title": "On the Faith",
+    "order": 6,
+    "sectionCount": 1,
+    "words": 1989,
+    "book": null
+  },
+  {
+    "id": "on-virginity",
+    "title": "On Virginity",
+    "order": 7,
+    "sectionCount": 25,
+    "words": 25112,
+    "book": null
+  },
+  {
+    "id": "on-infants-early-deaths",
+    "title": "On Infants' Early Deaths",
+    "order": 8,
+    "sectionCount": 1,
+    "words": 8560,
+    "book": null
+  },
+  {
+    "id": "on-pilgrimages",
+    "title": "On Pilgrimages",
+    "order": 9,
+    "sectionCount": 1,
+    "words": 1571,
+    "book": null
+  },
+  {
+    "id": "on-the-making-of-man",
+    "title": "On the Making of Man",
+    "order": 10,
+    "sectionCount": 31,
+    "words": 36438,
+    "book": null
+  },
+  {
+    "id": "on-the-soul-and-the-resurrection",
+    "title": "On the Soul and the Resurrection",
+    "order": 11,
+    "sectionCount": 2,
+    "words": 33082,
+    "book": null
+  },
+  {
+    "id": "the-great-catechism",
+    "title": "The Great Catechism",
+    "order": 12,
+    "sectionCount": 42,
+    "words": 31222,
+    "book": null
+  },
+  {
+    "id": "funeral-oration-on-meletius",
+    "title": "Funeral Oration on Meletius",
+    "order": 13,
+    "sectionCount": 1,
+    "words": 3564,
+    "book": null
+  },
+  {
+    "id": "on-the-baptism-of-christ",
+    "title": "On the Baptism of Christ",
+    "order": 14,
+    "sectionCount": 1,
+    "words": 6082,
+    "book": null
+  },
+  {
+    "id": "letter-i",
+    "title": "Letter I",
+    "order": 15,
+    "sectionCount": 1,
+    "words": 938,
+    "book": null
+  },
+  {
+    "id": "to-the-city-of-sebasteia",
+    "title": "To the City of Sebasteia",
+    "order": 16,
+    "sectionCount": 1,
+    "words": 897,
+    "book": null
+  },
+  {
+    "id": "to-ablabius",
+    "title": "To Ablabius",
+    "order": 17,
+    "sectionCount": 1,
+    "words": 594,
+    "book": null
+  },
+  {
+    "id": "to-cynegius",
+    "title": "To Cynegius",
+    "order": 18,
+    "sectionCount": 1,
+    "words": 310,
+    "book": null
+  },
+  {
+    "id": "a-testimonial",
+    "title": "A Testimonial",
+    "order": 19,
+    "sectionCount": 1,
+    "words": 324,
+    "book": null
+  },
+  {
+    "id": "to-stagirius",
+    "title": "To Stagirius",
+    "order": 20,
+    "sectionCount": 1,
+    "words": 234,
+    "book": null
+  },
+  {
+    "id": "to-a-friend",
+    "title": "To a Friend",
+    "order": 21,
+    "sectionCount": 1,
+    "words": 328,
+    "book": null
+  },
+  {
+    "id": "to-a-student-of-the-classics",
+    "title": "To a Student of the Classics",
+    "order": 22,
+    "sectionCount": 1,
+    "words": 519,
+    "book": null
+  },
+  {
+    "id": "an-invitation",
+    "title": "An Invitation",
+    "order": 23,
+    "sectionCount": 1,
+    "words": 471,
+    "book": null
+  },
+  {
+    "id": "to-libanius",
+    "title": "To Libanius",
+    "order": 24,
+    "sectionCount": 1,
+    "words": 704,
+    "book": null
+  },
+  {
+    "id": "to-libanius-2",
+    "title": "To Libanius",
+    "order": 25,
+    "sectionCount": 1,
+    "words": 709,
+    "book": null
+  },
+  {
+    "id": "on-his-work-against-eunomius",
+    "title": "On his work against Eunomius",
+    "order": 26,
+    "sectionCount": 1,
+    "words": 621,
+    "book": null
+  },
+  {
+    "id": "to-the-church-at-nicomedia",
+    "title": "To the Church at Nicomedia",
+    "order": 27,
+    "sectionCount": 1,
+    "words": 2191,
+    "book": null
+  },
+  {
+    "id": "to-the-bishop-of-melitene",
+    "title": "To the Bishop of Melitene",
+    "order": 28,
+    "sectionCount": 1,
+    "words": 933,
+    "book": null
+  },
+  {
+    "id": "to-adelphius-the-lawyer",
+    "title": "To Adelphius the Lawyer",
+    "order": 29,
+    "sectionCount": 1,
+    "words": 1262,
+    "book": null
+  },
+  {
+    "id": "to-amphilochius",
+    "title": "To Amphilochius",
+    "order": 30,
+    "sectionCount": 1,
+    "words": 1208,
+    "book": null
+  },
+  {
+    "id": "to-eustathia-ambrosia-and-basilissa",
+    "title": "To Eustathia, Ambrosia, and Basilissa",
+    "order": 31,
+    "sectionCount": 1,
+    "words": 2490,
+    "book": null
+  },
+  {
+    "id": "to-flavian",
+    "title": "To Flavian",
+    "order": 32,
+    "sectionCount": 1,
+    "words": 2712,
+    "book": null
+  }
+]

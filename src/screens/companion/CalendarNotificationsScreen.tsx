@@ -9,11 +9,13 @@ import {
   getCalendarNotificationSettings,
   saveCalendarNotifications,
 } from "@/services/companion/calendarNotifications"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 export function CalendarNotificationsScreen() {
   const [settings, setSettings] = useState(getCalendarNotificationSettings)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState("")
+  useAnnouncement(message)
   const [showTime, setShowTime] = useState(false)
   const time = new Date(2024, 0, 1, settings.hour, settings.minute)
   const supported = Platform.OS !== "web"

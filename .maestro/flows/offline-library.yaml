@@ -7,6 +7,14 @@ onFlowStart:
       visible: "Got it"
     commands:
       - tapOn: "Got it"
+# In paragraphs a verse is a span of running text, which has no element of its
+# own to tap by id; verse by verse gives each verse one.
+- tapOn:
+    id: "tab-settings"
+- scrollUntilVisible:
+    element: "Layout, Verse by verse"
+    direction: DOWN
+- tapOn: "Layout, Verse by verse"
 - tapOn:
     id: "tab-read"
 - tapOn: "Search Scripture"
@@ -24,7 +32,6 @@ onFlowStart:
 - assertVisible: "Passage copied"
 - tapOn: "Bookmark John 3:16"
 - assertVisible: "Bookmark saved"
-- tapOn: "Highlight John 3:16"
 - tapOn: "Apply gold highlight"
 - assertVisible: "Gold highlight applied"
 - tapOn: "Note John 3:16"

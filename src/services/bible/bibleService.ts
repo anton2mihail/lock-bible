@@ -26,15 +26,20 @@ export function getActiveTranslationMeta(): TranslationMeta {
   return active().meta
 }
 
-export function listBooks(): BookMeta[] {
-  return active().manifest
+/**
+ * Screens that stay mounted (the Read tab) pass the translation they are
+ * showing, so a change made in Settings reaches them as a dependency.
+ */
+export function listBooks(translationId: string = getTranslationId()): BookMeta[] {
+  return getTranslation(translationId).manifest
 }
 
-export function getBook(code: string): BookData {
-  const cacheKey = `${active().meta.id}:${code}`
+export function getBook(code: string, translationId: string = getTranslationId()): BookData {
+  const translation = getTranslation(translationId)
+  const cacheKey = `${translation.meta.id}:${code}`
   const cached = bookCache.get(cacheKey)
   if (cached) return cached
-  const book = active().loadBook(code)
+  const book = translation.loadBook(code)
   bookCache.set(cacheKey, book)
   return book
 }

@@ -8,6 +8,7 @@ import { Button } from "@/components/Button"
 import { companionStyles as s, Muted, Page } from "@/components/companion/Companion"
 import { Text } from "@/components/Text"
 import { type PassageParams, resolvePassage } from "@/services/companion/passage"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 const CARD_COLORS = { ivory: "#F4EADB", plum: "#2F1D2C" }
 const BACKGROUNDS = {
@@ -31,6 +32,7 @@ export function ShareCardScreen() {
     [busy, setBusy] = useState(false),
     [ready, setReady] = useState(false),
     [error, setError] = useState("")
+  useAnnouncement(error)
   const card = useRef<View>(null)
   if (!passage)
     return (

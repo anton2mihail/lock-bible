@@ -1,0 +1,42 @@
+[
+  {
+    "id": "the-divine-institutes",
+    "title": "The Divine Institutes",
+    "order": 1,
+    "sectionCount": 251,
+    "words": 215562,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-anger-of-god-addressed-to-donatus",
+    "title": "A Treatise on the Anger of God Addressed to Donatus",
+    "order": 2,
+    "sectionCount": 23,
+    "words": 18946,
+    "book": null
+  },
+  {
+    "id": "on-the-workmanship-of-god-or-the-formation-of-man",
+    "title": "On the Workmanship of God, or the Formation of Man",
+    "order": 3,
+    "sectionCount": 22,
+    "words": 17342,
+    "book": null
+  },
+  {
+    "id": "of-the-manner-in-which-the-persecutors-died",
+    "title": "Of the Manner in Which the Persecutors Died",
+    "order": 4,
+    "sectionCount": 53,
+    "words": 18351,
+    "book": null
+  },
+  {
+    "id": "fragments-of-lactantius",
+    "title": "Fragments of Lactantius",
+    "order": 5,
+    "sectionCount": 4,
+    "words": 3104,
+    "book": null
+  }
+]

@@ -15,12 +15,14 @@ import {
 } from "@/components/companion/Companion"
 import { Text } from "@/components/Text"
 import { getTeaching, TEACHINGS } from "@/services/companion/teaching"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 export function TeachingScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>(),
     router = useRouter(),
     teaching = getTeaching(id),
     [error, setError] = useState("")
+  useAnnouncement(error)
   if (id && !teaching)
     return (
       <Page title="Topic not found">

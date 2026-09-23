@@ -1,0 +1,42 @@
+[
+  {
+    "id": "the-life-and-passion-of-cyprian-bishop-and-martyr-by-pontius",
+    "title": "The Life and Passion of Cyprian, Bishop and Martyr. By Pontius the Deacon",
+    "order": 1,
+    "sectionCount": 1,
+    "words": 7020,
+    "book": null
+  },
+  {
+    "id": "the-epistles-of-cyprian",
+    "title": "The Epistles of Cyprian",
+    "order": 2,
+    "sectionCount": 82,
+    "words": 123838,
+    "book": null
+  },
+  {
+    "id": "the-treatises-of-cyprian",
+    "title": "The Treatises of Cyprian",
+    "order": 3,
+    "sectionCount": 204,
+    "words": 123811,
+    "book": null
+  },
+  {
+    "id": "the-seventh-council-of-carthage-under-cyprian-concerning-the",
+    "title": "The Seventh Council of Carthage under Cyprian. Concerning the Baptism of Heretics",
+    "order": 4,
+    "sectionCount": 1,
+    "words": 5893,
+    "book": null
+  },
+  {
+    "id": "treatises-attributed-to-cyprian-on-questionable-authority",
+    "title": "Treatises Attributed to Cyprian on Questionable Authority",
+    "order": 5,
+    "sectionCount": 5,
+    "words": 18873,
+    "book": null
+  }
+]

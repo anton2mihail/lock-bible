@@ -1,0 +1,170 @@
+[
+  {
+    "id": "on-the-duties-of-the-clergy",
+    "title": "On the Duties of the Clergy",
+    "order": 1,
+    "sectionCount": 103,
+    "words": 73934,
+    "book": null
+  },
+  {
+    "id": "on-the-holy-spirit",
+    "title": "On the Holy Spirit",
+    "order": 2,
+    "sectionCount": 54,
+    "words": 56228,
+    "book": null
+  },
+  {
+    "id": "on-the-decease-of-his-brother-satyrus",
+    "title": "On the Decease of His Brother Satyrus",
+    "order": 3,
+    "sectionCount": 4,
+    "words": 31925,
+    "book": null
+  },
+  {
+    "id": "exposition-of-the-christian-faith",
+    "title": "Exposition of the Christian Faith",
+    "order": 4,
+    "sectionCount": 90,
+    "words": 90094,
+    "book": null
+  },
+  {
+    "id": "on-the-mysteries",
+    "title": "On the Mysteries",
+    "order": 5,
+    "sectionCount": 9,
+    "words": 7080,
+    "book": null
+  },
+  {
+    "id": "concerning-repentance",
+    "title": "Concerning Repentance",
+    "order": 6,
+    "sectionCount": 31,
+    "words": 25515,
+    "book": null
+  },
+  {
+    "id": "concerning-virgins",
+    "title": "Concerning Virgins",
+    "order": 7,
+    "sectionCount": 26,
+    "words": 20512,
+    "book": null
+  },
+  {
+    "id": "concerning-widows",
+    "title": "Concerning Widows",
+    "order": 8,
+    "sectionCount": 15,
+    "words": 13952,
+    "book": null
+  },
+  {
+    "id": "epistle-xvii-to-valentinian-ii",
+    "title": "Epistle XVII: To Valentinian II",
+    "order": 9,
+    "sectionCount": 1,
+    "words": 2158,
+    "book": null
+  },
+  {
+    "id": "epistle-xviii-to-valentinian-in-reply-to-symmachus",
+    "title": "Epistle XVIII: To Valentinian, in Reply to Symmachus",
+    "order": 10,
+    "sectionCount": 1,
+    "words": 4685,
+    "book": null
+  },
+  {
+    "id": "epistle-xx-to-marcellina-as-to-the-arian-party",
+    "title": "Epistle XX: To Marcellina as to the Arian Party",
+    "order": 11,
+    "sectionCount": 1,
+    "words": 3545,
+    "book": null
+  },
+  {
+    "id": "letter-xxi-to-valentinian-ii-declining-challenge-of-auxentiu",
+    "title": "Letter XXI: To Valentinian II., Declining Challenge of Auxentius",
+    "order": 12,
+    "sectionCount": 1,
+    "words": 1851,
+    "book": null
+  },
+  {
+    "id": "sermon-against-auxentius-on-the-giving-up-of-the-basilicas",
+    "title": "Sermon Against Auxentius on the Giving Up of the Basilicas",
+    "order": 13,
+    "sectionCount": 1,
+    "words": 6026,
+    "book": null
+  },
+  {
+    "id": "letter-xxii-to-marcellina-on-finding-the-bodies-of-ss-gervas",
+    "title": "Letter XXII: To Marcellina on Finding the Bodies of SS. Gervasius and Protasius",
+    "order": 14,
+    "sectionCount": 1,
+    "words": 3139,
+    "book": null
+  },
+  {
+    "id": "letter-xl-to-theodosius-as-to-the-burning-of-a-jewish-synago",
+    "title": "Letter XL: To Theodosius as to the Burning of a Jewish Synagogue",
+    "order": 15,
+    "sectionCount": 1,
+    "words": 4732,
+    "book": null
+  },
+  {
+    "id": "letter-xli-to-marcellina-on-the-same",
+    "title": "Letter XLI: To Marcellina on the Same",
+    "order": 16,
+    "sectionCount": 1,
+    "words": 4282,
+    "book": null
+  },
+  {
+    "id": "letter-li-to-theodosius-after-the-massacre-at-thessalonica",
+    "title": "Letter LI: To Theodosius After the Massacre at Thessalonica",
+    "order": 17,
+    "sectionCount": 1,
+    "words": 2280,
+    "book": null
+  },
+  {
+    "id": "letter-lvii-to-eugenius-reproving-him",
+    "title": "Letter LVII: To Eugenius, Reproving Him",
+    "order": 18,
+    "sectionCount": 1,
+    "words": 1608,
+    "book": null
+  },
+  {
+    "id": "letter-lxi-to-theodosius-after-his-victory-over-eugenius",
+    "title": "Letter LXI: To Theodosius, After His Victory Over Eugenius",
+    "order": 19,
+    "sectionCount": 1,
+    "words": 594,
+    "book": null
+  },
+  {
+    "id": "letter-lxii-to-theodosius-urging-him-to-be-merciful",
+    "title": "Letter LXII: To Theodosius, Urging Him To Be Merciful",
+    "order": 20,
+    "sectionCount": 1,
+    "words": 368,
+    "book": null
+  },
+  {
+    "id": "epistle-lxiii-to-the-church-at-vercell",
+    "title": "Epistle LXIII: To the Church at Vercellæ",
+    "order": 21,
+    "sectionCount": 1,
+    "words": 14130,
+    "book": null
+  }
+]

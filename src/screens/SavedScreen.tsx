@@ -14,6 +14,7 @@ import {
 } from "@/services/library"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 const FILTERS: readonly { value: SavedFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -38,6 +39,7 @@ export const SavedScreen: FC = function SavedScreen() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [deletedItem, setDeletedItem] = useState<SavedItem | null>(null)
+  useAnnouncement(deletedItem && `${deletedItem.reference} deleted. Undo available.`)
 
   const loadItems = useCallback(() => {
     setIsLoading(true)

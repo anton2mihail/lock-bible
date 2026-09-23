@@ -1,0 +1,18 @@
+[
+  {
+    "id": "the-church-history-of-eusebius",
+    "title": "The Church History of Eusebius",
+    "order": 1,
+    "sectionCount": 301,
+    "words": 206061,
+    "book": null
+  },
+  {
+    "id": "the-life-of-constantine-with-orations-of-constantine-and-eus",
+    "title": "The Life of Constantine with Orations of Constantine and Eusebius",
+    "order": 2,
+    "sectionCount": 350,
+    "words": 126022,
+    "book": null
+  }
+]

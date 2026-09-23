@@ -1,0 +1,42 @@
+[
+  {
+    "id": "first-part",
+    "title": "First Part",
+    "order": 1,
+    "sectionCount": 703,
+    "words": 487986,
+    "book": null
+  },
+  {
+    "id": "first-part-of-the-second-part-fs-qq-1-114",
+    "title": "First Part of the Second Part (FS) (QQ[1]-114)",
+    "order": 2,
+    "sectionCount": 734,
+    "words": 488621,
+    "book": null
+  },
+  {
+    "id": "second-part-of-the-second-part-ss-qq-1-189",
+    "title": "Second Part of the Second Part (SS) (QQ[1] - 189)",
+    "order": 3,
+    "sectionCount": 1103,
+    "words": 708546,
+    "book": null
+  },
+  {
+    "id": "third-part-tp-of-the-summa-theologica-qq-1-90",
+    "title": "Third Part (TP) of the Summa Theologica (QQ[1] - 90)",
+    "order": 4,
+    "sectionCount": 640,
+    "words": 466492,
+    "book": null
+  },
+  {
+    "id": "supplement-xp-to-the-third-part-of-the-summa-theologica",
+    "title": "SUPPLEMENT (XP): TO THE THIRD PART OF THE SUMMA THEOLOGICA",
+    "order": 5,
+    "sectionCount": 547,
+    "words": 371460,
+    "book": null
+  }
+]

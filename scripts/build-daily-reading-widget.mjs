@@ -1,5 +1,6 @@
 /** Build offline Gospel previews from the same references and public-domain WEB-CE as the app. */
 import fs from "node:fs"
+
 const root = new URL("../", import.meta.url)
 const read = (p) => JSON.parse(fs.readFileSync(new URL(p, root), "utf8"))
 const readings = read("src/services/companion/data/readings-us.json")

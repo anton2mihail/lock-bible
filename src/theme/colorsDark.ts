@@ -28,8 +28,10 @@ const palette = {
   accent200: "#FBC878",
   accent100: "#FFBB50",
 
-  angry100: "#F2D6CD",
-  angry500: "#C03403",
+  // The light theme's red is too dark to read on these backgrounds. This one
+  // keeps at least 4.5:1 on the background, cards and separators alike.
+  angry100: "#3D1F1A",
+  angry500: "#F4876B",
 
   overlay20: "rgba(25, 16, 21, 0.2)",
   overlay50: "rgba(25, 16, 21, 0.5)",

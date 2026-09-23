@@ -28,6 +28,9 @@ import {
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
+/** Line height of the `xs` day numbers. */
+const DAY_NUMBER_LINE_HEIGHT = 21
+
 const days = Array.from({ length: NOVENA_DAY_COUNT }, (_, index) => index + 1)
 
 type NovenaScreenProps = {
@@ -41,6 +44,8 @@ export const NovenaScreen: FC<NovenaScreenProps> = function NovenaScreen({ noven
   } = useAppTheme()
   const router = useRouter()
   const { fontScale } = useWindowDimensions()
+  // Day circles grow with the text size so the number inside is never clipped.
+  const daySize = Math.max(34, Math.ceil(DAY_NUMBER_LINE_HEIGHT * fontScale + 12))
   const novena = getNovena(novenaId)
   const [progress, setProgress] = useState<NovenaProgress>(() =>
     novena ? loadNovenaProgress(novena.id) : { ...emptyNovenaProgress },
@@ -155,7 +160,9 @@ export const NovenaScreen: FC<NovenaScreenProps> = function NovenaScreen({ noven
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={themed($dayRail)}
+          // Room above and below for the selected day's enlargement, which
+          // the scroll view would otherwise clip.
+          contentContainerStyle={[themed($dayRail), { paddingVertical: Math.ceil(daySize * 0.04) }]}
           accessibilityLabel="Choose a novena day"
         >
           {days.map((day, index) => {
@@ -170,15 +177,15 @@ export const NovenaScreen: FC<NovenaScreenProps> = function NovenaScreen({ noven
                   accessibilityLabel={`Day ${day}${complete ? ", complete" : ""}`}
                   accessibilityState={{ selected }}
                   hitSlop={4}
-                  style={({ pressed }) =>
+                  style={({ pressed }) => [
                     themed([
                       $dayButton,
                       complete && $dayButtonComplete,
                       selected && $dayButtonSelected,
                       pressed && $dayButtonPressed,
-                      fontScale > 1.3 && $dayButtonLargeText,
-                    ])
-                  }
+                    ]),
+                    { width: daySize, height: daySize, borderRadius: daySize / 2 },
+                  ]}
                 >
                   <Text
                     text={complete ? "✓" : String(day)}
@@ -369,9 +376,6 @@ const $connectorComplete: ThemedStyle<ViewStyle> = ({ colors }) => ({
 })
 
 const $dayButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  width: 34,
-  height: 34,
-  borderRadius: 17,
   borderWidth: 1,
   borderColor: colors.border,
   backgroundColor: colors.background,
@@ -379,11 +383,6 @@ const $dayButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
   alignItems: "center",
 })
 
-const $dayButtonLargeText: ThemedStyle<ViewStyle> = () => ({
-  width: 40,
-  height: 40,
-  borderRadius: 20,
-})
 const $dayButtonComplete: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.tint,
   borderColor: colors.tint,

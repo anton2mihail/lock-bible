@@ -1,0 +1,258 @@
+[
+  {
+    "id": "apology",
+    "title": "Apology",
+    "order": 1,
+    "sectionCount": 50,
+    "words": 36043,
+    "book": null
+  },
+  {
+    "id": "on-idolatry",
+    "title": "On Idolatry",
+    "order": 2,
+    "sectionCount": 24,
+    "words": 11674,
+    "book": null
+  },
+  {
+    "id": "the-shows-or-de-spectaculis",
+    "title": "The Shows, or De Spectaculis",
+    "order": 3,
+    "sectionCount": 30,
+    "words": 10782,
+    "book": null
+  },
+  {
+    "id": "the-chaplet-or-de-corona",
+    "title": "The Chaplet, or De Corona",
+    "order": 4,
+    "sectionCount": 15,
+    "words": 8811,
+    "book": null
+  },
+  {
+    "id": "to-scapula",
+    "title": "To Scapula",
+    "order": 5,
+    "sectionCount": 5,
+    "words": 2775,
+    "book": null
+  },
+  {
+    "id": "ad-nationes",
+    "title": "Ad Nationes",
+    "order": 6,
+    "sectionCount": 37,
+    "words": 29913,
+    "book": null
+  },
+  {
+    "id": "an-answer-to-the-jews",
+    "title": "An Answer to the Jews",
+    "order": 7,
+    "sectionCount": 14,
+    "words": 17482,
+    "book": null
+  },
+  {
+    "id": "the-soul-s-testimony",
+    "title": "The Soul's Testimony",
+    "order": 8,
+    "sectionCount": 6,
+    "words": 3572,
+    "book": null
+  },
+  {
+    "id": "a-treatise-on-the-soul",
+    "title": "A Treatise on the Soul",
+    "order": 9,
+    "sectionCount": 58,
+    "words": 46751,
+    "book": null
+  },
+  {
+    "id": "the-prescription-against-heretics",
+    "title": "The Prescription Against Heretics",
+    "order": 10,
+    "sectionCount": 44,
+    "words": 16738,
+    "book": null
+  },
+  {
+    "id": "the-five-books-against-marcion",
+    "title": "The Five Books Against Marcion",
+    "order": 11,
+    "sectionCount": 148,
+    "words": 155076,
+    "book": null
+  },
+  {
+    "id": "against-hermogenes",
+    "title": "Against Hermogenes",
+    "order": 12,
+    "sectionCount": 45,
+    "words": 20271,
+    "book": null
+  },
+  {
+    "id": "against-the-valentinians",
+    "title": "Against the Valentinians",
+    "order": 13,
+    "sectionCount": 39,
+    "words": 12679,
+    "book": null
+  },
+  {
+    "id": "on-the-flesh-of-christ",
+    "title": "On the Flesh of Christ",
+    "order": 14,
+    "sectionCount": 25,
+    "words": 17841,
+    "book": null
+  },
+  {
+    "id": "on-the-resurrection-of-the-flesh",
+    "title": "On the Resurrection of the Flesh",
+    "order": 15,
+    "sectionCount": 63,
+    "words": 42485,
+    "book": null
+  },
+  {
+    "id": "against-praxeas",
+    "title": "Against Praxeas",
+    "order": 16,
+    "sectionCount": 32,
+    "words": 28678,
+    "book": null
+  },
+  {
+    "id": "scorpiace",
+    "title": "Scorpiace",
+    "order": 17,
+    "sectionCount": 15,
+    "words": 13665,
+    "book": null
+  },
+  {
+    "id": "on-repentance",
+    "title": "On Repentance",
+    "order": 18,
+    "sectionCount": 12,
+    "words": 8404,
+    "book": null
+  },
+  {
+    "id": "on-baptism",
+    "title": "On Baptism",
+    "order": 19,
+    "sectionCount": 20,
+    "words": 7169,
+    "book": null
+  },
+  {
+    "id": "on-prayer",
+    "title": "On Prayer",
+    "order": 20,
+    "sectionCount": 29,
+    "words": 7393,
+    "book": null
+  },
+  {
+    "id": "ad-martyras",
+    "title": "Ad Martyras",
+    "order": 21,
+    "sectionCount": 6,
+    "words": 2462,
+    "book": null
+  },
+  {
+    "id": "the-passion-of-the-holy-martyrs-perpetua-and-felicitas",
+    "title": "The Passion of the Holy Martyrs Perpetua and Felicitas",
+    "order": 22,
+    "sectionCount": 7,
+    "words": 5975,
+    "book": null
+  },
+  {
+    "id": "on-patience",
+    "title": "On Patience",
+    "order": 23,
+    "sectionCount": 16,
+    "words": 8161,
+    "book": null
+  },
+  {
+    "id": "on-the-pallium",
+    "title": "On the Pallium",
+    "order": 24,
+    "sectionCount": 6,
+    "words": 6427,
+    "book": null
+  },
+  {
+    "id": "on-the-apparel-of-women",
+    "title": "On the Apparel of Women",
+    "order": 25,
+    "sectionCount": 22,
+    "words": 9059,
+    "book": null
+  },
+  {
+    "id": "on-the-veiling-of-virgins",
+    "title": "On the Veiling of Virgins",
+    "order": 26,
+    "sectionCount": 17,
+    "words": 10050,
+    "book": null
+  },
+  {
+    "id": "to-his-wife",
+    "title": "To His Wife",
+    "order": 27,
+    "sectionCount": 16,
+    "words": 7866,
+    "book": null
+  },
+  {
+    "id": "on-exhortation-to-chastity",
+    "title": "On Exhortation to Chastity",
+    "order": 28,
+    "sectionCount": 13,
+    "words": 6545,
+    "book": null
+  },
+  {
+    "id": "on-monogamy",
+    "title": "On Monogamy",
+    "order": 29,
+    "sectionCount": 17,
+    "words": 12150,
+    "book": null
+  },
+  {
+    "id": "on-modesty",
+    "title": "On Modesty",
+    "order": 30,
+    "sectionCount": 22,
+    "words": 23993,
+    "book": null
+  },
+  {
+    "id": "on-fasting",
+    "title": "On Fasting",
+    "order": 31,
+    "sectionCount": 17,
+    "words": 10928,
+    "book": null
+  },
+  {
+    "id": "de-fuga-in-persecutione",
+    "title": "De Fuga in Persecutione",
+    "order": 32,
+    "sectionCount": 1,
+    "words": 9556,
+    "book": null
+  }
+]

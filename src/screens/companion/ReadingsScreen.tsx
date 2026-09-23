@@ -28,6 +28,7 @@ import {
   upcomingSunday,
 } from "@/services/companion/calendar"
 import { loadReflection, saveReflection } from "@/services/companion/preferences"
+import { useAnnouncement } from "@/utils/useAnnouncement"
 
 export function ReadingsScreen({ sunday = false }: { sunday?: boolean }) {
   const params = useLocalSearchParams<{ date?: string }>(),
@@ -41,6 +42,7 @@ export function ReadingsScreen({ sunday = false }: { sunday?: boolean }) {
     season = seasonFor(day)
   const [reflection, setReflection] = useState(() => loadReflection(key)),
     [feedback, setFeedback] = useState("")
+  useAnnouncement(feedback)
   useEffect(() => {
     const next = parseDate(params.date, sunday ? upcomingSunday() : new Date())
     setDay(next)

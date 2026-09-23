@@ -3,6 +3,8 @@ import { load, save } from "@/utils/storage"
 export type ReaderTextSize = "small" | "medium" | "large" | "extraLarge"
 export type ReaderLineSpacing = "compact" | "comfortable" | "relaxed"
 export type ReaderTypeface = "sans" | "serif"
+/** Flowing paragraphs and poetry lines, or every verse on its own line. */
+export type ReaderLayout = "paragraphs" | "verses"
 
 export interface ReaderLocation {
   book: string
@@ -16,7 +18,9 @@ const KEYS = {
   textSize: "bible.reader.textSize",
   lineSpacing: "bible.reader.lineSpacing",
   typeface: "bible.reader.typeface",
+  layout: "bible.reader.layout",
   widgetGuideDismissed: "bible.widgetGuideDismissed",
+  selectionHintDismissed: "bible.reader.selectionHintDismissed",
 } as const
 
 export const READER_TEXT_SIZES: readonly ReaderTextSize[] = [
@@ -31,13 +35,33 @@ export const READER_LINE_SPACINGS: readonly ReaderLineSpacing[] = [
   "relaxed",
 ]
 export const READER_TYPEFACES: readonly ReaderTypeface[] = ["sans", "serif"]
+export const READER_LAYOUTS: readonly ReaderLayout[] = ["paragraphs", "verses"]
 
 export const DEFAULT_READER_TEXT_SIZE: ReaderTextSize = "medium"
 export const DEFAULT_READER_LINE_SPACING: ReaderLineSpacing = "comfortable"
 export const DEFAULT_READER_TYPEFACE: ReaderTypeface = "serif"
+export const DEFAULT_READER_LAYOUT: ReaderLayout = "paragraphs"
 
 function isOneOf<T extends string>(value: unknown, values: readonly T[]): value is T {
   return typeof value === "string" && (values as readonly string[]).includes(value)
+}
+
+// Settings and the reader's text sheet change how Scripture looks while the
+// other screens stay mounted, so those screens subscribe instead of re-reading
+// on focus. The reader behind the sheet restyles as each option is tapped.
+const listeners = new Set<() => void>()
+
+/** Calls `listener` after any text or layout preference changes. */
+export function subscribeToReadingPreferences(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+function savePreference(key: string, value: unknown): void {
+  save(key, value)
+  listeners.forEach((listener) => listener())
 }
 
 export function getReaderLocation(): ReaderLocation | null {
@@ -75,7 +99,7 @@ export function getReaderTextSize(): ReaderTextSize {
 }
 
 export function setReaderTextSize(value: ReaderTextSize): void {
-  save(KEYS.textSize, value)
+  savePreference(KEYS.textSize, value)
 }
 
 export function getReaderLineSpacing(): ReaderLineSpacing {
@@ -84,7 +108,7 @@ export function getReaderLineSpacing(): ReaderLineSpacing {
 }
 
 export function setReaderLineSpacing(value: ReaderLineSpacing): void {
-  save(KEYS.lineSpacing, value)
+  savePreference(KEYS.lineSpacing, value)
 }
 
 export function getReaderTypeface(): ReaderTypeface {
@@ -93,7 +117,16 @@ export function getReaderTypeface(): ReaderTypeface {
 }
 
 export function setReaderTypeface(value: ReaderTypeface): void {
-  save(KEYS.typeface, value)
+  savePreference(KEYS.typeface, value)
+}
+
+export function getReaderLayout(): ReaderLayout {
+  const value = load<unknown>(KEYS.layout)
+  return isOneOf(value, READER_LAYOUTS) ? value : DEFAULT_READER_LAYOUT
+}
+
+export function setReaderLayout(value: ReaderLayout): void {
+  savePreference(KEYS.layout, value)
 }
 
 export function isWidgetGuideDismissed(): boolean {
@@ -102,4 +135,13 @@ export function isWidgetGuideDismissed(): boolean {
 
 export function dismissWidgetGuide(): void {
   save(KEYS.widgetGuideDismissed, true)
+}
+
+/** The reader explains verse selection until the reader has selected a verse once. */
+export function isSelectionHintDismissed(): boolean {
+  return load<boolean>(KEYS.selectionHintDismissed) === true
+}
+
+export function dismissSelectionHint(): void {
+  save(KEYS.selectionHintDismissed, true)
 }

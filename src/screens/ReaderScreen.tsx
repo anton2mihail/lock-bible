@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
+  AccessibilityInfo,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -12,22 +13,33 @@ import {
   ViewStyle,
 } from "react-native"
 import * as Clipboard from "expo-clipboard"
-import { useLocalSearchParams, useRouter } from "expo-router"
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router"
+import { Feather } from "@expo/vector-icons"
 import type { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller"
 
 import { Button } from "@/components/Button"
+import { ChapterGrid } from "@/components/ChapterGrid"
+import { ChapterText } from "@/components/ChapterText"
 import { Icon } from "@/components/Icon"
 import { ListItem } from "@/components/ListItem"
 import { Screen } from "@/components/Screen"
+import { SelectionToolbar } from "@/components/SelectionToolbar"
 import { Text } from "@/components/Text"
+import { TextSettingsSheet } from "@/components/TextSettingsSheet"
 import {
-  getActiveTranslationMeta,
+  dismissSelectionHint,
   getBook,
+  getReaderLayout,
   getReaderLocation,
+  getTranslation,
+  getTranslationId,
+  isSelectionHintDismissed,
   listBooks,
   setReaderLocation,
   type BookGroup,
   type BookMeta,
+  useReadingPreference,
+  type ReaderLayout,
   type ReaderLocation,
 } from "@/services/bible"
 import { useLibraryDatabase } from "@/services/database"
@@ -36,20 +48,25 @@ import {
   clearHighlight,
   createPassageSelection,
   getChapterHighlights,
+  isPassageBookmarked,
   passageReference,
   toggleBookmark,
   type HighlightColor,
-  type PassageSelection,
 } from "@/services/library"
+import { COLLECTIONS, getChapterCommentary, getCollection, plural, WORKS } from "@/services/works"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import { useReaderTypography } from "@/theme/useReaderTypography"
+import { useReaderTypography, useReadingColumn } from "@/theme/useReaderTypography"
+import { useScreenReaderEnabled } from "@/utils/useScreenReaderEnabled"
 
 const GROUP_LABELS: Record<BookGroup, string> = {
   ot: "Old Testament",
   deutero: "Deuterocanon",
   nt: "New Testament",
 }
+
+/** Most chapters have one to four homilies; a couple have twenty. */
+const COMMENTARY_PREVIEW = 3
 
 type Mode = "books" | "chapters" | "verses"
 
@@ -58,18 +75,11 @@ interface PassageTarget {
   chapter: number
 }
 
-const HIGHLIGHT_FILLS: Record<HighlightColor, { light: string; dark: string }> = {
-  gold: { light: "#F4D89A", dark: "rgba(244, 216, 154, 0.24)" },
-  sage: { light: "#C8D6C0", dark: "rgba(200, 214, 192, 0.24)" },
-  rose: { light: "#E6C5C8", dark: "rgba(230, 197, 200, 0.24)" },
-  blue: { light: "#C6D5E6", dark: "rgba(198, 213, 230, 0.24)" },
-}
-
 export const ReaderScreen: FC = function ReaderScreen() {
   const { themed, theme } = useAppTheme()
   const libraryDatabase = useLibraryDatabase()
   const router = useRouter()
-  const { fontScale, width } = useWindowDimensions()
+  const { fontScale, width, height } = useWindowDimensions()
   const stackChapterNavigation = width < 360 || fontScale > 1.25
   const params = useLocalSearchParams<{
     book?: string
@@ -78,13 +88,38 @@ export const ReaderScreen: FC = function ReaderScreen() {
     endVerse?: string
     contextRequest?: string
   }>()
-  const books = useMemo(() => listBooks(), [])
-  const meta = getActiveTranslationMeta()
+  // Settings can switch the translation while this tab stays mounted, so the
+  // tab re-reads it whenever it regains focus. Text and layout preferences
+  // update on their own, including from the Aa sheet over this screen.
+  const [translationId, setShownTranslationId] = useState(getTranslationId)
+  useFocusEffect(
+    useCallback(() => {
+      setShownTranslationId(getTranslationId())
+    }, []),
+  )
+  const layoutPreference = useReadingPreference(getReaderLayout)
+  const books = useMemo(() => listBooks(translationId), [translationId])
+  const meta = getTranslation(translationId).meta
+  // Running text can't give each verse its own element, so screen readers
+  // always get the chapter verse by verse.
+  const screenReaderEnabled = useScreenReaderEnabled()
+  const readerLayout: ReaderLayout = screenReaderEnabled ? "verses" : layoutPreference
+
+  // Opening the Read tab returns to the chapter the reader left, where they
+  // left it. A link that names a passage (widget, search, Read in context)
+  // takes precedence, and the book list stays one step back.
+  const [resume] = useState(() => {
+    if (params.book) return undefined
+    const location = getReaderLocation()
+    const savedBook = location && books.find((candidate) => candidate.code === location.book)
+    if (!location || !savedBook || location.chapter > savedBook.chapterCount) return undefined
+    return { book: savedBook, chapter: location.chapter, scrollY: location.scrollY }
+  })
 
   const initialBook = params.book
     ? books.find((candidate) => candidate.code === params.book)
-    : undefined
-  const initialChapter = params.chapter ? Number(params.chapter) : undefined
+    : resume?.book
+  const initialChapter = params.chapter ? Number(params.chapter) : resume?.chapter
 
   const [mode, setMode] = useState<Mode>(
     initialBook && initialChapter ? "verses" : initialBook ? "chapters" : "books",
@@ -96,19 +131,48 @@ export const ReaderScreen: FC = function ReaderScreen() {
   const [savedLocation, setSavedLocation] = useState<ReaderLocation | null>(getReaderLocation)
   const [selectionRange, setSelectionRange] = useState<[number, number] | null>(null)
   const [chapterHighlights, setChapterHighlights] = useState<Record<string, HighlightColor>>({})
-  const [showHighlightChoices, setShowHighlightChoices] = useState(false)
+  const [selectionBookmarked, setSelectionBookmarked] = useState(false)
   const [actionFeedback, setActionFeedback] = useState("")
+  const [showSelectionHint, setShowSelectionHint] = useState(() => !isSelectionHintDismissed())
+  const [textSettingsOpen, setTextSettingsOpen] = useState(false)
 
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null)
-  const pendingOffsetRef = useRef<number | null>(null)
+  const pendingOffsetRef = useRef<number | null>(resume?.scrollY ?? null)
   const verseBlockYRef = useRef<number | null>(null)
   const contextVerseYRef = useRef<number | null>(null)
   const contextScrollCompletedRef = useRef(false)
+  const chapterListRef = useRef<View>(null)
+  const currentChapterCellRef = useRef<View>(null)
+
+  // A translation switch reaches this tab through `books`: swap the open book
+  // for the new edition's entry, or step back when that edition lacks the book
+  // or chapter. The ref limits this to actual switches, not every navigation.
+  const booksShownRef = useRef(books)
+  useEffect(() => {
+    if (booksShownRef.current === books) return
+    booksShownRef.current = books
+    setSelectionRange(null)
+    setActionFeedback("")
+    const nextBook = book && books.find((candidate) => candidate.code === book.code)
+    if (!nextBook) {
+      setBook(undefined)
+      setChapter(undefined)
+      setMode("books")
+      return
+    }
+    setBook(nextBook)
+    if (chapter != null && chapter > nextBook.chapterCount) {
+      setChapter(undefined)
+      setMode("chapters")
+    }
+  }, [book, books, chapter])
 
   const selectedChapter = useMemo(() => {
     if (!book || chapter == null) return undefined
-    return getBook(book.code).chapters.find((candidate) => candidate.c === chapter)
-  }, [book, chapter])
+    // For one render after a switch, `book` can belong to the old edition.
+    if (!books.some((candidate) => candidate.code === book.code)) return undefined
+    return getBook(book.code, translationId).chapters.find((candidate) => candidate.c === chapter)
+  }, [book, books, chapter, translationId])
 
   const selectedPassage = useMemo(() => {
     if (!book || !selectedChapter || !selectionRange) return null
@@ -142,7 +206,40 @@ export const ReaderScreen: FC = function ReaderScreen() {
       .catch(() => setChapterHighlights({}))
   }, [book, chapter, libraryDatabase, meta.id])
 
+  // The toolbar shows whether the selected passage is already bookmarked, so
+  // tapping Bookmark again is a visible removal rather than a silent one.
+  useEffect(() => {
+    if (!selectedPassage) {
+      setSelectionBookmarked(false)
+      return
+    }
+    let active = true
+    isPassageBookmarked(libraryDatabase, selectedPassage)
+      .then((bookmarked) => {
+        if (active) setSelectionBookmarked(bookmarked)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [libraryDatabase, selectedPassage])
+
+  // The colour every selected verse shares, and whether any has one at all.
+  const selectionHighlight = useMemo(() => {
+    const colors = selectedPassage?.verses.map((verse) => chapterHighlights[verse.verse]) ?? []
+    const shared = colors[0] && colors.every((color) => color === colors[0]) ? colors[0] : undefined
+    return { color: shared, any: colors.some(Boolean) }
+  }, [chapterHighlights, selectedPassage])
+
+  // Toolbar results are shown for sight and spoken for VoiceOver, which does
+  // not read iOS live regions.
+  const announce = useCallback((message: string) => {
+    setActionFeedback(message)
+    AccessibilityInfo.announceForAccessibility(message)
+  }, [])
+
   const passageStyle = useReaderTypography()
+  const readingColumn = useReadingColumn(theme.spacing.lg)
 
   const rememberLocation = useCallback(
     (targetBook: BookMeta, targetChapter: number, scrollY: number) => {
@@ -174,8 +271,8 @@ export const ReaderScreen: FC = function ReaderScreen() {
       setContextVerse(options?.verse)
       setContextEndVerse(options?.endVerse)
       setSelectionRange(null)
-      setShowHighlightChoices(false)
       setActionFeedback("")
+      setShowSelectionHint(!isSelectionHintDismissed())
       setMode("verses")
       rememberLocation(targetBook, targetChapter, scrollY)
     },
@@ -183,10 +280,12 @@ export const ReaderScreen: FC = function ReaderScreen() {
   )
 
   // Tab screens remain mounted, so useState's initializer does not run again
-  // when a widget or “Read in context” selects the existing Read tab.
+  // when a widget or “Read in context” selects the existing Read tab. The book
+  // list is read here rather than depended on, so a translation switch does not
+  // replay the last request and jump back to its passage.
   useEffect(() => {
     if (!params.book) return
-    const requestedBook = books.find((candidate) => candidate.code === params.book)
+    const requestedBook = listBooks().find((candidate) => candidate.code === params.book)
     if (!requestedBook) return
 
     const requestedChapter = Number(params.chapter)
@@ -208,7 +307,6 @@ export const ReaderScreen: FC = function ReaderScreen() {
       setMode("chapters")
     }
   }, [
-    books,
     openPassage,
     params.book,
     params.chapter,
@@ -295,6 +393,19 @@ export const ReaderScreen: FC = function ReaderScreen() {
     })
   }, [])
 
+  // Stepping back from a chapter deep in a long book (the Psalms run to 150)
+  // opens the grid around it, a third of the way down, rather than at 1.
+  const revealCurrentChapter = useCallback(() => {
+    const cell = currentChapterCellRef.current
+    const list = chapterListRef.current
+    if (!cell || !list) return
+    cell.measureLayout(
+      list,
+      (_x, y) => scrollToOffset(y - height / 3, false),
+      () => {},
+    )
+  }, [height, scrollToOffset])
+
   const tryScrollToContext = useCallback(() => {
     if (
       !contextVerse ||
@@ -316,9 +427,9 @@ export const ReaderScreen: FC = function ReaderScreen() {
     [tryScrollToContext],
   )
 
-  const onContextVerseLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      contextVerseYRef.current = event.nativeEvent.layout.y
+  const onContextVerseY = useCallback(
+    (y: number) => {
+      contextVerseYRef.current = y
       tryScrollToContext()
     },
     [tryScrollToContext],
@@ -345,9 +456,42 @@ export const ReaderScreen: FC = function ReaderScreen() {
 
   const openSearch = useCallback(() => router.push("/search" as never), [router])
 
+  // The chapter title opens the book and chapter picker, marked where the reader is.
+  const openGoTo = useCallback(() => {
+    if (!book) return
+    router.push({
+      pathname: "/go-to",
+      params: chapter != null ? { book: book.code, chapter: String(chapter) } : { book: book.code },
+    })
+  }, [book, chapter, router])
+
+  // What the Fathers wrote on the chapter in front of the reader. Empty for the
+  // books none of them expounded, which is most of the Old Testament.
+  const commentary = useMemo(() => getChapterCommentary(book?.code, chapter), [book, chapter])
+
+  // One Father gets his name in the heading and nowhere else; several share a
+  // collective heading and are told apart on each row instead.
+  const { commentaryHeading, nameAuthorPerRow } = useMemo(() => {
+    const authors = new Set(commentary.map((entry) => entry.collectionId))
+    const only = authors.size === 1 ? getCollection(commentary[0]?.collectionId) : undefined
+    return {
+      commentaryHeading: only ? `${only.author} on this chapter` : "The Fathers on this chapter",
+      nameAuthorPerRow: authors.size > 1,
+    }
+  }, [commentary])
+
+  const openCommentary = useCallback(
+    (workId: string, sectionIndex: number) =>
+      router.push({
+        pathname: "/works/[id]",
+        params: { id: workId, section: String(sectionIndex) },
+      }),
+    [router],
+  )
+
   const selectVerse = useCallback((verseIndex: number) => {
+    if (!isSelectionHintDismissed()) dismissSelectionHint()
     setActionFeedback("")
-    setShowHighlightChoices(false)
     setSelectionRange((current) => {
       if (!current) return [verseIndex, verseIndex]
       if (current[0] === verseIndex && current[1] === verseIndex) return null
@@ -367,11 +511,11 @@ export const ReaderScreen: FC = function ReaderScreen() {
       await Clipboard.setStringAsync(
         `${selectedPassage.scriptureText}\n${reference} (${meta.abbreviation})`,
       )
-      setActionFeedback("Passage copied")
+      announce("Passage copied")
     } catch {
-      setActionFeedback("Passage could not be copied")
+      announce("Passage could not be copied")
     }
-  }, [meta.abbreviation, selectedPassage])
+  }, [announce, meta.abbreviation, selectedPassage])
 
   const shareSelection = useCallback(async () => {
     if (!selectedPassage) return
@@ -386,19 +530,20 @@ export const ReaderScreen: FC = function ReaderScreen() {
         message: `${selectedPassage.scriptureText}\n${reference} (${meta.abbreviation})`,
       })
     } catch {
-      setActionFeedback("Share sheet could not be opened")
+      announce("Share sheet could not be opened")
     }
-  }, [meta.abbreviation, selectedPassage])
+  }, [announce, meta.abbreviation, selectedPassage])
 
   const bookmarkSelection = useCallback(async () => {
     if (!selectedPassage) return
     try {
       const saved = await toggleBookmark(libraryDatabase, selectedPassage)
-      setActionFeedback(saved ? "Bookmark saved" : "Bookmark removed")
+      setSelectionBookmarked(saved)
+      announce(saved ? "Bookmark saved" : "Bookmark removed")
     } catch {
-      setActionFeedback("Bookmark could not be updated")
+      announce("Bookmark could not be updated")
     }
-  }, [libraryDatabase, selectedPassage])
+  }, [announce, libraryDatabase, selectedPassage])
 
   const highlightSelection = useCallback(
     async (color: HighlightColor) => {
@@ -409,13 +554,12 @@ export const ReaderScreen: FC = function ReaderScreen() {
           ...current,
           ...Object.fromEntries(selectedPassage.verses.map((verse) => [verse.verse, color])),
         }))
-        setShowHighlightChoices(false)
-        setActionFeedback(`${color[0].toUpperCase() + color.slice(1)} highlight applied`)
+        announce(`${color[0].toUpperCase() + color.slice(1)} highlight applied`)
       } catch {
-        setActionFeedback("Highlight could not be updated")
+        announce("Highlight could not be updated")
       }
     },
-    [libraryDatabase, selectedPassage],
+    [announce, libraryDatabase, selectedPassage],
   )
 
   const removeSelectionHighlight = useCallback(async () => {
@@ -427,12 +571,11 @@ export const ReaderScreen: FC = function ReaderScreen() {
         selectedPassage.verses.forEach((verse) => delete next[verse.verse])
         return next
       })
-      setShowHighlightChoices(false)
-      setActionFeedback("Highlight removed")
+      announce("Highlight removed")
     } catch {
-      setActionFeedback("Highlight could not be updated")
+      announce("Highlight could not be updated")
     }
-  }, [libraryDatabase, selectedPassage])
+  }, [announce, libraryDatabase, selectedPassage])
 
   const openNote = useCallback(() => {
     if (!selectedPassage) return
@@ -475,6 +618,23 @@ export const ReaderScreen: FC = function ReaderScreen() {
             </View>
           </View>
         )}
+        <View style={themed($continueSection)}>
+          <Text text="The Church Fathers" preset="formLabel" style={themed($sectionHeader)} />
+          <View style={themed($continueSurface)}>
+            <ListItem
+              text={
+                COLLECTIONS.length === 1
+                  ? `${COLLECTIONS[0].author} · ${WORKS.length} works`
+                  : `${COLLECTIONS.length} authors · ${WORKS.length} works`
+              }
+              rightIcon="caretRight"
+              onPress={() => router.push("/works")}
+              testID="read-church-fathers"
+              accessibilityRole="button"
+              accessibilityLabel={`The Fathers and Doctors. ${WORKS.length} works, available offline.`}
+            />
+          </View>
+        </View>
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.code}
@@ -489,7 +649,7 @@ export const ReaderScreen: FC = function ReaderScreen() {
               rightIcon="caretRight"
               onPress={() => openBook(item)}
               accessibilityRole="button"
-              accessibilityLabel={`${item.name}, ${item.chapterCount} chapters`}
+              accessibilityLabel={`${item.name}, ${plural(item.chapterCount, "chapter")}`}
               bottomSeparator
             />
           )}
@@ -499,33 +659,32 @@ export const ReaderScreen: FC = function ReaderScreen() {
   }
 
   if (mode === "chapters" && book) {
-    const chapters = Array.from({ length: book.chapterCount }, (_, index) => index + 1)
     return (
-      <Screen preset="scroll" safeAreaEdges={["top"]} contentContainerStyle={themed($padded)}>
-        <ReaderHeader
-          title={book.name}
-          backLabel="Back to books"
-          onBack={goBack}
-          onSearch={openSearch}
-          themed={themed}
-          tint={theme.colors.text}
-        />
-        <View style={themed($grid)}>
-          {chapters.map((chapterNumber) => (
-            <TouchableOpacity
-              key={chapterNumber}
-              style={themed($chip)}
-              onPress={() => openChapter(chapterNumber)}
-              accessibilityRole="button"
-              accessibilityLabel={`${book.name} chapter ${chapterNumber}`}
-            >
-              <Text
-                text={String(chapterNumber)}
-                style={themed($chipText)}
-                maxFontSizeMultiplier={1.6}
-              />
-            </TouchableOpacity>
-          ))}
+      <Screen
+        preset="scroll"
+        safeAreaEdges={["top"]}
+        contentContainerStyle={[themed($padded), readingColumn]}
+        scrollViewRef={scrollViewRef}
+      >
+        <View ref={chapterListRef}>
+          <ReaderHeader
+            title={book.name}
+            backLabel="Back to books"
+            onBack={goBack}
+            onTitlePress={openGoTo}
+            onSearch={openSearch}
+            themed={themed}
+            tint={theme.colors.text}
+            accent={theme.colors.tint}
+          />
+          <ChapterGrid
+            bookName={book.name}
+            chapterCount={book.chapterCount}
+            currentChapter={chapter}
+            onSelect={openChapter}
+            currentChapterRef={currentChapterCellRef}
+            onCurrentChapterLayout={revealCurrentChapter}
+          />
         </View>
       </Screen>
     )
@@ -537,7 +696,10 @@ export const ReaderScreen: FC = function ReaderScreen() {
         <Screen
           preset="scroll"
           safeAreaEdges={["top"]}
-          contentContainerStyle={themed([$padded, selectionRange && $paddedWithToolbar])}
+          contentContainerStyle={[
+            themed([$padded, selectionRange && $paddedWithToolbar]),
+            readingColumn,
+          ]}
           scrollViewRef={scrollViewRef}
           ScrollViewProps={{
             onContentSizeChange,
@@ -549,68 +711,74 @@ export const ReaderScreen: FC = function ReaderScreen() {
             title={`${book.name} ${chapter}`}
             backLabel={`Back to ${book.name} chapters`}
             onBack={goBack}
+            onTitlePress={openGoTo}
+            onTextSettings={() => setTextSettingsOpen(true)}
             onSearch={openSearch}
             themed={themed}
             tint={theme.colors.text}
+            accent={theme.colors.tint}
           />
-          <Text
-            text="Tap a verse to select it. Tap another verse to select a range."
-            size="xxs"
-            style={themed($selectionHint)}
-          />
+          {showSelectionHint && (
+            <Text
+              text="Tap a verse to select it. Tap another verse to select a range."
+              size="xxs"
+              style={themed($selectionHint)}
+            />
+          )}
           <View
             testID="reader-verse-block"
-            style={themed($verseBlock)}
+            style={themed([$verseBlock, readerLayout === "paragraphs" && $verseBlockFlowing])}
             onLayout={onVerseBlockLayout}
           >
-            {selectedChapter?.verses.map((verse, verseIndex) => {
-              const isContextVerse = verse.n === contextVerse
-              const isInContextRange =
-                !!contextRange && verseIndex >= contextRange[0] && verseIndex <= contextRange[1]
-              const isSelected =
-                !!selectionRange &&
-                verseIndex >= selectionRange[0] &&
-                verseIndex <= selectionRange[1]
-              const highlightColor = chapterHighlights[verse.n]
-              const backgroundColor = isSelected
-                ? theme.isDark
-                  ? HIGHLIGHT_FILLS.gold.dark
-                  : HIGHLIGHT_FILLS.gold.light
-                : highlightColor
-                  ? theme.isDark
-                    ? HIGHLIGHT_FILLS[highlightColor].dark
-                    : HIGHLIGHT_FILLS[highlightColor].light
-                  : undefined
-              return (
-                <TouchableOpacity
-                  key={verse.n}
-                  testID={isContextVerse ? "reader-context-verse" : `reader-verse-${verse.n}`}
-                  onLayout={isContextVerse ? onContextVerseLayout : undefined}
-                  onPress={() => selectVerse(verseIndex)}
-                  activeOpacity={0.7}
-                  style={[
-                    themed($verseTouchable),
-                    !!backgroundColor && { backgroundColor },
-                    isInContextRange && !backgroundColor && themed($contextVerse),
-                    isSelected && themed($selectedVerse),
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: isSelected }}
-                  accessibilityLabel={`Verse ${verse.n}. ${verse.t}`}
-                  accessibilityHint={
-                    selectionRange
-                      ? "Extends the selected passage to this verse"
-                      : "Selects this verse"
-                  }
-                >
-                  <Text style={[themed($passage), passageStyle]}>
-                    <Text text={`${verse.n} `} size="xs" style={themed($verseNum)} />
-                    {verse.t}
-                  </Text>
-                </TouchableOpacity>
-              )
-            })}
+            {selectedChapter && (
+              <ChapterText
+                chapter={selectedChapter}
+                layout={readerLayout}
+                passageStyle={passageStyle}
+                selectionRange={selectionRange}
+                contextRange={contextRange}
+                contextVerse={contextVerse}
+                highlights={chapterHighlights}
+                onSelectVerse={selectVerse}
+                onContextVerseY={onContextVerseY}
+              />
+            )}
           </View>
+
+          {commentary.length > 0 && (
+            <View style={themed($continueSection)}>
+              <Text text={commentaryHeading} preset="formLabel" style={themed($sectionHeader)} />
+              <View style={themed($continueSurface)}>
+                {commentary.slice(0, COMMENTARY_PREVIEW).map((homily) => (
+                  <ListItem
+                    key={`${homily.workId}-${homily.sectionIndex}`}
+                    text={
+                      nameAuthorPerRow
+                        ? `${homily.sectionTitle} · ${getCollection(homily.collectionId)?.author ?? ""}`
+                        : homily.sectionTitle
+                    }
+                    rightIcon="caretRight"
+                    onPress={() => openCommentary(homily.workId, homily.sectionIndex)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${homily.sectionTitle}, ${homily.workTitle}`}
+                  />
+                ))}
+                {commentary.length > COMMENTARY_PREVIEW && (
+                  <ListItem
+                    text={`All ${commentary.length} readings on this chapter`}
+                    rightIcon="caretRight"
+                    onPress={() =>
+                      router.push({
+                        pathname: "/commentary/[book]/[chapter]",
+                        params: { book: book?.code ?? "", chapter: String(chapter ?? 1) },
+                      })
+                    }
+                    accessibilityRole="button"
+                  />
+                )}
+              </View>
+            </View>
+          )}
 
           <View
             style={themed([
@@ -622,7 +790,6 @@ export const ReaderScreen: FC = function ReaderScreen() {
               {previousPassage && (
                 <Button
                   text={`Previous\n${previousPassage.book.name} ${previousPassage.chapter}`}
-                  preset="reversed"
                   onPress={() => openPassage(previousPassage.book, previousPassage.chapter)}
                   accessibilityLabel={`Previous chapter, ${previousPassage.book.name} chapter ${previousPassage.chapter}`}
                 />
@@ -632,6 +799,7 @@ export const ReaderScreen: FC = function ReaderScreen() {
               {nextPassage && (
                 <Button
                   text={`Next\n${nextPassage.book.name} ${nextPassage.chapter}`}
+                  preset="reversed"
                   onPress={() => openPassage(nextPassage.book, nextPassage.chapter)}
                   accessibilityLabel={`Next chapter, ${nextPassage.book.name} chapter ${nextPassage.chapter}`}
                 />
@@ -645,17 +813,17 @@ export const ReaderScreen: FC = function ReaderScreen() {
         {selectedPassage && (
           <SelectionToolbar
             passage={selectedPassage}
-            showHighlightChoices={showHighlightChoices}
+            highlightColor={selectionHighlight.color}
+            highlighted={selectionHighlight.any}
+            bookmarked={selectionBookmarked}
             feedback={actionFeedback}
             onClose={() => {
               setSelectionRange(null)
-              setShowHighlightChoices(false)
               setActionFeedback("")
             }}
             onCopy={copySelection}
             onShare={shareSelection}
             onBookmark={bookmarkSelection}
-            onShowHighlights={() => setShowHighlightChoices((current) => !current)}
             onHighlight={highlightSelection}
             onClearHighlight={removeSelectionHighlight}
             onNote={openNote}
@@ -685,6 +853,8 @@ export const ReaderScreen: FC = function ReaderScreen() {
             }
           />
         )}
+
+        <TextSettingsSheet visible={textSettingsOpen} onClose={() => setTextSettingsOpen(false)} />
       </View>
     )
   }
@@ -696,150 +866,92 @@ interface ReaderHeaderProps {
   title: string
   backLabel: string
   onBack: () => void
+  /** The title opens the book and chapter picker. */
+  onTitlePress: () => void
+  /** Adds the Aa button, for text size, spacing and typeface. */
+  onTextSettings?: () => void
   onSearch?: () => void
   themed: ReturnType<typeof useAppTheme>["themed"]
   tint: string
+  accent: string
 }
 
-function ReaderHeader({ title, backLabel, onBack, onSearch, themed, tint }: ReaderHeaderProps) {
+function ReaderHeader({
+  title,
+  backLabel,
+  onBack,
+  onTitlePress,
+  onTextSettings,
+  onSearch,
+  themed,
+  tint,
+  accent,
+}: ReaderHeaderProps) {
   return (
     <View style={themed($readerHeader)}>
-      <TouchableOpacity
-        onPress={onBack}
-        style={themed($backButton)}
-        accessibilityRole="button"
-        accessibilityLabel={backLabel}
-        hitSlop={8}
-      >
-        <Icon icon="caretLeft" size={24} color={tint} />
-      </TouchableOpacity>
-      <Text text={title} preset="heading" style={themed($headerTitle)} accessibilityRole="header" />
-      {onSearch && (
+      <View style={themed($readerToolbar)}>
         <TouchableOpacity
-          onPress={onSearch}
-          style={themed($headerSearchButton)}
+          onPress={onBack}
+          style={themed($backButton)}
           accessibilityRole="button"
-          accessibilityLabel="Search Scripture"
+          accessibilityLabel={backLabel}
+          hitSlop={8}
         >
-          <Text text="Search" size="xs" weight="medium" style={themed($searchButtonText)} />
+          <Icon icon="caretLeft" size={24} color={tint} />
         </TouchableOpacity>
-      )}
-    </View>
-  )
-}
-
-interface SelectionToolbarProps {
-  passage: PassageSelection
-  showHighlightChoices: boolean
-  feedback: string
-  onClose: () => void
-  onCopy: () => void | Promise<void>
-  onShare: () => void | Promise<void>
-  onBookmark: () => void | Promise<void>
-  onShowHighlights: () => void
-  onHighlight: (color: HighlightColor) => void | Promise<void>
-  onClearHighlight: () => void | Promise<void>
-  onNote: () => void
-  onPray: () => void
-  onCard: () => void
-}
-
-function SelectionToolbar({
-  passage,
-  showHighlightChoices,
-  feedback,
-  onClose,
-  onCopy,
-  onShare,
-  onBookmark,
-  onShowHighlights,
-  onHighlight,
-  onClearHighlight,
-  onNote,
-  onPray,
-  onCard,
-}: SelectionToolbarProps) {
-  const { themed, theme } = useAppTheme()
-  const reference = passageReference(
-    passage.bookName,
-    passage.chapter,
-    passage.startVerse,
-    passage.endVerse,
-  )
-  const actions = [
-    { label: "Copy", onPress: onCopy },
-    { label: "Share", onPress: onShare },
-    { label: "Bookmark", onPress: onBookmark },
-    { label: "Highlight", onPress: onShowHighlights },
-    { label: "Note", onPress: onNote },
-    { label: "Pray", onPress: onPray },
-    { label: "Create card", onPress: onCard },
-  ]
-
-  return (
-    <View style={themed($selectionToolbar)} accessibilityRole="toolbar">
-      <View style={themed($selectionSummary)}>
-        <Text text={reference} size="xs" weight="semiBold" />
-        <TouchableOpacity
-          onPress={onClose}
-          style={themed($closeSelection)}
-          accessibilityRole="button"
-          accessibilityLabel="Clear passage selection"
-        >
-          <Icon icon="x" size={18} color={theme.colors.text} />
-        </TouchableOpacity>
-      </View>
-      {showHighlightChoices && (
-        <View style={themed($highlightChoices)} accessibilityRole="radiogroup">
-          {(Object.keys(HIGHLIGHT_FILLS) as HighlightColor[]).map((color) => (
+        <View style={themed($readerActions)}>
+          {onTextSettings && (
             <TouchableOpacity
-              key={color}
-              onPress={() => onHighlight(color)}
-              style={[
-                themed($highlightChoice),
-                {
-                  backgroundColor: theme.isDark
-                    ? HIGHLIGHT_FILLS[color].dark
-                    : HIGHLIGHT_FILLS[color].light,
-                },
-              ]}
+              onPress={onTextSettings}
+              style={themed($headerIconButton)}
               accessibilityRole="button"
-              accessibilityLabel={`Apply ${color} highlight`}
+              accessibilityLabel="Text settings"
+              testID="reader-text-settings"
             >
-              <Text text={color[0].toUpperCase() + color.slice(1)} size="xxs" weight="medium" />
+              <Text
+                text="Aa"
+                size="md"
+                weight="semiBold"
+                maxFontSizeMultiplier={1.4}
+                style={themed($searchButtonText)}
+              />
             </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            onPress={onClearHighlight}
-            style={themed($highlightChoice)}
-            accessibilityRole="button"
-            accessibilityLabel="Remove highlight"
-          >
-            <Text text="None" size="xxs" weight="medium" />
-          </TouchableOpacity>
+          )}
+          {onSearch && (
+            <TouchableOpacity
+              onPress={onSearch}
+              style={themed($headerIconButton)}
+              accessibilityRole="button"
+              accessibilityLabel="Search Scripture"
+            >
+              <Feather name="search" size={22} color={accent} />
+            </TouchableOpacity>
+          )}
         </View>
-      )}
-      <View style={themed($selectionActions)}>
-        {actions.map((action) => (
-          <TouchableOpacity
-            key={action.label}
-            onPress={action.onPress}
-            style={themed($selectionAction)}
-            accessibilityRole="button"
-            accessibilityLabel={`${action.label} ${reference}`}
-          >
-            <Text text={action.label} size="xxs" weight="medium" style={themed($actionLabel)} />
-          </TouchableOpacity>
-        ))}
       </View>
-      {!!feedback && (
+      {/* The title has a line to itself, so even "1 Thessalonians 5" fits. It
+          grows only so far with the system text size, like iOS's large titles:
+          iOS lays a shrunk-to-fit title out at its unshrunk height, so a much
+          larger one would open a gap above the text. */}
+      <TouchableOpacity
+        onPress={onTitlePress}
+        style={themed($titleButton)}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityHint="Choose another book or chapter"
+        testID="reader-title"
+      >
         <Text
-          text={feedback}
-          size="xxs"
-          style={themed($actionFeedback)}
-          accessibilityLiveRegion="polite"
+          text={title}
+          preset="heading"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.6}
+          maxFontSizeMultiplier={1.4}
+          style={themed($titleButtonText)}
         />
-      )}
+        <Feather name="chevron-down" size={22} color={tint} />
+      </TouchableOpacity>
     </View>
   )
 }
@@ -902,10 +1014,22 @@ const $paddedWithToolbar: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $readerHeader: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  paddingTop: spacing.xs,
+  paddingBottom: spacing.xxs,
+})
+
+const $readerToolbar: ThemedStyle<ViewStyle> = () => ({
+  minHeight: 44,
   flexDirection: "row",
   alignItems: "center",
-  paddingVertical: spacing.sm,
-  gap: spacing.xs,
+  justifyContent: "space-between",
+})
+
+const $readerActions: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flexDirection: "row",
+  alignItems: "center",
+  // Brings the last icon, not its touch target, to the text's right edge.
+  marginRight: -spacing.xs,
 })
 
 const $backButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
@@ -916,138 +1040,37 @@ const $backButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingRight: spacing.xs,
 })
 
-const $headerTitle: ThemedStyle<TextStyle> = () => ({ flex: 1 })
-
-const $headerSearchButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  minWidth: 60,
+const $titleButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  alignSelf: "flex-start",
+  maxWidth: "100%",
   minHeight: 44,
-  justifyContent: "center",
-  alignItems: "flex-end",
-  paddingLeft: spacing.xs,
-})
-
-const $grid: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
-  flexWrap: "wrap",
-  gap: spacing.sm,
-  marginTop: spacing.sm,
+  alignItems: "center",
+  gap: spacing.xxs,
 })
 
-const $chip: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  width: 52,
-  minHeight: 52,
-  borderRadius: 12,
-  backgroundColor: colors.palette.neutral100,
+const $titleButtonText: ThemedStyle<TextStyle> = () => ({ flexShrink: 1 })
+
+const $headerIconButton: ThemedStyle<ViewStyle> = () => ({
+  minWidth: 44,
+  minHeight: 44,
   alignItems: "center",
   justifyContent: "center",
-  borderWidth: 1,
-  borderColor: colors.border,
-  paddingHorizontal: spacing.xxxs,
 })
-
-const $chipText: ThemedStyle<TextStyle> = ({ colors }) => ({ color: colors.text })
 
 const $verseBlock: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.sm,
   gap: spacing.xs,
 })
 
+// Paragraphs and poetry lines carry their own spacing.
+const $verseBlockFlowing: ThemedStyle<ViewStyle> = () => ({
+  gap: 0,
+})
+
 const $selectionHint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
   marginBottom: spacing.xs,
-})
-
-const $verseTouchable: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  minHeight: 44,
-  justifyContent: "center",
-  borderRadius: 8,
-  paddingHorizontal: spacing.xs,
-  paddingVertical: spacing.xxs,
-})
-
-const $selectedVerse: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderWidth: 1,
-  borderColor: colors.tint,
-})
-
-const $passage: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.text,
-})
-
-const $verseNum: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  color: colors.tint,
-  fontFamily: typography.primary.medium,
-})
-
-const $contextVerse: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  backgroundColor: colors.palette.primary100,
-  borderRadius: 8,
-  paddingHorizontal: spacing.xs,
-  paddingVertical: spacing.xxs,
-})
-
-const $selectionToolbar: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  backgroundColor: colors.palette.neutral100,
-  borderTopWidth: 1,
-  borderTopColor: colors.border,
-  paddingHorizontal: spacing.sm,
-  paddingTop: spacing.xs,
-  paddingBottom: spacing.xs,
-  gap: spacing.xxs,
-})
-
-const $selectionSummary: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  minHeight: 32,
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",
-  paddingLeft: spacing.xs,
-})
-
-const $closeSelection: ThemedStyle<ViewStyle> = () => ({
-  width: 44,
-  height: 44,
-  alignItems: "center",
-  justifyContent: "center",
-})
-
-const $selectionActions: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexDirection: "row",
-  gap: spacing.xxxs,
-})
-
-const $selectionAction: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flex: 1,
-  minHeight: 44,
-  alignItems: "center",
-  justifyContent: "center",
-  paddingHorizontal: spacing.xxxs,
-})
-
-const $actionLabel: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.text,
-  textAlign: "center",
-})
-
-const $highlightChoices: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexDirection: "row",
-  gap: spacing.xs,
-})
-
-const $highlightChoice: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  flex: 1,
-  minHeight: 44,
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: colors.border,
-  paddingHorizontal: spacing.xxxs,
-})
-
-const $actionFeedback: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.tint,
-  textAlign: "center",
 })
 
 const $chapterNavigation: ThemedStyle<ViewStyle> = ({ spacing }) => ({

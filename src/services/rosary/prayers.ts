@@ -1,4 +1,11 @@
-import type { RosaryGuideStep, RosaryMysterySet, RosaryPrayer, RosaryPrayerId } from "./types"
+import type {
+  RosaryGuideStep,
+  RosaryMysterySet,
+  RosaryPrayer,
+  RosaryPrayerId,
+  RosarySession,
+  SevenSorrowsDevotion,
+} from "./types"
 
 export const ROSARY_PRAYERS: Readonly<Record<RosaryPrayerId, RosaryPrayer>> = {
   "sign-of-the-cross": {
@@ -40,6 +47,21 @@ export const ROSARY_PRAYERS: Readonly<Record<RosaryPrayerId, RosaryPrayer>> = {
     id: "closing-prayer",
     title: "Closing Prayer",
     text: "O God, whose only-begotten Son, by his life, death and resurrection, has purchased for us the rewards of eternal life, grant, we beseech thee, that meditating upon these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.",
+  },
+  "sorrows-opening": {
+    id: "sorrows-opening",
+    title: "Offering of the Rosary",
+    text: "My God, I offer thee this Rosary in honour of the seven principal sorrows of Mary, for thy greatest glory, for my conversion and that of all people, through thy beloved Son Jesus Christ, our salvation and our one way to come to thee, in union with the Holy Ghost, for ever and ever. Amen.",
+  },
+  "sorrows-versicle": {
+    id: "sorrows-versicle",
+    title: "Pray for Us",
+    text: "Pray for us, Virgin most sorrowful, that we may be made worthy of the promises of Christ.",
+  },
+  "sorrows-closing-prayer": {
+    id: "sorrows-closing-prayer",
+    title: "Closing Prayer",
+    text: "Let intercession be made for us, we beseech thee, O Lord Jesus Christ, now and at the hour of our death, before the throne of thy mercy, by the Blessed Virgin Mary, thy Mother, whose most holy soul was pierced by a sword of sorrow in the hour of thy bitter Passion; through thee, Jesus Christ, Saviour of the world, who with the Father and the Holy Spirit livest and reignest, world without end. Amen.",
   },
 }
 
@@ -95,4 +117,65 @@ export function buildRosaryGuide(set: RosaryMysterySet): readonly RosaryGuideSte
     prayerStep("closing-prayer", "Conclusion", "closing-prayer"),
     prayerStep("closing-sign-of-the-cross", "Conclusion", "sign-of-the-cross"),
   ]
+}
+
+/**
+ * The Servite Rosary: seven groups of one Our Father and seven Hail Marys, then
+ * three Hail Marys honouring the tears of the Sorrowful Mother.
+ */
+export function buildSevenSorrowsGuide(devotion: SevenSorrowsDevotion): readonly RosaryGuideStep[] {
+  const opening: RosaryGuideStep[] = [
+    prayerStep("sign-of-the-cross", "Opening", "sign-of-the-cross"),
+    prayerStep("sorrows-opening", "Opening", "sorrows-opening"),
+  ]
+
+  const groups = devotion.sorrows.flatMap<RosaryGuideStep>((sorrow, index) => {
+    const number = index + 1
+    const eyebrow = `Sorrow ${number} of 7`
+    return [
+      {
+        id: `sorrow-${number}`,
+        eyebrow,
+        title: sorrow.title,
+        instruction: `${sorrow.scriptureReference} · Grace of this sorrow: ${sorrow.grace}`,
+        meditation: sorrow.invocation,
+        repetitions: 1,
+        mysteryIndex: index,
+      },
+      prayerStep(`sorrow-our-father-${number}`, eyebrow, "our-father", 1, index),
+      prayerStep(`sorrow-hail-marys-${number}`, eyebrow, "hail-mary", 7, index),
+    ]
+  })
+
+  return [
+    ...opening,
+    ...groups,
+    prayerStep("tears-hail-marys", "For the tears of our Sorrowful Mother", "hail-mary", 3),
+    prayerStep("sorrows-versicle", "Conclusion", "sorrows-versicle"),
+    prayerStep("sorrows-closing-prayer", "Conclusion", "sorrows-closing-prayer"),
+    prayerStep("closing-sign-of-the-cross", "Conclusion", "sign-of-the-cross"),
+  ]
+}
+
+/** Flattens either devotion into the shape the guide screen prays. */
+export function buildRosarySession(
+  devotion: RosaryMysterySet | SevenSorrowsDevotion,
+): RosarySession {
+  if (devotion.id === "seven-sorrows") {
+    return {
+      id: devotion.id,
+      title: devotion.title,
+      shortTitle: devotion.shortTitle,
+      groupLabels: devotion.sorrows.map((sorrow) => sorrow.title),
+      steps: buildSevenSorrowsGuide(devotion),
+    }
+  }
+
+  return {
+    id: devotion.id,
+    title: devotion.title,
+    shortTitle: devotion.shortTitle,
+    groupLabels: devotion.mysteries.map((mystery) => mystery.title),
+    steps: buildRosaryGuide(devotion),
+  }
 }

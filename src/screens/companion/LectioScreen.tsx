@@ -80,7 +80,7 @@ export function LectioScreen() {
     return (
       <Page title="Pray with Scripture">
         <Muted text="Choose a passage in the Bible reader, then select Pray." />
-        <Button text="Open the Bible" onPress={() => router.push("/read")} />
+        <Button text="Open the Bible" onPress={() => router.dismissTo("/read")} />
       </Page>
     )
   const step = STEPS[index]

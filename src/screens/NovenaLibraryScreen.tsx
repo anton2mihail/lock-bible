@@ -6,7 +6,7 @@ import { ActionRow, art, ArtCard } from "@/components/companion/Companion"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
-import { novenaArt } from "@/services/companion/artwork"
+import { novenaArt, rosaryCover } from "@/services/companion/artwork"
 import {
   loadNovenaProgress,
   NOVENA_DAY_COUNT,
@@ -15,7 +15,11 @@ import {
   type Novena,
   type NovenaProgress,
 } from "@/services/novena"
-import { getRosaryReminderSummary, getSuggestedRosaryMysterySet } from "@/services/rosary"
+import {
+  getRosaryReminderSummary,
+  getSuggestedRosaryMysterySet,
+  SEVEN_SORROWS,
+} from "@/services/rosary"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
@@ -74,6 +78,14 @@ export const NovenaLibraryScreen: FC = function NovenaLibraryScreen() {
         onPress={() => router.push("/pray/rosary")}
       />
       <View>
+        <ActionRow
+          title="Our Lady of Sorrows"
+          subtitle="The Servite Rosary of the Seven Sorrows"
+          image={rosaryCover["seven-sorrows"]}
+          onPress={() =>
+            router.push({ pathname: "/pray/rosary-guide", params: { set: SEVEN_SORROWS.id } })
+          }
+        />
         <ActionRow
           title="Everyday prayers"
           subtitle="Morning offerings, the Angelus, and words for difficult days"
