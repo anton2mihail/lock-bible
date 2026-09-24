@@ -1,6 +1,8 @@
 # 1.5.0 — The reader
 
-**Status: building. Build 18.**
+**Status: submitted to App Review 24 September 2026, 7:38 AM. Build 18.
+Waiting for Review, set to release automatically on approval, to all users at
+once.**
 
 The first release from the September UI/UX review, which ran the app and read
 every screen's code. 1.4.0 shipped on 22 September; everything below is new
@@ -9,7 +11,7 @@ since then.
 ## What's New (App Store text)
 
 > Scripture now reads like a book. Paragraphs flow, psalms and poetry are set
-> in lines, and psalm titles are back. Prefer one verse per line? It's a tap
+> in lines, and psalm titles are back. Prefer one verse per line? It’s a tap
 > away.
 >
 > • The new Aa button changes text size, line spacing, typeface and layout
@@ -25,6 +27,13 @@ since then.
 > contrast in dark mode, and layouts that hold up at the largest text sizes.
 > • Closing Search returns you to your chapter, and switching translation
 > updates the open chapter.
+
+## Reviewer notes
+
+Rewritten for this version. The 1.4.0 notes carried over and described the
+Fathers library as what was new. The new notes keep the text and image rights
+and the technical notes, and walk the reviewer through paragraphs, the Aa
+sheet, Go to, the verse toolbar and the accessibility changes.
 
 ## What shipped
 
@@ -90,3 +99,23 @@ since then.
 - Store screenshots are still from 1.2.2 and show the old reader header.
 - At AX5, Search's "Old Testament" and "New Testament" buttons break mid-word,
   and the mystery names under the Rosary beads truncate.
+
+## Build and submission notes
+
+- **The first build failed because the disk filled up.** The other project's
+  EAS build ran at the same time, and the Xcode log reads like a dependency
+  scan error in `react-native-keyboard-controller`, but the cause is `No space
+  left on device` further up. A retry with nothing else building, with 12 GB
+  free, succeeded.
+- EAS local builds pass `-derivedDataPath ./build` inside their own temporary
+  folder, so two EAS builds don't share a module cache. The 1.4.0 warning about
+  concurrent builds still holds for builds against the default DerivedData.
+  Disk space is the constraint either way.
+- Two partial build folders from 21 September, about 6 GB, remain under
+  `$TMPDIR/eas-build-local-nodejs/` and can be deleted.
+- The App Store Connect session expired between saving the metadata and
+  attaching the build. The metadata had already saved; signing in again was
+  enough.
+- This time the submit went straight through, with no dialog listing pending
+  changes to shared app information: the name mismatch shipped with 1.4.0.
+
