@@ -1,0 +1,80 @@
+# Native rebuild work ledger
+
+Updated: 5 October 2026
+Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
+Branch: `codex/swiftui-ios26-rebuild`
+
+| Ticket | Owner | Depends on | Status | Implementation SHA | Sol verdict | Evidence / note |
+| --- | --- | --- | --- | --- | --- | --- |
+| L00 | Main and Source Luna | None | Source inventory accepted; full route capture open | `7aaede8`, `07287f9` | Staged acceptance | L00 inventory and core simulator baseline |
+| S00 | GPT-6.1 Sol | L00 | Accepted for staged baseline | `587be12` | Accepted | Full route and device evidence remains tracked |
+| L01 | Main and Source Luna | S00 | Minimum renderer and same-ID read accepted | Prototype commit pending | Accepted for S01 | Full importer proof remains L04 |
+| S01 | GPT-6.1 Sol | L01 | Contracts accepted | `587be12` | Accepted | ADRs 0001–0006 and Core contracts |
+| L02 | Main Luna | S01 | Swift 6 app/widget build and dev launch observed | Foundation commit pending | Conditional foundation acceptance | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
+| L03 | Source Luna | S01, L02 | Indexed resources accepted; provenance correction under review | `3e84efa`; correction commit pending | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
+| L04 | Source Luna; Main owns runtime | L02, L03 | Bounded Core accepted; import corrections and runtime open | `2aaef1d`; storage commit pending | Fixes required | `L04-storage-code-review.md`; `L04-runtime-acceptance-contract.md` |
+| L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | Foundation commit pending | Foundation only | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
+| Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
+| L06–L07 | Main Luna | Gate A; L01 | Bounded preparation authorized after foundation commit | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
+| L08–L12 | Luna | Plan dependencies | Queued | Pending | Pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
+| Gate B | GPT-6.1 Sol | L06–L12 | Queued | N/A | Pending | Fresh and upgrade vertical slice; offline reader/library/widgets |
+| L13–L19 | Luna | Plan dependencies | Queued | Pending | Pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
+| Gate C | GPT-6.1 Sol | L13–L19 | Queued | N/A | Pending | Devotional routes, source content, persistent and temporary state |
+| L20–L24 | Luna | Plan dependencies | Queued | Pending | Pending | Works, pagination, notices, media, complete Settings and attribution |
+| Gate D | GPT-6.1 Sol | L20–L24 | Queued | N/A | Pending | Works, notices, media gates, Settings |
+| L25–L27 | Luna | Gates C, D | Queued | Pending | Pending | All-route fidelity, performance, lifecycle, release update and interruption recovery |
+| Gate E | GPT-6.1 Sol | L25–L27 | Queued | N/A | Pending | Full integration and parity review |
+| L28 | Luna | Gate E | Queued | Pending | Pending | Archive, signing, privacy, screenshots, reproducible release evidence |
+| S02 | GPT-6.1 Sol | L28 | Queued | N/A | Pending | Final readiness review |
+
+## L00 checks
+
+- [x] Build and launch the existing app on a dedicated iOS 26 simulator.
+- [ ] Capture all five tab roots. Today and Read are captured. Other roots remain source-only.
+- [ ] Record all 29 routes and important states in the parity matrix. The route inventory is complete. Most route states remain source-only.
+- [x] Record bundle IDs, URL schemes, native metadata, and actual storage paths. App Group entitlement behavior remains unverified because the build is unsigned.
+- [x] Capture a synthetic legacy-state fixture and record SQLite journal state.
+- [x] Mark simulator observations separately from source-only findings.
+- [x] Send the staged evidence paths, simulator details, storage findings, and build result to Sol.
+
+No app source or target behavior changes are part of L00.
+
+## L00 runtime evidence
+
+- Simulator: iPhone 17 Pro, model `iPhone18,1`, iOS 26.5 runtime `23F77`, UDID `37D1870B-F16D-488A-8F20-959201F970D9`.
+- Toolchain: Xcode 26.6, build 17F113. The Release simulator build passed. See `build/native-evidence/L00/old-app-release-build.log`.
+- Build products: native bundle ID `com.nrsv.verse`, native version `1.2.2 (15)`. The current JavaScript app config is `1.5.0 (18)`. Record these as separate values.
+- Widget bundle ID: `com.nrsv.verse.widget`. Source app group ID: `group.com.nrsv.verse`. URL schemes in the built app: `nrsv`, `com.nrsv.verse`, `exp+nrsv`.
+- The build used `CODE_SIGNING_ALLOWED=NO`. The installed app has no usable signed App Group entitlement. Shared container and widget data are not verified by this run.
+- App data container: `.../Containers/Data/Application/7FA0CAAF-5F22-4446-854C-C902C7EBBE21` on this simulator.
+- Search DB: `Documents/SQLite/bible-search.db` (34,607,104 bytes in this run).
+- User library: `Documents/SQLite/user-library.db` (schema `user_version=1`, `journal_mode=wal`), with `user-library.db-wal` and `user-library.db-shm` while active.
+- Preferences: `Documents/mmkv/mmkv.default` and `Documents/mmkv/mmkv.default.crc`. The reader preference key was observed in this instance as `bible.reader.textSize` with value `medium` after a live Large then Default change.
+- The fixture under `build/native-evidence/L00/synthetic-legacy-fixture/` came from a fresh dedicated simulator. UI actions created one John 1:1 bookmark, one gold highlight, and one note. The fixture also includes search DB, MMKV data and CRC, and preference plists. It is a copy. Do not run tools that can delete or mutate its source.
+- Screenshots use the iPhone 17 Pro light appearance, 1206 x 2622 pixels (402 x 874 points), status bar time 9:41, and the app default text setting (Medium, Comfortable, Serif, Paragraphs) unless the image name says otherwise.
+- `07-release-launch.png` shows a clean Today screen and all five tabs. `08-reader-john-1.png` shows unselected WEB-CE John 1 and all five tabs. `09-aas-live-large.png` shows live Large text while Aa is open. `10-reader-john-1-highlighted.png` shows the saved gold highlight and selected John 1:1 action sheet.
+- `02-today.png` and the earlier development screenshots include the Expo developer control. They are not clean shell comparison images. The unsigned Debug app also showed a notification Keychain entitlement error; the Release capture did not show that error.
+- Runtime observations currently cover Today, the Read list, John book/chapter selection, the John 1 Reader, Psalm 23 heading and poetry, Scripture search entry/results and return to John 1, the note editor, saved bookmark/highlight/note actions, and Aa live restyle. All other route states remain open.
+- No complete L00 simulator parity pass is claimed. See the status per route in `docs/native/parity-matrix.md`.
+
+## L01 prototype and runtime proof
+
+- Sol accepted the ReaderProof renderer/pagination mechanism and selected custom flat Feather tab chrome. See ADR 0004, ADR 0006, `03-works-page-2.png`, and `04-shell-comparison.png`. Remaining visual, poetry, range, anchor, and accessibility checks move to production reader tickets.
+- The reviewed read-only storage harness was installed over the seeded `com.nrsv.verse` app without an uninstall step. It read the expected MMKV key, queried the three FTS editions, decoded one Works section, and exited 0. The app container UUID changed. The new container kept exact database, WAL, search, and MMKV bytes; all three library rows matched the copied fixture. See `docs/native/reviews/L01-same-id-read-report.md`.
+- A consistent online SQLite backup passed integrity check before the install. L04 must prove typed MMKV value normalization, importer writes, repeat/interruption handling, signed App Group continuity, and release update behavior.
+
+
+- Preparation is permitted by `docs/native/reviews/L01-renderer-preparation-contract.md`.
+- Proof-only files are under `native/Prototypes/ReaderProof/`. They are not production app code.
+- Sample resources use existing WEB-CE John 1, Psalm 23, Song of Songs 1, Douay–Rheims John 1, one real Works section, and one synthetic Unicode string. See the local sample manifest.
+- The prototype build and minimum simulator checks passed. The accepted mechanism is recorded in S01. Production Reader fidelity remains open.
+- Sol accepted the corrected legacy-read mode for a copied-byte simulator proof. It read `bible.reader.textSize`, queried FTS5 for three editions, and decoded the requested Works section. The process returned exit 0. MMKV data/CRC and both input databases kept the same hashes. Output: `build/native-evidence/L01/storage-runtime/run-02.txt`. This does not prove same-ID app migration or compare the decoded preference value.
+- The proof ran in the pinned iOS 26.5 simulator using a separate `com.nrsv.storageproof` app bundle. Its final output line says “No simulator was opened,” although `simctl launch` started the app process in the simulator. SQLite and zlib version strings were not reported.
+
+## Gate A checkpoint
+
+The L02 images prove the native shell and live in-memory reading controls. They do not prove the full Reader, durable preferences, migration, or widget behavior. Gate A remains open. Main can prepare bounded Reader navigation and rendering after its foundation commit. Source continues storage corrections. Main remains the only simulator and project writer.
+
+The indexed stage contains 351 app resources (132,783,642 bytes) and 23 widget resources (18,164,087 bytes). The two output trees match across 377 files. The net app size reduction is 4,665,507 bytes. The resource verifier correction has SHA-256 `5ac5fcf3e3987c73d1f3490cf6e9131765a10cdde19c018fd8204627e60eebd9`. A scoped correction commit remains open.
+
+The host rotation comparison matches 792 rows. Fixture SHA-256: `9f888bd7648c1f9422a320a3e3be1617eb2f8bbde7238377f903fb9268c528f9`. RotationMath SHA-256: `5ce600cc5940a9053044d0cf7e843d907b9129c7338e98a3b2f056ee362c4f38`. This is preliminary host evidence. Main must run the production simulator comparison.
