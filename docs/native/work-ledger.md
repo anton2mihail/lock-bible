@@ -10,12 +10,12 @@ Branch: `codex/swiftui-ios26-rebuild`
 | S00 | GPT-6.1 Sol | L00 | Accepted for staged baseline | `587be12` | Accepted | Full route and device evidence remains tracked |
 | L01 | Main and Source Luna | S00 | Minimum renderer and same-ID read accepted | Prototype commit pending | Accepted for S01 | Full importer proof remains L04 |
 | S01 | GPT-6.1 Sol | L01 | Contracts accepted | `587be12` | Accepted | ADRs 0001–0006 and Core contracts |
-| L02 | Main Luna | S01 | Swift 6 app/widget build and dev launch observed | Foundation commit pending | Conditional foundation acceptance | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
+| L02 | Main Luna | S01 | Swift 6 build and expanded simulator UI test pass | `c997283` | Foundation accepted; hosted CI unobserved | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
 | L03 | Source Luna | S01, L02 | Indexed resources accepted; provenance correction under review | `3e84efa`; correction commit pending | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
 | L04 | Source Luna; Main owns runtime | L02, L03 | Bounded Core accepted; import corrections and runtime open | `2aaef1d`; storage commit pending | Fixes required | `L04-storage-code-review.md`; `L04-runtime-acceptance-contract.md` |
-| L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | Foundation commit pending | Foundation only | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
+| L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | `c997283` | Foundation accepted; full startup/chrome open | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
-| L06–L07 | Main Luna | Gate A; L01 | Bounded preparation authorized after foundation commit | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
+| L06–L07 | Main Luna | Gate A; L01 | Bounded Reader preparation started | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
 | L08–L12 | Luna | Plan dependencies | Queued | Pending | Pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
 | Gate B | GPT-6.1 Sol | L06–L12 | Queued | N/A | Pending | Fresh and upgrade vertical slice; offline reader/library/widgets |
 | L13–L19 | Luna | Plan dependencies | Queued | Pending | Pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
