@@ -12,7 +12,7 @@ Branch: `codex/swiftui-ios26-rebuild`
 | S01 | GPT-6.1 Sol | L01 | Contracts accepted | `587be12` | Accepted | ADRs 0001–0006 and Core contracts |
 | L02 | Main Luna | S01 | Swift 6 build and expanded simulator UI test pass | `c997283` | Foundation accepted; hosted CI unobserved | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
 | L03 | Source Luna | S01, L02 | Indexed resources and provenance correction accepted | `3e84efa`, `91a57a8` | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
-| L04 | Source Luna; Main owns runtime | L02, L03 | Corrected storage source accepted; runtime integration open | `2aaef1d`, `0fa667f` | Source accepted; simulator matrix pending | `L04-storage-code-review.md`; `L04-runtime-acceptance-contract.md` |
+| L04 | Source Luna; Main owns runtime | L02, L03 | Production build passes; fresh bootstrap fault found in simulator | `2aaef1d`, `0fa667f`; runtime fix pending | Earlier source accepted; runtime not accepted | `L04-app-integration-review.md`; `L04-runtime-acceptance-contract.md` |
 | L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | `c997283` | Foundation accepted; full startup/chrome open | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
 | L06–L07 | Main Luna | Gate A; L01 | Bounded Reader preparation started | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
@@ -78,3 +78,7 @@ The L02 images prove the native shell and live in-memory reading controls. They 
 The indexed stage contains 351 app resources (132,783,642 bytes) and 23 widget resources (18,164,087 bytes). The two output trees match across 377 files. The net app size reduction is 4,665,507 bytes. The resource verifier correction has SHA-256 `5ac5fcf3e3987c73d1f3490cf6e9131765a10cdde19c018fd8204627e60eebd9`. The verifier correction is committed at `91a57a8`.
 
 The host rotation comparison matches 792 rows. Fixture SHA-256: `9f888bd7648c1f9422a320a3e3be1617eb2f8bbde7238377f903fb9268c528f9`. RotationMath SHA-256: `5ce600cc5940a9053044d0cf7e843d907b9129c7338e98a3b2f056ee362c4f38`. This is preliminary host evidence. Main must run the production simulator comparison.
+
+The app-only adapter and state store compile in the production app. Build 05 passed after the target used the pinned vendor paths, gnu++20, libc++, and FORCE_POSIX. Core and the widget have no MMKV dependency.
+
+The first separate-root fresh-install scenario failed with SQLite code 6, `database table is locked`. No library DB was published, but revision 1 state was committed. Source must finish the WAL-mode statement before the checkpoint. Source must also prevent completed state after failed fresh library creation. Main preserved the failure. Main will run a new output root after source review. The missing-library protection for existing completed state remains required. Gate A is open.
