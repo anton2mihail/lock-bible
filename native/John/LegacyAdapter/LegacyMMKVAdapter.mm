@@ -28,8 +28,7 @@ static NSString *JohnString(const std::string &value) {
 }
 
 NSDictionary<NSString *, id> *JohnReadLegacyMMKV(NSString *rootPath, NSArray<NSString *> *knownKeys, NSError **error) {
-        @autoreleasepool {
-        try {
+    try {
             std::lock_guard<std::mutex> readLock(JohnLegacyMMKVReadLock);
             JohnLegacyStage(@"adapter-begin");
             if (rootPath.length == 0) {
@@ -114,6 +113,5 @@ NSDictionary<NSString *, id> *JohnReadLegacyMMKV(NSString *rootPath, NSArray<NSS
             if (error) *error = [NSError errorWithDomain:JohnLegacyMMKVErrorDomain code:4
                 userInfo:@{NSLocalizedDescriptionKey: @"MMKV read failed."}];
             return nil;
-        }
     }
 }

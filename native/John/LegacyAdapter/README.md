@@ -17,7 +17,7 @@ Use these build settings for the app-only adapter target:
 
 `LegacyMMKVReader` requires CryptoKit and JohnCore. It checks that both MMKV files exist, hashes both source files, and then calls the read-only C++ adapter. The C++ adapter opens MMKV in `MMKV_SINGLE_PROCESS | MMKV_READ_ONLY` mode. It passes `false` for string in-place modification.
 
-Debug diagnostics report stage names only. They do not log MMKV keys, values, or root paths. The wrapper requires ARC because it returns an Objective-C dictionary to Swift across an autorelease pool.
+Debug diagnostics report stage names only. They do not log MMKV keys, values, or root paths. The wrapper requires ARC. It does not use a nested autorelease pool. This keeps NSError values alive when Swift receives them.
 
 Run this standalone syntax check when you change the wrapper. It uses ARC and C++20. It does not launch a simulator.
 
