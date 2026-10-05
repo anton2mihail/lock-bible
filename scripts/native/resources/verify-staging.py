@@ -92,6 +92,14 @@ def main() -> None:
                 raise RuntimeError(f"missing or invalid staged resource: {rel_path}")
             if digest(candidate) != expected_hash:
                 raise RuntimeError(f"staged resource hash mismatch: {rel_path}")
+        for row in manifest["files"]:
+            source_label = row["sourcePath"]
+            source_path = (ROOT / source_label).resolve()
+            if source_path.is_file():
+                if not source_path.is_relative_to(ROOT) or digest(source_path) != row["sha256"]:
+                    raise RuntimeError(f"copied source hash mismatch: {source_label}")
+            elif " + " not in source_label:
+                raise RuntimeError(f"copied source path cannot be resolved: {source_label}")
         expected_files = set(declared) | {"manifest.json", "app-target-files.json", "widget-target-files.json"}
         actual_files = {p.relative_to(run).as_posix() for p in run.rglob("*") if p.is_file()}
         if actual_files != expected_files:
