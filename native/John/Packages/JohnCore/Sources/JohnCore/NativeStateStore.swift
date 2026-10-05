@@ -125,6 +125,11 @@ public actor NativeStateStore {
             // Never replace a missing former library with an empty schema.
             libraryCapability = await inspectLibrary(allowCreate: snapshot == nil)
             if let committedEnvelope { return StartupState(envelope: committedEnvelope, libraryCapability: libraryCapability) }
+            // A fresh install is complete only when both the first library and state file are ready.
+            // If schema publication fails, leave no envelope so a later launch can retry creation.
+            if !libraryExistedAtStart, snapshot == nil, let libraryCapability {
+                throw CoreError.unreadableLibrary("fresh library setup failed: \(libraryCapability)")
+            }
             if libraryExistedAtStart, libraryCapability == nil {
                 do { try await preserveExistingLibraryBeforeImport() }
                 catch {

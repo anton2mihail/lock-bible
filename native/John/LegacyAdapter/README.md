@@ -7,9 +7,9 @@ The app target must compile `LegacyMMKVAdapter.mm` and `LegacyMMKVReader.swift`.
 Use these build settings for the app-only adapter target:
 
 - Define `FORCE_POSIX=1`.
-- Use C++17 or later.
+- Set `CLANG_CXX_LANGUAGE_STANDARD` to `gnu++20`, as in the pinned `MMKVCore` target.
 - Add `Vendor/MMKVCore` to the header search paths.
-- Link Foundation and zlib.
+- Link Foundation, libc++, and zlib.
 - Expose `LegacyMMKVAdapter.h` to `LegacyMMKVReader.swift` with the target bridging header.
 - Link the target only to the app target.
 

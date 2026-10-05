@@ -63,18 +63,25 @@ public actor SQLiteLibraryBoundary {
             #endif
             let summary = try inspect(database)
             validatedSummary = summary
-            let integrity = try database.prepare("PRAGMA integrity_check")
-            guard try integrity.step(), try integrity.text(0) == "ok", try !integrity.step() else {
-                throw CoreError.unreadableLibrary("temporary library integrity check failed")
+            do {
+                let integrity = try database.prepare("PRAGMA integrity_check")
+                guard try integrity.step(), try integrity.text(0) == "ok", try !integrity.step() else {
+                    throw CoreError.unreadableLibrary("temporary library integrity check failed")
+                }
             }
-            let walMode = try database.prepare("PRAGMA journal_mode=WAL")
-            guard try walMode.step(), try walMode.text(0).lowercased() == "wal" else {
-                throw CoreError.unreadableLibrary("temporary library cannot use WAL mode")
+            do {
+                let walMode = try database.prepare("PRAGMA journal_mode=WAL")
+                guard try walMode.step(), try walMode.text(0).lowercased() == "wal",
+                      try !walMode.step() else {
+                    throw CoreError.unreadableLibrary("temporary library cannot use WAL mode")
+                }
             }
-            let checkpoint = try database.prepare("PRAGMA wal_checkpoint(TRUNCATE)")
-            guard try checkpoint.step(), checkpoint.integer(0) == 0,
-                  checkpoint.integer(1) == checkpoint.integer(2) else {
-                throw CoreError.unreadableLibrary("temporary library WAL checkpoint failed")
+            do {
+                let checkpoint = try database.prepare("PRAGMA wal_checkpoint(TRUNCATE)")
+                guard try checkpoint.step(), checkpoint.integer(0) == 0,
+                      checkpoint.integer(1) == checkpoint.integer(2), try !checkpoint.step() else {
+                    throw CoreError.unreadableLibrary("temporary library WAL checkpoint failed")
+                }
             }
         } catch {
             if let coreError = error as? CoreError { throw coreError }
@@ -116,6 +123,7 @@ public actor SQLiteLibraryBoundary {
         let versionQuery = try db.prepare("PRAGMA user_version")
         guard try versionQuery.step() else { throw CoreError.unreadableLibrary("user_version could not be read") }
         let rawVersion = versionQuery.integer(0)
+        guard try !versionQuery.step() else { throw CoreError.unreadableLibrary("user_version returned extra rows") }
         guard let version = Int32(exactly: rawVersion) else {
             throw CoreError.invalidResource("library schema version is outside the supported integer range")
         }
@@ -183,7 +191,9 @@ public actor SQLiteLibraryBoundary {
     private func rowCount(_ db: SQLiteConnection, table: String) throws -> Int64 {
         let query = try db.prepare("SELECT count(*) FROM \(table)")
         guard try query.step() else { throw CoreError.unreadableLibrary("library count query failed") }
-        return query.integer(0)
+        let count = query.integer(0)
+        guard try !query.step() else { throw CoreError.unreadableLibrary("library count query returned extra rows") }
+        return count
     }
 
     private static let schema1SQL = """
