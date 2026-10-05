@@ -54,6 +54,10 @@ final class SQLiteStatement {
         let result = sqlite3_bind_int(handle, index, value)
         guard result == SQLITE_OK else { throw database.failure(result) }
     }
+    func bind(_ value: Int64, at index: Int32) throws {
+        let result = sqlite3_bind_int64(handle, index, value)
+        guard result == SQLITE_OK else { throw database.failure(result) }
+    }
     func step() throws -> Bool {
         let result = sqlite3_step(handle)
         if result == SQLITE_ROW { return true }

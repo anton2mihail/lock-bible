@@ -13,6 +13,9 @@ public enum CoreError: Error, Sendable, Equatable {
     case missingSection(workID: String, index: Int)
     case damagedSection(String)
     case oversizedContent(limit: Int)
+    case unsupportedNativeState(Int)
+    case unrecoverableNativeState(String)
+    case failedNativeStateWrite(String)
 }
 
 public enum TranslationID: String, Codable, CaseIterable, Sendable {

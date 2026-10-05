@@ -13,4 +13,11 @@ The baseline source commit is `b64e1fc3cfc6a78f508b41d74b71dddfe9ff7697`. The sc
 
 `rotation-fixtures.json` calls the existing rotation functions. It covers all three editions, all three scopes, all eight cadence values, and eleven clock cases. The cases include a negative epoch slot, both daylight-saving transitions in Toronto, Kathmandu's 5:45 offset, and one instant in Los Angeles and Kathmandu. The output contains 792 selections, the selected verse, pool index, local offset, and next rotation instant. Pool reference order and input hashes are recorded.
 
-The expected values are source-derived. They do not prove Swift parity or simulator behavior. Native production resource schema remains undecided.
+`compare-rotation-native.swift` compares the fixture slot, pool index, and next boundary with `RotationMath`. Run it from the repository root after a host Swift package build:
+
+```sh
+swiftc -swift-version 6 -I native/John/Packages/JohnCore/Sources/CSQLite -I native/John/Packages/JohnCore/Sources/CZlib native/John/Packages/JohnCore/Sources/JohnCore/*.swift scripts/native/source-fixtures/compare-rotation-native.swift -lsqlite3 -lz -o /tmp/compare-rotation-native
+/tmp/compare-rotation-native build/native-evidence/L00-source/rotation-fixtures.json
+```
+
+The expected values are source-derived. A host comparison is preliminary evidence. It does not prove simulator behavior. Main Luna must run the same comparison through the production simulator target. Native resource packaging follows ADR 0005. Source pools remain the fixture authority.

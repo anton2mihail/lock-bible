@@ -54,7 +54,12 @@ public actor SQLiteWorksRepository: WorksRepository {
         let version = try db.prepare("SELECT value FROM metadata WHERE key = 'schemaVersion'")
         guard try version.step() else { throw CoreError.invalidResource("Works database schema metadata missing") }
         let schema = version.integer(0)
-        guard schema == 2 else { throw CoreError.unsupportedSchema(Int32(schema)) }
+        guard schema == 2 else {
+            guard schema >= Int64(Int32.min), schema <= Int64(Int32.max) else {
+                throw CoreError.invalidResource("Works database schema version is out of range")
+            }
+            throw CoreError.unsupportedSchema(Int32(schema))
+        }
         let encoding = try db.prepare("SELECT value FROM metadata WHERE key = 'paragraphEncoding'")
         guard try encoding.step(), try encoding.text(0) == "zlib-json" else { throw CoreError.invalidResource("Works paragraph encoding mismatch") }
         database = db

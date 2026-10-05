@@ -84,8 +84,10 @@ public actor IndexedRotationRepository: RotationRepository {
                   metadata.counts.ot >= 0, metadata.counts.nt >= 0,
                   metadata.counts.ot <= metadata.counts.full,
                   metadata.counts.nt == metadata.counts.full - metadata.counts.ot,
-                  offsetsData.count == (metadata.counts.full + 1) * 4,
-                  otData.count == metadata.counts.ot * 4, ntData.count == metadata.counts.nt * 4 else {
+                  offsetsData.count.isMultiple(of: 4), offsetsData.count >= 8,
+                  otData.count.isMultiple(of: 4), ntData.count.isMultiple(of: 4),
+                  metadata.counts.full == offsetsData.count / 4 - 1,
+                  metadata.counts.ot == otData.count / 4, metadata.counts.nt == ntData.count / 4 else {
                 throw CoreError.invalidResource("rotation metadata or index size mismatch: \(prefix)")
             }
             let offsets = try Self.uint32Values(offsetsData)
