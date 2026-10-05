@@ -1,0 +1,1 @@
+{"id":"unicode-offsets","text":"Before😀é—after","utf16Boundaries":[0,6,8,9,10,11,16],"note":"Offsets are UTF-16 code units, as used by JavaScript and NSRange."}

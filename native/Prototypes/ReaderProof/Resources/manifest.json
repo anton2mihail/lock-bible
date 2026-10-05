@@ -1,0 +1,50 @@
+[
+  {
+    "id": "john-web",
+    "source": "src/services/bible/data/web-ce/JHN.json",
+    "sourceSha256": "24ee557fbcfc80dce8246446313e06c76f3982900403f74f2e552bb0183bfc0b",
+    "chapterSha256": "14307d8395861e2a2eddfa3218f297e216bac15e5c096efb96abdfd7c9f421e8",
+    "chapter": 1,
+    "verseCount": 51
+  },
+  {
+    "id": "psalm-23-web",
+    "source": "src/services/bible/data/web-ce/PSA.json",
+    "sourceSha256": "addc04857157f8edf87b0f296d3267e201edd34da16c112a802f8fc15a3aa6db",
+    "chapterSha256": "423e3daec236a80c81d77c98619c52617e69cffebe97c422f31055716af135d4",
+    "chapter": 23,
+    "verseCount": 6
+  },
+  {
+    "id": "song-1-web",
+    "source": "src/services/bible/data/web-ce/SNG.json",
+    "sourceSha256": "998f956dd16a5a0097fbd574e87a602788dbfaec82e9f04e83096548a9ba7165",
+    "chapterSha256": "a966deb8ca004c93a41886dc373f5bfdd7cd2b34eb9910af4d187b93a698643e",
+    "chapter": 1,
+    "verseCount": 17
+  },
+  {
+    "id": "john-vulgate",
+    "source": "src/services/bible/data/vulgate/JHN.json",
+    "sourceSha256": "1663ccd1e8346dccecf9416e5e295ebb22255784afe1c58e1eec7e77d9afd9d2",
+    "chapterSha256": "bb96edfe4d62293415657b70b6e96670a01a846fe8ebe604a830cfc9d86617f6",
+    "chapter": 1,
+    "verseCount": 51
+  },
+  {
+    "id": "john-douay",
+    "source": "src/services/bible/data/douay-rheims/JHN.json",
+    "sourceSha256": "addef3ce9c1c2eab5fa4d8b5905272f33b8914184925044f1c64562ded2e43ed",
+    "chapterSha256": "4ec1d26cd82ba6249505cca44c6f17a42a236bf8576a9ba4dd03db0a25918c30",
+    "chapter": 1,
+    "verseCount": 51
+  },
+  {
+    "id": "works-section",
+    "source": "src/services/works/data/chrysostom/homilies-on-the-gospel-of-john.json",
+    "sourceSha256": "de2da84174eed4b546ae3d41f69da0dda587ef33a5aabf2c1bb84c1b47a897f0",
+    "sectionIndex": 0,
+    "paragraphCount": 13,
+    "wordCount": 2921
+  }
+]
