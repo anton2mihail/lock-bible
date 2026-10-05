@@ -16,6 +16,8 @@ The before-commit run pauses PID 8579 at `beforeDurableCommit`. No primary exist
 
 Evidence root: `build/native-evidence/L04/`. Each accepted folder retains process paths, launch records, results, and logs.
 
+The normal cases in `standard-matrix-01/` also pass their reviewed predicates. Concurrent startup returns revisions `1,1`; a mutation commits revision 2. Failed fresh creation commits no envelope and then retries safely. A missing library with completed state is not recreated. Failed backup leaves no primary; the next attempt validates its backup before completion. An uncertain after-rename write blocks another write; the next store reads revision 2. Invalid text size falls back to medium and records the affected key. The damaged-library result reports SQLite code 26, `file is not a database`. Its generic capability predicate is limited. Future fallback checks must require the exact damage error and unchanged source bytes.
+
 ## Closed WAL decision
 
 The host proof in `private-copy-proof-02/proof.json` builds a complete closed database with WAL header bytes `0202` and no sidecars. A separate private copy changes to DELETE mode, with bytes `0101`. Schema 1, integrity `ok`, and row counts 2/1/1 survive read-only reopen. The original fixture hashes and sidecar set remain unchanged. The proof is sufficient to choose a bounded fallback. It does not prove simulator access. The script must also record and compare the generated closed-source hash after private normalization.
