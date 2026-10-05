@@ -1,0 +1,67 @@
+name: Native iOS simulator
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-simulator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check pinned Xcode and simulator runtime
+        run: |
+          xcodebuild -version | tee build-xcode-version.txt
+          grep -q 'Xcode 26.6' build-xcode-version.txt
+          grep -q 'Build version 17F113' build-xcode-version.txt
+          xcrun simctl list devices available --json > available-simulators.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('available-simulators.json').read_text())
+          match = next((device for runtime, devices in data['devices'].items()
+                        if runtime.endswith('iOS-26-5')
+                        for device in devices
+                        if device['name'] == 'iPhone 17 Pro' and device['isAvailable']), None)
+          if match is None:
+              raise SystemExit('Required iOS 26.5 iPhone 17 Pro simulator is not available')
+          with open(__import__('os').environ['GITHUB_ENV'], 'a') as env:
+              env.write(f"IOS_SIMULATOR_UDID={match['udid']}\n")
+          print(f"Selected iPhone 17 Pro {match['udid']} on iOS 26.5")
+          PY
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Install resource export tools
+        run: bun install --frozen-lockfile
+      - name: Stage and verify native resources
+        run: |
+          python3 scripts/native/resources/stage-resources.py build/native-evidence/L03/staged/run-9
+          python3 scripts/native/resources/stage-resources.py build/native-evidence/L03/staged/run-10
+          python3 scripts/native/resources/verify-staging.py build/native-evidence/L03/staged/run-9 build/native-evidence/L03/staged/run-10
+      - name: Build and test on iPhone simulator
+        run: |
+          xcodebuild test \
+            -project native/John/John.xcodeproj \
+            -scheme 'John Development' \
+            -destination "platform=iOS Simulator,id=${IOS_SIMULATOR_UDID}" \
+            -derivedDataPath build/native-evidence/CI/DerivedData \
+            -resultBundlePath build/native-evidence/CI/John-Development.xcresult \
+            ONLY_ACTIVE_ARCH=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES
+      - name: Save simulator test result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-simulator-result
+          path: build/native-evidence/CI/John-Development.xcresult
+          if-no-files-found: ignore
