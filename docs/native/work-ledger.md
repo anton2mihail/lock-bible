@@ -11,8 +11,8 @@ Branch: `codex/swiftui-ios26-rebuild`
 | L01 | Main and Source Luna | S00 | Minimum renderer and same-ID read accepted | Prototype commit pending | Accepted for S01 | Full importer proof remains L04 |
 | S01 | GPT-6.1 Sol | L01 | Contracts accepted | `587be12` | Accepted | ADRs 0001–0006 and Core contracts |
 | L02 | Main Luna | S01 | Swift 6 build and expanded simulator UI test pass | `c997283` | Foundation accepted; hosted CI unobserved | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
-| L03 | Source Luna | S01, L02 | Indexed resources accepted; provenance correction under review | `3e84efa`; correction commit pending | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
-| L04 | Source Luna; Main owns runtime | L02, L03 | Bounded Core accepted; import corrections and runtime open | `2aaef1d`; storage commit pending | Fixes required | `L04-storage-code-review.md`; `L04-runtime-acceptance-contract.md` |
+| L03 | Source Luna | S01, L02 | Indexed resources and provenance correction accepted | `3e84efa`, `91a57a8` | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
+| L04 | Source Luna; Main owns runtime | L02, L03 | Corrected storage source accepted; runtime integration open | `2aaef1d`, `0fa667f` | Source accepted; simulator matrix pending | `L04-storage-code-review.md`; `L04-runtime-acceptance-contract.md` |
 | L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | `c997283` | Foundation accepted; full startup/chrome open | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
 | L06–L07 | Main Luna | Gate A; L01 | Bounded Reader preparation started | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
@@ -75,6 +75,6 @@ No app source or target behavior changes are part of L00.
 
 The L02 images prove the native shell and live in-memory reading controls. They do not prove the full Reader, durable preferences, migration, or widget behavior. Gate A remains open. Main can prepare bounded Reader navigation and rendering after its foundation commit. Source continues storage corrections. Main remains the only simulator and project writer.
 
-The indexed stage contains 351 app resources (132,783,642 bytes) and 23 widget resources (18,164,087 bytes). The two output trees match across 377 files. The net app size reduction is 4,665,507 bytes. The resource verifier correction has SHA-256 `5ac5fcf3e3987c73d1f3490cf6e9131765a10cdde19c018fd8204627e60eebd9`. A scoped correction commit remains open.
+The indexed stage contains 351 app resources (132,783,642 bytes) and 23 widget resources (18,164,087 bytes). The two output trees match across 377 files. The net app size reduction is 4,665,507 bytes. The resource verifier correction has SHA-256 `5ac5fcf3e3987c73d1f3490cf6e9131765a10cdde19c018fd8204627e60eebd9`. The verifier correction is committed at `91a57a8`.
 
 The host rotation comparison matches 792 rows. Fixture SHA-256: `9f888bd7648c1f9422a320a3e3be1617eb2f8bbde7238377f903fb9268c528f9`. RotationMath SHA-256: `5ce600cc5940a9053044d0cf7e843d907b9129c7338e98a3b2f056ee362c4f38`. This is preliminary host evidence. Main must run the production simulator comparison.
