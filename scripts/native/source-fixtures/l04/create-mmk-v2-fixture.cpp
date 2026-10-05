@@ -1,6 +1,8 @@
 #include "MMKV.h"
+#include "MMKVMetaInfo.hpp"
 
 #include <filesystem>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -20,6 +22,11 @@ static std::string decodeHex(const std::string &value) {
 
 int main(int argc, char **argv) {
     try {
+        if (argc == 2 && std::string(argv[1]) == "--layout") {
+            std::cout << sizeof(mmkv::MMKVMetaInfo) << "\t"
+                      << offsetof(mmkv::MMKVMetaInfo, m_crcDigest) << "\n";
+            return 0;
+        }
         if (argc != 3) throw std::runtime_error("usage: create-mmv2-fixture <new-mmkv-root> <hex-rows.tsv>");
         const std::filesystem::path root(argv[1]);
         if (std::filesystem::exists(root)) throw std::runtime_error("MMKV output path already exists");

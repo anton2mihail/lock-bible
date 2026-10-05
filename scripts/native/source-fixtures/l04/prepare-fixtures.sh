@@ -27,7 +27,11 @@ clang++ -std=c++20 -DFORCE_POSIX=1 -I "$VENDOR" \
 BUILDER="$OUT_DIR/build/create-mmv2-fixture"
 "$BUILDER" "$OUT_DIR/input/legacy/mmkv" "$OUT_DIR/legacy-values.tsv"
 "$BUILDER" "$OUT_DIR/input/invalid-legacy/mmkv" "$OUT_DIR/invalid-legacy-values.tsv"
-python3 "$ROOT_DIR/scripts/native/source-fixtures/l04/make-damaged-mmkv-fixtures.py" "$OUT_DIR"
+MMKV_LAYOUT=$("$BUILDER" --layout)
+MMKV_META_SIZE="${MMKV_LAYOUT%%$'\t'*}"
+MMKV_CRC_OFFSET="${MMKV_LAYOUT#*$'\t'}"
+python3 "$ROOT_DIR/scripts/native/source-fixtures/l04/make-damaged-mmkv-fixtures.py" \
+  "$OUT_DIR" "$MMKV_META_SIZE" "$MMKV_CRC_OFFSET"
 
 python3 - "$OUT_DIR" <<'PY'
 from hashlib import sha256
