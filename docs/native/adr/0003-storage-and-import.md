@@ -47,6 +47,8 @@ Use a new backup attempt path after a failed SQLite backup. A partial backup fil
 
 ## Evidence and limits
 
+For an existing WAL-header database without sidecars, use the bounded private-read fallback in `../reviews/L04-error-recovery-and-closed-wal-review.md`. Trigger it only after direct read inspection returns `SQLITE_CANTOPEN`. Normalize only a unique, hash-checked copy. Preserve the original bytes and sidecar set. Keep the private workspace tied to its connection lifetime. Before any original-library write, require the separate durable backup and invalidate the private read cache. Unsupported schema and damaged files remain rejected. The host proof selects this method; simulator checks must accept its implementation.
+
 The reviewed simulator binary read actual app-created copied MMKV bytes unchanged. It ran three-edition FTS5 and one-section bounded zlib/TEXT decode. The host backup proof retained a committed WAL row. The full-corpus host scan is preliminary.
 
 The same-ID simulator read passed in `build/native-evidence/L01/same-id-read-01/`. The container UUID changed during installation. Library DB/WAL, search DB, and MMKV data/CRC hashes remained equal. The reviewed native executable read the retained live MMKV files and returned exit 0. This proves the narrow retained-data read path.

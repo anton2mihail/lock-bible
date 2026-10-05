@@ -4,6 +4,8 @@ Updated: 5 October 2026
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 
+Latest checkpoint: three corrected MMKV error paths, three envelope recovery cases, and both actual process interruption boundaries are accepted. The closed-WAL fallback is dispatched. Same-ID production import, durable startup preferences, queued/repeated URLs, and matching new implementation commits remain Gate A work. See `reviews/L04-error-recovery-and-closed-wal-review.md`.
+
 | Ticket | Owner | Depends on | Status | Implementation SHA | Sol verdict | Evidence / note |
 | --- | --- | --- | --- | --- | --- | --- |
 | L00 | Main and Source Luna | None | Source inventory accepted; full route capture open | `7aaede8`, `07287f9` | Staged acceptance | L00 inventory and core simulator baseline |
@@ -12,7 +14,7 @@ Branch: `codex/swiftui-ios26-rebuild`
 | S01 | GPT-6.1 Sol | L01 | Contracts accepted | `587be12` | Accepted | ADRs 0001–0006 and Core contracts |
 | L02 | Main Luna | S01 | Swift 6 build and expanded simulator UI test pass | `c997283` | Foundation accepted; hosted CI unobserved | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
 | L03 | Source Luna | S01, L02 | Indexed resources and provenance correction accepted | `3e84efa`, `91a57a8` | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
-| L04 | Source Luna; Main owns runtime | L02, L03 | Fresh schema, full synthetic import, and process reads pass; recovery/update checks remain open | `2aaef1d`, `0fa667f`, `f01857b`, `a647491`, `41608bd`; runner `c6c79bb` | Accepted scenarios; full runtime gate open | `L04-app-integration-review.md`; `L04-runtime-acceptance-contract.md` |
+| L04 | Source Luna; Main owns runtime | L02, L03 | Fresh import, process reads, corruption rejection, envelope recovery, and both interruption boundaries pass; closed-WAL and update checks remain open | `2aaef1d`, `0fa667f`, `f01857b`, `a647491`, `41608bd`; runner `c6c79bb`; new accepted scopes await commit | Accepted scenarios; full runtime gate open | `L04-error-recovery-and-closed-wal-review.md`; `L04-runtime-acceptance-contract.md` |
 | L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | `c997283` | Foundation accepted; full startup/chrome open | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
 | L06–L07 | Main Luna | Gate A; L01 | Bounded Reader preparation started | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
