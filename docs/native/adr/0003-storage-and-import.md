@@ -12,6 +12,8 @@ Use system SQLite with actor-owned handles, prepared values, synchronous transac
 
 Use the reviewed MMKV Core v2.0.0 read path as a narrow legacy adapter. Pin its source and license. Build with the reviewed `FORCE_POSIX` configuration. Open the default instance read-only and use `getString(..., false)`. Keep this dependency out of the widget. Do not include React Native, JSI, or Hermes.
 
+Compile `LegacyMMKVAdapter.mm` with ARC. ARC manages Objective-C object lifetime across the Swift bridge. Retain the pinned vendor's per-file `-fno-objc-arc` settings. The wrapper must reject a build without ARC. Define `DEBUG=1` for adapter diagnostics only in the Debug configuration.
+
 Locate legacy paths from the current container and configuration. Preserve the original MMKV data/CRC files and unknown keys. Read each value with its source loader semantics. The raw theme key is a distinct normalization path. Do not apply generic JSON parsing to it.
 
 Store native private preferences and progress in one versioned envelope at `Library/Application Support/John/native-state-v1.json`. The envelope contains `formatVersion`, `revision`, `importVersion`, `importSourceHashes`, and typed `state`. It also records capability issue keys without private values. `formatVersion` is 1. A completed legacy import has `importVersion` 1.
@@ -23,13 +25,15 @@ Do not use separate UserDefaults writes for private payload and completion. That
 ## Import order
 
 1. Inspect existing native state. If its supported completed envelope is valid, use it. Do not re-import over it.
-2. Inspect the existing library schema and make its consistent backup.
-3. Read legacy MMKV values without mutation.
-4. Normalize known feature values. Keep invalid raw source values in the preserved legacy files. Record affected capability keys only.
-5. Validate the staged state against the fixture.
-6. Commit the complete envelope atomically.
-7. Expose state to feature models.
-8. Project effective widget preferences and reconcile owned local reminders.
+2. Read legacy MMKV values without mutation.
+3. Inspect the library schema. Permit creation only for a fresh install without legacy state or recovery files.
+4. If the existing library is valid, make and validate its consistent backup before native completion. Keep unsupported or damaged files and report their capability error.
+5. Normalize known feature values. Keep invalid raw source values in the preserved legacy files. Record affected capability keys only.
+6. Validate the staged state against the fixture.
+7. Commit the complete envelope atomically.
+8. Expose state to feature models.
+9. Project effective widget preferences.
+10. Reconcile owned local reminders.
 
 Before completion, a killed import can repeat the read and staging work. After completion, retries must keep newer native changes. Existing private files remain available for recovery. A fresh install has defaults and an explicit fresh-state envelope.
 
