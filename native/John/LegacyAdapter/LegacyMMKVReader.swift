@@ -2,6 +2,12 @@ import CryptoKit
 import Foundation
 import JohnCore
 
+#if DEBUG
+private func JohnLegacyReaderStage(_ stage: String) {
+    NSLog("[JohnLegacyMMKVReader] stage=%@", stage)
+}
+#endif
+
 /// App-only bridge from Tencent MMKV Core to JohnCore's read-only import contract.
 public struct LegacyMMKVReader: LegacyMMKVReading {
     public let rootURL: URL
@@ -16,6 +22,9 @@ public struct LegacyMMKVReader: LegacyMMKVReading {
     }
 
     public func readKnownValues(_ keys: [String]) async throws -> LegacyMMKVSnapshot? {
+#if DEBUG
+        JohnLegacyReaderStage("entry")
+#endif
         let dataURL = rootURL.appendingPathComponent("mmkv.default", isDirectory: false)
         let crcURL = rootURL.appendingPathComponent("mmkv.default.crc", isDirectory: false)
         let hasData = FileManager.default.fileExists(atPath: dataURL.path)
@@ -23,10 +32,32 @@ public struct LegacyMMKVReader: LegacyMMKVReading {
         if !hasData && !hasCRC { return nil }
         guard hasData && hasCRC else { throw CoreError.unreadableLibrary("MMKV data and CRC files are incomplete") }
 
-        let data = try Data(contentsOf: dataURL, options: .mappedIfSafe)
-        let crc = try Data(contentsOf: crcURL, options: .mappedIfSafe)
+        let data: Data
+        let crc: Data
+        do {
+#if DEBUG
+            JohnLegacyReaderStage("before-data-read")
+#endif
+            data = try Data(contentsOf: dataURL, options: .mappedIfSafe)
+            crc = try Data(contentsOf: crcURL, options: .mappedIfSafe)
+#if DEBUG
+            JohnLegacyReaderStage("after-data-read")
+#endif
+        } catch {
+#if DEBUG
+            JohnLegacyReaderStage("data-read-failed")
+#endif
+            throw error
+        }
         var error: NSError?
-        guard let result = JohnReadLegacyMMKV(rootURL.path, keys, &error) as? [String: Any],
+#if DEBUG
+        JohnLegacyReaderStage("before-bridge")
+#endif
+        let bridgeResult = JohnReadLegacyMMKV(rootURL.path, keys, &error)
+#if DEBUG
+        JohnLegacyReaderStage("after-bridge")
+#endif
+        guard let result = bridgeResult,
               let names = result["keys"] as? [String],
               let strings = result["stringValues"] as? [String: String] else {
             if let error { throw error }

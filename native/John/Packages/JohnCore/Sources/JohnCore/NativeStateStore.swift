@@ -198,14 +198,50 @@ public actor NativeStateStore {
     }
 
     private func preserveExistingLibraryBeforeImport() async throws {
-        let sourceSummary = try await library.inspect()
+#if DEBUG
+        NSLog("[JohnCoreImport] stage=source-summary-begin")
+#endif
+        let sourceSummary: LibrarySchemaSummary
+        do { sourceSummary = try await library.inspect() }
+        catch {
+#if DEBUG
+            NSLog("[JohnCoreImport] stage=source-summary-failed")
+#endif
+            throw error
+        }
+#if DEBUG
+        NSLog("[JohnCoreImport] stage=source-summary-complete")
+#endif
         let recoveryDirectory = stateDirectory.appendingPathComponent("recovery", isDirectory: true)
         do { try FileManager.default.createDirectory(at: recoveryDirectory, withIntermediateDirectories: true) }
         catch { throw CoreError.failedBackup("recovery directory cannot be created") }
         try Self.syncDirectory(stateDirectory, failure: "recovery directory entry cannot be synced")
         let backupURL = recoveryDirectory.appendingPathComponent("library-import-\(UUID().uuidString).sqlite")
-        try await library.makeConsistentBackup(to: backupURL)
-        let backupSummary = try await SQLiteLibraryBoundary(databaseURL: backupURL).inspect()
+#if DEBUG
+        NSLog("[JohnCoreImport] stage=backup-create-begin")
+#endif
+        do { try await library.makeConsistentBackup(to: backupURL) }
+        catch {
+#if DEBUG
+            NSLog("[JohnCoreImport] stage=backup-create-failed")
+#endif
+            throw error
+        }
+#if DEBUG
+        NSLog("[JohnCoreImport] stage=backup-create-complete")
+        NSLog("[JohnCoreImport] stage=backup-summary-begin")
+#endif
+        let backupSummary: LibrarySchemaSummary
+        do { backupSummary = try await SQLiteLibraryBoundary(databaseURL: backupURL).inspect() }
+        catch {
+#if DEBUG
+            NSLog("[JohnCoreImport] stage=backup-summary-failed")
+#endif
+            throw error
+        }
+#if DEBUG
+        NSLog("[JohnCoreImport] stage=backup-summary-complete")
+#endif
         guard sourceSummary == backupSummary else {
             throw CoreError.failedBackup("recovery backup does not match the source schema and row counts")
         }
