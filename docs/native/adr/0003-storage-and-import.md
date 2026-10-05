@@ -33,6 +33,10 @@ Do not use separate UserDefaults writes for private payload and completion. That
 
 Before completion, a killed import can repeat the read and staging work. After completion, retries must keep newer native changes. Existing private files remain available for recovery. A fresh install has defaults and an explicit fresh-state envelope.
 
+If the envelope has an unsupported format version, preserve it and return a native-state capability error. Do not import over it. If the primary envelope is damaged, validate the previous envelope before recovery. If neither existing envelope is valid, preserve both files and return a recovery error. Do not treat that condition as a fresh install.
+
+Use a new backup attempt path after a failed SQLite backup. A partial backup file is not a completed recovery snapshot. Complete and validate the snapshot before native library writes start.
+
 ## Evidence and limits
 
 The reviewed simulator binary read actual app-created copied MMKV bytes unchanged. It ran three-edition FTS5 and one-section bounded zlib/TEXT decode. The host backup proof retained a committed WAL row. The full-corpus host scan is preliminary.

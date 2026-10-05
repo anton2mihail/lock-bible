@@ -2,7 +2,7 @@
 
 Date: 5 October 2026.
 Owner: GPT-6.1 Sol.
-Status: proposed. L01 evidence is required before approval.
+Status: closed by `S01-architecture-acceptance.md`. The accepted ADRs and Core contracts control production work.
 
 ## Domain identity
 
