@@ -1,0 +1,42 @@
+# ADR 0003: storage and import
+
+Date: 5 October 2026.
+Owner: GPT-6.1 Sol.
+Status: ACCEPTED. Full L04 migration acceptance remains open.
+
+## Decision
+
+Keep the existing schema-1 library at `Documents/SQLite/user-library.db`. Use its rows directly. Do not copy them into another persistence model. Make a consistent SQLite backup before the first native write. Preserve passage keys, verse keys, batch IDs, text, and epoch-millisecond timestamps.
+
+Use system SQLite with actor-owned handles, prepared values, synchronous transactions, and scoped statement cleanup. An unsupported schema is a recoverable capability error. Do not downgrade `user_version` or replace an unreadable database with an empty one.
+
+Use the reviewed MMKV Core v2.0.0 read path as a narrow legacy adapter. Pin its source and license. Build with the reviewed `FORCE_POSIX` configuration. Open the default instance read-only and use `getString(..., false)`. Keep this dependency out of the widget. Do not include React Native, JSI, or Hermes.
+
+Locate legacy paths from the current container and configuration. Preserve the original MMKV data/CRC files and unknown keys. Read each value with its source loader semantics. The raw theme key is a distinct normalization path. Do not apply generic JSON parsing to it.
+
+Store native private preferences and progress in one versioned envelope at `Library/Application Support/John/native-state-v1.json`. The envelope contains `formatVersion`, `revision`, `importVersion`, `importSourceHashes`, and typed `state`. It also records capability issue keys without private values. `formatVersion` is 1. A completed legacy import has `importVersion` 1.
+
+One state actor serializes import and later writes. Encode and validate a complete temporary envelope. Atomically replace the destination. The payload and import marker are in the same replacement. Expose imported state only after replacement succeeds. Preserve the previous valid envelope and source recovery files. A failed write does not publish success.
+
+Do not use separate UserDefaults writes for private payload and completion. That would permit a durable completion flag with incomplete state. The single envelope gives L04 a small set of recoverable commit boundaries. App Group UserDefaults remains the existing widget scalar projection.
+
+## Import order
+
+1. Inspect existing native state. If its supported completed envelope is valid, use it. Do not re-import over it.
+2. Inspect the existing library schema and make its consistent backup.
+3. Read legacy MMKV values without mutation.
+4. Normalize known feature values. Keep invalid raw source values in the preserved legacy files. Record affected capability keys only.
+5. Validate the staged state against the fixture.
+6. Commit the complete envelope atomically.
+7. Expose state to feature models.
+8. Project effective widget preferences and reconcile owned local reminders.
+
+Before completion, a killed import can repeat the read and staging work. After completion, retries must keep newer native changes. Existing private files remain available for recovery. A fresh install has defaults and an explicit fresh-state envelope.
+
+## Evidence and limits
+
+The reviewed simulator binary read actual app-created copied MMKV bytes unchanged. It ran three-edition FTS5 and one-section bounded zlib/TEXT decode. The host backup proof retained a committed WAL row. The full-corpus host scan is preliminary.
+
+The same-ID simulator read passed in `build/native-evidence/L01/same-id-read-01/`. The container UUID changed during installation. Library DB/WAL, search DB, and MMKV data/CRC hashes remained equal. The reviewed native executable read the retained live MMKV files and returned exit 0. This proves the narrow retained-data read path.
+
+The harness did not commit native state or read every typed preference. L04 must prove the atomic envelope, live backup, all imported fields, killed/repeated writes, damaged state, and unsupported schemas. Gate A cannot pass from a fresh install alone.
