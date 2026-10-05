@@ -21,3 +21,20 @@ The Reader files are not accepted as complete tickets. Main owns their implement
 Use matched simulator captures for John prose, Psalm poetry, and Song speaker labels. Use real taps for the 10, 12, 8, 8, 8 selection sequence. Check a wrapped continuation and blank layout space. Check saved fills together with active selection and context. Preserve unselected text anchors through style changes in L08. Keep all findings in the full ticket queue; they do not change the accepted TextKit mechanism.
 
 The next source revision uses Georgia, fixed 14-point verse labels, before-block gaps, typed heading styles, and saved-fill precedence. Manifest responses now have an ID guard. Main added chapter-load cancellation on Back and book navigation. One request case remains: those navigation actions must also cancel a pending manifest response. A new edition or deep-link manifest request must cancel the older chapter response before it waits. Otherwise, a late response can reopen a page after Back or update Continue reading for the old request. Full runtime acceptance remains open.
+
+The current model now clears pending manifest IDs on Back and book selection. New edition and passage manifest requests clear an old chapter ID before waiting. These source corrections are present. Main must still show their navigation behavior on the simulator.
+
+## Next production corrections
+
+| Trigger | Required result | Source and native file |
+| --- | --- | --- |
+| Reader opens a chapter | Use the source icon-only Back control. Keep its full accessibility label. The header must scroll with the chapter. | Source `ReaderHeader` in `src/screens/ReaderScreen.tsx`; native `ReaderView.swift` |
+| Previous or Next is shown | Include the target book and chapter. Include the edition attribution below navigation. | Source chapter navigation; native `ReaderView.swift` |
+| Chapter grid width changes | Wrap 52-point chips to available width. Use the source gaps and current marker. Do not force five columns. GoTo must not add visible chapter-count text absent from source. | `src/components/ChapterGrid.tsx`, `src/screens/GoToScreen.tsx`; native `ReaderView.swift`, `GoToView.swift` |
+| Back or GoTo opens from Psalm 149 | Retain the current chapter marker. Reveal that cell. Do not reveal the center of the whole grid. | Source currentChapter/ref/layout callbacks; native `ReaderScreenModel.swift`, `GoToView.swift` |
+| The book list scrolls | Keep the source title, Continue reading, and Fathers area above the scrolling list. Use exact catalog author/work counts in the Fathers row. | Source book-list mode; native `ReaderView.swift` |
+| Verse layout is selected | Render the source verse rows and headings. The current paragraph-only view ignores this setting. | Source `VerseChapter`; native `ScriptureTextView.swift` |
+| A saved highlight or requested context is active | Supply actual chapter highlights. Reveal the requested verse after layout. The current Reader supplies an empty highlight map and no scroll request. | Native `ReaderView.swift`, `ReaderScreenModel.swift`; ADR 0004 |
+| Style, edition, or system text size changes | Preserve the source text anchor and selection. Apply Dynamic Type once. Persist location through the state actor. | L08 contract; native Reader model and text view |
+
+These findings stay within the approved full scope. The current Reader commit can record preparation, but it cannot close L06–L08. Main keeps storage builds stable first. Use matched John, Psalm, and Song captures, real range taps, late-Psalm navigation, and one large-text anchor check for production acceptance.
