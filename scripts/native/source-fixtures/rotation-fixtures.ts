@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs"
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { createHash } from "node:crypto"
 import { filterByScope, nextRotationDate, rotationSlot, verseIndexForDate, type VerseScope } from "../../../src/services/bible/verseOfDay"
 
@@ -48,5 +48,6 @@ const result = {
   outputs: rows,
   runtimeBehaviorObserved: false,
 }
+mkdirSync("build/native-evidence/L00-source", { recursive: true })
 writeFileSync("build/native-evidence/L00-source/rotation-fixtures.json", `${JSON.stringify(result, null, 2)}\n`)
 console.log(`Wrote ${rows.length} rotation outcomes for ${editions.length} editions, ${scopes.length} scopes, ${intervals.length} cadences, and ${cases.length} clock cases.`)

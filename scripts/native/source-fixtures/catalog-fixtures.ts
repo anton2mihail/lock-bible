@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs"
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { createHash } from "node:crypto"
 import { PRAYERS } from "../../../src/services/companion/prayers"
 import { TEACHINGS } from "../../../src/services/companion/teaching"
@@ -36,5 +36,6 @@ const fixture = {
     works: { path: "src/services/works/data/catalog.json", sha256: hash("src/services/works/data/catalog.json"), values: readJson("src/services/works/data/catalog.json") },
   },
 }
+mkdirSync("build/native-evidence/L00-source", { recursive: true })
 writeFileSync("build/native-evidence/L00-source/catalog-fixtures.json", `${JSON.stringify(fixture, null, 2)}\n`)
 console.log(`Wrote source fixture: ${novenas.length} novenas, ${PRAYERS.length} prayers, ${TEACHINGS.length} teachings, ${ROSARY_MYSTERY_SETS.length} mystery sets, and ${Object.values(TRANSLATIONS).length} editions.`)
