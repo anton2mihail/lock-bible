@@ -4,7 +4,7 @@ Prepared 5 October 2026. Baseline: repository commit `b64e1fc`, JavaScript app v
 
 **User preferences:** use simulator testing for almost all checks. Treat 99% as the intended emphasis. Unit tests are rare exceptions. Use ASD-STE100 Simplified Technical English in plans, model prompts, progress reports, reviews, and final reports. Use short sentences and direct instructions. Preserve code, API names, paths, URLs, and source content.
 
-**Execution status:** L02/L05 foundation is implemented. The app and widget build with Swift 6, and the development shell runs on iPhone 17 Pro simulator. Sol accepted S01. The focused L02/L05 commit and stronger UI checks are in progress. L00 route coverage, L04 state migration, and release/update acceptance remain open. Track current status in the [native work ledger](native/work-ledger.md). The approved baseline remains in force.
+**Execution status:** Sol accepted S01. The L02/L05 foundation is committed at `c997283`. The app and widget build with Swift 6. The expanded simulator UI test passes. L04 fresh import, process reads, error rejection, envelope recovery, and interruption checks pass. Closed-WAL access, bounded same-ID production import, startup routing, and production repository checks remain Gate A work. L00 route coverage and final release/update acceptance remain open. Track current status in the [native work ledger](native/work-ledger.md). The approved baseline remains in force.
 
 ## 1. Outcome and model ownership
 
