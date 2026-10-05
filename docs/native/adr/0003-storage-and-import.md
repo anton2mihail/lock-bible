@@ -16,6 +16,8 @@ Use the reviewed MMKV Core v2.0.0 read path as a narrow legacy adapter. Pin its 
 
 Compile `LegacyMMKVAdapter.mm` with ARC. ARC manages Objective-C object lifetime across the Swift bridge. Retain the pinned vendor's per-file `-fno-objc-arc` settings. The wrapper must reject a build without ARC. Define `DEBUG=1` for adapter diagnostics only in the Debug configuration.
 
+Do not drain an inner autoreleasepool before Swift receives the NSError output. Use the caller scope for that error return. The corrected corruption fixture exposed this lifetime failure in the simulator. Preserve the existing checksum checks and read-only mode.
+
 Locate legacy paths from the current container and configuration. Preserve the original MMKV data/CRC files and unknown keys. Read each value with its source loader semantics. The raw theme key is a distinct normalization path. Do not apply generic JSON parsing to it.
 
 Store native private preferences and progress in one versioned envelope at `Library/Application Support/John/native-state-v1.json`. The envelope contains `formatVersion`, `revision`, `importVersion`, `importSourceHashes`, and typed `state`. It also records capability issue keys without private values. `formatVersion` is 1. A completed legacy import has `importVersion` 1.
