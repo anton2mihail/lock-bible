@@ -101,6 +101,7 @@ struct CitationContextView: View {
             }
         }
         .task(id: reference) { await loadReference() }
+        .onDisappear { loadGeneration &+= 1 }
     }
 
     @MainActor private func loadReference() async {
