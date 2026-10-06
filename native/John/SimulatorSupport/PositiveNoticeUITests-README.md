@@ -24,7 +24,7 @@ After each successful on/change/off state, the test emits `NOTICE_STAGE_READY <n
 
 ## Picker preflight
 
-The helper locates hour and minute wheels by their observed accessibility labels. It sets each value and checks the displayed numeric value. If a picker exposes AM/PM, it checks that field too. It does not select a wheel by index. Main must inspect the first UI hierarchy and confirm that the current iOS version exposes semantic hour/minute labels for both the spinner and compact picker. If it does not, stop the run and update the test from the observed hierarchy. Do not infer a time from a button label alone.
+The observed Calendar `DatePicker` uses identifier `calendar-notifications-time-picker`. Its child `PickerWheel` values are `8 o’clock`, `00 minutes`, and `AM`. The hour wheel has no accessibility label. The helper scopes to a visible `DatePicker`, then identifies the hour, minute, and meridiem wheels from these semantic value forms. It preserves the observed suffix and zero-padding when it sets a target. It reads each value back before it saves. It does not select a wheel by index. Main must confirm the same value forms for the compact Rosary picker. If that picker exposes a different hierarchy, keep the captured failure and update the helper from that observed hierarchy. Do not infer a time from a button label alone.
 
 The denial method requires a real system alert with a `Don't Allow` button. The authorized method requires a real `Allow` button only when the declared initial state is `notDetermined`. The test does not open system Settings or external links.
 

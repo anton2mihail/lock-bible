@@ -181,27 +181,26 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed)
     }
 
-    /// Set both wheels by their observed accessibility labels and verify their values.
-    /// This fails if the picker exposes no semantic hour/minute controls.
+    /// Set wheels by the observed PickerWheel value suffixes. The hour wheel has no label.
     private func setTime(hour: Int, minute: Int, in app: XCUIApplication, compactPickerID: String? = nil) {
         if let compactPickerID {
             let compactPicker = app.descendants(matching: .any)
                 .matching(identifier: compactPickerID).firstMatch
             tap(compactPicker)
         }
-        let wheels = app.pickerWheels
-        let hourWheel = wheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "hour")).firstMatch
-        let minuteWheel = wheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "minute")).firstMatch
-        XCTAssertTrue(hourWheel.waitForExistence(timeout: 8), "Read the native picker hierarchy before setting the hour")
-        XCTAssertTrue(minuteWheel.exists, "Read the native picker hierarchy before setting the minute")
+        let wheels = timeWheels(in: app, preferredPickerID: compactPickerID ?? "calendar-notifications-time-picker")
+        let hourWheel = wheels.hour
+        let minuteWheel = wheels.minute
+        XCTAssertTrue(hourWheel.waitForExistence(timeout: 8), "Expected a PickerWheel value ending in ‘o’clock’")
+        XCTAssertTrue(minuteWheel.waitForExistence(timeout: 8), "Expected a PickerWheel value ending in ‘minutes’")
 
         let hourValues = hourWheel.value as? String ?? ""
         let minuteValues = minuteWheel.value as? String ?? ""
-        let hourTarget = matchingWheelValue(hour: hour, current: hourValues)
-        let minuteTarget = matchingWheelValue(hour: minute, current: minuteValues)
+        let hourTarget = wheelTargetValue(number: hour % 12 == 0 ? 12 : hour % 12, current: hourValues)
+        let minuteTarget = wheelTargetValue(number: minute, current: minuteValues)
         hourWheel.adjust(toPickerWheelValue: hourTarget)
         minuteWheel.adjust(toPickerWheelValue: minuteTarget)
-        let meridiem = wheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "AM/PM")).firstMatch
+        let meridiem = wheels.meridiem
         if meridiem.exists {
             let meridiemValue = (hour < 12) ? "AM" : "PM"
             meridiem.adjust(toPickerWheelValue: meridiemValue)
@@ -214,16 +213,20 @@ final class PositiveNoticeUITests: XCTestCase {
         NSLog("NOTICE_PICKER observedHourLabel=%@ hour=%@ observedMinuteLabel=%@ minute=%@ locale=%@",
               hourWheel.label, hourWheel.value as? String ?? "", minuteWheel.label,
               minuteWheel.value as? String ?? "", Locale.current.identifier)
+        if meridiem.exists {
+            NSLog("NOTICE_PICKER observedMeridiemLabel=%@ value=%@", meridiem.label, meridiem.value as? String ?? "")
+        }
         if compactPickerID != nil { dismissCompactPicker(in: app) }
     }
 
     private func assertTime(hour: Int, minute: Int, in app: XCUIApplication) {
-        let hourWheel = app.pickerWheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "hour")).firstMatch
-        let minuteWheel = app.pickerWheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "minute")).firstMatch
+        let wheels = timeWheels(in: app, preferredPickerID: "calendar-notifications-time-picker")
+        let hourWheel = wheels.hour
+        let minuteWheel = wheels.minute
         XCTAssertTrue(hourWheel.waitForExistence(timeout: 8))
         XCTAssertTrue(waitWheel(hourWheel, equalsNumber: hour % 12 == 0 ? 12 : hour % 12, timeout: 3))
         XCTAssertTrue(waitWheel(minuteWheel, equalsNumber: minute, timeout: 3))
-        let meridiem = app.pickerWheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "AM/PM")).firstMatch
+        let meridiem = wheels.meridiem
         if meridiem.exists {
             XCTAssertEqual(meridiem.value as? String, hour < 12 ? "AM" : "PM")
         }
@@ -234,7 +237,7 @@ final class PositiveNoticeUITests: XCTestCase {
     }
 
     private func dismissCompactPicker(in app: XCUIApplication) {
-        let hourWheel = app.pickerWheels.matching(NSPredicate(format: "label CONTAINS[cd] %@", "hour")).firstMatch
+        let hourWheel = timeWheels(in: app, preferredPickerID: "rosary-reminder-time").hour
         guard hourWheel.exists else { return }
         let heading = app.staticTexts.matching(NSPredicate(format: "label == %@", "Rosary reminder")).firstMatch
         XCTAssertTrue(heading.waitForExistence(timeout: 4), "Use the visible heading to dismiss the native picker popup")
@@ -254,10 +257,47 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertFalse(alert.waitForExistence(timeout: 2), "The system permission alert must close after Allow")
     }
 
-    private func matchingWheelValue(hour: Int, current: String) -> String {
-        let candidates = ["\(hour)", String(format: "%02d", hour)]
-        if let currentCandidate = candidates.first(where: { current.contains($0) }) { return currentCandidate }
-        return candidates[0]
+    private func timeWheels(in app: XCUIApplication, preferredPickerID: String) -> TimeWheels {
+        let preferred = app.datePickers.matching(identifier: preferredPickerID).firstMatch
+        let visiblePickers = app.datePickers.allElementsBoundByIndex
+            .filter {
+                $0.exists && $0.frame.intersects(app.frame) &&
+                    $0.descendants(matching: .pickerWheel).count > 0
+            }
+        let picker: XCUIElement
+        if preferred.exists && preferred.frame.intersects(app.frame) &&
+            preferred.descendants(matching: .pickerWheel).count > 0 {
+            picker = preferred
+        } else if let visiblePicker = visiblePickers.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }) {
+            picker = visiblePicker
+        } else {
+            XCTFail("No visible native DatePicker was found for the requested time")
+            picker = app
+        }
+        let wheels = picker.descendants(matching: .pickerWheel)
+        let hour = wheels.matching(NSPredicate(format: "value ENDSWITH[c] %@", "o’clock"))
+        let minute = wheels.matching(NSPredicate(format: "value ENDSWITH[c] %@", "minutes"))
+        let meridiem = wheels.matching(NSPredicate(format: "value == %@ OR value == %@", "AM", "PM"))
+        NSLog("NOTICE_PICKER_HIERARCHY pickerID=%@ wheelCount=%d values=%@ locale=%@",
+              picker.identifier, wheels.count,
+              wheels.allElementsBoundByIndex.map { String(describing: $0.value) }.joined(separator: "|"),
+              Locale.current.identifier)
+        XCTAssertEqual(hour.count, 1, "The visible picker must expose one hour wheel with the observed suffix")
+        XCTAssertEqual(minute.count, 1, "The visible picker must expose one minute wheel with the observed suffix")
+        if hour.count == 1 && minute.count == 1 {
+            XCTAssertEqual(meridiem.count, 1, "The observed picker uses an AM/PM wheel")
+        }
+        return TimeWheels(hour: hour.firstMatch, minute: minute.firstMatch, meridiem: meridiem.firstMatch)
+    }
+
+    private func wheelTargetValue(number: Int, current: String) -> String {
+        guard let range = current.range(of: "[0-9]+", options: .regularExpression) else {
+            XCTFail("Picker wheel value has no numeric field: \(current)")
+            return current
+        }
+        let width = current[range].count
+        let target = String(format: "%0*d", width, number)
+        return current.replacingCharacters(in: range, with: target)
     }
 
     private func waitWheel(_ wheel: XCUIElement, equalsNumber expected: Int, timeout: TimeInterval) -> Bool {
@@ -267,6 +307,12 @@ final class PositiveNoticeUITests: XCTestCase {
             return Int(digits) == expected
         }, object: wheel)
         return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
+    }
+
+    private struct TimeWheels {
+        let hour: XCUIElement
+        let minute: XCUIElement
+        let meridiem: XCUIElement
     }
 
     private func tap(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
