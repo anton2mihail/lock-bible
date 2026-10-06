@@ -79,4 +79,10 @@ Heading metrics also remain distinct from body line spacing. Speaker labels use 
 
 The next source change captures the edition and stages chapter values before applying them. It writes the initial location. It captures idle scroll coordinates and verifies the active chapter identity. Runtime projects only a nonolder state revision. These changes can enter the first simulator batch.
 
-Verse geometry remains open in this build. Its current `max(lineHeight, 36 * scale)` raises every wrapped line. The source 44-point minimum applies to the whole padded row. Its body lines keep Scripture line height. Painted row rectangles alone do not supply padding or the full row hit region. Source view padding and gaps do not scale with font size. Main can run the paragraph, navigation, callback, and repository checks now. Full verse-layout acceptance requires the next focused geometry correction and simulator comparison.
+The earlier build used `max(lineHeight, 36 * scale)`, which raised every wrapped line. The source 44-point minimum applies to the whole padded row. Its body lines keep Scripture line height. Painted row rectangles alone do not supply padding. Source view padding and gaps do not scale with font size.
+
+## Verse metric correction: 6 October 2026
+
+The focused source patch is accepted at `ScriptureTextView.swift` SHA-256 `fecdaf4b47d50369e217d75ec1c9f82cf51ffc895eff5c141fc11e17b5c7cd89`. Body lines now use configured Scripture line height. Row edges use fixed 4-point padding. TextKit measures the rendered verse at the current width, then adds only the extra spacing needed for a 44-point row. It removes those adjustments before width reflow. The fill and outline center on the text union. The opening gap uses the source `lines.first`, `startsBlock`, heading, line-kind, and stanza predicate. Stanza and paragraph opening gaps remain 12 points.
+
+This accepts the source correction. It does not accept new line wrapping, row spacing, fill pixels, or tap points. Main must build the patch and observe John 1:2/8/10/11/12 owned word points once. Reuse those points for the remaining range transitions and clean mixed-highlight deletion. Keep paragraph blank-space hit behavior and anchor conversion unchanged. Accepted Card export content and state checks need no repeat.
