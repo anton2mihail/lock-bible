@@ -457,9 +457,20 @@ struct ReaderView: View {
                                 geometryProbe: textGeometryProbe,
                                 isDark: colorScheme == .dark,
                                 onTapVerse: { index in
+                                    // VoiceOver activation comes here directly, without `onTapChapter`.
+                                    guard router.sheet == nil else { router.sheet = nil; return }
                                     model.selectVerse(index)
                                     guard !preferences.selectionHintDismissed else { return }
                                     Task { _ = await runtime.applyWithResult(.setSelectionHintDismissed(true)) }
+                                },
+                                onTapChapter: {
+                                    // With the Aa sheet open (background interaction up to the medium detent), a tap
+                                    // on the chapter closes the sheet and selects nothing, as the old app does
+                                    // (TextSettingsSheet.tsx:55). Scrolling behind the sheet stays allowed. Without a
+                                    // selection, the selection panel cannot try to show a second sheet (Share).
+                                    guard router.sheet != nil else { return false }
+                                    router.sheet = nil
+                                    return true
                                 },
                                 onContextVerseY: { y in
                                     guard let context = model.pendingContextIndex else { return true }

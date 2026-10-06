@@ -86,6 +86,8 @@ struct ScriptureTextView: UIViewRepresentable {
     let geometryProbe: ReaderTextGeometryProbe
     let isDark: Bool
     let onTapVerse: (Int) -> Void
+    /// Runs first on each tap on the chapter text, also between verses. True takes the tap: no verse selection.
+    let onTapChapter: () -> Bool
     /// Returns true when the context verse scroll is done (now or before). False means "not ready, try again".
     let onContextVerseY: (CGFloat) -> Bool
     let onVisibleAnchor: (ReaderAnchorCaptureRequest, ReaderAnchor?) -> Void
@@ -285,6 +287,7 @@ struct ScriptureTextView: UIViewRepresentable {
 
         @objc func didTap(_ recognizer: UITapGestureRecognizer) {
             guard let view, recognizer.state == .ended else { return }
+            if parent.onTapChapter() { return }
             let location = recognizer.location(in: view)
             guard let index = view.verseIndex(at: location) else {
                 #if DEBUG
