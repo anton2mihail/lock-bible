@@ -21,7 +21,9 @@ L15 failed an exact `60s of quiet` lookup. The exported hierarchy `7FA90257-5CC4
 
 L14 failed before it typed the second Sunday reflection. L18 failed before Continue after it typed temporary notes. Their keyboard and control state require review of the recorded images. These failures do not yet establish a product defect.
 
-Main must add installed/product hashes, app process records, and the post-run native state to the run record before bounded runtime acceptance.
+Main added provenance to `content-disabled-run-01/run.txt`. Product and installed executable hashes match at `7feceee97d31c0c07c9735dccf0b2e765f63370063b417fcfaaef139aa3b7660`. The debug library hashes match at `390136ee0acb054908b0e221c5c02fa4ac6dc9504087384e6e1bf7a68f1c1fe8`. The post-run envelope has revision 118 and both notification settings disabled. The library DB, SHM, and WAL hashes match the seed. The visible disabled-save feedback is accepted on this binary. System permission, delivery, and cancellation remain open.
+
+L14 saved the `morning` favorite. The post-run envelope contains that ID. Reflections and novena progress remain empty because the test stopped before their save actions. This run does not prove their persistence or the planned restart journey.
 
 ## Search test boundary
 
