@@ -20,6 +20,8 @@ Source defines `CompanionRoute: Hashable, Sendable`. It has prayer home, dated d
 
 Source views receive an `onNavigate(CompanionRoute)` callback. Main adds the companion destination to `AppRoute` and maps existing external routes at the shared router. Citation context remains distinct from a selected passage. It uses the source WEB-CE whole-chapter mapping policy.
 
+The destination boundary also supplies `onClose` and `onOpenReader(PassageSelection)` callbacks. Main maps these to the correct pop or dismiss action and `router.openReader`. Each Reader opening keeps a fresh request ID. Source does not write router paths.
+
 ## Save and lifecycle rules
 
 Use the committed snapshot for favorites, reflections, and novena progress. Serialize saves within each feature. Derive each new value from the latest committed state. Await a true save result before a success action, reset, or return navigation. Keep the draft and show the source error state after a false result. Do not overwrite unsaved drafts when another state field changes.
