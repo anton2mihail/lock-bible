@@ -5,7 +5,6 @@ import JohnCore
 struct PrayerDetailView: View {
     let id: String
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -24,7 +23,7 @@ struct PrayerDetailView: View {
             if let prayer {
                 prayerContent(prayer)
             } else if loadFailed {
-                ContentPage(title: "Prayer is not available", eyebrow: "Prayer", subtitle: nil, onClose: onClose) {
+                ContentPage(title: "Prayer is not available", eyebrow: "Prayer", subtitle: nil) {
                     ContentMutedText(text: "The prayer could not be loaded. Please try again later.")
                 }
             } else if loaded {
@@ -44,7 +43,7 @@ struct PrayerDetailView: View {
 
     private func prayerContent(_ prayer: PrayerCatalogItem) -> some View {
         ContentPage(title: prayer.title, eyebrow: prayer.category,
-                    subtitle: prayer.subtitle, onClose: onClose) {
+                    subtitle: prayer.subtitle) {
             prayerArtwork(for: prayer.id)
                 .aspectRatio(1.7, contentMode: .fill)
                 .frame(maxWidth: .infinity)
@@ -90,7 +89,7 @@ struct PrayerDetailView: View {
     }
 
     private var notFound: some View {
-        ContentPage(title: "Prayer not found", eyebrow: nil, subtitle: nil, onClose: onClose) {
+        ContentPage(title: "Prayer not found", eyebrow: nil, subtitle: nil) {
             ContentMutedText(text: "This prayer is not in the library.")
             ContentButton(title: "Prayer library") { onNavigate(.prayers) }
         }

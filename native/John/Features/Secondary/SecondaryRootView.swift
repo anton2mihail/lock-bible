@@ -18,12 +18,11 @@ struct SecondaryRootView: View {
             SavedView()
         case .pray:
             PrayerHomeView(timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
-                           onNavigate: { router.push(.companion($0)) }, onClose: {})
+                           onNavigate: { router.push(.companion($0)) })
         case .settings:
             FullSettingsView(onOpenCalendarNotifications: { router.push(.calendarNotifications) })
         case .today:
             CompanionTodayView(onNavigate: { router.push(.companion($0)) },
-                               onClose: {},
                                onOpenVerseMoment: {
                                    router.push(.verseMoment(VerseMomentSelection(verse: $0, translation: preferences.translation)))
                                })

@@ -2,7 +2,6 @@ import SwiftUI
 import JohnCore
 
 struct WorksLibraryView: View {
-    let onClose: () -> Void
     let onOpenCollection: (String) -> Void
     let onOpenWork: (String, Int?) -> Void
 
@@ -28,18 +27,7 @@ struct WorksLibraryView: View {
     }
 
     var body: some View {
-        WorksPage(onClose: onClose) {
-            Button(action: onClose) {
-                HStack(spacing: 6) {
-                    Text("‹").font(JohnTypography.sans(24))
-                    Text("Read").font(JohnTypography.sans(14, weight: .semibold))
-                }
-                .foregroundStyle(colors.tint)
-                .frame(minHeight: 40)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Back to Read")
+        WorksPage {
             VStack(alignment: .leading, spacing: 8) {
                 WorksEyebrow("THE LIBRARY")
                 Text("The Fathers & Doctors")

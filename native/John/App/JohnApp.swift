@@ -204,7 +204,6 @@ private struct JohnRootView: View {
             CompanionTodayView(clock: { runtime.featureNow() },
                                fixedTimeZone: runtime.featureTimeZone,
                                onNavigate: { router.push(.companion($0)) },
-                               onClose: {},
                                onOpenVerseMoment: {
                                    router.push(.verseMoment(VerseMomentSelection(verse: $0, translation: preferences.translation)))
                                })

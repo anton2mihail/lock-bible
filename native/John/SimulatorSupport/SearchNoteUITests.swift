@@ -50,7 +50,7 @@ final class SearchNoteUITests: XCTestCase {
         assertResult("John 3:16", in: app)
         app.buttons["search-scope-all"].tap()
 
-        app.buttons["search-cancel-button"].tap()
+        systemBack(in: app).tap()
         selectEdition("vulgate", in: app)
         openSearch(in: app)
 
@@ -95,7 +95,7 @@ final class SearchNoteUITests: XCTestCase {
 
         app.buttons["reader-search-button"].tap()
         XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 8))
-        app.buttons["search-cancel-button"].tap()
+        systemBack(in: app).tap()
         XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["reader-verse-16"].exists)
         NSLog("SEARCH_ROUTE_RESULT reference=John3:16 openedVerse=16 repeatedResult=John3:16 cancel=Reader; rapidReplacement=final-visible-query-state")
@@ -172,6 +172,11 @@ final class SearchNoteUITests: XCTestCase {
             format: "label CONTAINS %@", "Sic enim Deus dilexit mundum"
         )).firstMatch.exists)
         NSLog("SEARCH_NOTE_RESTART rowID=note:vulgate:JHN:3:16:16 translationID=vulgate bookCode=JHN chapter=3 startVerse=16 endVerse=16 reference=IOHANNEM3:16 note=%@ currentEdition=web-ce restartCount=1 seedRequiresNoNoteForJHN3:16 and verse-by-verse layout", note)
+    }
+
+    /// The iOS 26 system glass back button of a pushed screen. It replaced the Search `search-cancel-button`.
+    private func systemBack(in app: XCUIApplication) -> XCUIElement {
+        app.navigationBars.buttons.firstMatch
     }
 
     private func openSearch(in app: XCUIApplication) {

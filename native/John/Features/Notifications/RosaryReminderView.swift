@@ -3,7 +3,6 @@ import JohnCore
 
 struct RosaryReminderView: View {
     let initialSettings: RosaryReminderSettings
-    let onClose: @MainActor () -> Void
     let onSave: @MainActor (RosaryReminderSettings) async throws -> RosaryReminderSettings
     let readCommittedSettings: @MainActor () -> RosaryReminderSettings
 
@@ -25,11 +24,9 @@ struct RosaryReminderView: View {
     ]
 
     init(initialSettings: RosaryReminderSettings,
-         onClose: @escaping @MainActor () -> Void,
          onSave: @escaping @MainActor (RosaryReminderSettings) async throws -> RosaryReminderSettings,
          readCommittedSettings: @escaping @MainActor () -> RosaryReminderSettings) {
         self.initialSettings = initialSettings
-        self.onClose = onClose
         self.onSave = onSave
         self.readCommittedSettings = readCommittedSettings
         _settings = State(initialValue: initialSettings)
@@ -38,16 +35,6 @@ struct RosaryReminderView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Button(action: onClose) {
-                    HStack(spacing: 6) {
-                        Text("‹").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
-                        Text("Rosary").font(JohnTypography.sans(14, weight: .semibold)).foregroundStyle(colors.tint)
-                    }.frame(minHeight: 40)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to Rosary")
-                .accessibilityIdentifier("rosary-reminder-back")
-
                 VStack(alignment: .leading, spacing: 8) {
                     Text("PRAYER RHYTHM").font(JohnTypography.sans(12, weight: .semibold)).tracking(1.5).foregroundStyle(colors.tint)
                     Text("Rosary reminder").font(JohnTypography.sans(36, weight: .bold)).foregroundStyle(colors.text).accessibilityAddTraits(.isHeader)

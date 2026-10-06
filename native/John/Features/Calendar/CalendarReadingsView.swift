@@ -6,7 +6,6 @@ struct CalendarReadingsView: View {
     let sunday: Bool
     let initialDateKey: String?
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
     let clock: () -> Date
     let timeZone: TimeZone
 
@@ -25,13 +24,12 @@ struct CalendarReadingsView: View {
 
     init(sunday: Bool, initialDateKey: String? = nil,
          timeZone: TimeZone = .autoupdatingCurrent, clock: @escaping () -> Date = Date.init,
-         onNavigate: @escaping (CompanionRoute) -> Void, onClose: @escaping () -> Void) {
+         onNavigate: @escaping (CompanionRoute) -> Void) {
         self.sunday = sunday
         self.initialDateKey = initialDateKey
         self.timeZone = timeZone
         self.clock = clock
         self.onNavigate = onNavigate
-        self.onClose = onClose
         let current = clock()
         let fallback = sunday ? CompanionCalendar.upcomingSunday(current, timeZone: timeZone) : current
         _day = State(initialValue: CompanionCalendar.parseDate(initialDateKey, fallback: fallback, timeZone: timeZone))
@@ -55,7 +53,7 @@ struct CalendarReadingsView: View {
     var body: some View {
         ContentPage(title: sunday ? "Come ready for Sunday" : "Today’s readings",
                     eyebrow: "\(CompanionCalendar.label) / \(CompanionCalendar.seasonNames[season] ?? season)",
-                    subtitle: nil, onClose: onClose) {
+                    subtitle: nil) {
             HStack(spacing: 12) {
                 ContentButton(title: "Previous", expandsToFill: false) { move(sunday ? -7 : -1) }
                 Spacer(minLength: 0)

@@ -5,7 +5,6 @@ struct WorksChapterCommentaryView: View {
     let bookCode: String?
     let chapter: Int?
     let bookName: String
-    let onClose: () -> Void
     let onOpenWork: (String, Int?) -> Void
 
     @Environment(JohnRuntime.self) private var runtime
@@ -31,19 +30,12 @@ struct WorksChapterCommentaryView: View {
     }
 
     var body: some View {
-        WorksPage(onClose: onClose) {
+        WorksPage {
             if failed {
                 missing("No readings on this chapter")
             } else if let catalog, entries.isEmpty {
                 missing("No readings on this chapter")
             } else if catalog != nil {
-                Button(action: onClose) {
-                    HStack(spacing: 6) { Text("‹"); Text("\(bookName) \(chapter ?? 0)") }
-                        .font(JohnTypography.sans(16, weight: .semibold)).foregroundStyle(colors.tint)
-                        .frame(minHeight: 40)
-                }.buttonStyle(.plain)
-                    .accessibilityLabel("Back to \(bookName) \(chapter ?? 0)")
-
                 VStack(alignment: .leading, spacing: 8) {
                     WorksEyebrow("THE FATHERS ON")
                     Text("\(bookName) \(chapter ?? 0)")
@@ -91,8 +83,6 @@ struct WorksChapterCommentaryView: View {
     @ViewBuilder private func missing(_ text: String) -> some View {
         VStack(spacing: 16) {
             Text(text).font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
-            Button(action: onClose) { Text("Go back").font(JohnTypography.sans(14)).foregroundStyle(colors.tint) }
-                .buttonStyle(.plain)
         }
         .frame(maxWidth: .infinity, minHeight: 240)
     }

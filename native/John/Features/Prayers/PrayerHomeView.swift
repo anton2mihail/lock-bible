@@ -3,7 +3,6 @@ import JohnCore
 
 struct PrayerHomeView: View {
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
     let clock: () -> Date
     let timeZone: TimeZone
 
@@ -15,11 +14,10 @@ struct PrayerHomeView: View {
     @State private var loadError = false
 
     init(timeZone: TimeZone = .autoupdatingCurrent, clock: @escaping () -> Date = Date.init,
-         onNavigate: @escaping (CompanionRoute) -> Void, onClose: @escaping () -> Void) {
+         onNavigate: @escaping (CompanionRoute) -> Void) {
         self.timeZone = timeZone
         self.clock = clock
         self.onNavigate = onNavigate
-        self.onClose = onClose
     }
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }

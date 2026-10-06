@@ -27,11 +27,6 @@ struct SearchView: View {
                     .foregroundStyle(colors.text)
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
-                Button("Cancel") { router.pop() }
-                    .font(JohnTypography.sans(15, weight: .medium))
-                    .foregroundStyle(colors.tint)
-                    .frame(minHeight: 44)
-                    .accessibilityIdentifier("search-cancel-button")
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)

@@ -56,7 +56,6 @@ struct RosaryGuideView: View {
                 Text("This Rosary guide is not available right now.")
                     .font(JohnTypography.sans(16))
                     .foregroundStyle(colors.textDim)
-                ContentButton(title: "Close", action: onClose)
             } else {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
             }
@@ -73,16 +72,6 @@ struct RosaryGuideView: View {
 
         return RosaryGuidePage {
             HStack(spacing: 12) {
-                Button(action: onClose) {
-                    Text("×")
-                        .font(JohnTypography.sans(24))
-                        .foregroundStyle(colors.tint)
-                        .frame(width: 44, height: 44)
-                        .background(colors.card, in: Circle())
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Close Rosary guide")
                 VStack(alignment: .center, spacing: 2) {
                     Text(session.shortTitle)
                         .font(JohnTypography.sans(14, weight: .semibold))

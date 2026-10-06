@@ -37,8 +37,7 @@ struct LectioView: View {
             if let passage {
                 guide(passage)
             } else {
-                ContentPage(title: "Pray with Scripture", eyebrow: nil, subtitle: nil,
-                            onClose: onClose) {
+                ContentPage(title: "Pray with Scripture", eyebrow: nil, subtitle: nil) {
                     ContentMutedText(text: loadFailed
                         ? "Choose a passage in the Bible reader, then select Pray."
                         : "Loading a passage for prayer…")
@@ -53,7 +52,7 @@ struct LectioView: View {
 
     private func guide(_ selection: PassageSelection) -> some View {
         ContentPage(title: step.title, eyebrow: "Lectio divina / \(stepIndex + 1) of \(Self.steps.count)",
-                    subtitle: passageReference(selection), onClose: onClose) {
+                    subtitle: passageReference(selection)) {
             ContentPanel {
                 Text(step.name)
                     .font(JohnTypography.sans(11))

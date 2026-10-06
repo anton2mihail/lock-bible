@@ -4,7 +4,6 @@ import JohnCore
 struct TeachingView: View {
     let id: String?
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -21,12 +20,11 @@ struct TeachingView: View {
         Group {
             if let loadMessage {
                 ContentPage(title: "Faith, rooted in Scripture", eyebrow: "Explore & understand",
-                            subtitle: "Small introductions to Catholic belief, with places to read more.",
-                            onClose: onClose) {
+                            subtitle: "Small introductions to Catholic belief, with places to read more.") {
                     ContentMutedText(text: loadMessage)
                 }
             } else if let id, catalog != nil, teaching == nil {
-                ContentPage(title: "Topic not found", eyebrow: nil, subtitle: nil, onClose: onClose) {
+                ContentPage(title: "Topic not found", eyebrow: nil, subtitle: nil) {
                     ContentButton(title: "Explore the faith") { onNavigate(.learn) }
                 }
             } else if let teaching {
@@ -40,8 +38,7 @@ struct TeachingView: View {
 
     private var library: some View {
         ContentPage(title: "Faith, rooted in Scripture", eyebrow: "Explore & understand",
-                    subtitle: "Small introductions to Catholic belief, with places to read more.",
-                    onClose: onClose) {
+                    subtitle: "Small introductions to Catholic belief, with places to read more.") {
             if let catalog {
                 ForEach(catalog.teachings, id: \.id) { item in
                     ContentArtCard(artwork: item.artwork, title: item.title,
@@ -57,7 +54,7 @@ struct TeachingView: View {
 
     private func detail(_ item: TeachingCatalogItem) -> some View {
         ContentPage(title: item.title, eyebrow: "Scripture & Catholic teaching",
-                    subtitle: item.subtitle, onClose: onClose) {
+                    subtitle: item.subtitle) {
             ContentArtwork(name: item.artwork)
                 .scaledToFill()
                 .aspectRatio(1.7, contentMode: .fill)

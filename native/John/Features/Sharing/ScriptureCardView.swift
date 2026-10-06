@@ -4,7 +4,6 @@ import JohnCore
 
 struct ScriptureCardView: View {
     let passage: PassageSelection
-    let onClose: () -> Void
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -39,7 +38,7 @@ struct ScriptureCardView: View {
 
     var body: some View {
         ContentPage(title: "A word worth sharing", eyebrow: "Scripture cards",
-                    subtitle: "Choose a background. Keep the words at the center.", onClose: onClose) {
+                    subtitle: "Choose a background. Keep the words at the center.") {
             HStack(spacing: 12) {
                 preset(title: "Warm ivory", selected: !plum) { plum = false }
                 preset(title: "Evening plum", selected: plum) { plum = true }

@@ -3,7 +3,6 @@ import JohnCore
 
 struct WorksCollectionView: View {
     let collectionID: String?
-    let onClose: () -> Void
     let onOpenWork: (String, Int?) -> Void
 
     @Environment(JohnRuntime.self) private var runtime
@@ -27,17 +26,10 @@ struct WorksCollectionView: View {
     }
 
     var body: some View {
-        WorksPage(onClose: onClose) {
+        WorksPage {
             if loadingFailed {
                 missing("That author isn’t available")
             } else if catalog != nil, let collection {
-                Button(action: onClose) {
-                    HStack(spacing: 6) { Text("‹"); Text("Library") }
-                        .font(JohnTypography.sans(16, weight: .semibold)).foregroundStyle(colors.tint)
-                        .frame(minHeight: 40)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to the library")
                 VStack(alignment: .leading, spacing: 8) {
                     if let era = collection.era { WorksEyebrow(era.uppercased()) }
                     Text(collection.author)
@@ -90,8 +82,6 @@ struct WorksCollectionView: View {
     @ViewBuilder private func missing(_ text: String) -> some View {
         VStack(spacing: 16) {
             Text(text).font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
-            Button(action: onClose) { Text("Go back").font(JohnTypography.sans(14)).foregroundStyle(colors.tint) }
-                .buttonStyle(.plain)
         }
         .frame(maxWidth: .infinity, minHeight: 240)
     }

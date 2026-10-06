@@ -3,7 +3,6 @@ import JohnCore
 
 struct CompanionTodayView: View {
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
     let onOpenVerseMoment: (RotatingVerse) -> Void
     let clock: () -> Date
     let fixedTimeZone: TimeZone?
@@ -18,12 +17,10 @@ struct CompanionTodayView: View {
 
     init(clock: @escaping () -> Date = Date.init, fixedTimeZone: TimeZone? = nil,
          onNavigate: @escaping (CompanionRoute) -> Void,
-         onClose: @escaping () -> Void,
          onOpenVerseMoment: @escaping (RotatingVerse) -> Void) {
         self.clock = clock
         self.fixedTimeZone = fixedTimeZone
         self.onNavigate = onNavigate
-        self.onClose = onClose
         self.onOpenVerseMoment = onOpenVerseMoment
         _now = State(initialValue: clock())
     }
@@ -38,8 +35,7 @@ struct CompanionTodayView: View {
     var body: some View {
         ContentPage(title: "A little closer to God.",
                     eyebrow: "JOHN 1:1  /  \(formattedDate(now, "EEEE, MMMM d"))",
-                    subtitle: "Scripture for your day. Space for your soul.", onClose: onClose,
-                    showsBack: false) {
+                    subtitle: "Scripture for your day. Space for your soul.") {
             // Keep the launch smoke-test anchor on the source page title.
             if let snapshot {
                 ContentArtCard(artwork: artworkName(snapshot.season),

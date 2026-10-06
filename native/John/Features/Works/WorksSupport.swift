@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct WorksPage<Content: View>: View {
-    let onClose: () -> Void
     @ViewBuilder var content: Content
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme

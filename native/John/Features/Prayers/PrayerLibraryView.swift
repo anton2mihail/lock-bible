@@ -3,7 +3,6 @@ import JohnCore
 
 struct PrayerLibraryView: View {
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -25,8 +24,7 @@ struct PrayerLibraryView: View {
 
     var body: some View {
         ContentPage(title: "Prayer for every day", eyebrow: "Keep a little quiet",
-                    subtitle: "Familiar words for ordinary moments, and the difficult ones too.",
-                    onClose: onClose) {
+                    subtitle: "Familiar words for ordinary moments, and the difficult ones too.") {
             TextField("Find a prayer…", text: $query)
                 .font(JohnTypography.sans(16))
                 .textInputAutocapitalization(.never)
