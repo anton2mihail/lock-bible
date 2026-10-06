@@ -11,6 +11,7 @@ struct ReaderView: View {
     @ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
     @Environment(\.displayScale) private var displayScale
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var readerScrollPosition = ScrollPosition(idType: String.self)
     @State private var textGeometryProbe = ReaderTextGeometryProbe()
     @State private var readerScrollOffset: CGFloat = 0
@@ -222,10 +223,26 @@ struct ReaderView: View {
         #endif
     }
 
-    /// Clips the chapter text at the top safe area only. At the bottom the mask goes into the safe area,
-    /// so the text scrolls under the floating glass tab bar.
+    /// Shows the chapter text down from the top safe area. Above that line (under the status bar) the text fades out
+    /// over the lower part of the safe area instead of a hard cut through the glyphs (audit B5). The upper part of
+    /// the safe area stays clear, so no text shows behind the status bar glyphs. At the bottom the mask goes into the
+    /// safe area, so the text scrolls under the floating glass tab bar and the selection panel.
+    /// The anchor math does not use this mask: `ReaderTextGeometryProbe` measures the visible viewport from the
+    /// window safe area. With Reduce Transparency on, the mask keeps the former hard cut at the safe area line.
     private var readerTopSafeAreaMask: some View {
-        Rectangle().fill(Color.black).ignoresSafeArea(edges: .bottom)
+        GeometryReader { proxy in
+            VStack(spacing: 0) {
+                LinearGradient(stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .clear, location: reduceTransparency ? 1 : 0.45),
+                    .init(color: reduceTransparency ? .clear : .black, location: 1),
+                ], startPoint: .top, endPoint: .bottom)
+                .frame(height: proxy.safeAreaInsets.top)
+                Rectangle().fill(Color.black)
+            }
+            .ignoresSafeArea()
+        }
+        .ignoresSafeArea()
     }
 
     private var bookList: some View {
@@ -554,6 +571,8 @@ struct ReaderView: View {
                         .frame(maxWidth: .infinity)
                     }
                     .mask(alignment: .top) { readerTopSafeAreaMask }
+                    // A soft system edge effect at the top, never `.hard` on a reading screen (audit B5 and 1.5).
+                    .scrollEdgeEffectStyle(.soft, for: .top)
                     .coordinateSpace(name: "readerScroll")
                     .scrollPosition($readerScrollPosition)
                     .accessibilityValue(String(format: "%.1f", windowSafeAreaTop))
