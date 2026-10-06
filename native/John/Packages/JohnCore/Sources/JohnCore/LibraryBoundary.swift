@@ -98,8 +98,10 @@ public actor SQLiteLibraryBoundary {
     }
 
     public func inspect() throws -> LibrarySchemaSummary {
-        let db = try openExistingLibrary()
-        return try inspect(db)
+        let opened = try openExistingLibrary()
+        defer { try? opened.handle.close() }
+        try opened.handle.validateSourceUnchanged()
+        return opened.summary
     }
 
     private func inspect(_ db: SQLiteConnection) throws -> LibrarySchemaSummary {
@@ -124,15 +126,6 @@ public actor SQLiteLibraryBoundary {
     /// Creates a consistent SQLite backup at a new path. It never replaces an existing destination.
     /// A failed attempt can leave a partial destination. A retry must use a new path.
     public func makeConsistentBackup(to destinationURL: URL) throws {
-#if DEBUG
-        NSLog("[JohnCoreSQLite] stage=backup-source-inspect-begin")
-#endif
-        let sourceSummary: LibrarySchemaSummary
-        do { sourceSummary = try inspect() }
-        catch { throw CoreError.failedBackup("backup source inspection failed: \(error)") }
-#if DEBUG
-        NSLog("[JohnCoreSQLite] stage=backup-source-inspect-complete")
-#endif
         let destination = destinationURL.standardizedFileURL
         guard destination != databaseURL else { throw CoreError.failedBackup("backup path equals library path") }
         guard !FileManager.default.fileExists(atPath: destination.path) else { throw CoreError.failedBackup("backup destination already exists") }
@@ -141,10 +134,15 @@ public actor SQLiteLibraryBoundary {
         #if DEBUG
         NSLog("[JohnCoreSQLite] stage=backup-source-open-begin")
         #endif
-        let source: SQLiteConnection
-        do { source = try openExistingLibrary() }
+        let openedSource: OpenedLibrary
+        do { openedSource = try openExistingLibrary() }
         catch { throw CoreError.failedBackup("backup source open failed: \(error)") }
-        defer { _ = source.close() }
+        let sourceHandle = openedSource.handle
+        defer { try? sourceHandle.close() }
+        let source = sourceHandle.connection
+        let sourceSummary = openedSource.summary
+        do { try sourceHandle.validateSourceUnchanged() }
+        catch { throw CoreError.failedBackup("backup source changed after inspection: \(error)") }
         #if DEBUG
         NSLog("[JohnCoreSQLite] stage=backup-source-open-complete")
         NSLog("[JohnCoreSQLite] stage=backup-target-open-begin")
@@ -189,6 +187,8 @@ public actor SQLiteLibraryBoundary {
             let errorMessage = String(cString: sqlite3_errmsg(target.handle))
             throw CoreError.failedBackup("SQLite backup failed with status \(stepStatus)/\(finishStatus): \(errorMessage)")
         }
+        do { try sourceHandle.validateSourceUnchanged() }
+        catch { throw CoreError.failedBackup("library changed during consistent backup: \(error)") }
         do { try Self.requireJournalMode(target, expected: "delete", context: "backup") }
         catch { throw CoreError.failedBackup("backup journal mode could not be normalized: \(error)") }
         let backupSummary: LibrarySchemaSummary
@@ -211,13 +211,59 @@ public actor SQLiteLibraryBoundary {
         catch { throw CoreError.failedBackup("\(error)") }
     }
 
-    private func openExistingLibrary() throws -> SQLiteConnection {
+    func openReadOnlyConnection() throws -> SQLiteLibraryReadHandle {
+        let opened = try openExistingLibrary()
+        do { try opened.handle.validateSourceUnchanged(); return opened.handle }
+        catch { try? opened.handle.close(); throw error }
+    }
+
+    private struct OpenedLibrary {
+        let handle: SQLiteLibraryReadHandle
+        let summary: LibrarySchemaSummary
+    }
+
+    private func openExistingLibrary() throws -> OpenedLibrary {
         guard FileManager.default.fileExists(atPath: databaseURL.path),
               (try? databaseURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0) ?? 0 > 0 else {
             throw CoreError.unreadableLibrary("library database is missing or empty")
         }
-        do { return try SQLiteConnection(url: databaseURL, readOnly: true) }
-        catch { throw CoreError.unreadableLibrary("library database cannot be opened: \(error)") }
+        let direct: SQLiteLibraryReadHandle
+        do { direct = .direct(try SQLiteConnection(url: databaseURL, readOnly: true)) }
+        catch {
+            guard Self.isCantOpen(error) else {
+                throw CoreError.unreadableLibrary("library database cannot be opened: \(error)")
+            }
+            return try openPrivateLibraryCopy()
+        }
+        do {
+            let summary = try inspect(direct.connection)
+            try direct.validateSourceUnchanged()
+            return OpenedLibrary(handle: direct, summary: summary)
+        } catch {
+            do { try direct.close() }
+            catch { throw CoreError.unreadableLibrary("library read connection did not close before fallback") }
+            guard Self.isCantOpen(error) else { throw error }
+            return try openPrivateLibraryCopy()
+        }
+    }
+
+    private func openPrivateLibraryCopy() throws -> OpenedLibrary {
+        let handle = try SQLiteLibraryReadHandle.privateCopy(for: databaseURL)
+        do {
+            let summary = try inspect(handle.connection)
+            try Self.requireIntegrity(handle.connection, context: "private read copy")
+            try handle.validateSourceUnchanged()
+            return OpenedLibrary(handle: handle, summary: summary)
+        } catch {
+            try? handle.close()
+            throw error
+        }
+    }
+
+    private static func isCantOpen(_ error: Error) -> Bool {
+        guard let coreError = error as? CoreError,
+              case .sqlite(let code, _) = coreError else { return false }
+        return code == SQLITE_CANTOPEN
     }
 
     private func requireColumns(_ db: SQLiteConnection, table: String, expected: [String]) throws {

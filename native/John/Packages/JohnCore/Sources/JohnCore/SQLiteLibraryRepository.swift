@@ -15,7 +15,7 @@ public actor SQLiteLibraryRepository {
     private let recoveryDirectory: URL
     private let clock: any CoreClock
     private let boundary: SQLiteLibraryBoundary
-    private var readDatabase: SQLiteConnection?
+    private var readHandle: SQLiteLibraryReadHandle?
     private var writeDatabase: SQLiteConnection?
     private var backupVerified = false
 
@@ -43,16 +43,20 @@ public actor SQLiteLibraryRepository {
             while try query.step() { rows.append(try highlightRow(query)) }
             ordered.append(contentsOf: try groupHighlightRows(rows))
         }
-        return ordered.enumerated().sorted {
+        let result = ordered.enumerated().sorted {
             if $0.element.updatedAt != $1.element.updatedAt { return $0.element.updatedAt > $1.element.updatedAt }
             return $0.offset < $1.offset
         }.map(\.element)
+        try validateReadSource()
+        return result
     }
 
     public func isBookmarked(_ id: PassageID) async throws -> Bool {
         let query = try await connection().prepare("SELECT 1 FROM bookmarks WHERE passage_key = ?")
         try query.bind(id.legacyKey, at: 1)
-        return try query.step()
+        let result = try query.step()
+        try validateReadSource()
+        return result
     }
 
     @discardableResult
@@ -127,13 +131,16 @@ public actor SQLiteLibraryRepository {
             guard let color = HighlightColor(rawValue: try query.text(1)) else { throw CoreError.invalidResource("unknown saved highlight color") }
             result.append(ChapterHighlight(verse: try query.text(0), color: color))
         }
+        try validateReadSource()
         return result
     }
 
     public func note(for id: PassageID) async throws -> String {
         let query = try await connection().prepare("SELECT note_text FROM notes WHERE passage_key = ?")
         try query.bind(id.legacyKey, at: 1)
-        return try query.step() ? query.text(0) : ""
+        let result = try query.step() ? query.text(0) : ""
+        try validateReadSource()
+        return result
     }
 
     public func saveNote(_ selection: PassageSelection, text: String) async throws {
@@ -210,16 +217,27 @@ public actor SQLiteLibraryRepository {
     }
 
     private func connection() async throws -> SQLiteConnection {
-        if let readDatabase { return readDatabase }
         if let writeDatabase { return writeDatabase }
-        _ = try await boundary.inspect()
-        if let readDatabase { return readDatabase }
-        if let writeDatabase { return writeDatabase }
-        let handle: SQLiteConnection
-        do { handle = try SQLiteConnection(url: databaseURL, readOnly: true) }
-        catch { throw CoreError.unreadableLibrary("library cannot be opened read-only") }
-        readDatabase = handle
-        return handle
+        if let readHandle {
+            try readHandle.validateSourceUnchanged()
+            return readHandle.connection
+        }
+        let handle = try await boundary.openReadOnlyConnection()
+        if let writeDatabase {
+            try handle.close()
+            return writeDatabase
+        }
+        if let readHandle {
+            try handle.close()
+            try readHandle.validateSourceUnchanged()
+            return readHandle.connection
+        }
+        readHandle = handle
+        return handle.connection
+    }
+
+    private func validateReadSource() throws {
+        try readHandle?.validateSourceUnchanged()
     }
 
     private func writableConnection() async throws -> SQLiteConnection {
@@ -237,10 +255,17 @@ public actor SQLiteLibraryRepository {
             backupVerified = true
         }
         if let writeDatabase { return writeDatabase }
+        try invalidateReadHandle()
         do { writeDatabase = try SQLiteConnection(url: databaseURL, readOnly: false) }
         catch { throw CoreError.unreadableLibrary("library cannot be opened for writing") }
         guard let writeDatabase else { throw CoreError.unreadableLibrary("library write connection is unavailable") }
         return writeDatabase
+    }
+
+    private func invalidateReadHandle() throws {
+        guard let readHandle else { return }
+        self.readHandle = nil
+        try readHandle.close()
     }
 
     private func transaction(_ db: SQLiteConnection, body: () throws -> Void) throws {
