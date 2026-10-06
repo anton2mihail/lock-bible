@@ -19,3 +19,11 @@ Current leaf controls include `prayer-favorite`, `prayer-search`, and `content-b
 Use a current public route for invalid IDs or missing citations. If no such entry exists, record that limit. Do not add a test-only product route. Keep Reader selection geometry, accepted Saved operations, and Gate A checks outside this test file.
 
 Send Main the test names, launch arguments, exact seed conditions, expected durable fields, and source hashes. Main will run the journeys in batch 4 of `Remaining-gate-runtime-order.md`. Main will preserve product/installed hashes, actual process records, screenshots, result files, and a read-only envelope inspection. Passing this helper does not complete all-route visual parity.
+
+## Accepted test source
+
+Commit `30caf1ef1544359fa8e2b4e84de99f9b446459af` completes the focused selector corrections after `fcb58e2`. The test file SHA-256 is `21f698bc3904f82c1a26d42a9a13a0129195147d7130e23da81c791ef0f57848`. Source reports a passing Swift 6 arm64 simulator SDK type-check with XCTest. This accepts source inclusion only.
+
+The file has four independently selectable tests. Three check persistence, dated routes/Lectio start-stop, and Confession clearing. The separate Rosary test uses the exact 80-action Joyful source count. It checks initial and back progress, the actual completion title/controls, and zero progress after reset. Completion has no Progress element. Guide headers use the source short titles. Novena detail uses its actual title Text, rather than the generic page-title identifier.
+
+Main must supply WEB-CE, no `morning` favorite, no reflection at `2026-09-13`, and default `st-padre-pio` progress. The fixed app date is `2026-09-13T16:00:00Z` in `America/Toronto`. The persistent journey checks those same identities after one relaunch. Timer start/stop is covered in source; natural Lectio countdown expiry remains untested. Source continues the separate `WorksSettingsUITests.swift` preparation. Main retains target membership and runtime control.
