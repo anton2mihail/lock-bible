@@ -7,7 +7,7 @@ final class MediaNotificationUITests: XCTestCase {
     }
 
     #if DEBUG
-    func testDebugMediaModeEpisodeExitAndInactiveLifecycle() throws {
+    func testDebugMediaModeEpisodeAndRouteReturnAfterActivation() throws {
         let app = XCUIApplication()
         openMedia(in: app)
         XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 10))
@@ -20,9 +20,13 @@ final class MediaNotificationUITests: XCTestCase {
         XCTAssertEqual(audio.value as? String, "Selected")
         XCTAssertEqual(video.value as? String, "Not selected")
 
-        let otherEpisode = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "rosary-media-episode-")).element(boundBy: 1)
-        XCTAssertTrue(otherEpisode.waitForExistence(timeout: 8))
+        let sourceEpisodeIDs = ["why-pray", "how-to-pray", "joyful", "sorrowful", "glorious", "luminous"]
+        for id in sourceEpisodeIDs {
+            XCTAssertTrue(app.buttons["rosary-media-episode-\(id)"].waitForExistence(timeout: 8), "Missing media entry \(id)")
+        }
+        let otherEpisode = app.buttons["rosary-media-episode-why-pray"]
         tapWhenReady(otherEpisode, in: app)
+        XCTAssertTrue(app.staticTexts["Why Pray the Rosary?"].waitForExistence(timeout: 8))
         let selectedEpisode = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isSelected == true"), object: otherEpisode)
         XCTAssertEqual(XCTWaiter.wait(for: [selectedEpisode], timeout: 5), .completed)
 
@@ -30,8 +34,8 @@ final class MediaNotificationUITests: XCTestCase {
         app.activate()
         XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 8))
         tapWhenReady(app.buttons["Back to Rosary"], in: app)
-        XCTAssertTrue(button(containing: "The Rosary with Bishop Barron", in: app).waitForExistence(timeout: 8))
-        NSLog("MEDIA_DEBUG mode=audio episodeSelected=true inactiveResume=true exit=true")
+        XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
+        NSLog("MEDIA_DEBUG mode=audio episodeID=why-pray episodeTitle=Why Pray the Rosary? afterActivation=true routeReturn=true")
     }
     #endif
 
@@ -47,7 +51,7 @@ final class MediaNotificationUITests: XCTestCase {
     }
     #endif
 
-    func testNotificationScreensSaveDisabledStateWithoutPermissionPrompt() throws {
+    func testNotificationScreensShowDisabledSaveFeedback() throws {
         let app = XCUIApplication()
         app.launch()
         app.buttons["tab-settings"].tap()
@@ -74,7 +78,7 @@ final class MediaNotificationUITests: XCTestCase {
         XCTAssertEqual(save.label, "Turn reminder off")
         tapWhenReady(save, in: app)
         XCTAssertTrue(app.staticTexts["Reminder turned off"].waitForExistence(timeout: 8))
-        NSLog("NOTIFICATION_UI enabled=false calendar=committed rosary=committed permissionPromptRequested=false")
+        NSLog("NOTIFICATION_UI calendarDisabledFeedback=true rosaryDisabledFeedback=true")
     }
 
     private func openMedia(in app: XCUIApplication) {
