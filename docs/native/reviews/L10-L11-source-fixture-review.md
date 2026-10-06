@@ -11,3 +11,11 @@ The sequence covers bookmark add, remove, and add again. It applies all four hig
 The screen contract is separate. Undo lasts 10 seconds. A failed delete keeps the item visible. A failed restore keeps undo available. A failed note save keeps the draft. Successful note save or delete returns to the prior screen. Main must show these behaviors in the simulator. Use the exact source fixture for repository comparisons and real Scripture for screen flows. Do not substitute synthetic verse text into the product UI.
 
 The old Saved note route omits the edition parameter. The approved native route preserves the saved passage's edition. This is an intentional identity correction. Keep the same passage and edition when opening or saving its note. This follows the plan's upgrade and cross-screen requirements.
+
+## Unicode note trimming
+
+The source follow-up calls the actual `saveNote` function with U+FEFF-only and U+0085-only input. U+FEFF deletes the note. U+0085 saves that character as the note text, with created/updated time `1800000000008`. Two generated outputs match. The output SHA-256 is `9a34df2dd4196d2c64ceee878d2dfd1050a1738901b95e288bfd4dccfc5975de`.
+
+The current native `saveNote` uses Foundation whitespace trimming. It keeps U+FEFF and removes U+0085. The latter case can delete text that the source saves. Source must use the exact JavaScript trim whitespace set for note text. Keep importer and state normalization unchanged. This correction belongs to L10. It does not change the accepted same-ID import binary.
+
+Source supplies a DEBUG-only comparison of the complete action fixture with an injected clock. Main runs it on the simulator. Compare all original fields, timestamps, batches, grouping, filters, and delete/restore payloads. Include both Unicode trim probes. Keep UI save failure and undo behavior in the separate Main screen checks. Native L10/L11 acceptance remains open.
