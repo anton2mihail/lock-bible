@@ -4,7 +4,7 @@ Updated: 5 October 2026
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 
-Latest checkpoint: three corrected MMKV error paths, three envelope recovery cases, and both actual process interruption boundaries are accepted. Their wrapper and fixture commits are recorded. The closed-WAL fallback source and final repository runner are accepted for simulator validation. Same-ID production import, durable startup preferences, queued/repeated URLs, the failure-state banner fix, and matching new implementation commits remain Gate A work. See `reviews/L04-error-recovery-and-closed-wal-review.md` and `reviews/L04-private-read-copy-source-review.md`.
+Latest checkpoint: three corrected MMKV error paths, three envelope recovery cases, and both actual process interruption boundaries are accepted. The failure-state banner now leaves Aa usable and passes its unchanged UI flow. The closed-WAL fallback source and final repository runner are accepted for simulator validation. Same-ID production import, durable startup preferences, queued/repeated URLs, and matching new implementation commits remain Gate A work. See `reviews/L04-error-recovery-and-closed-wal-review.md` and `reviews/L04-private-read-copy-source-review.md`.
 
 | Ticket | Owner | Depends on | Status | Implementation SHA | Sol verdict | Evidence / note |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ Latest checkpoint: three corrected MMKV error paths, three envelope recovery cas
 | L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | `c997283` | Foundation accepted; full startup/chrome open | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
 | L06–L07 | Main Luna | Gate A; L01 | Bounded Reader preparation started | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
-| L08–L12 | Luna | Plan dependencies | Queued | Pending | Pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
+| L08–L12 | Luna | Plan dependencies | Production queued; Search and library source fixtures accepted | Source fixtures `2429a8b`, `7473d79`, `ee6ca10` | Native runtime pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
 | Gate B | GPT-6.1 Sol | L06–L12 | Queued | N/A | Pending | Fresh and upgrade vertical slice; offline reader/library/widgets |
 | L13–L19 | Luna | Plan dependencies | Production queued; calendar and novena source fixtures accepted | Source fixture `1439075` | Native runtime pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
 | Gate C | GPT-6.1 Sol | L13–L19 | Queued | N/A | Pending | Devotional routes, source content, persistent and temporary state |
