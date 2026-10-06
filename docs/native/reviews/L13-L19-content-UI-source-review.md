@@ -37,3 +37,20 @@ Today requires the source root-page behavior without Back. Its Lectio action mus
 Main owns the shared metadata and rotation integration. The view's explicit date and time zone must also drive rotation. Refresh on changed rotation preferences and committed novena progress. Keep one shared calendar cache when Main replaces the old Today root. Do not keep the old TodayModel calendar decoder alongside the companion repository.
 
 Shared view types used across feature files need internal access. A frontend parse does not check cross-file private access. Main must compile the complete file set before source acceptance of these views. Lora baseline distances and large-text date-row wrapping remain focused runtime checks.
+
+## Teaching, Confession, and Novena checkpoint
+
+The dedicated Prayer root now uses the source SpaceGrotesk heading and root padding. Teaching, Confession, and Novena detail files are present. Source can continue Lectio and Rosary while it applies these corrections. No simulator acceptance is claimed.
+
+- Teaching and Confession body text uses source 17/28 and the app text color.
+- Teaching and Novena hero art uses aspect ratio 1.7, radius 18, and cover cropping. Novena library portraits crop to cover the 76-by-92 frame.
+- Confession shows “Private notes, if helpful”. Disable correction and spelling. Keep notes across internal steps. Clear them on route exit, inactive scene, finish, and external resource action.
+- A successful Novena reset clears the displayed intention. A failed intention save keeps the draft. A new route ID clears the old draft before loading and rejects stale loads and queue feedback.
+
+Use local styles from `src/screens/NovenaScreen.tsx`. Generic companion panels do not match Novena cards. Dates belong inside the heading. The about card uses radius 16, padding 16, gap 12, and a three-point tint border on the left. The progress card uses radius 20 and vertical padding 16. Day numbers use 14/21 semibold text. The selected circle uses neutral800. A completed circle uses tint. The connector is 10 by 1 and follows the completion state of the next circle.
+
+The intention card uses radius 16 and padding 16. Its input uses radius 10. The prayer card uses horizontal padding 24, vertical padding 32, radius 20, and gap 24. Opening text uses SpaceGrotesk 20/32 semibold. Prayer paragraphs use 18/30. Responses use 16/25 semibold, tint, and a two-point left border with padding 16. The source link is centered and underlined.
+
+Use the actual source size aliases: sm is 16/24, md is 18/26, xs is 14/21, and xxs is 12/18. Local overrides still apply. Novena subtitle is 16/24. About text is 16/23. The earlier message with 17-point paragraphs and 14-point responses was corrected before implementation acceptance.
+
+The coherent simulator batch must check notes across Confession steps, inactive clearing, intention reset, and failed-save draft retention. Capture Novena selected/completed states at default and large text. Parse checks do not prove lifecycle or visual behavior.
