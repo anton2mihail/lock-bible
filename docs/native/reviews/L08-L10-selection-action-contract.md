@@ -49,3 +49,13 @@ The first toolbar and Reader integration need these corrections before acceptanc
 5. Main must align toolbar controls with the Reader column on iPad. The toolbar background can span the screen.
 
 The corrected ContentFlow helper uses gestures inside the visible ScrollView area. It excludes the keyboard, tab bar, and navigation area. It records target movement. Its scroll direction must use the target's tap center, so a partly clipped target above the viewport is not moved farther upward. Runtime acceptance remains open.
+
+## Source handoff acceptance
+
+The toolbar source is accepted at SHA-256 `621a6b71b8b92153676eba620c4395fc5fe8204b329587f232bb7c5bd3b0927b`. Its capped text uses `Font.custom(fixedSize:)`, so `@ScaledMetric` does not apply a second scale. It keeps unknown bookmark state separate from mutation activity. It uses source action order, icons, swatches, row distribution, and synchronous callbacks. Swift 6 arm64 simulator type-check passed. Small-screen and large-text runtime acceptance remain open.
+
+The corrected ContentFlow source is accepted at SHA-256 `2fbfdda90ed5d74eee49a5411182e5e7a0bd80288e4d74405bfdb01dbe0dba4d`, commit `6f83b790ff5c964c7975f205707208978c571df9`. A scroll can make progress by moving the target or changing the keyboard. The timer check requires a numerical decrease. Natural timer expiry remains untested.
+
+Main's exact-note lookup and delete boundary, successful-load readiness, duplicate-write guards, captured share payload and error callback, and separate bookmark-known state are accepted for source integration. Reviewed `SavedView.swift` hash: `d0541ade730eb4e84f9ff2e4d040cc07ec9e8393b8beb29b4981e286b42021c0`. Reviewed `ReaderView.swift` hash: `24108f01792ccb217655d197589bc1837129b4c19c25e2ee54361149d3b61826`. The new note and selection runtime checks remain open.
+
+Main corrected the pinned Feather codes and added the toolbar icons. Reviewed `FeatherIcon.swift` hash: `c5c6828683d5632ccefa66118e4d0596b824126f44ce6d6a2543cad362454b70`. The Reader commentary preview now has connected work and chapter-list actions. Visual parity remains open. Verse Moment async identity and content-clock injection still require their queued corrections.
