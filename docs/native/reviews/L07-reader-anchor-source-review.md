@@ -64,3 +64,11 @@ Sol inspected all three images in `build/native-evidence/L22/reader-anchor-safea
 The source consumes a restore request before it proves view attachment and layout. It also clears the pending anchor when coordinate measurement fails. Keep that request pending until current geometry permits the restore. Issue the target after the enclosing scroll content has its final extent. Verify the actual restored glyph against the measured viewport. The top overlay uses the SwiftUI parent coordinate space and does not protect the actual status area in these images. Main must correct the actual viewport boundary.
 
 The lower-control image is bounded geometry evidence. Keep matching installed/product/process records with it before final route acceptance. Do not repeat the accepted notification comparison while these Reader fixes proceed.
+
+## Run 10 result
+
+The test captures `47:0`. The restart image shows verse 47. The footer image shows both controls above the tab bar. The reflow image shows verses 15–19, and the post-size assertion fails. The restore trace uses local Y 1166 for reflow and 5156 for restart. These results accept only the observed restart verse and lower-control placement. They do not accept exact within-verse restoration or full Reader parity.
+
+The status icons have a clear background. However, the actual clipping edge does not match the coordinate probe. In the full-size 1206 × 2622 images `05F4FC7E-4601-486B-9998-FBA6C4720F62.png` and `D7CE3DE8-F24C-4201-B3A7-02C3929347AB.png`, clipped Scripture ink starts at pixel row 372. This is 124 points at the simulator's 3× scale. The UIKit trace reports a visible top of 62 points. Main must measure the mask's actual window position. Use the same visible window boundary for clipping, capture, and restoration. A logged mask height does not establish that position.
+
+Main has suppressed ordinary reflow capture while a saved-anchor restore is pending. The updated restore loop recomputes the glyph Y after text height and scroll extent become stable. These source changes address the wrong-target mechanism. Runtime acceptance remains open. First check the actual mask position with a short geometry and image observation. Then run the focused reflow and restart check. Preserve source, product, installed binary, and process provenance.
