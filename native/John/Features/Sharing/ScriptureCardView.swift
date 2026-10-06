@@ -147,7 +147,7 @@ struct ScriptureCardView: View {
             sharePresented = true
         } catch {
             shareBusy = false
-            shareError = "The Scripture card could not be saved for sharing. You can share the words instead."
+            shareError = "The card could not be shared. Please try again, or share the text."
         }
     }
 

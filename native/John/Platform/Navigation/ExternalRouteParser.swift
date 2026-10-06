@@ -1,10 +1,17 @@
 import Foundation
 import JohnCore
 
+/// A parsed `nrsv://` URL.
+///
+/// The old app let Expo Router open the route and let each screen decide what
+/// to do with its parameters, so a bad parameter never rejected the URL. It
+/// selected a fallback. The parser keeps that rule. `AppRouter.receive` checks
+/// book and chapter against the edition.
 enum ExternalRoute: Sendable {
-    case daily(String)
+    /// `nil` when the URL has no date, or a date that fails the source check.
+    case daily(String?)
     case rosary
-    case read(bookCode: String, chapter: Int, verse: String, endVerse: String?, translation: TranslationID?)
+    case read(bookCode: String?, chapter: Int?, verse: String?, endVerse: String?, translation: TranslationID?)
 }
 
 enum ExternalRouteParser {
@@ -14,24 +21,24 @@ enum ExternalRouteParser {
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         let values = Dictionary(components.queryItems?.map { ($0.name, $0.value ?? "") } ?? [], uniquingKeysWith: { first, _ in first })
         if host == "daily" {
-            guard let date = values["date"], isValidDateKey(date) else { return nil }
-            return .daily(date)
+            // Old app: `parseDate` (src/services/companion/calendar.ts:13-18) uses today for a missing or bad date.
+            return .daily(values["date"].flatMap { isValidDateKey($0) ? $0 : nil })
         }
         if host == "pray", components.path == "/rosary" { return .rosary }
-        guard host == "read",
-              let book = values["book"], !book.isEmpty,
-              let chapter = values["chapter"].flatMap(Int.init), chapter > 0,
-              let verse = values["verse"], !verse.isEmpty else { return nil }
-        let translation: TranslationID?
-        if let raw = values["translation"] {
-            guard let parsed = TranslationID(rawValue: raw) else { return nil }
-            translation = parsed
-        } else {
-            translation = nil
-        }
-        let endVerse = values["endVerse"]
-        guard endVerse == nil || !(endVerse?.isEmpty ?? true) else { return nil }
-        return .read(bookCode: book, chapter: chapter, verse: verse, endVerse: endVerse, translation: translation)
+        guard host == "read" else { return nil }
+        // Old app: ReaderScreen.tsx:84-90 reads book, chapter, verse, endVerse, and contextRequest only.
+        // It never reads `translation`, so that value cannot change the route. Native keeps a valid value.
+        return .read(bookCode: nonEmpty(values["book"]),
+                     chapter: values["chapter"].flatMap { Int($0) },
+                     verse: nonEmpty(values["verse"]),
+                     endVerse: nonEmpty(values["endVerse"]),
+                     translation: values["translation"].flatMap { TranslationID(rawValue: $0) })
+    }
+
+    /// An empty value equals an absent value. The old Reader tests truthiness (ReaderScreen.tsx:129-130, :287, :299-300).
+    private static func nonEmpty(_ value: String?) -> String? {
+        guard let value, !value.isEmpty else { return nil }
+        return value
     }
 
     private static func isValidDateKey(_ value: String) -> Bool {

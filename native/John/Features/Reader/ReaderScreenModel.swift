@@ -107,10 +107,14 @@ import JohnCore
         let loadedBooks = await runtime.books(translation: request.translationID)
         guard manifestLoadID == request.id, handledRequestID == request.id else { return }
         books = loadedBooks
-        guard let requestedBook = books.first(where: { $0.code == request.bookCode }),
-              (1...requestedBook.chapterCount).contains(request.chapter) else {
+        guard let requestedBook = books.first(where: { $0.code == request.bookCode }) else {
             message = "This passage is not available in this edition."
             screen = .books
+            return
+        }
+        // A known book with a chapter out of range shows that book's chapter list, as the old Reader does.
+        guard (1...requestedBook.chapterCount).contains(request.chapter) else {
+            openBook(requestedBook)
             return
         }
         await openChapter(requestedBook, number: request.chapter, verse: request.verse,

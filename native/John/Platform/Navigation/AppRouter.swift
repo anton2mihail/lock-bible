@@ -107,20 +107,42 @@ enum AppSheet: String, Identifiable {
                                                   endVerse: item.endVerse) else { return }
         openReader(passage: passage)
     }
+    /// Shows the chapter list of a book. `chapter` 0 is below the valid range, so the Reader model opens the list.
+    func openReaderChapterList(bookCode: String, translation: TranslationID) {
+        selectedTab = .read
+        paths[.read] = []
+        latestChapterRequest = ReaderChapterRequest(bookCode: bookCode, chapter: 0, translationID: translation)
+        #if DEBUG
+        NSLog("John Reader request created id=%@ kind=chapterList", latestChapterRequest!.id.uuidString)
+        #endif
+    }
     func receive(_ url: URL, using runtime: JohnRuntime) async {
         guard let external = ExternalRouteParser.parse(url) else { return }
         switch external {
         case let .daily(date):
+            // Old app: a missing or bad date shows today's readings (src/services/companion/calendar.ts:13-18).
+            let key = date ?? CompanionCalendar.dateKey(runtime.featureNow(), timeZone: runtime.featureTimeZone)
             selectedTab = .today
-            paths[.today, default: []].append(.daily(date))
+            paths[.today, default: []].append(.daily(key))
         case .rosary:
             selectedTab = .pray
             paths[.pray] = [.companion(.rosaryHome)]
         case let .read(bookCode, chapter, verse, endVerse, requestedTranslation):
+            // Old app: the Read tab opens for every `read` URL. Then ReaderScreen.tsx:286-308 decides.
             let translation = requestedTranslation ?? runtime.preferences.translation
-            guard let passage = await runtime.passage(translation: translation, bookCode: bookCode,
-                                                       chapter: chapter, startVerse: verse, endVerse: endVerse ?? verse) else { return }
-            openReader(passage: passage)
+            let books = await runtime.books(translation: translation)
+            guard let bookCode, let book = books.first(where: { $0.code == bookCode }) else {
+                // Unknown or missing book: the old effect returns (ReaderScreen.tsx:287-289). Only the tab changes.
+                selectedTab = .read
+                return
+            }
+            guard let chapter, (1...book.chapterCount).contains(chapter) else {
+                // Known book, chapter missing or out of range: chapter list (ReaderScreen.tsx:302-308).
+                openReaderChapterList(bookCode: book.code, translation: translation)
+                return
+            }
+            // A missing, empty, or unknown verse opens the chapter at its top with no selection (ReaderScreen.tsx:129-130, :186-193).
+            openReader(bookCode: book.code, chapter: chapter, translation: translation, verse: verse, endVerse: endVerse)
         }
     }
 }
