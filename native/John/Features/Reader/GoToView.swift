@@ -1,9 +1,15 @@
 import SwiftUI
 import JohnCore
 
+/// Go to. The Reader shows it as a sheet with medium and large detents (audit B6), so the chapter stays in context and
+/// a swipe down closes it. The title row with Cancel stays fixed above the book list, so Cancel is always visible.
+/// Cancel and a chapter choice close it with `dismiss`, which also works for the older pushed route (`AppRoute.goTo`).
 struct GoToView: View {
     let initialBookCode: String?
     let initialChapter: Int?
+    /// True in the Reader sheet: no opaque page fill, so the sheet keeps its system (Liquid Glass) background.
+    var presentedAsSheet = false
+    @Environment(\.dismiss) private var dismiss
     @Environment(JohnRuntime.self) private var runtime
     @Environment(AppRouter.self) private var router
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -15,22 +21,28 @@ struct GoToView: View {
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
 
     var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Go to")
+                    .font(JohnTypography.sans(36, weight: .bold))
+                    .tracking(-0.8)
+                    .foregroundStyle(colors.text)
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+                Button("Cancel") { dismiss() }
+                    .font(JohnTypography.sans(15, weight: .medium))
+                    .foregroundStyle(colors.tint)
+                    .accessibilityIdentifier("go-to-cancel")
+            }
+            .frame(maxWidth: 740, alignment: .leading)
+            .padding(.horizontal, 24)
+            .padding(.top, 24)
+            .padding(.bottom, 12)
+            .frame(maxWidth: .infinity)
+
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text("Go to")
-                            .font(JohnTypography.sans(36, weight: .bold))
-                            .tracking(-0.8)
-                            .foregroundStyle(colors.text)
-                            .accessibilityAddTraits(.isHeader)
-                        Spacer()
-                        Button("Cancel") { router.pop() }
-                            .font(JohnTypography.sans(15, weight: .medium))
-                            .foregroundStyle(colors.tint)
-                            .accessibilityIdentifier("go-to-cancel")
-                    }
-
                     ForEach(BookGroupOrder.allCases, id: \.self) { group in
                         let groupBooks = books.filter { $0.group == group.rawValue }
                         if !groupBooks.isEmpty {
@@ -66,6 +78,7 @@ struct GoToView: View {
                                                 ForEach(1...book.chapterCount, id: \.self) { number in
                                                     Button {
                                                         router.openReader(bookCode: book.code, chapter: number, translation: preferences.translation)
+                                                        if presentedAsSheet { dismiss() }
                                                     } label: {
                                                         Text(String(number))
                                                             .font(JohnTypography.sans(15, weight: number == initialChapter && book.code == initialBookCode ? .semibold : .regular))
@@ -92,7 +105,7 @@ struct GoToView: View {
                 }
                 .frame(maxWidth: 740, alignment: .leading)
                 .padding(.horizontal, 24)
-                .padding(.top, 24)
+                .padding(.top, 10)
                 .padding(.bottom, 44)
                 .frame(maxWidth: .infinity)
             }
@@ -106,12 +119,14 @@ struct GoToView: View {
                 }
             }
         }
-        .background(colors.background)
+        }
+        .background(presentedAsSheet ? Color.clear : colors.background)
     }
 
     private func selectBook(_ book: BibleBookDescriptor) {
         guard book.chapterCount > 1 else {
             router.openReader(bookCode: book.code, chapter: 1, translation: preferences.translation)
+            if presentedAsSheet { dismiss() }
             return
         }
         openBookCode = openBookCode == book.code ? nil : book.code

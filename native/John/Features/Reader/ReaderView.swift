@@ -197,8 +197,16 @@ struct ReaderView: View {
             Task { await loadBookmarkState(passage, chapterRequestID: chapterRequestID, selectionID: identity) }
         }
         .onAppear { model.prepareVisibleLocationRestore(preferences.readerLocation) }
-        .sheet(isPresented: Binding(get: { router.sheet == .readerAppearance }, set: { if !$0 { router.sheet = nil } })) {
-            ReaderTextSettingsSheet { router.sheet = nil }
+        .sheet(item: Binding(get: { router.sheet }, set: { router.sheet = $0 })) { sheet in
+            switch sheet {
+            case .readerAppearance:
+                ReaderTextSettingsSheet { router.sheet = nil }
+            case .goTo:
+                // Go to as a sheet (audit B6): the chapter stays in context above it, and a swipe down closes it.
+                GoToView(initialBookCode: model.book?.code, initialChapter: model.currentChapterNumber,
+                         presentedAsSheet: true)
+                    .presentationDetents([.medium, .large])
+            }
         }
     }
 
@@ -730,7 +738,7 @@ struct ReaderView: View {
     }
 
     private func openGoTo() {
-        router.push(.goTo(bookCode: model.book?.code, chapter: model.currentChapterNumber))
+        router.sheet = .goTo
     }
 
     private func openSearch() { router.push(.search) }

@@ -65,6 +65,8 @@ struct VerseMomentSelection: Hashable, Sendable {
 
 enum AppSheet: String, Identifiable {
     case readerAppearance
+    /// Go to, shown as a sheet over the Reader (audit B6). The Reader passes its current book and chapter.
+    case goTo
     var id: String { rawValue }
 }
 
