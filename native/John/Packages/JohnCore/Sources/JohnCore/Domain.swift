@@ -165,10 +165,14 @@ public struct ReaderLocation: Codable, Hashable, Sendable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedScrollY = try values.decode(Double.self, forKey: .scrollY)
+        guard decodedScrollY >= 0 else {
+            throw CoreError.invalidIdentity("reader location")
+        }
         try self.init(
             bookCode: values.decode(BookCode.self, forKey: .bookCode),
             chapter: values.decode(Int.self, forKey: .chapter),
-            scrollY: values.decode(Double.self, forKey: .scrollY),
+            scrollY: decodedScrollY,
             updatedAt: values.decodeIfPresent(Int64.self, forKey: .updatedAt) ?? 0,
             anchor: values.decodeIfPresent(ReaderAnchor.self, forKey: .anchor)
         )
