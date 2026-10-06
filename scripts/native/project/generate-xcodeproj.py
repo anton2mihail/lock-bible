@@ -38,7 +38,7 @@ shared_product_id = oid("product:JohnSharedResources.framework")
 source_files = {
     "App": ["JohnApp.swift", "Runtime.swift"],
     "DesignSystem": ["Theme.swift", "FeatherIcon.swift", "FlatTabBar.swift", "AppComponents.swift"],
-    "Features/Today": ["TodayModel.swift", "TodayView.swift"],
+    "Features/Today": ["TodayModel.swift"],
     "Features/Secondary": ["SecondaryRootView.swift", "DestinationView.swift", "SearchView.swift", "SavedView.swift"],
     "Features/Reader": ["ReaderScreenModel.swift", "ReaderView.swift", "GoToView.swift", "ReaderSelectionToolbar.swift"],
     "Features/Companion": ["CompanionRoute.swift", "ContentPage.swift", "CompanionTodayView.swift", "TeachingView.swift"],
