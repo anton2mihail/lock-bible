@@ -390,10 +390,28 @@ private struct WorkPageTextView: UIViewRepresentable {
         view.backgroundColor = .clear
         view.textContainerInset = .zero
         view.textContainer.lineFragmentPadding = 0
+        view.textContainer.widthTracksTextView = true
+        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        view.setContentHuggingPriority(.defaultLow, for: .horizontal)
         view.accessibilityIdentifier = "works-prose-text"
         return view
     }
-    func updateUIView(_ view: UITextView, context: Context) { view.attributedText = page }
+    func updateUIView(_ view: UITextView, context: Context) {
+        view.attributedText = page
+        let width = view.bounds.width
+        if width.isFinite, width > 0 {
+            view.textContainer.size = CGSize(width: width, height: .greatestFiniteMagnitude)
+            view.layoutManager.ensureLayout(for: view.textContainer)
+        }
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UITextView, context: Context) -> CGSize? {
+        guard let width = proposal.width, width.isFinite, width > 0 else { return nil }
+        uiView.textContainer.size = CGSize(width: width, height: .greatestFiniteMagnitude)
+        uiView.layoutManager.ensureLayout(for: uiView.textContainer)
+        let measured = uiView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        return CGSize(width: width, height: proposal.height ?? measured.height)
+    }
 }
 
 private enum WorkTextPaginator {
