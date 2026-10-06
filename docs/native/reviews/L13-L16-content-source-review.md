@@ -44,3 +44,11 @@ Source committed the three Core files at `d1b045a2f926af16eb7aae137ba42b338bc318
 The citation helper at `4bf433cd35f6fc1afcbeed2c627a1c5583bd919519130ec92eb77e60a810e89b` remains provisional. The preparation copy has the corrected ASCII-digit pattern, but the committed copy still has `\d`. The eight-case host comparison calls the preparation module's helper. It does not yet check the committed helper. Source must fix that production pattern in a separate small commit and call the JohnCore symbol in the comparison.
 
 The current package can build for Reader, Search, and library checks. New content views can proceed. Do not hold these tasks for the narrow citation follow-up. Citation runtime and full content acceptance remain open.
+
+## Final citation source acceptance
+
+Source committed the ASCII chapter pattern as `5fcd729508a6c06145cb868c18e7515e34195362`. The final helper hash is `7a7d3dcaef93c5ccd470e79b005e848f6c4555d84995bf79f0a099740a09b49c`. The comparator now calls `JohnCore.CompanionReferenceTargetParser` directly. All eight citation cases match. The explicit iPhoneSimulator26.5 target build passes. Sol accepts this source boundary for implementation.
+
+The final host report passes 14 named checks. It has 858 reading maps, 2,922 celebrations, 324 novena transition steps, seven callback steps, and 900 Today observations. The malformed-input check remains labeled source fixture evidence. This report does not prove content UI or simulator behavior.
+
+Source has started new Companion and Prayer view files. Main can build the Reader, Search, and library runtime batch with the frozen Core files. New content UI does not block that batch.
