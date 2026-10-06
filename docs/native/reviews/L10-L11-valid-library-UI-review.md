@@ -23,3 +23,9 @@ Reviewed on 6 October 2026. App PID is 63341. The leaf identifier is now exposed
 The note-delete screenshot at 22.36 seconds shows the sheet partway down during dismissal. The deletion tap starts at 21.61 seconds. The log then confirms Bookmarks selected and two rows at 23.04–23.17 seconds. It reaches the John 3:16 Delete action at 24.42 seconds. This evidence does not establish a sheet that stays open at the later Undo tap at 25.94 seconds.
 
 The Boolean sheet binding supplies `SavedNoteEditor`. Its success callbacks reload and call `dismiss()`. Add bounded waits for the editor to disappear and the next control to become hittable. These waits are not a proven fix for the Undo position. Before another full run, perform a short delete/Undo check. Record the actual Undo frame, hittability, tab-bar frames, and screenshot. Check the nested bottom safe-area insets in Saved and the root. If the banner overlaps the tab bar, reserve layout height above the bar. Do not tap a stale or invalid coordinate.
+
+## Direct Undo geometry
+
+`saved-undo-geometry-01.log` confirms the layout defect. Undo has frame `{{348.33,809},{35.67,18}}` and is not hittable. The Settings tab has frame `{{321.67,791},{80.33,49}}`. Undo overlaps that tab.
+
+The source now places the banner after the list or empty state in the normal Saved VStack. This is the correct layout boundary. It reserves space above the root tab bar. Restore the source bar and button metrics in the same change: bar height at least 52, horizontal margins 16, bottom margin 8, radius 12, border, left/right padding 16/8, and a 56 by 44 minimum Undo button. The corrected short probe must check that the Undo bottom is above the tab top, confirm hittability, tap it, and verify the exact deleted ID returns. Corrected geometry and restore remain open until observed.
