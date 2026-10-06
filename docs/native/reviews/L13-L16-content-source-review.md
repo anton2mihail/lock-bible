@@ -26,3 +26,13 @@ The revised Toronto host report passes 13 checks with no mismatches. It reports 
 The malformed-input check uses a comparator-only raw normalizer. It does not verify a production selector. Treat that result as source-shape evidence. The other 12 checks support the content contract. Do not add a second production raw normalizer for this check.
 
 Sol permits parallel content implementation under `Parallel-content-UI-contract.md`. Final production source hashes and SDK selection remain required. The draft simulator log has a MacOSX sysroot warning. Source must report or correct the SDK command before SDK acceptance. Feature runtime and visual parity remain open.
+
+## Bounded promotion acceptance
+
+Source corrected the SDK command to build only `ContentPreparation`, with `--triple arm64-apple-ios26.0-simulator` and the explicit iPhoneSimulator26.5 SDK. The revised target-only log passes without the sysroot warning. Sol accepts this SDK build for preparation.
+
+Sol permits production promotion of `ContentModels.swift` at SHA-256 `5bfb8a6e59b214f7c7b0899011310fbf0c12d371cc0aa0ed38341c233bb2be0b` and `CompanionRepository.swift` at `45a0a645fd5e944eb875a1b670be0ebc53182309a4f98a407904fb8c099708be`. Remove the preparation-only import of JohnCore when these files enter that same module. Keep the comparator outside production package sources. Source must send the final promoted hashes and scoped commit before Main's next shared build.
+
+The repository includes a date-based prayer selector. It derives the local hour with the supplied time zone and calls the hour-based selector. The malformed-input result is now labeled `sourceFixture.malformedInputExpected`. It remains source fixture evidence. The latest saved report before the final relabel has 900 Today observations, including the new date-edge checks. Source must align the final report with the comparator.
+
+The Core and view implementation can proceed while the corrected Reader UI check runs. No content UI parity or simulator selector acceptance is claimed by this decision.
