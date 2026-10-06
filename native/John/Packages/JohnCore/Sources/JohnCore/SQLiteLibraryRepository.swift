@@ -145,7 +145,7 @@ public actor SQLiteLibraryRepository {
 
     public func saveNote(_ selection: PassageSelection, text: String) async throws {
         let db = try await writableConnection()
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = trimJavaScriptWhitespace(text)
         if trimmed.isEmpty {
             try transaction(db) {
                 let delete = try db.prepare("DELETE FROM notes WHERE passage_key = ?")
@@ -343,6 +343,33 @@ public actor SQLiteLibraryRepository {
 
     private func passageKey(_ item: SavedItem) -> String {
         "\(item.translationID):\(item.bookCode):\(item.chapter):\(item.startVerse):\(item.endVerse)"
+    }
+}
+
+/// Match JavaScript String.trim for legacy note values.
+/// U+FEFF is whitespace here. U+0085 is not.
+private func trimJavaScriptWhitespace(_ value: String) -> String {
+    let scalars = value.unicodeScalars
+    var start = scalars.startIndex
+    var end = scalars.endIndex
+    while start < end, isJavaScriptTrimWhitespace(scalars[start]) {
+        start = scalars.index(after: start)
+    }
+    while start < end {
+        let previous = scalars.index(before: end)
+        guard isJavaScriptTrimWhitespace(scalars[previous]) else { break }
+        end = previous
+    }
+    return String(scalars[start..<end])
+}
+
+private func isJavaScriptTrimWhitespace(_ scalar: Unicode.Scalar) -> Bool {
+    switch scalar.value {
+    case 0x0009...0x000D, 0x0020, 0x00A0, 0x1680,
+         0x2000...0x200A, 0x2028...0x2029, 0x202F, 0x205F, 0x3000, 0xFEFF:
+        return true
+    default:
+        return false
     }
 }
 
