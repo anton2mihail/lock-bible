@@ -75,7 +75,7 @@ final class ScriptureCardUITests: XCTestCase {
     private func openCardFromVerseMoment(in app: XCUIApplication) {
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
-        tapWhenReady(app.buttons["today-verse-card"], in: app)
+        tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: app)
         tapWhenReady(app.buttons["verse-moment-scripture-card"], in: app)
         let title = app.staticTexts["content-page-title"]
         XCTAssertTrue(title.waitForExistence(timeout: 10))

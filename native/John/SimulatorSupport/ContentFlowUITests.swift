@@ -281,7 +281,7 @@ final class ContentFlowUITests: XCTestCase {
         try requireStep7("verse-moment")
         let env = ProcessInfo.processInfo.environment
         let app = step7Launch()
-        tapWhenReady(app.buttons["today-verse-card"], in: app)
+        tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: app)
         XCTAssertEqual(waitForPageTitle(app), "Verse of the moment")
         let countdown = app.staticTexts.matching(NSPredicate(
             format: "label MATCHES %@", "^New verse in ([0-9]+ min|[0-9]+h|[0-9]+h [0-9]+m)$")).firstMatch
@@ -341,7 +341,7 @@ final class ContentFlowUITests: XCTestCase {
         if guideShown {
             app.terminate()
             let relaunched = step7Launch()
-            tapWhenReady(relaunched.buttons["today-verse-card"], in: relaunched)
+            tapWhenReady(relaunched.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: relaunched)
             XCTAssertEqual(waitForPageTitle(relaunched), "Verse of the moment")
             XCTAssertFalse(relaunched.buttons["verse-widget-guide-dismiss"].waitForExistence(timeout: 3),
                            "The guide dismissal must survive a fresh process")
@@ -530,7 +530,7 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(app.buttons["reader-back"].exists, "The Reader must keep its Back control")
             step7Attach("step7-fault-chapter-missing", app: app)
         case "artwork-ivory-missing", "artwork-plum-missing":
-            tapWhenReady(app.buttons["today-verse-card"], in: app)
+            tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: app)
             XCTAssertEqual(waitForPageTitle(app), "Verse of the moment")
             tapWhenReady(app.buttons["verse-moment-scripture-card"], in: app)
             XCTAssertEqual(waitForPageTitle(app), "A word worth sharing")
@@ -580,7 +580,7 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["Search could not be completed. Try a different phrase."].waitForExistence(timeout: 15))
             step7Attach("step7-fault-search-db", app: app)
         case "reading-reference-invalid":
-            tapWhenReady(app.buttons["today-readings-card"], in: app)
+            tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Today’s readings")).firstMatch, in: app)
             let row = button(containing: "Nonexistent 99:1", in: app)
             tapWhenReady(row, in: app)
             XCTAssertTrue(app.staticTexts["This reference could not be opened. You can find the passage using Bible search."]
