@@ -86,6 +86,7 @@ struct SettingsControls: View {
                     Text("Verse by verse").tag(ReaderLayout.verses.rawValue)
                 }
                 .accessibilityIdentifier("settings-reading-layout")
+                .accessibilityValue(preferences.reading.layout == .verses ? "Verse by verse" : "Paragraphs")
                 .accessibilityHint("With VoiceOver on, the reader always goes verse by verse.")
                 Picker("Appearance", selection: Binding(
                     get: { preferences.appearance },
@@ -94,6 +95,7 @@ struct SettingsControls: View {
                     ForEach(AppearanceMode.allCases) { mode in Text(mode.rawValue.capitalized).tag(mode) }
                 }
                 .accessibilityIdentifier("settings-appearance")
+                .accessibilityValue(preferences.appearance.rawValue.capitalized)
                 Picker("Bible", selection: Binding(
                     get: { preferences.translation.rawValue },
                     set: { value in
@@ -106,6 +108,7 @@ struct SettingsControls: View {
                     Text("Vulgate").tag(TranslationID.vulgate.rawValue)
                 }
                 .accessibilityIdentifier("settings-translation")
+                .accessibilityValue(translationAccessibilityValue)
                 Picker("Line spacing", selection: Binding(
                     get: { preferences.reading.lineSpacing.rawValue },
                     set: { value in
@@ -118,6 +121,7 @@ struct SettingsControls: View {
                     Text("Relaxed").tag(ReaderLineSpacing.relaxed.rawValue)
                 }
                 .accessibilityIdentifier("settings-line-spacing")
+                .accessibilityValue(preferences.reading.lineSpacing.rawValue.capitalized)
                 Picker("Scripture typeface", selection: Binding(
                     get: { preferences.reading.typeface.rawValue },
                     set: { value in
@@ -129,6 +133,7 @@ struct SettingsControls: View {
                     Text("Sans").tag(ReaderTypeface.sans.rawValue)
                 }
                 .accessibilityIdentifier("settings-scripture-typeface")
+                .accessibilityValue(preferences.reading.typeface.rawValue.capitalized)
             }
             .pickerStyle(.menu)
         }
@@ -140,6 +145,14 @@ struct SettingsControls: View {
         case .medium: "Medium"
         case .large: "Large"
         case .extraLarge: "Extra large"
+        }
+    }
+
+    private var translationAccessibilityValue: String {
+        switch preferences.translation {
+        case .webCE: "WEB"
+        case .douayRheims: "Douay-Rheims"
+        case .vulgate: "Vulgate"
         }
     }
 }

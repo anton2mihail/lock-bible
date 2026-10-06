@@ -227,11 +227,7 @@ struct ReaderView: View {
     }
 
     private var readerTopSafeAreaMask: some View {
-        VStack(spacing: 0) {
-            Color.clear.frame(height: readerTopClipInset)
-            Rectangle().fill(Color.black)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        Rectangle().fill(Color.black)
     }
 
     private var bookList: some View {

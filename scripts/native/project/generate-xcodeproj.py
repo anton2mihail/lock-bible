@@ -59,6 +59,14 @@ source_files = {
         "WorksSettingsUITests.swift",
         "MediaNotificationUITests.swift",
         "SearchNoteUITests.swift",
+        "ScriptureCardUITests.swift",
+        "AllRouteCaptureUITests.swift",
+        "ReaderSelectionActionsUITests.swift",
+        "ReaderParityUITests.swift",
+        "LectioTimerUITests.swift",
+        "CalendarBoundaryUITests.swift",
+        "ReleasePerformanceUITests.swift",
+        "PositiveNoticeUITests.swift",
     ],
 }
 
@@ -118,6 +126,13 @@ for name, filetype in [
 app_resources_id = add("resource:App", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/App"; sourceTree = SOURCE_ROOT; }')
 widget_resources_id = add("resource:Widget", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/Widget"; sourceTree = SOURCE_ROOT; }')
 
+# Keep L28 app resources separate from the L03 Bible and Works corpus folders.
+l28_asset_catalog_ref = add("resource:L28-Assets", '{ isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; }')
+l28_launch_storyboard_ref = add("resource:L28-LaunchStoryboard", '{ isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Launch/SplashScreen.storyboard; sourceTree = "<group>"; }')
+l28_legal_folder_ref = add("resource:L28-Legal", '{ isa = PBXFileReference; lastKnownFileType = folder; path = Legal; sourceTree = "<group>"; }')
+l28_app_privacy_ref = add("resource:L28-AppPrivacy", '{ isa = PBXFileReference; lastKnownFileType = text.xml; path = App/PrivacyInfo.xcprivacy; sourceTree = "<group>"; }')
+l28_widget_privacy_ref = add("resource:L28-WidgetPrivacy", '{ isa = PBXFileReference; lastKnownFileType = text.xml; path = Widget/PrivacyInfo.xcprivacy; sourceTree = "<group>"; }')
+
 app_source_builds = [add(f"build-source-app:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for group in ("App", "DesignSystem", "Features/Today", "Features/Secondary", "Features/Reader", "Features/Companion", "Features/Prayers", "Features/Calendar", "Features/Guides", "Features/Sharing", "Features/Works", "Features/Media", "Features/Settings", "Features/Notifications", "Platform/Navigation", "Platform/Notifications", "Platform/Media", "Platform/Text") for p in [f"{group}/{name}" for name in source_files[group]]]
 legacy_reader_ref = add("file:LegacyAdapter/LegacyMMKVReader.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LegacyMMKVReader.swift; path = LegacyAdapter/LegacyMMKVReader.swift; sourceTree = SOURCE_ROOT; }')
 legacy_reader_build = add("build-source-app:LegacyMMKVReader.swift", f"{{ isa = PBXBuildFile; fileRef = {legacy_reader_ref}; }}")
@@ -140,8 +155,14 @@ for path in adapter_source_paths:
     settings = ' settings = { COMPILER_FLAGS = "-fno-objc-arc"; };' if path in mmkv_no_arc else ""
     adapter_source_builds.append(add(f"build-source-adapter:{path}", f"{{ isa = PBXBuildFile; fileRef = {adapter_file_refs[path]};{settings} }}"))
 feather_build = add("build-resource-feather", f"{{ isa = PBXBuildFile; fileRef = {plist_refs['Resources/Feather.ttf']}; }}")
+feather_license_build = add("build-resource-feather-license", f"{{ isa = PBXBuildFile; fileRef = {plist_refs['Resources/Feather-LICENSE.txt']}; }}")
 app_resource_build = add("build-resource-app-folder", f"{{ isa = PBXBuildFile; fileRef = {app_resources_id}; }}")
 widget_resource_build = add("build-resource-widget-folder", f"{{ isa = PBXBuildFile; fileRef = {widget_resources_id}; }}")
+l28_asset_build = add("build-resource-L28-assets", f"{{ isa = PBXBuildFile; fileRef = {l28_asset_catalog_ref}; }}")
+l28_launch_build = add("build-resource-L28-launch", f"{{ isa = PBXBuildFile; fileRef = {l28_launch_storyboard_ref}; }}")
+l28_legal_build = add("build-resource-L28-legal", f"{{ isa = PBXBuildFile; fileRef = {l28_legal_folder_ref}; }}")
+l28_app_privacy_build = add("build-resource-L28-app-privacy", f"{{ isa = PBXBuildFile; fileRef = {l28_app_privacy_ref}; }}")
+l28_widget_privacy_build = add("build-resource-L28-widget-privacy", f"{{ isa = PBXBuildFile; fileRef = {l28_widget_privacy_ref}; }}")
 app_package_ref = oid("JohnCoreLocalPackage")
 app_package_dep = oid("JohnCoreAppProduct")
 widget_package_dep = oid("JohnCoreWidgetProduct")
@@ -172,8 +193,8 @@ adapter_frameworks_phase = phase("phase-adapter-frameworks", "PBXFrameworksBuild
 app_frameworks_phase = phase("phase-app-frameworks", "PBXFrameworksBuildPhase", [app_package_build, adapter_product_build, app_zlib_build, app_libcxx_build])
 widget_frameworks_phase = phase("phase-widget-frameworks", "PBXFrameworksBuildPhase", [widget_package_build])
 ui_frameworks_phase = phase("phase-ui-frameworks", "PBXFrameworksBuildPhase", [])
-app_resources_phase = phase("phase-app-resources", "PBXResourcesBuildPhase", [app_resource_build, feather_build])
-widget_resources_phase = phase("phase-widget-resources", "PBXResourcesBuildPhase", [widget_resource_build])
+app_resources_phase = phase("phase-app-resources", "PBXResourcesBuildPhase", [app_resource_build, feather_build, feather_license_build, l28_asset_build, l28_launch_build, l28_legal_build, l28_app_privacy_build])
+widget_resources_phase = phase("phase-widget-resources", "PBXResourcesBuildPhase", [widget_resource_build, l28_widget_privacy_build])
 ui_resources_phase = phase("phase-ui-resources", "PBXResourcesBuildPhase", [])
 embed_phase = phase("phase-embed-widget", "PBXCopyFilesBuildPhase", [widget_embed_build], dstPath='""', dstSubfolderSpec="13", name='"Embed App Extensions"')
 
@@ -200,6 +221,7 @@ project_config_ids.extend([
     build_config("Release", {**project_common, "DEBUG_INFORMATION_FORMAT": '"dwarf-with-dsym"', "SWIFT_COMPILATION_MODE": "wholemodule", "SWIFT_OPTIMIZATION_LEVEL": '"-O"'}, "project"),
 ])
 app_common = {
+    "ASSETCATALOG_COMPILER_APPICON_NAME": '"AppIcon"',
     "CODE_SIGN_STYLE": "Automatic",
     "GENERATE_INFOPLIST_FILE": "NO",
     "INFOPLIST_FILE": '"App/Info.plist"',
@@ -290,10 +312,11 @@ app_group = add("group:AppPlist", f"{{ isa = PBXGroup; children = ({', '.join(ap
 widget_group = add("group:WidgetInfo", f"{{ isa = PBXGroup; children = ({widget_info_ref}, ); path = Widget; sourceTree = \"<group>\"; }}")
 resources_group = add("group:Resources", f"{{ isa = PBXGroup; children = ({plist_refs['Resources/Feather.ttf']}, {plist_refs['Resources/Feather-LICENSE.txt']}, ); path = Resources; sourceTree = \"<group>\"; }}")
 staged_group = add("group:Staged", f"{{ isa = PBXGroup; children = ({app_resources_id}, {widget_resources_id}, ); name = \"Staged Resources\"; sourceTree = \"<group>\"; }}")
+release_resources_group = add("group:ReleaseResources", f"{{ isa = PBXGroup; children = ({l28_asset_catalog_ref}, {l28_launch_storyboard_ref}, {l28_legal_folder_ref}, {l28_app_privacy_ref}, {l28_widget_privacy_ref}, ); name = \"L28 Release Resources\"; path = \"Resources/Release/Resources\"; sourceTree = \"<group>\"; }}")
 core_group = add("group:JohnCore", '{ isa = PBXGroup; children = (); name = JohnCore; path = Packages/JohnCore; sourceTree = SOURCE_ROOT; }')
 adapter_group = add("group:LegacyAdapter", f"{{ isa = PBXGroup; children = ({legacy_reader_ref}, {', '.join(adapter_children)}, {adapter_foundation_ref}, {adapter_zlib_ref}, {adapter_libcxx_ref}, ); name = LegacyAdapter; path = LegacyAdapter; sourceTree = \"<group>\"; }}")
 scenario_group = add("group:ScenarioRunner", f"{{ isa = PBXGroup; children = ({scenario_runner_ref}, {recovery_runner_ref}, {repository_runner_ref}, ); name = \"L04 simulator scenarios\"; sourceTree = \"<group>\"; }}")
-main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Features/Companion"], group_ids["Features/Prayers"], group_ids["Features/Calendar"], group_ids["Features/Guides"], group_ids["Features/Sharing"], group_ids["Features/Works"], group_ids["Features/Media"], group_ids["Features/Settings"], group_ids["Features/Notifications"], group_ids["Platform/Navigation"], group_ids["Platform/Notifications"], group_ids["Platform/Media"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, core_group, adapter_group, scenario_group, products_group]
+main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Features/Companion"], group_ids["Features/Prayers"], group_ids["Features/Calendar"], group_ids["Features/Guides"], group_ids["Features/Sharing"], group_ids["Features/Works"], group_ids["Features/Media"], group_ids["Features/Settings"], group_ids["Features/Notifications"], group_ids["Platform/Navigation"], group_ids["Platform/Notifications"], group_ids["Platform/Media"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, release_resources_group, core_group, adapter_group, scenario_group, products_group]
 main_group = add("group-main", f"{{ isa = PBXGroup; children = ({', '.join(main_children)}, ); sourceTree = \"<group>\"; }}")
 
 container_proxy = add("proxy-app-embeds-widget", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {widget_target_id}; remoteInfo = JohnWidget; }}")
