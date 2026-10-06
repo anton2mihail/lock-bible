@@ -32,7 +32,7 @@ final class ScriptureCardUITests: XCTestCase {
         // The second plum export checks that the route can create another temporary image
         // after the first panel is cancelled and the first image is released.
         exportAndCancel(label: "plum-repeat", in: app)
-        NSLog("CARD_LONG_EXPORT passage=WEB-CE:Psalms:2:1-12 utf16=1043 references=\"Psalms 2:1–12\" presets=ivory,plum captures=ivory,plum,plum-repeat cancel=system-share-panel")
+        NSLog("CARD_LONG_EXPORT passage=WEB-CE:Psalms:2:1-12 canonicalRawUTF16=1043 references=\"Psalms 2:1–12\" presets=ivory,plum captures=ivory,plum,plum-repeat cancel=system-share-panel")
     }
 
     func testLongCardSharePresentationOnIPadWhereSupported() throws {
@@ -86,7 +86,7 @@ final class ScriptureCardUITests: XCTestCase {
             predicate: NSPredicate(format: "label == %@", "Psalms 2:1–12"), object: reference)
         XCTAssertEqual(XCTWaiter.wait(for: [referenceReady], timeout: 8), .completed,
                        "The selected reference must identify the complete Psalm range")
-        NSLog("CARD_SELECTED_RANGE reference=Psalms2:1-12 translation=web-ce utf16=1043")
+        NSLog("CARD_SELECTED_RANGE reference=Psalms2:1-12 translation=web-ce canonicalRawUTF16=1043")
     }
 
     private func setEdition(_ edition: String, in app: XCUIApplication) {
