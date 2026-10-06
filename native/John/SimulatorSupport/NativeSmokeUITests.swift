@@ -2,6 +2,82 @@ import XCTest
 
 @MainActor
 final class NativeSmokeUITests: XCTestCase {
+    func testReaderVerseWordPointDiagnostic() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+
+        app.buttons["tab-settings"].tap()
+        XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
+        let layout = app.buttons["settings-layout-verse-by-verse"]
+        XCTAssertTrue(layout.waitForExistence(timeout: 8))
+        if (layout.value as? String) != "Selected" { layout.tap() }
+        let web = app.buttons["translation-web-ce"]
+        XCTAssertTrue(web.waitForExistence(timeout: 8))
+        if (web.value as? String) != "Selected" { web.tap() }
+        app.buttons["tab-read"].tap()
+
+        let bookList = app.staticTexts["reader-book-list-title"]
+        for _ in 0..<3 where !bookList.exists {
+            let back = app.buttons["reader-back"]
+            XCTAssertTrue(back.waitForExistence(timeout: 8))
+            back.tap()
+        }
+        XCTAssertTrue(bookList.waitForExistence(timeout: 8))
+        let john = app.buttons["reader-book-JHN"]
+        XCTAssertTrue(john.waitForExistence(timeout: 8))
+        john.tap()
+        let chapter = app.buttons["reader-chapter-1"]
+        XCTAssertTrue(chapter.waitForExistence(timeout: 8))
+        chapter.tap()
+        XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 8))
+
+        for number in [10, 11, 12] {
+            let verse = app.buttons["reader-verse-\(number)"]
+            XCTAssertTrue(verse.waitForExistence(timeout: 8), "Missing JHN 1:\(number)")
+            let scroll = app.scrollViews["reader-chapter-scroll"]
+            XCTAssertTrue(scroll.waitForExistence(timeout: 8))
+            var viewport = scroll.frame.intersection(app.frame)
+            let tabs = ["tab-today", "tab-read", "tab-pray", "tab-saved", "tab-settings"]
+                .map { app.buttons[$0] }.filter { $0.exists }
+            if let tabTop = tabs.map(\.frame.minY).min() {
+                viewport.size.height = min(viewport.height, tabTop - viewport.minY)
+            }
+            for _ in 0..<12 {
+                let frame = verse.frame
+                if frame.minY >= viewport.minY + 8 && frame.maxY <= viewport.maxY - 8 { break }
+                let above = frame.midY < viewport.midY
+                let startFraction: CGFloat = above ? 0.25 : 0.75
+                let endFraction: CGFloat = above ? 0.75 : 0.25
+                let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+                let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+                app.coordinate(withNormalizedOffset: CGVector(dx: start.x / app.frame.width,
+                                                               dy: start.y / app.frame.height))
+                    .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(
+                        dx: end.x / app.frame.width, dy: end.y / app.frame.height)))
+                viewport = scroll.frame.intersection(app.frame)
+                if let tabTop = tabs.map(\.frame.minY).min() {
+                    viewport.size.height = min(viewport.height, tabTop - viewport.minY)
+                }
+            }
+            XCTAssertTrue(verse.frame.minY >= viewport.minY + 8 && verse.frame.maxY <= viewport.maxY - 8,
+                          "JHN 1:\(number) must be fully inside the Reader viewport")
+            XCTAssertTrue(verse.isHittable)
+            NSLog("READER_WORD_POINT id=%@ frame=%@ viewport=%@ label=%@",
+                  verse.identifier, NSCoder.string(for: verse.frame), NSCoder.string(for: viewport), verse.label)
+            verse.coordinate(withNormalizedOffset: CGVector(dx: 30 / verse.frame.width,
+                                                              dy: 14 / verse.frame.height)).tap()
+            let reference = app.staticTexts["reader-selection-reference"]
+            let selected = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "label == %@", "John 1:\(number)"), object: reference)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
+                           "The observed owned-word point must select exactly JHN 1:\(number)")
+            attachScreenshot("reader-word-point-jhn-1-\(number)", app: app)
+            app.buttons["reader-selection-close"].tap()
+            XCTAssertTrue(app.staticTexts["reader-selection-reference"].waitForNonExistence(timeout: 5))
+        }
+    }
+
     func testSavedUndoGeometryProbe() throws {
         let app = XCUIApplication()
         app.launch()
@@ -537,6 +613,165 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(restoredVerse.waitForExistence(timeout: 8))
         XCTAssertTrue(reader.frame.intersects(restoredVerse.frame))
         attachScreenshot("L08-reader-anchor-after-restart", app: app)
+    }
+
+    func testReaderTopSafeAreaAndSmallScrollProbe() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+        app.buttons["tab-read"].tap()
+        let john = app.buttons["reader-book-JHN"]
+        XCTAssertTrue(john.waitForExistence(timeout: 8))
+        john.tap()
+        let chapterOne = app.buttons["reader-chapter-1"]
+        XCTAssertTrue(chapterOne.waitForExistence(timeout: 8))
+        chapterOne.tap()
+
+        let reader = app.scrollViews["reader-chapter-scroll"]
+        XCTAssertTrue(reader.waitForExistence(timeout: 12))
+        let title = app.buttons["reader-title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 8))
+        let firstVerse = app.buttons["reader-verse-1"]
+        XCTAssertTrue(firstVerse.waitForExistence(timeout: 8))
+        let safeTop = CGFloat((reader.value as? String).flatMap(Double.init) ?? -1)
+        NSLog("L08_TOP_PROBE stage=top safeTop=%.1f viewport=%@ title=%@ verse1=%@",
+              safeTop, NSCoder.string(for: reader.frame),
+              NSCoder.string(for: title.frame), NSCoder.string(for: firstVerse.frame))
+        XCTAssertGreaterThan(safeTop, 0)
+        attachScreenshot("L08-reader-chapter-top", app: app)
+
+        let initialVerseY = firstVerse.frame.minY
+        let start = reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+        let end = reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.63))
+        start.press(forDuration: 0.1, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
+        let moved = NSPredicate { _, _ in firstVerse.frame.minY < initialVerseY - 1 }
+        let movedWait = XCTNSPredicateExpectation(predicate: moved, object: firstVerse)
+        XCTAssertEqual(XCTWaiter.wait(for: [movedWait], timeout: 3), .completed,
+                       "The small upward drag must move the visible verse upward")
+        NSLog("L08_TOP_PROBE stage=small-scroll viewport=%@ title=%@ verse1=%@",
+              NSCoder.string(for: reader.frame), NSCoder.string(for: title.frame),
+              NSCoder.string(for: firstVerse.frame))
+        attachScreenshot("L08-reader-small-scroll", app: app)
+    }
+
+    func testReaderAppearanceAccessibilityValues() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+        app.buttons["tab-settings"].tap()
+        let layoutOptions = ["settings-layout-paragraphs", "settings-layout-verse-by-verse"]
+        let selectedLayout = layoutOptions.first { app.buttons[$0].value as? String == "Selected" }
+        XCTAssertNotNil(selectedLayout, "Full Settings must expose the committed layout choice")
+        let expectedLayout = selectedLayout == "settings-layout-verse-by-verse" ? "Verse by verse" : "Paragraphs"
+
+        app.buttons["tab-read"].tap()
+        let john = app.buttons["reader-book-JHN"]
+        XCTAssertTrue(john.waitForExistence(timeout: 8))
+        john.tap()
+        let chapterOne = app.buttons["reader-chapter-1"]
+        XCTAssertTrue(chapterOne.waitForExistence(timeout: 8))
+        chapterOne.tap()
+        let appearance = app.buttons["reader-appearance-button"]
+        XCTAssertTrue(appearance.waitForExistence(timeout: 8))
+        appearance.tap()
+
+        let expected = [
+            ("settings-text-size", "Medium"),
+            ("settings-line-spacing", "Comfortable"),
+            ("settings-scripture-typeface", "Serif"),
+            ("settings-reading-layout", expectedLayout),
+            ("settings-appearance", "System"),
+            ("settings-translation", "WEB"),
+        ]
+        for (identifier, value) in expected {
+            let control = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+            XCTAssertTrue(control.waitForExistence(timeout: 5), "Missing Reader appearance control: \(identifier)")
+            XCTAssertEqual(control.value as? String, value, "Wrong Reader appearance value: \(identifier)")
+        }
+        attachScreenshot("reader-appearance-accessibility-values", app: app)
+    }
+
+    func testPsalmTwoLoadedVerseGeometryDiagnostic() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+
+        app.buttons["tab-settings"].tap()
+        let edition = app.buttons["translation-web-ce"]
+        XCTAssertTrue(edition.waitForExistence(timeout: 8))
+        if edition.value as? String != "Selected" { edition.tap() }
+        let layout = app.buttons["settings-layout-verse-by-verse"]
+        XCTAssertTrue(layout.waitForExistence(timeout: 8))
+        if layout.value as? String != "Selected" { layout.tap() }
+
+        app.buttons["tab-read"].tap()
+        let psalms = app.buttons["reader-book-PSA"]
+        XCTAssertTrue(psalms.waitForExistence(timeout: 10))
+        psalms.tap()
+        let chapter = app.buttons["reader-chapter-2"]
+        XCTAssertTrue(chapter.waitForExistence(timeout: 10))
+        chapter.tap()
+
+        let first = app.buttons["reader-verse-1"]
+        XCTAssertTrue(first.waitForExistence(timeout: 15))
+        XCTAssertTrue(app.buttons["reader-verse-12"].waitForExistence(timeout: 15))
+        let reader = app.scrollViews["reader-chapter-scroll"]
+        NSLog("CARD_GLYPH_PROBE reader=%@ verse1=%@ label=%@ selected=%@",
+              NSCoder.string(for: reader.frame), NSCoder.string(for: first.frame),
+              first.label, String(first.isSelected))
+        attachScreenshot("psalm-2-loaded-verse-1-geometry", app: app)
+
+        let point = CGPoint(x: 120, y: 195)
+        NSLog("CARD_GLYPH_TAP point=%@ verse1=%@", NSCoder.string(for: point), NSCoder.string(for: first.frame))
+        app.coordinate(withNormalizedOffset: CGVector(dx: point.x / app.frame.width,
+                                                       dy: point.y / app.frame.height)).tap()
+        XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 5),
+                      "The observed word point must activate verse 1")
+        XCTAssertTrue(first.isSelected, "The observed word point must select verse 1")
+    }
+
+    func testPsalmTwoVerseTwelveGeometryDiagnostic() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+
+        app.buttons["tab-settings"].tap()
+        let edition = app.buttons["translation-web-ce"]
+        XCTAssertTrue(edition.waitForExistence(timeout: 8))
+        if edition.value as? String != "Selected" { edition.tap() }
+        let layout = app.buttons["settings-layout-verse-by-verse"]
+        XCTAssertTrue(layout.waitForExistence(timeout: 8))
+        if layout.value as? String != "Selected" { layout.tap() }
+
+        app.buttons["tab-read"].tap()
+        let psalms = app.buttons["reader-book-PSA"]
+        XCTAssertTrue(psalms.waitForExistence(timeout: 10))
+        psalms.tap()
+        let chapter = app.buttons["reader-chapter-2"]
+        XCTAssertTrue(chapter.waitForExistence(timeout: 10))
+        chapter.tap()
+
+        let reader = app.scrollViews["reader-chapter-scroll"]
+        let last = app.buttons["reader-verse-12"]
+        XCTAssertTrue(last.waitForExistence(timeout: 15))
+        let tab = app.buttons["tab-saved"]
+        for _ in 0..<8 where last.frame.maxY > min(reader.frame.maxY, tab.frame.minY) - 12 {
+            reader.swipeUp()
+        }
+        XCTAssertTrue(last.frame.minY >= reader.frame.minY && last.frame.maxY <= tab.frame.minY,
+                      "Verse 12 must be fully visible above the tabs")
+        NSLog("CARD_GLYPH_PROBE verse12 reader=%@ verse12=%@ label=%@ tab=%@",
+              NSCoder.string(for: reader.frame), NSCoder.string(for: last.frame),
+              last.label, NSCoder.string(for: tab.frame))
+        attachScreenshot("psalm-2-loaded-verse-12-geometry", app: app)
+
+        let point = CGPoint(x: 120, y: 324)
+        NSLog("CARD_GLYPH_TAP verse12 point=%@ frame=%@", NSCoder.string(for: point), NSCoder.string(for: last.frame))
+        app.coordinate(withNormalizedOffset: CGVector(dx: point.x / app.frame.width,
+                                                       dy: point.y / app.frame.height)).tap()
+        XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 5),
+                      "The observed word point must activate verse 12")
+        XCTAssertTrue(last.isSelected, "The observed word point must select verse 12")
     }
 
     private func attachScreenshot(_ name: String, app: XCUIApplication) {

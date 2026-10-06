@@ -142,6 +142,7 @@ struct ScriptureTextView: UIViewRepresentable {
         view.contextRange = contextRange
         view.savedHighlights = highlights.mapValues(highlightColor)
         view.selectionTint = UIColor(isDark ? JohnColors.dark.tint : JohnColors.light.tint)
+        view.resetVerseRowMinimumAdjustments()
         let result = makeAttributedText()
         view.verseRanges = result.verseRanges
         view.verseBodyRanges = result.verseBodyRanges
@@ -150,6 +151,8 @@ struct ScriptureTextView: UIViewRepresentable {
         view.attributedText = result.text
         view.invalidateIntrinsicContentSize()
         view.setNeedsLayout()
+        view.layoutManager.ensureLayout(for: view.textContainer)
+        view.applyVerseRowMinimums()
         view.layoutManager.ensureLayout(for: view.textContainer)
 
         if let anchor = reflowAnchor, let y = view.documentY(for: anchor) {
@@ -180,6 +183,8 @@ struct ScriptureTextView: UIViewRepresentable {
             ? viewportY.flatMap { $0.isFinite ? uiView.visibleAnchor(atY: $0) : nil }
             : nil
         uiView.textContainer.size = CGSize(width: width, height: .greatestFiniteMagnitude)
+        uiView.layoutManager.ensureLayout(for: uiView.textContainer)
+        uiView.applyVerseRowMinimums()
         uiView.layoutManager.ensureLayout(for: uiView.textContainer)
         let height = uiView.layoutManager.usedRect(for: uiView.textContainer).height
         if let reflowAnchor, let chapterRequestID = uiView.chapterRequestID,
@@ -303,7 +308,8 @@ struct ScriptureTextView: UIViewRepresentable {
         let indent = (fontSize * 1.25).rounded()
         let lineKinds: Set<String> = ["q1", "q2", "q3", "li"]
 
-        for block in blocksForCurrentLayout() {
+        let currentBlocks = blocksForCurrentLayout()
+        for (blockIndex, block) in currentBlocks.enumerated() {
             switch block {
             case let .heading(kind, text, _):
                 if output.length > 0 && (output.string as NSString).substring(from: output.length - 1) != "\n" {
@@ -364,16 +370,36 @@ struct ScriptureTextView: UIViewRepresentable {
                 }
                 let followsLine = lineKinds.contains(kind) && (previousKind.map(lineKinds.contains) ?? false)
                 let sourceGap: CGFloat = previousKind == nil || previousWasHeading || (followsLine && !stanzaBreak) ? 0 : paragraphGap
+                let verseIndex = segments.first?.verseIndex
+                let startsVerseRow = readerLayout == .verses && verseIndex != previousBodyVerseIndex
+                let opensParagraph: Bool = {
+                    guard readerLayout == .verses, layout.structured, let verseIndex,
+                          verseIndex > 0, layout.verses.indices.contains(verseIndex) else { return false }
+                    let verseLayout = layout.verses[verseIndex]
+                    guard verseLayout.startsBlock, verseLayout.headings.isEmpty,
+                          let firstLine = verseLayout.lines.first,
+                          case let .text(firstKind, firstStanzaBreak, _) = firstLine else { return false }
+                    return !lineKinds.contains(firstKind) || firstStanzaBreak
+                }()
+                let continuesVerseRow: Bool = {
+                    guard readerLayout == .verses, let verseIndex,
+                          currentBlocks.indices.contains(blockIndex + 1),
+                          case let .text(_, _, nextSegments) = currentBlocks[blockIndex + 1] else { return false }
+                    return nextSegments.first?.verseIndex == verseIndex
+                }()
                 let gap: CGFloat = readerLayout == .verses
-                    ? (previousKind == nil ? 4 * dynamicTypeScale : (stanzaBreak || previousWasHeading || previousKind != kind ? 12 * dynamicTypeScale : 4 * dynamicTypeScale))
+                    ? (startsVerseRow
+                        ? 4 + (opensParagraph ? 12 : 0)
+                        : (stanzaBreak ? 12 : 0))
                     : sourceGap
                 let paragraph = NSMutableParagraphStyle()
-                let rowLineHeight = readerLayout == .verses ? max(lineHeight, 36 * dynamicTypeScale) : lineHeight
-                paragraph.minimumLineHeight = rowLineHeight
-                paragraph.maximumLineHeight = rowLineHeight
+                paragraph.minimumLineHeight = lineHeight
+                paragraph.maximumLineHeight = lineHeight
                 paragraph.lineBreakMode = .byWordWrapping
                 paragraph.paragraphSpacingBefore = gap
-                paragraph.paragraphSpacing = readerLayout == .verses ? 4 * dynamicTypeScale : 0
+                paragraph.paragraphSpacing = readerLayout == .verses
+                    ? (continuesVerseRow ? 0 : 4)
+                    : 0
                 let blockIndent: CGFloat = switch kind {
                 case "q2", "li", "pi", "mi": indent
                 case "q3": indent * 2
@@ -505,6 +531,7 @@ struct ScriptureTextView: UIViewRepresentable {
     var selectionTint: UIColor = .label { didSet { setNeedsDisplay() } }
     var verseLabels: [String] = [] { didSet { setNeedsLayout() } }
     var verseDescriptions: [String] = [] { didSet { setNeedsLayout() } }
+    private var verseRowMinimumAdjustments: [Int: (top: CGFloat, bottom: CGFloat)] = [:]
     let textView: UITextView
     var textContainer: NSTextContainer { textView.textContainer }
     var layoutManager: NSLayoutManager { textView.layoutManager }
@@ -512,6 +539,55 @@ struct ScriptureTextView: UIViewRepresentable {
     var attributedText: NSAttributedString {
         get { textView.attributedText }
         set { textView.attributedText = newValue }
+    }
+
+    func resetVerseRowMinimumAdjustments() {
+        guard !verseRowMinimumAdjustments.isEmpty else { return }
+        textStorage.beginEditing()
+        for (index, adjustment) in verseRowMinimumAdjustments {
+            guard let ranges = verseBodyRanges[index], let first = ranges.first, let last = ranges.last else { continue }
+            adjustParagraphSpacing(at: first.location, before: -adjustment.top, after: 0)
+            adjustParagraphSpacing(at: last.location, before: 0, after: -adjustment.bottom)
+        }
+        textStorage.endEditing()
+        verseRowMinimumAdjustments.removeAll()
+    }
+
+    func applyVerseRowMinimums() {
+        resetVerseRowMinimumAdjustments()
+        guard readerLayout == .verses else { return }
+        layoutManager.ensureLayout(for: textContainer)
+        var adjustments: [Int: (top: CGFloat, bottom: CGFloat)] = [:]
+        textStorage.beginEditing()
+        for index in verseRanges.keys.sorted() {
+            guard let visibleRanges = verseRanges[index],
+                  let bodyRanges = verseBodyRanges[index],
+                  let first = bodyRanges.first, let last = bodyRanges.last else { continue }
+            let union = visibleRanges.map(rect(for:)).reduce(CGRect.null) { $0.union($1) }
+            guard !union.isNull, union.height.isFinite else { continue }
+            let deficit = max(0, 44 - (union.height + 8))
+            guard deficit > 0.5 else { continue }
+            let top = deficit / 2
+            let bottom = deficit - top
+            adjustParagraphSpacing(at: first.location, before: top, after: 0)
+            adjustParagraphSpacing(at: last.location, before: 0, after: bottom)
+            adjustments[index] = (top, bottom)
+        }
+        textStorage.endEditing()
+        verseRowMinimumAdjustments = adjustments
+        layoutManager.ensureLayout(for: textContainer)
+    }
+
+    private func adjustParagraphSpacing(at characterIndex: Int, before: CGFloat, after: CGFloat) {
+        guard characterIndex >= 0, characterIndex < textStorage.length else { return }
+        let paragraphRange = (textStorage.string as NSString).paragraphRange(
+            for: NSRange(location: characterIndex, length: 0))
+        guard paragraphRange.length > 0,
+              let existing = textStorage.attribute(.paragraphStyle, at: characterIndex, effectiveRange: nil) as? NSParagraphStyle,
+              let paragraph = existing.mutableCopy() as? NSMutableParagraphStyle else { return }
+        paragraph.paragraphSpacingBefore = max(0, paragraph.paragraphSpacingBefore + before)
+        paragraph.paragraphSpacing = max(0, paragraph.paragraphSpacing + after)
+        textStorage.addAttribute(.paragraphStyle, value: paragraph, range: paragraphRange)
     }
 
     override init(frame: CGRect) {
@@ -565,8 +641,9 @@ struct ScriptureTextView: UIViewRepresentable {
             guard let ranges = verseRanges[index] else { continue }
             let union = ranges.map(rect(for:)).reduce(CGRect.null) { $0.union($1) }
             guard !union.isNull, union.height > 0 else { continue }
-            let row = CGRect(x: 8, y: union.minY - 4, width: max(0, bounds.width - 16), height: max(44, union.height + 8))
-                .integral
+            let height = max(44, union.height + 8)
+            let row = CGRect(x: 8, y: union.midY - height / 2,
+                             width: max(0, bounds.width - 16), height: height).integral
             let fill = savedHighlights[index] ?? (contextRange?.contains(index) == true
                 ? selectionTint.withAlphaComponent(0.12) : nil)
             if let fill {
