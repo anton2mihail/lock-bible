@@ -716,8 +716,11 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         do {
             try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
             let data = try JSONSerialization.data(withJSONObject: record, options: [.sortedKeys, .prettyPrinted])
-            // `.withoutOverwriting` makes the write fail when the file exists. The probe never replaces an earlier record.
-            try data.write(to: target, options: [.atomic, .withoutOverwriting])
+            // The probe never replaces an earlier record. Foundation traps on `.atomic` with `.withoutOverwriting`.
+            guard !FileManager.default.fileExists(atPath: target.path) else {
+                throw CocoaError(.fileWriteFileExists, userInfo: [NSFilePathErrorKey: target.path])
+            }
+            try data.write(to: target, options: .atomic)
         } catch {
             NSLog("John L29 shared probe not written: %@", String(describing: error))
         }
