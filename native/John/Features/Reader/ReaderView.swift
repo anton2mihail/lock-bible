@@ -462,12 +462,15 @@ struct ReaderView: View {
                                     Task { _ = await runtime.applyWithResult(.setSelectionHintDismissed(true)) }
                                 },
                                 onContextVerseY: { y in
-                                    guard let context = model.pendingContextIndex,
-                                          lastContextRequest != (runtime.reader.openRequest?.id.uuidString ?? "\(book.code)-\(number)-\(context)") else { return }
-                                    lastContextRequest = runtime.reader.openRequest?.id.uuidString ?? "\(book.code)-\(number)-\(context)"
-                                    if let target = textGeometryProbe.scrollTargetY(forLocalY: y, margin: 24) {
-                                        readerScrollPosition.scrollTo(y: target)
-                                    }
+                                    guard let context = model.pendingContextIndex else { return true }
+                                    let key = runtime.reader.openRequest?.id.uuidString ?? "\(book.code)-\(number)-\(context)"
+                                    guard lastContextRequest != key else { return true }
+                                    // Mark the request done only when the scroll target exists. Without a window or
+                                    // scroll view yet, the next layout pass tries again.
+                                    guard let target = textGeometryProbe.scrollTargetY(forLocalY: y, margin: 24) else { return false }
+                                    lastContextRequest = key
+                                    readerScrollPosition.scrollTo(y: target)
+                                    return true
                                 },
                                 onVisibleAnchor: { request, anchor in
                                     Task {

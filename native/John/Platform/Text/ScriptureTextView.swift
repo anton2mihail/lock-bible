@@ -86,7 +86,8 @@ struct ScriptureTextView: UIViewRepresentable {
     let geometryProbe: ReaderTextGeometryProbe
     let isDark: Bool
     let onTapVerse: (Int) -> Void
-    let onContextVerseY: (CGFloat) -> Void
+    /// Returns true when the context verse scroll is done (now or before). False means "not ready, try again".
+    let onContextVerseY: (CGFloat) -> Bool
     let onVisibleAnchor: (ReaderAnchorCaptureRequest, ReaderAnchor?) -> Void
     let onAnchorRestoreY: (ReaderAnchorRestoreRequest, CGFloat?) -> Void
 
@@ -98,7 +99,7 @@ struct ScriptureTextView: UIViewRepresentable {
         view.verseLabels = chapter.verses.map(\.label)
         view.verseDescriptions = chapter.verses.map(\.text)
         view.contextVerseIndex = contextVerseIndex
-        view.onContextVerseY = onContextVerseY
+        view.onContextVerseY = context.coordinator.contextVerseY
         view.readerLayout = readerLayout
         view.contextRange = contextRange
         view.savedHighlights = highlights.mapValues(highlightColor)
@@ -124,8 +125,11 @@ struct ScriptureTextView: UIViewRepresentable {
                                               chapterRequestID: chapterRequestID)
         let currentViewportY = geometryProbe.measure()?.visibleViewportInText.minY
         let reflowAnchor: ReaderAnchor?
+        // The first real width (from 0) is the initial layout, not a reflow. A reflow anchor taken then is the
+        // chapter top, and its restore can undo a context verse scroll that lands in the same pass.
         if anchorRestoreRequest == nil,
            let previous = context.coordinator.renderSignature, previous != signature,
+           previous.width > 0,
            previous.chapterRequestID == signature.chapterRequestID,
            let currentViewportY, currentViewportY.isFinite {
             reflowAnchor = view.visibleAnchor(atY: currentViewportY)
@@ -138,7 +142,7 @@ struct ScriptureTextView: UIViewRepresentable {
         view.verseLabels = chapter.verses.map(\.label)
         view.verseDescriptions = chapter.verses.map(\.text)
         view.contextVerseIndex = contextVerseIndex
-        view.onContextVerseY = onContextVerseY
+        view.onContextVerseY = context.coordinator.contextVerseY
         view.readerLayout = readerLayout
         view.contextRange = contextRange
         view.savedHighlights = highlights.mapValues(highlightColor)
@@ -160,7 +164,7 @@ struct ScriptureTextView: UIViewRepresentable {
         if let anchor = reflowAnchor, let y = view.documentY(for: anchor) {
             if let chapterRequestID {
                 let request = ReaderAnchorRestoreRequest(id: UUID(), anchor: anchor, chapterRequestID: chapterRequestID)
-                context.coordinator.scheduleRestore(request, y: y)
+                context.coordinator.scheduleRestore(request, y: y, isReflow: true)
             }
         }
         context.coordinator.renderSignature = signature
@@ -192,7 +196,7 @@ struct ScriptureTextView: UIViewRepresentable {
         if let reflowAnchor, let chapterRequestID = uiView.chapterRequestID,
            let y = uiView.documentY(for: reflowAnchor) {
             let request = ReaderAnchorRestoreRequest(id: UUID(), anchor: reflowAnchor, chapterRequestID: chapterRequestID)
-            context.coordinator.scheduleRestore(request, y: y)
+            context.coordinator.scheduleRestore(request, y: y, isReflow: true)
         }
         return CGSize(width: width, height: ceil(height))
     }
@@ -206,11 +210,25 @@ struct ScriptureTextView: UIViewRepresentable {
         var lastCaptureID: UUID?
         var lastRestoreID: UUID?
         var scheduledRestoreID: UUID?
+        private var scheduledRestoreIsReflow = false
         init(parent: ScriptureTextView) { self.parent = parent }
 
-        func scheduleRestore(_ request: ReaderAnchorRestoreRequest, y: CGFloat?) {
+        /// A context verse scroll (URL verse, saved passage, Read in context) wins over a reflow restore that is
+        /// still waiting for a stable layout: that anchor was read before the context scroll. A saved-location
+        /// restore (`anchorRestoreRequest`) is not a reflow and stays scheduled.
+        func contextVerseY(_ y: CGFloat) -> Bool {
+            guard parent.onContextVerseY(y) else { return false }
+            if scheduledRestoreIsReflow {
+                scheduledRestoreID = nil
+                scheduledRestoreIsReflow = false
+            }
+            return true
+        }
+
+        func scheduleRestore(_ request: ReaderAnchorRestoreRequest, y: CGFloat?, isReflow: Bool = false) {
             guard lastRestoreID != request.id, scheduledRestoreID != request.id else { return }
             scheduledRestoreID = request.id
+            scheduledRestoreIsReflow = isReflow
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 var priorContentSize: CGSize?
@@ -521,11 +539,19 @@ struct ScriptureTextView: UIViewRepresentable {
     var chapter: BibleChapter?
     var verseRanges: [Int: [NSRange]] = [:] { didSet { setNeedsLayout() } }
     var verseBodyRanges: [Int: [NSRange]] = [:] { didSet { setNeedsLayout() } }
-    var chapterRequestID: UUID?
+    var chapterRequestID: UUID? {
+        didSet { if oldValue != chapterRequestID { lastContextVerseIndex = nil } }
+    }
     var headingRanges: [(String, NSRange)] = [] { didSet { setNeedsLayout() } }
     var activeSelection: ClosedRange<Int>? { didSet { setNeedsLayout() } }
-    var contextVerseIndex: Int? { didSet { lastContextVerseIndex = nil; setNeedsLayout() } }
-    var onContextVerseY: ((CGFloat) -> Void)?
+    /// Each update sets the same value again, so only a new value (or a new chapter request) starts a new context scroll.
+    var contextVerseIndex: Int? {
+        didSet {
+            if oldValue != contextVerseIndex { lastContextVerseIndex = nil }
+            setNeedsLayout()
+        }
+    }
+    var onContextVerseY: ((CGFloat) -> Bool)?
     private var lastContextVerseIndex: Int?
     var readerLayout: ReaderLayout = .paragraphs { didSet { setNeedsDisplay() } }
     var contextRange: ClosedRange<Int>? { didSet { setNeedsDisplay() } }
@@ -633,9 +659,8 @@ struct ScriptureTextView: UIViewRepresentable {
         if let contextVerseIndex, lastContextVerseIndex != contextVerseIndex,
            let range = verseRanges[contextVerseIndex]?.first {
             let frame = rect(for: range)
-            if !frame.isNull, frame.height > 0 {
+            if !frame.isNull, frame.height > 0, onContextVerseY?(frame.minY) == true {
                 lastContextVerseIndex = contextVerseIndex
-                onContextVerseY?(frame.minY)
             }
         }
         buildAccessibilityElements()
