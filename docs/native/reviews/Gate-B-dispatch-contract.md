@@ -2,7 +2,7 @@
 
 Date: 5 October 2026.
 Owner: GPT-6.1 Sol.
-Status: ready for dispatch after Gate A acceptance.
+Status: active after Gate A acceptance at `df8cc9b85595a8be24709d8692de62a45410f293`.
 
 Main owns app composition, routing, project files, UI, and every simulator action. Source owns Core repositories and source fixture scripts. Preserve this file split. Each accepted ticket needs its own scoped commit and simulator evidence. Use the existing source fixtures. Do not add a unit-test target.
 

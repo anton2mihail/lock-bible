@@ -2,7 +2,7 @@
 
 Date: 5 October 2026
 Reviewer: GPT-6.1 Sol
-Status: bounded Release import and native-wins runtime accepted; integration commit pending
+Status: bounded Release import and native-wins runtime accepted
 
 ## Install sequence
 
@@ -40,11 +40,10 @@ The installed Release executable matches the product SHA-256 above. The app-crea
 
 This bounded same-ID Release runtime is accepted. Main must add the final process and backup journal records to its report. No repeat app run is required for this record.
 
-## Remaining handoff
+## Final handoff
 
-1. Attach the final PID sequence and backup journal/header/sidecar record.
-2. Record the matching scoped app integration commit.
+Main attached `run.txt` with the exact PID sequence. `native-recovery-backup-summary.json` confirms DELETE journal mode, header bytes 1/1, no WAL/SHM/journal sidecars, schema 1, integrity `ok`, and exact rows. Main committed the coherent app integration at `df8cc9b85595a8be24709d8692de62a45410f293`. Its Reader foundation files retain separate open L06–L08 verdicts.
 
 SpringBoard denied the first restart command after termination. Main preserved that failure. The later restart and UI test pass. This failed command does not negate the later observed fresh processes.
 
-Gate A remains open for the report and commit handoff. Signed App Group access, the full release fixture, physical-device update behavior, and final release readiness remain later requirements.
+Gate A is accepted for its foundation scope. Signed App Group access, the full release fixture, physical-device update behavior, and final release readiness remain later requirements.
