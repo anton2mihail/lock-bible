@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 import JohnCore
 
 struct PassageRequest: Identifiable, Sendable, Hashable {
@@ -183,6 +184,64 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             }
             // A missing, empty, or unknown verse opens the chapter at its top with no selection (ReaderScreen.tsx:129-130, :186-193).
             openReader(bookCode: book.code, chapter: chapter, translation: translation, verse: verse, endVerse: endVerse)
+        }
+    }
+}
+
+// MARK: - Today zoom transitions (audit item B7)
+
+extension EnvironmentValues {
+    /// The Today tab publishes this namespace. Other tabs leave it nil, so their pushes keep the standard transition.
+    @Entry var todayZoomNamespace: Namespace.ID?
+}
+
+extension View {
+    /// Marks a Today card as the source of the zoom into the page that `route` opens.
+    func todayZoomSource(_ route: CompanionRoute, cornerRadius: CGFloat = 0) -> some View {
+        modifier(TodayZoomSource(route: .companion(route), cornerRadius: cornerRadius))
+    }
+
+    /// Makes a page that Today opens zoom from its card. Other routes keep the standard push.
+    func todayZoomDestination(_ route: AppRoute) -> some View {
+        modifier(TodayZoomDestination(route: route))
+    }
+}
+
+private struct TodayZoomSource: ViewModifier {
+    let route: AppRoute
+    let cornerRadius: CGFloat
+    @Environment(\.todayZoomNamespace) private var namespace
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @ViewBuilder func body(content: Content) -> some View {
+        if let namespace, !reduceMotion {
+            content.matchedTransitionSource(id: route, in: namespace) {
+                $0.clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            }
+        } else {
+            content
+        }
+    }
+}
+
+private struct TodayZoomDestination: ViewModifier {
+    let route: AppRoute
+    @Environment(\.todayZoomNamespace) private var namespace
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// The routes that a Today card pushes with a zoom: the daily readings, the Rosary guide, and Sunday.
+    private var isTodayCardRoute: Bool {
+        switch route {
+        case .companion(.daily), .companion(.rosaryGuide), .companion(.sunday): true
+        default: false
+        }
+    }
+
+    @ViewBuilder func body(content: Content) -> some View {
+        if let namespace, !reduceMotion, isTodayCardRoute {
+            content.navigationTransition(.zoom(sourceID: route, in: namespace))
+        } else {
+            content
         }
     }
 }

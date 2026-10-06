@@ -45,6 +45,7 @@ struct CompanionTodayView: View {
                                subtitle: "\(CompanionCalendar.seasonNames[snapshot.season] ?? snapshot.season) · Today’s readings") {
                     onNavigate(.daily(dateKey: dateKey))
                 }
+                .todayZoomSource(.daily(dateKey: dateKey), cornerRadius: 18)
                 ContentMutedText(text: CompanionCalendar.label)
 
                 VStack(alignment: .leading, spacing: 16) {
@@ -53,6 +54,7 @@ struct CompanionTodayView: View {
                                      imageName: "mary") {
                         onNavigate(.rosaryGuide(set: snapshot.rosarySet))
                     }
+                    .todayZoomSource(.rosaryGuide(set: snapshot.rosarySet))
                     ContentActionRow(title: prayer.title, subtitle: prayer.subtitle, imageName: "prayer") {
                         onNavigate(.prayer(id: prayer.id))
                     }
@@ -91,6 +93,7 @@ struct CompanionTodayView: View {
                                subtitle: "\(formattedDate(CompanionCalendar.upcomingSunday(now, timeZone: timeZone), "MMMM d")) · Read, reflect, return") {
                     onNavigate(.sunday)
                 }
+                .todayZoomSource(.sunday, cornerRadius: 18)
                 VStack(alignment: .leading, spacing: 0) {
                     ContentActionRow(title: "Explore the Catholic faith",
                                      subtitle: "Scripture alongside the Catechism") {
