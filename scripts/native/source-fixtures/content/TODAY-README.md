@@ -1,18 +1,23 @@
-# Calendar and novena source fixtures
+# Today source contract fixture
 
-This generator exports the current calendar and novena behavior from the TypeScript source. It does not export Bible text or novena prayer text. The calendar output contains dates, labels, reading references, coverage, season results, and local-time cases. The novena output contains progress state changes for every catalog ID.
+This fixture records current TypeScript outputs for the Today and readings screens. It calls the source calendar selectors, Rosary weekday selector, novena catalog, and novena progress normalizer. It uses synthetic novena progress. It does not read app storage or change app data.
 
-Run the generator from the repository root. It creates parent folders when needed.
+Run from the repository root with the target local time zone:
 
 ```sh
-bun scripts/native/source-fixtures/content/calendar-novena-fixtures.ts \
-  build/native-evidence/L13-content/calendar-novena-toronto.json America/Toronto
-bun scripts/native/source-fixtures/content/calendar-novena-fixtures.ts \
-  build/native-evidence/L13-content/calendar-novena-utc.json UTC
+TZ=America/Toronto bun scripts/native/source-fixtures/content/today-source-contract.ts build/native-evidence/L10-L11/today-source-contract.json
 ```
 
-The output records the time zone, UTC instants, local dates, and offset minutes. The Toronto cases include spring and fall daylight-saving transitions. The output also records SHA-256 hashes for the selector, catalog, progress model, screen, and source data files.
+The output records all 858 dates in the current offline readings file, with exact titles and reading references. It records the internal coverage gap 2025-09-18. It also records local Sunday selection, prayer choices at 16:59 and 17:00 on daylight-saving and ordinary dates, Rosary choices across all seven local weekdays, and a local midnight transition.
 
-The calendar map preserves each source date and each reading label and reference. The selector cases cover daily and Sunday defaults, valid and invalid dates, and a date outside calendar coverage. The novena cases preserve the source catalog IDs and storage keys. They call the source `normalizeNovenaProgress` function for initial state, intention change, each of nine completion steps, reset, and malformed-state normalization. The source screen does not export its select, complete, or reset callbacks. The `callbackSequence` field maps those exact `NovenaScreen.tsx` callbacks. It checks selecting day 5, completing it, repeating an already completed day, selecting and completing day 9, and resetting. The JSON labels this source mapping. It does not claim that these callbacks are direct function calls.
+The output records missing-reading behavior before, inside, and after the coverage range. Today uses the celebration title when readings are missing. It uses the season title when readings and celebrations are both missing. The readings screen shows its offline message when readings are missing.
 
-The JSON output is source evidence. It does not prove native behavior. Keep the generated JSON under ignored `build/native-evidence/`.
+The novena output preserves catalog order. It calls `normalizeNovenaProgress` with synthetic progress states. It records the Today screen filter and next-day subtitle rules. It maps the screen's catalog iteration and filter. It does not call `loadNovenaProgress`, because that function reads private app storage.
+
+The output contains SHA-256 hashes for the screen sources, selectors, source tests, catalog data, and generator. I ran the generator twice with the same time zone. Both output files had SHA-256 `82518ffd6877290ce0c4c58fcedadd4feb592d8a6cd7f9f0562bcc147ab28545`. This is source evidence. It is not simulator evidence. Keep the JSON in ignored `build/native-evidence/L10-L11/`.
+
+## Main simulator handoff
+
+Compare the native Today screen with the fixture values for the process local time zone. Check the 16:59 and 17:00 prayer choices. Check that Sunday returns the same date. Check the Rosary selector at each local weekday and at midnight. Check the finite coverage dates, the internal gap, and the missing-reading title fallbacks. Check the active novena order and subtitles with the fixture's synthetic progress states.
+
+Keep the active translation ID when the Today verse opens in context. Do not use this fixture as a request to add a test target.
