@@ -136,7 +136,7 @@ final class WorksSettingsUITests: XCTestCase {
 
         let prose = app.descendants(matching: .any).matching(identifier: "works-prose").firstMatch
         XCTAssertTrue(prose.waitForExistence(timeout: 12))
-        waitForValue(prose, containing: sectionAnchor)
+        waitForTextLabel(in: app, containing: sectionAnchor)
         let footerLabels = ["Previous section", "Contents, section 10 of 88", "Next section"]
         let tab = app.buttons["tab-read"]
         XCTAssertTrue(tab.isHittable)
@@ -151,7 +151,7 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Page 2 of")).firstMatch.waitForExistence(timeout: 8))
         prose.swipeRight()
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Page 1 of")).firstMatch.waitForExistence(timeout: 8))
-        waitForValue(prose, containing: sectionAnchor)
+        waitForTextLabel(in: app, containing: sectionAnchor)
 
         app.buttons["tab-settings"].tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
@@ -163,7 +163,7 @@ final class WorksSettingsUITests: XCTestCase {
         app.buttons["tab-read"].tap()
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Contents, section 10 of 88"].waitForExistence(timeout: 8))
-        waitForValue(prose, containing: sectionAnchor)
+        waitForTextLabel(in: app, containing: sectionAnchor)
         assertWorksFooter(footerLabels, above: tab, in: app)
 
         tapWhenReady(app.buttons["Close the reader"], in: app)
@@ -182,7 +182,7 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Contents, section 10 of 88"].waitForExistence(timeout: 10))
         let resumedProse = app.descendants(matching: .any).matching(identifier: "works-prose").firstMatch
-        waitForValue(resumedProse, containing: sectionAnchor)
+        waitForTextLabel(in: app, containing: sectionAnchor)
         let resumedPage = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Page 1 of")).firstMatch
         XCTAssertTrue(resumedPage.waitForExistence(timeout: 8), "Resume must show the saved page")
 
@@ -191,7 +191,7 @@ final class WorksSettingsUITests: XCTestCase {
         tapAndWaitForSelection(originalSize, in: app)
         app.buttons["tab-read"].tap()
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 10))
-        waitForValue(resumedProse, containing: sectionAnchor)
+        waitForTextLabel(in: app, containing: sectionAnchor)
         NSLog("WORKS_RESUME_VISIBLE workID=%@ sectionIndex=9 page=1 sectionTextMarker=true", worksID)
     }
 
@@ -309,10 +309,10 @@ final class WorksSettingsUITests: XCTestCase {
         return suffix == "default" ? "Medium" : choiceLabel(identifier)
     }
 
-    private func waitForValue(_ element: XCUIElement, containing text: String) {
-        let predicate = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value CONTAINS %@", text), object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [predicate], timeout: 12), .completed,
-                       "TextView value did not contain the expected anchor. Observed: \(String(describing: element.value))")
+    private func waitForTextLabel(in app: XCUIApplication, containing text: String) {
+        let element = app.textViews.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
+        XCTAssertTrue(element.waitForExistence(timeout: 12),
+                      "TextView label did not contain the expected anchor. Observed label: \(element.label)")
     }
 
     private func assertWorksFooter(_ labels: [String], above tab: XCUIElement, in app: XCUIApplication) {
