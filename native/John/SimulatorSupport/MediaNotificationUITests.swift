@@ -46,8 +46,8 @@ final class MediaNotificationUITests: XCTestCase {
         let externalMediaAction = button(containing: "opens on YouTube", in: app)
         XCTAssertTrue(externalMediaAction.waitForExistence(timeout: 8))
         XCTAssertFalse(app.buttons["rosary-media-mode-video"].exists)
-        XCTAssertTrue(app.links.matching(NSPredicate(format: "label CONTAINS %@", "More from the series")).firstMatch.exists)
-        NSLog("MEDIA_RELEASE playerModes=absent externalMediaAction=available approvedUris=false linkAvailable=true")
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "More from the series")).firstMatch.exists)
+        NSLog("MEDIA_RELEASE sourceCatalog=ROSARY_MEDIA_EPISODES noApprovedMediaURIs=true playerModes=absent externalAction=available seriesLink=true")
     }
     #endif
 
