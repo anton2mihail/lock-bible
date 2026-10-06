@@ -13,9 +13,13 @@ The four initial findings are corrected at source. Their runtime and visual chec
 
 The reviewed hashes are ReaderView `364413f20f87bf604043d901c4122c4b26fb9d90147c02b433bd6556a4f5cafd`, DestinationView `c4a0620b1e3bad2a092d75effb4067031e5617941214bbcda2dee60f0804a696`, SecondaryRootView `6d9b008e2e7dfc7345693732c1d217f4f29b786d2963934b7ee26f3cac93dca1`, and CitationContextView `83dfeeb61c6b5e30721044cc340d8dae7937cfb9186ce3be7ea7485dfd9d8312`.
 
-Reader selection actions are integrated under `L08-L10-selection-action-contract.md`. Source owns the pure toolbar. Main owns Reader integration, storage commands, note routing, and simulator checks. A successful highlight write updates the captured visible chapter even if the user changes the selected range. Feedback still requires the original selection. Actual action runtime acceptance remains open.
+Reader selection actions are integrated under `L08-L10-selection-action-contract.md`. Source owns the pure toolbar. Main owns Reader integration, storage commands, note routing, and simulator checks. A successful highlight write updates the captured visible chapter even if the user changes the selected range. Feedback still requires the original selection. Bookmark save, four highlight control transitions, and final clear pass at `f8a90bd`. New Vulgate note creation/edition identity/restart pass at `1d8fed9`. Other action and visual bounds remain open.
 
-## Content run classification
+## Current runtime checkpoint
+
+Build19 accepts five content/Search methods. Exact values, process restart, copied state, binary hashes, and failed-helper classifications are in `L14-L18-Search-runtime-20261006.md`. L14 persistence and L18 temporary-state checks pass. Rosary/timer, full Settings, and Works remain open.
+
+## Historical first content run classification
 
 Evidence: `build/native-evidence/L22/source-content-flow-20261006/`.
 
@@ -35,7 +39,7 @@ The helper corrections above are now committed at `6f83b790`. The accepted Conte
 
 `SearchNoteUITests.swift` contains Search journeys and a new Vulgate note journey. Each Search test selects WEB-CE. The Latin case selects Vulgate and resets scope to All. The repeated-result case opens the second result before it checks Cancel separately.
 
-Source added a committed-selection wait after each edition tap. The accepted test is committed at `ee8747f`, with hash `cc1d394b5b639b7927c3e67716c4b926b2939131b8d008bf57e5959876033a89`. Swift 6 simulator type-check passed. Main must use a task-only schema-1 seed without a note for Vulgate JHN 3:16. The note journey sets verse layout, waits for `IOHANNEM 3:16`, creates the note through Reader, changes to WEB-CE, and checks exact row `saved-row-note:vulgate:JHN:3:16:16` before and after one restart. Runtime acceptance remains open.
+Source added a committed-selection wait after each edition tap. The accepted test is committed at `ee8747f`, with hash `cc1d394b5b639b7927c3e67716c4b926b2939131b8d008bf57e5959876033a89`. Swift 6 simulator type-check passed. Main must use a task-only schema-1 seed without a note for Vulgate JHN 3:16. The note journey sets verse layout, waits for `IOHANNEM 3:16`, creates the note through Reader, changes to WEB-CE, and checks exact row `saved-row-note:vulgate:JHN:3:16:16` before and after one restart. The new-note journey passes at `1d8fed9`. The three Search methods pass on Build19. Full visuals and error states remain open.
 
 ## Shared icon finding
 
