@@ -2,7 +2,7 @@
 
 Date: 6 October 2026.
 Owner: GPT-6.1 Sol.
-Status: Corrected resource preparation accepted. The README command correction is pending. Archive acceptance remains open.
+Status: Corrected resource preparation accepted at `329d931`. Archive acceptance remains open.
 
 The initial stage has 31 resource rows. Each output SHA-256 matches its manifest. Each copied output matches its source SHA-256. The tree has no missing or unexpected resource file. The generator hash is `6b1962f1d7cebe13307a7a70b282e68c6c8db434ae2b2f81c0dcdb7f859002ff`. The manifest hash is `8458b76dcb719930cf26508fffaa768289ed91f79cb1c875497ab5c298f4b33c`.
 
@@ -38,3 +38,5 @@ The corrected generator stages 33 rows under `native/John/Resources/Release/Reso
 Sol compared the default output with fresh `L28/resources-e` and `resources-f` trees. All files and manifests match byte for byte. All 33 copied/generated row hashes pass. The manifest hash is `197839eb9aafb3c9f2a8ba101c2f55016afdf8765515ae249fdcba6897b2bc40`. The generator hash is `7e5251b2500924ece35b5b858a48d283fecce00bd7fa116dceff9a92d3e6a7c6`. Source reports matching decoded 1024 by 1024 RGBA pixels for the three icon pairs. The stage keeps the old iOS PNG encoding.
 
 The generator now verifies a temporary tree before publication. It rejects an existing nonempty output and preserves it. Source must correct the README example to `--fresh-output --output-root PATH`; the first option is a flag. Main must copy the staged Feather file as one bundle-root file or update its registration path. Keep the generated Resources subtree ignored and the generator, pinned notice, and README tracked. Final target membership and archive checks remain open.
+
+Source committed the generator, pinned notice, and corrected README at `329d9312bc82b9fd5c6e7cc35ed86b2d1ed0af88`. The command now has the correct flag syntax. The README also states the single-file bundle-root mapping for Feather. Generated resources remain outside that commit. All four source corrections are accepted.
