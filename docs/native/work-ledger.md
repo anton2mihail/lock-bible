@@ -2,7 +2,7 @@
 
 Updated: 6 October 2026
 
-Current checkpoint: Gate A is accepted at Main integration `df8cc9b`. Gates B through E remain open. All 29 routes and the final release gates remain in scope. Main owns the project, shared integration, simulator, and signing actions. Source owns isolated source, resource, fixture, and simulator test preparation.
+Current checkpoint: Gate A is accepted at Main integration `df8cc9b`. The later coherent feature integration is committed at `e0e1f73`. Gates B through E remain open. All 29 routes and the final release gates remain in scope. Main owns the project, shared integration, simulator, and signing actions. Source owns isolated source, resource, fixture, and simulator test preparation.
 
 The full seeded existing-note/Saved journey is accepted at review `8f66582`. It checks all four filters, note edit/reopen/delete, bookmark deletion, and Undo. Final database schema is 1; integrity is `ok`; row counts are 2 bookmarks, 1 highlight, and 0 notes. The later Vulgate new-note journey is accepted below. Undo expiry/failure and full visual parity remain open.
 
@@ -10,7 +10,7 @@ Verse Moment passes the exact 2 Timothy 2:23 → Reader 2 Timothy 2 → verse 23
 
 Corrected notification service source is accepted at `6e87cfa`. Simulator process 13149 passes all 25 injected-center observations in `L22/runtime-09`. Actual system permission, pending-request round trips, delivery, lifecycle refresh, and warm/cold taps remain open. The app and widget Debug property lists resolve to `group.com.nrsv.verse.dev`. Effective signed group access remains open.
 
-Reader run 09 captures anchor `48:44` and proves the corrected Settings leaf identifier/value. Run 10 captures `47:0`; its restart image shows verse 47 and its footer image shows both controls above the tabs. The new mask stops status overlap, but its actual clip edge must agree with the capture boundary. Reflow still shows verses 15–19. Main is correcting final-layout restoration. Full Reader/Aa and matched John/Psalm/Song parity remain open. See `reviews/L07-reader-anchor-source-review.md`.
+The Build19 Reader test passes in 57.718 seconds. It saves unselected John1 anchor `50:85`, changes Medium to Large, and restarts PID56251→56599. Both restored images show verse50 continuation and have identical bytes. Final revision78 keeps the exact anchor. Previous/Next and attribution are fully above the tabs. This accepts this reflow/restart profile. Exact glyph placement, width reflow, chapter-top clipping edge, and full Reader/Aa/John/Psalm/Song parity remain open. See `reviews/L08-reader-anchor-runtime-20261006.md`.
 
 The Build19 batch accepts five methods. Prayer favorite `morning`, both Sep13 Sunday reflections, and Padre Pio intention/completed day 1/selected day 2 survive restart PID49600→50531. Confession notes clear on background/exit/Finish and remain during internal steps. All three Search UI methods pass. Product/installed hashes and revision62 state match. L15 stops at a status-area gesture; Settings stops at an overlong XCTest identifier; Works waits for an unmaterialized Contents row before scrolling. Source corrects these test helpers. Rosary/timer, full Settings, and Works remain open. Disabled-notice feedback remains accepted; actual OS permission and delivery remain open. See `reviews/L14-L18-Search-runtime-20261006.md`.
 
