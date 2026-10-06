@@ -27,3 +27,13 @@ Source can continue other assigned content views while it applies these correcti
 The shared file now puts the 740-point cap outside its padding. Its bottom content padding is 48. Action row padding is inside the 72-point minimum. Panel and row borders use the display scale. Section detail has the source eight-point gap. Native font metrics provide a line-spacing estimate; simulator baseline measurement remains required.
 
 The prayer library now checks load errors before empty results. It uses the raw query for Kept close visibility and removes extra category row gaps. The favorite queue keeps the durable save boundary. Main can add the four new files to the next app build. Their complete UI and visual acceptance remain open.
+
+## Daily, Sunday, and Today boundary
+
+Source has added `CalendarReadingsView.swift` and `CompanionTodayView.swift`. The Daily/Sunday source now uses the upcoming Sunday as the invalid-date fallback. It keys the scroll page by date, uses the source 17/28 connection text, and captures the reflection date and draft before saving. Save feedback applies only to that captured date and draft. Runtime acceptance remains open.
+
+Today requires the source root-page behavior without Back. Its Lectio action must carry the displayed verse and edition. A nil passage opens the fallback guide and loses the source route identity. Use the existing runtime passage resolver. Display the metadata abbreviation: WEB-CE, DRB, or VUL.
+
+Main owns the shared metadata and rotation integration. The view's explicit date and time zone must also drive rotation. Refresh on changed rotation preferences and committed novena progress. Keep one shared calendar cache when Main replaces the old Today root. Do not keep the old TodayModel calendar decoder alongside the companion repository.
+
+Shared view types used across feature files need internal access. A frontend parse does not check cross-file private access. Main must compile the complete file set before source acceptance of these views. Lora baseline distances and large-text date-row wrapping remain focused runtime checks.
