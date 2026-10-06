@@ -35,3 +35,5 @@ bun scripts/native/source-fixtures/library/library-sequence.ts build/native-evid
 ```
 
 Compare `snapshots.noteAfterBOMOnlySave` and `snapshots.noteAfterNELOnlySave`. The first value must be null. The second value must contain U+0085. The earlier action sequence remains in the same fixture output.
+
+The follow-up output was generated twice and compared byte-for-byte. Its SHA-256 is `9a34df2dd4196d2c64ceee878d2dfd1050a1738901b95e288bfd4dccfc5975de`. The generator SHA-256 is `ff751030f50b7ef6be63d8dc5cf6282f56a7f1510e8f52ea48204c2095ea110c`.
