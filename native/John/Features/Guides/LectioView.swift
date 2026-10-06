@@ -18,7 +18,6 @@ struct LectioView: View {
     @State private var stepIndex = 0
     @State private var deadline: Date?
     @State private var seconds = 0
-    @State private var silentMinuteEnds = 0
 
     init(initialPassage: PassageSelection? = nil, clock: @escaping () -> Date = Date.init,
          onClose: @escaping () -> Void, onOpenReader: @escaping (PassageSelection) -> Void,
@@ -49,8 +48,6 @@ struct LectioView: View {
         }
         .task(id: initialPassage?.id.legacyKey ?? "current") { await loadPassageIfNeeded() }
         .task(id: deadline) { await runTimer() }
-        // One soft signal when the quiet minute ends by itself, so the user can keep their eyes closed.
-        .sensoryFeedback(.success, trigger: silentMinuteEnds)
         .onChange(of: deadline != nil) { _, _ in updateIdleTimer() }
         .onChange(of: scenePhase) { _, _ in updateIdleTimer() }
         .onDisappear {
@@ -159,7 +156,6 @@ struct LectioView: View {
             seconds = remaining
             if remaining == 0 {
                 self.deadline = nil
-                silentMinuteEnds += 1
                 return
             }
             try? await Task.sleep(for: .milliseconds(250))
