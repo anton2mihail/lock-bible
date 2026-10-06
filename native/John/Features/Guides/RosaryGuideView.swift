@@ -48,6 +48,8 @@ struct RosaryGuideView: View {
             }
         }
         .task(id: requestedSet ?? "suggested") { await loadSession() }
+        // One light tap for each bead the user completes. A step back also taps.
+        .sensoryFeedback(.impact(weight: .light), trigger: completedActions)
     }
 
     private var emptyState: some View {
