@@ -92,3 +92,9 @@ Citation context still uses Lora and a separate verse-label column. The source h
 `L06/content-widget-build-05.log` reports TEST BUILD SUCCEEDED for the app and widget batch. The duplicate `verseMoment` route and mutable PreferenceKey default were corrected. Scripture card now uses a constant default, the measured preview width, scale `1080 / previewWidth`, variable height, and native PNG sharing. The mixed frame call is split. The announcement helper uses the supported UIKit API. This accepts target compilation only.
 
 Citation now has inline text and the unavailable copy. Its actual serif font still calls the Lora helper, while its spacing measures Georgia. Its label is 12 points instead of source xs 14. Correct those values and put valid-chapter warnings inside the valid branch. Full source-matched rendering and runtime remain open. Works was not included in this compile evidence.
+
+## Today rotation integration correction
+
+The `anchor-works-share-01` tests stop at the Today action lookup. The source cause is a refresh guard: `CompanionTodayView` skipped rotation refresh when `fixedTimeZone` was present, while `JohnApp` always supplies the feature zone. This left the rotating verse and its actions absent.
+
+Main removed that guard. The current source always refreshes rotation with the same captured date and time zone used by dated content. `TodayModel` computes the slot from those inputs. Runtime uses the current auto-updating zone unless DEBUG arguments provide a fixed date and zone. Release keeps real time. This accepts the clock input boundary only. The next coherent build and fixed-date/zone content check must prove the actual UI result. Read-to-Works provides an independent test entry.
