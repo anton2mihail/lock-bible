@@ -40,6 +40,14 @@ The owner overrides the custom flat tab chrome above. The app uses the system Sw
 - The system bar stays below the keyboard (audit item A1). The system bar shows the Large Content Viewer for tab labels at accessibility text sizes.
 - `FlatTabBar.swift` and the `tintInactive` color are removed.
 
+### Pushed screens (audit item B1)
+
+- A pushed screen has one way back: the iOS 26 system glass back button. `DestinationView` sets an inline title mode, so the bar stays slim.
+- The in-page back rows are removed: the `content-back` row of `ContentPage`, the "‹ Read", "‹ Library", "‹ Novenas", "‹ Prayer Library", and "‹ Rosary" rows, the Work reader "×", the Rosary guide "×", and the Search "Cancel". The completion actions "Return to Rosary" and "Finish prayer" stay.
+- An editor keeps Cancel and Save in its own navigation bar. `SavedNoteEditor` shows them as toolbar items. When the Reader pushes it, it hides the system back button, so Cancel is its only exit.
+- Go to keeps its in-page Cancel until item B6 changes it to a sheet.
+- UI tests use `app.navigationBars.buttons.firstMatch` for the back button. The `content-back`, `rosary-reminder-back`, and `search-cancel-button` identifiers do not exist any more.
+
 ### Parity checks that this invalidates
 
 - The tab bar region of all native L25 captures (all routes, all variants). The floating bar is a rounded glass surface over the content, not a flat bar with a top border. Content now shows through the bar region.
@@ -49,7 +57,7 @@ The owner overrides the custom flat tab chrome above. The app uses the system Sw
 
 ### Tests
 
-The tab identifiers did not change, so no test selector changes are necessary. These test risks remain open until a simulator run:
+The tab identifiers did not change, so no tab selector changes are necessary. The pushed-screen selectors changed (see "Pushed screens"). These test risks remain open until a simulator run:
 
 - After a scroll down in the Reader, the bar minimizes and shows only the selected tab. A test that then taps another tab can fail. Launch with `-JohnTabBarMinimize never`, or tap the minimized bar first.
 - The system tab bar button label is the plain title (for example `Read`). VoiceOver reads it as "Read, tab, 2 of 5".

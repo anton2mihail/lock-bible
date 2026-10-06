@@ -3,7 +3,6 @@ import JohnCore
 
 struct WorksCollectionView: View {
     let collectionID: String?
-    let onClose: () -> Void
     let onOpenWork: (String, Int?) -> Void
 
     @Environment(JohnRuntime.self) private var runtime
@@ -27,17 +26,10 @@ struct WorksCollectionView: View {
     }
 
     var body: some View {
-        WorksPage(onClose: onClose) {
+        WorksPage {
             if loadingFailed {
-                missing("That author isn’t available")
+                missing("That author isn’t available", canRetry: true)
             } else if catalog != nil, let collection {
-                Button(action: onClose) {
-                    HStack(spacing: 6) { Text("‹"); Text("Library") }
-                        .font(JohnTypography.sans(16, weight: .semibold)).foregroundStyle(colors.tint)
-                        .frame(minHeight: 40)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to the library")
                 VStack(alignment: .leading, spacing: 8) {
                     if let era = collection.era { WorksEyebrow(era.uppercased()) }
                     Text(collection.author)
@@ -79,7 +71,7 @@ struct WorksCollectionView: View {
                 }
                 Text(collection.attribution).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
             } else if catalog != nil {
-                missing("That author isn’t available")
+                missing("That author isn’t available", canRetry: false)
             } else {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
             }
@@ -87,11 +79,11 @@ struct WorksCollectionView: View {
         .task(id: collectionID) { await loadCatalog() }
     }
 
-    @ViewBuilder private func missing(_ text: String) -> some View {
-        VStack(spacing: 16) {
-            Text(text).font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
-            Button(action: onClose) { Text("Go back").font(JohnTypography.sans(14)).foregroundStyle(colors.tint) }
-                .buttonStyle(.plain)
+    @ViewBuilder private func missing(_ text: String, canRetry: Bool) -> some View {
+        ContentUnavailableView {
+            Label(text, systemImage: "person.crop.circle.badge.questionmark")
+        } actions: {
+            if canRetry { Button("Try again") { Task { await loadCatalog() } } }
         }
         .frame(maxWidth: .infinity, minHeight: 240)
     }

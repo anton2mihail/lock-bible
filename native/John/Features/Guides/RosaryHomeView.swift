@@ -2,7 +2,6 @@ import SwiftUI
 import JohnCore
 
 struct RosaryHomeView: View {
-    let onClose: () -> Void
     let onOpenGuide: (String) -> Void
     let onOpenReminder: () -> Void
     let onOpenMedia: (String) -> Void
@@ -18,13 +17,11 @@ struct RosaryHomeView: View {
 
     init(clock: @escaping () -> Date = Date.init,
          timeZone: TimeZone = .autoupdatingCurrent,
-         onClose: @escaping () -> Void,
          onOpenGuide: @escaping (String) -> Void,
          onOpenReminder: @escaping () -> Void,
          onOpenMedia: @escaping (String) -> Void = { _ in }) {
         self.clock = clock
         self.timeZone = timeZone
-        self.onClose = onClose
         self.onOpenGuide = onOpenGuide
         self.onOpenReminder = onOpenReminder
         self.onOpenMedia = onOpenMedia
@@ -37,7 +34,7 @@ struct RosaryHomeView: View {
     private var reminderText: String { reminderSummary(reminder) }
 
     var body: some View {
-        RosaryHomePage(onClose: onClose) {
+        RosaryHomePage {
             if let catalog, let suggestedSet {
                 ContentArtwork(name: "mary")
                     .scaledToFill()
@@ -278,7 +275,6 @@ struct RosaryHomeView: View {
 }
 
 private struct RosaryHomePage<Content: View>: View {
-    let onClose: () -> Void
     @ViewBuilder var content: Content
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
@@ -287,14 +283,6 @@ private struct RosaryHomePage<Content: View>: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Button(action: onClose) {
-                    HStack(spacing: 6) {
-                        Text("‹").font(JohnTypography.sans(24))
-                        Text("Prayer Library").font(JohnTypography.sans(16, weight: .semibold))
-                    }.foregroundStyle(colors.tint).frame(minHeight: 40).contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to prayer library")
                 content
             }
             .padding(.horizontal, 24).padding(.top, 16).padding(.bottom, 48)

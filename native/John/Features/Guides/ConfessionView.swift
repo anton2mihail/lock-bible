@@ -17,7 +17,7 @@ struct ConfessionView: View {
     var body: some View {
         ContentPage(title: step.title,
                     eyebrow: "Prepare for Confession / \(index + 1) of \(Self.steps.count)",
-                    subtitle: nil, onClose: onClose, showsBack: false) {
+                    subtitle: nil) {
             Text(step.body)
                 .font(JohnTypography.sans(17))
                 .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 17, targetLineHeight: 28))

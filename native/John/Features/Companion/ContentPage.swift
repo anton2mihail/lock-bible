@@ -5,8 +5,6 @@ struct ContentPage<Content: View>: View {
     let title: String
     let eyebrow: String?
     let subtitle: String?
-    let onClose: () -> Void
-    var showsBack = true
     @ViewBuilder var content: Content
 
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -16,23 +14,6 @@ struct ContentPage<Content: View>: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                if showsBack {
-                Button(action: onClose) {
-                    HStack(spacing: 10) {
-                        FeatherIcon(name: "arrow-left", size: 20, color: colors.tint)
-                        Text("Back")
-                            .font(JohnTypography.sans(14))
-                            .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 14, targetLineHeight: 21))
-                            .foregroundStyle(colors.text)
-                    }
-                    .frame(minHeight: 44)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back")
-                .accessibilityIdentifier("content-back")
-                }
-
                 VStack(alignment: .leading, spacing: 8) {
                     if let eyebrow {
                         Text(eyebrow.uppercased())

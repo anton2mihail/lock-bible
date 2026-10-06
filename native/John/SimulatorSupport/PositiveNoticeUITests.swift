@@ -28,14 +28,14 @@ final class PositiveNoticeUITests: XCTestCase {
         }
         XCTAssertTrue(app.staticTexts["Calendar notifications are on."].waitForExistence(timeout: timeout))
         stage("calendar-on-0915")
-        tap(app.buttons["content-back"])
+        tap(systemBack(in: app))
 
         openCalendarSettings(in: app)
         XCTAssertTrue(calendarEnabled.exists)
         XCTAssertTrue(calendarEnabled.value as? String == "1", "Calendar must remain enabled after re-entry")
         tap(app.buttons["calendar-notifications-delivery-time"])
         assertTime(hour: 9, minute: 15, in: app)
-        tap(app.buttons["content-back"])
+        tap(systemBack(in: app))
 
         openRosaryReminder(in: app)
         let rosaryEnabled = app.switches["rosary-reminder-enabled"]
@@ -48,7 +48,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertTrue(monday830.waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE rosary-weekly-monday-0830 observed=%@ rawWeekday=2", monday830.label)
         stage("rosary-weekly-monday-0830")
-        tap(app.buttons["rosary-reminder-back"])
+        tap(systemBack(in: app))
 
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
@@ -57,7 +57,7 @@ final class PositiveNoticeUITests: XCTestCase {
         openCompactPicker(compactPicker(in: app))
         assertTime(hour: 8, minute: 30, in: app)
         dismissCompactPicker(in: app)
-        tap(app.buttons["rosary-reminder-back"])
+        tap(systemBack(in: app))
 
         openRosaryReminder(in: app)
         tap(app.buttons["rosary-reminder-frequency-daily"])
@@ -67,7 +67,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertTrue(daily835.waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE rosary-daily-0835 observed=%@", daily835.label)
         stage("rosary-daily-0835")
-        tap(app.buttons["rosary-reminder-back"])
+        tap(systemBack(in: app))
 
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
@@ -79,7 +79,7 @@ final class PositiveNoticeUITests: XCTestCase {
         tap(app.buttons["rosary-reminder-save"])
         XCTAssertTrue(app.staticTexts["Reminder turned off"].waitForExistence(timeout: timeout))
         stage("rosary-off")
-        tap(app.buttons["rosary-reminder-back"])
+        tap(systemBack(in: app))
 
         openCalendarSettings(in: app)
         setSwitch(calendarEnabled, on: false)
@@ -113,7 +113,7 @@ final class PositiveNoticeUITests: XCTestCase {
         ].waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE calendar-denied-visible-feedback")
         stage("calendar-denied-visible-feedback")
-        tap(app.buttons["content-back"])
+        tap(systemBack(in: app))
         openCalendarSettings(in: app)
         XCTAssertEqual(enabled.value as? String, "0", "Denied permission must leave committed Calendar notifications disabled")
         NSLog("NOTICE_UI_ONLY journey=notDetermined-deny seed=%@ bundle=%@; Main must verify zero durable and pending-request changes",
@@ -337,6 +337,11 @@ final class PositiveNoticeUITests: XCTestCase {
         let hour: XCUIElement
         let minute: XCUIElement
         let meridiem: XCUIElement
+    }
+
+    /// The iOS 26 system glass back button of a pushed screen. It replaced `content-back` and `rosary-reminder-back`.
+    private func systemBack(in app: XCUIApplication) -> XCUIElement {
+        app.navigationBars.buttons.firstMatch
     }
 
     private func tap(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {

@@ -27,11 +27,6 @@ struct SearchView: View {
                     .foregroundStyle(colors.text)
                     .accessibilityAddTraits(.isHeader)
                 Spacer()
-                Button("Cancel") { router.pop() }
-                    .font(JohnTypography.sans(15, weight: .medium))
-                    .foregroundStyle(colors.tint)
-                    .frame(minHeight: 44)
-                    .accessibilityIdentifier("search-cancel-button")
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)
@@ -103,15 +98,15 @@ struct SearchView: View {
 
     @ViewBuilder private var content: some View {
         if cleanQuery.count < 2 {
-            emptyMessage("Search by reference, keyword, or exact phrase.")
+            emptyMessage("Search by reference, keyword, or exact phrase.", title: "Find a passage", icon: "magnifyingglass")
         } else if let errorMessage {
-            emptyMessage(errorMessage)
+            emptyMessage(errorMessage, title: "Search failed", icon: "exclamationmark.triangle")
         } else if let response, response.results.isEmpty {
-            emptyMessage("No passages found. Try fewer words or check the reference.")
+            emptyMessage("No passages found. Try fewer words or check the reference.", title: "No results", icon: "text.magnifyingglass")
         } else if let response {
             resultList(response)
         } else {
-            emptyMessage("Search by a word or reference.")
+            emptyMessage("Search by a word or reference.", title: "Find a passage", icon: "magnifyingglass")
         }
     }
 
@@ -158,14 +153,14 @@ struct SearchView: View {
         .scrollContentBackground(.hidden)
     }
 
-    private func emptyMessage(_ text: String) -> some View {
-        Text(text)
-            .font(JohnTypography.sans(15))
-            .foregroundStyle(colors.textDim)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(28)
-            .accessibilityIdentifier("search-status")
+    /// The prompt, no-result, and error states. The description keeps the message text and the `search-status` identifier.
+    private func emptyMessage(_ text: String, title: String, icon: String) -> some View {
+        ContentUnavailableView {
+            Label(title, systemImage: icon)
+        } description: {
+            Text(text)
+                .accessibilityIdentifier("search-status")
+        }
     }
 
     private func runSearchAfterDelay() async {

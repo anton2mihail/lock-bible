@@ -3,7 +3,6 @@ import JohnCore
 
 struct CompanionTodayView: View {
     let onNavigate: (CompanionRoute) -> Void
-    let onClose: () -> Void
     let onOpenVerseMoment: (RotatingVerse) -> Void
     let clock: () -> Date
     let fixedTimeZone: TimeZone?
@@ -18,12 +17,10 @@ struct CompanionTodayView: View {
 
     init(clock: @escaping () -> Date = Date.init, fixedTimeZone: TimeZone? = nil,
          onNavigate: @escaping (CompanionRoute) -> Void,
-         onClose: @escaping () -> Void,
          onOpenVerseMoment: @escaping (RotatingVerse) -> Void) {
         self.clock = clock
         self.fixedTimeZone = fixedTimeZone
         self.onNavigate = onNavigate
-        self.onClose = onClose
         self.onOpenVerseMoment = onOpenVerseMoment
         _now = State(initialValue: clock())
     }
@@ -38,8 +35,7 @@ struct CompanionTodayView: View {
     var body: some View {
         ContentPage(title: "A little closer to God.",
                     eyebrow: "JOHN 1:1  /  \(formattedDate(now, "EEEE, MMMM d"))",
-                    subtitle: "Scripture for your day. Space for your soul.", onClose: onClose,
-                    showsBack: false) {
+                    subtitle: "Scripture for your day. Space for your soul.") {
             // Keep the launch smoke-test anchor on the source page title.
             if let snapshot {
                 ContentArtCard(artwork: artworkName(snapshot.season),
@@ -49,6 +45,7 @@ struct CompanionTodayView: View {
                                subtitle: "\(CompanionCalendar.seasonNames[snapshot.season] ?? snapshot.season) · Today’s readings") {
                     onNavigate(.daily(dateKey: dateKey))
                 }
+                .todayZoomSource(.daily(dateKey: dateKey), cornerRadius: 18)
                 ContentMutedText(text: CompanionCalendar.label)
 
                 VStack(alignment: .leading, spacing: 16) {
@@ -57,6 +54,7 @@ struct CompanionTodayView: View {
                                      imageName: "mary") {
                         onNavigate(.rosaryGuide(set: snapshot.rosarySet))
                     }
+                    .todayZoomSource(.rosaryGuide(set: snapshot.rosarySet))
                     ContentActionRow(title: prayer.title, subtitle: prayer.subtitle, imageName: "prayer") {
                         onNavigate(.prayer(id: prayer.id))
                     }
@@ -95,6 +93,7 @@ struct CompanionTodayView: View {
                                subtitle: "\(formattedDate(CompanionCalendar.upcomingSunday(now, timeZone: timeZone), "MMMM d")) · Read, reflect, return") {
                     onNavigate(.sunday)
                 }
+                .todayZoomSource(.sunday, cornerRadius: 18)
                 VStack(alignment: .leading, spacing: 0) {
                     ContentActionRow(title: "Explore the Catholic faith",
                                      subtitle: "Scripture alongside the Catechism") {

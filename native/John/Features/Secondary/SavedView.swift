@@ -42,13 +42,7 @@ struct SavedView: View {
                 ProgressView("Loading saved items…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if items.isEmpty {
-                Text(message ?? emptyText)
-                    .font(JohnTypography.sans(15))
-                    .foregroundStyle(colors.textDim)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(28)
-                    .accessibilityIdentifier("saved-empty-state")
+                emptyOrErrorState
             } else {
                 savedList
             }
@@ -151,6 +145,32 @@ struct SavedView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+    }
+
+    /// The empty list and the load failure. The description keeps the message text and the `saved-empty-state` identifier.
+    private var emptyOrErrorState: some View {
+        ContentUnavailableView {
+            if message == nil {
+                Label("Nothing saved", systemImage: emptyIcon)
+            } else {
+                Label("Could not load Saved", systemImage: "exclamationmark.triangle")
+            }
+        } description: {
+            Text(message ?? emptyText)
+                .accessibilityIdentifier("saved-empty-state")
+        } actions: {
+            if message != nil {
+                Button("Try again") { Task { await reload() } }
+            }
+        }
+    }
+
+    private var emptyIcon: String {
+        switch filter {
+        case .all, .bookmark: "bookmark"
+        case .highlight: "highlighter"
+        case .note: "note.text"
+        }
     }
 
     private var emptyText: String {
@@ -382,24 +402,6 @@ struct SavedNoteEditor: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 8) {
-                    Button("Cancel", action: close)
-                        .foregroundStyle(colors.tint)
-                        .frame(minWidth: 64, minHeight: 44, alignment: .leading)
-                        .accessibilityIdentifier("saved-note-cancel")
-                    Spacer(minLength: 4)
-                    Text(reference)
-                        .font(JohnTypography.sans(14, weight: .semibold))
-                        .foregroundStyle(colors.text)
-                        .lineLimit(1)
-                        .accessibilityAddTraits(.isHeader)
-                    Spacer(minLength: 4)
-                    Button("Save") { Task { await save() } }
-                        .disabled(isLoading || isSaving || !isLoadReady)
-                        .foregroundStyle(colors.tint)
-                        .frame(minWidth: 64, minHeight: 44, alignment: .trailing)
-                        .accessibilityIdentifier("saved-note-save")
-                }
                 Text(scriptureText)
                     .font(.custom("Georgia", size: 17))
                     .lineSpacing(10)
@@ -440,7 +442,22 @@ struct SavedNoteEditor: View {
         }
         .padding(20)
         .background(colors.background.ignoresSafeArea())
-        .toolbar(.hidden, for: .navigationBar)
+        // An editor needs Cancel and Save, so it keeps its own bar. It is a sheet from Saved and a push from the Reader.
+        // The pushed editor hides the system back button: Cancel is its only exit, and the edge swipe cannot drop a draft.
+        .navigationTitle(reference)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", action: close)
+                    .accessibilityIdentifier("saved-note-cancel")
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") { Task { await save() } }
+                    .disabled(isLoading || isSaving || !isLoadReady)
+                    .accessibilityIdentifier("saved-note-save")
+            }
+        }
         .interactiveDismissDisabled(draft != originalText)
         .overlay {
             if isLoading { ProgressView("Loading note…") }

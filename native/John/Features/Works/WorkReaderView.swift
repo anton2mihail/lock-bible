@@ -5,7 +5,6 @@ import JohnCore
 struct WorkReaderView: View {
     let workID: String?
     let requestedSection: Int?
-    let onClose: () -> Void
     let onOpenChapterCommentary: (String, Int, String) -> Void
 
     @Environment(JohnRuntime.self) private var runtime
@@ -58,12 +57,8 @@ struct WorkReaderView: View {
     private var taskIdentity: String { "\(workID ?? "missing-work")|\(requestedSection.map(String.init) ?? "resume")" }
 
     private var missingView: some View {
-        VStack(spacing: 16) {
-            Text("That work isn’t available")
-                .font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
-            Button(action: onClose) {
-                Text("Go back").font(JohnTypography.sans(14)).foregroundStyle(colors.tint)
-            }.buttonStyle(.plain)
+        ContentUnavailableView {
+            Label("That work isn’t available", systemImage: "book.closed")
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(colors.background)
@@ -120,12 +115,6 @@ struct WorkReaderView: View {
 
     private var topBar: some View {
         HStack(spacing: 12) {
-            Button(action: onClose) {
-                Text("×").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
-                    .frame(width: 40, height: 40).background(colors.card, in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close the reader")
             VStack(spacing: 2) {
                 Text(currentTitle).font(JohnTypography.sans(14, weight: .semibold)).lineLimit(1)
                 if currentTitle != work?.title { Text(work?.title ?? "").font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).lineLimit(1) }

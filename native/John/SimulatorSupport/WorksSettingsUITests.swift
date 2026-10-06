@@ -163,8 +163,10 @@ final class WorksSettingsUITests: XCTestCase {
         waitForTextLabel(in: app, containing: sectionAnchor)
         assertWorksFooter(footerLabels, above: tab, in: app)
 
-        tapWhenReady(app.buttons["Close the reader"], in: app)
-        tapWhenReady(app.buttons["Back to the library"], in: app)
+        // The system glass back button replaced the reader's "Close the reader" and the page's "Back to the library".
+        tapWhenReady(systemBack(in: app), in: app) // work reader back to the author page
+        XCTAssertTrue(app.staticTexts[sectionTitle].waitForNonExistence(timeout: 8), "The reader must leave before the next back tap")
+        tapWhenReady(systemBack(in: app), in: app) // author page back to the library
         let continueReading = app.buttons["works-continue"]
         XCTAssertTrue(continueReading.waitForExistence(timeout: 10))
         XCTAssertTrue(continueReading.label.contains("section 10"))
@@ -297,6 +299,11 @@ final class WorksSettingsUITests: XCTestCase {
     private func openWorksLibrary(in app: XCUIApplication) {
         openReaderBookList(in: app)
         tapWhenReady(app.buttons["reader-works-link"], in: app)
+    }
+
+    /// The iOS 26 system glass back button of a pushed screen.
+    private func systemBack(in app: XCUIApplication) -> XCUIElement {
+        app.navigationBars.buttons.firstMatch
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,

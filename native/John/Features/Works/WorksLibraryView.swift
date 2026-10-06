@@ -2,7 +2,6 @@ import SwiftUI
 import JohnCore
 
 struct WorksLibraryView: View {
-    let onClose: () -> Void
     let onOpenCollection: (String) -> Void
     let onOpenWork: (String, Int?) -> Void
 
@@ -28,18 +27,7 @@ struct WorksLibraryView: View {
     }
 
     var body: some View {
-        WorksPage(onClose: onClose) {
-            Button(action: onClose) {
-                HStack(spacing: 6) {
-                    Text("‹").font(JohnTypography.sans(24))
-                    Text("Read").font(JohnTypography.sans(14, weight: .semibold))
-                }
-                .foregroundStyle(colors.tint)
-                .frame(minHeight: 40)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Back to Read")
+        WorksPage {
             VStack(alignment: .leading, spacing: 8) {
                 WorksEyebrow("THE LIBRARY")
                 Text("The Fathers & Doctors")
@@ -72,7 +60,13 @@ struct WorksLibraryView: View {
             }
 
             if loadingFailed {
-                ContentMutedText(text: "The library could not be opened on this device.")
+                ContentUnavailableView {
+                    Label("Library unavailable", systemImage: "books.vertical")
+                } description: {
+                    Text("The library could not be opened on this device.")
+                } actions: {
+                    Button("Try again") { Task { await loadCatalog() } }
+                }
             } else if let catalog {
                 LazyVStack(spacing: 0) {
                     ForEach(catalog.collections.sorted(by: { $0.order < $1.order }), id: \.id) { collection in

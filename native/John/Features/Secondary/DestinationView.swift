@@ -21,90 +21,87 @@ struct DestinationView: View {
         case .goTo(let bookCode, let chapter):
             GoToView(initialBookCode: bookCode, initialChapter: chapter)
         case .works:
-            WorksLibraryView(onClose: router.pop,
-                             onOpenCollection: { router.push(.workCollection($0)) },
+            WorksLibraryView(onOpenCollection: { router.push(.workCollection($0)) },
                              onOpenWork: { workID, section in router.push(.workReader(workID: workID, section: section)) })
         case .daily(let value):
             CalendarReadingsView(sunday: false, initialDateKey: value,
                                  timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
-                                 onNavigate: navigate, onClose: router.pop)
+                                 onNavigate: navigate)
         case .sunday:
             CalendarReadingsView(sunday: true, timeZone: runtime.featureTimeZone,
-                                 clock: { runtime.featureNow() }, onNavigate: navigate, onClose: router.pop)
+                                 clock: { runtime.featureNow() }, onNavigate: navigate)
         case .rosaryGuide(let id):
             RosaryGuideView(requestedSet: id, clock: { runtime.featureNow() },
                             timeZone: runtime.featureTimeZone, onClose: router.pop)
         case .prayer(let id):
-            PrayerDetailView(id: id, onNavigate: navigate, onClose: router.pop)
+            PrayerDetailView(id: id, onNavigate: navigate)
         case .novena(let id):
-            NovenaView(id: id, onClose: router.pop)
+            NovenaView(id: id)
         case .verseMoment(let selection):
-            VerseMomentDestination(selection: selection, onClose: router.pop)
+            VerseMomentDestination(selection: selection)
         case .calendarNotifications:
             CalendarNotificationsView(
                 initialSettings: runtime.committedNativeState?.calendarNotifications ?? CalendarNotificationSettings(),
-                onClose: router.pop,
                 onSave: { try await runtime.saveCalendarNotifications($0) },
                 onOpenSystemSettings: openNotificationSettings
             )
         case .rosaryReminder:
             RosaryReminderView(
                 initialSettings: runtime.committedNativeState?.rosaryReminder ?? RosaryReminderSettings(),
-                onClose: router.pop,
                 onSave: { try await runtime.saveRosaryReminder($0) },
                 readCommittedSettings: { runtime.committedNativeState?.rosaryReminder ?? RosaryReminderSettings() }
             )
         case .learn:
-            TeachingView(id: nil, onNavigate: navigate, onClose: router.pop)
+            TeachingView(id: nil, onNavigate: navigate)
         case .confession:
             ConfessionView(onClose: router.pop)
         case .rosaryMedia:
-            RosaryMediaDestination(episodeID: mediaEpisodeID(route), onClose: router.pop)
+            RosaryMediaDestination(episodeID: mediaEpisodeID(route))
         case .workCollection(let id):
-            WorksCollectionView(collectionID: id, onClose: router.pop,
+            WorksCollectionView(collectionID: id,
                                 onOpenWork: { workID, section in router.push(.workReader(workID: workID, section: section)) })
         case .workReader(let workID, let section):
-            WorkReaderView(workID: workID, requestedSection: section, onClose: router.pop,
+            WorkReaderView(workID: workID, requestedSection: section,
                            onOpenChapterCommentary: { code, chapter, name in
                                router.push(.worksChapterCommentary(bookCode: code, chapter: chapter, bookName: name))
                            })
         case .worksChapterCommentary(let bookCode, let chapter, let bookName):
             WorksChapterCommentaryView(bookCode: bookCode, chapter: chapter, bookName: bookName,
-                                       onClose: router.pop,
                                        onOpenWork: { workID, section in router.push(.workReader(workID: workID, section: section)) })
             }
         }
+        // The system glass back button is the one way back. An empty inline title keeps the bar slim over the page.
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder private func companionDestination(_ route: CompanionRoute) -> some View {
         switch route {
         case .prayerHome:
             PrayerHomeView(timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
-                           onNavigate: navigate, onClose: router.pop)
+                           onNavigate: navigate)
         case .daily(let dateKey):
             CalendarReadingsView(sunday: false, initialDateKey: dateKey,
                                  timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
-                                 onNavigate: navigate, onClose: router.pop)
+                                 onNavigate: navigate)
         case .sunday:
             CalendarReadingsView(sunday: true, timeZone: runtime.featureTimeZone,
-                                 clock: { runtime.featureNow() }, onNavigate: navigate, onClose: router.pop)
+                                 clock: { runtime.featureNow() }, onNavigate: navigate)
         case .citationContext(let reference):
-            CitationContextView(reference: reference, onClose: router.pop,
+            CitationContextView(reference: reference,
                                 onOpenSearch: { router.push(.search) },
                                 onOpenLectio: { router.push(.companion(.lectio($0))) })
         case .prayers:
-            PrayerLibraryView(onNavigate: navigate, onClose: router.pop)
+            PrayerLibraryView(onNavigate: navigate)
         case .prayer(let id):
-            PrayerDetailView(id: id, onNavigate: navigate, onClose: router.pop)
+            PrayerDetailView(id: id, onNavigate: navigate)
         case .learn:
-            TeachingView(id: nil, onNavigate: navigate, onClose: router.pop)
+            TeachingView(id: nil, onNavigate: navigate)
         case .teaching(let id):
-            TeachingView(id: id, onNavigate: navigate, onClose: router.pop)
+            TeachingView(id: id, onNavigate: navigate)
         case .novena(let id):
-            NovenaView(id: id, onClose: router.pop)
+            NovenaView(id: id)
         case .rosaryHome:
             RosaryHomeView(clock: { runtime.featureNow() }, timeZone: runtime.featureTimeZone,
-                           onClose: router.pop,
                            onOpenGuide: { router.push(.companion(.rosaryGuide(set: $0))) },
                            onOpenReminder: { router.push(.rosaryReminder) },
                            onOpenMedia: { router.push(.rosaryMedia($0)) })
@@ -118,7 +115,7 @@ struct DestinationView: View {
         case .confession:
             ConfessionView(onClose: router.pop)
         case .scriptureCard(let passage):
-            ScriptureCardView(passage: passage, onClose: router.pop)
+            ScriptureCardView(passage: passage)
         }
     }
 
@@ -152,7 +149,6 @@ struct DestinationView: View {
 
 private struct RosaryMediaDestination: View {
     let episodeID: String?
-    let onClose: () -> Void
     @Environment(JohnRuntime.self) private var runtime
     @Environment(\.openURL) private var openURL
     @State private var catalog: RosaryHomeCatalog?
@@ -161,13 +157,11 @@ private struct RosaryMediaDestination: View {
     var body: some View {
         Group {
             if let catalog {
-                RosaryMediaView(episodeID: episodeID, catalog: catalog, onClose: onClose) { url in
+                RosaryMediaView(episodeID: episodeID, catalog: catalog) { url in
                     _ = openURL(url)
                 }
             } else if failed {
-                CompanionPage(title: "Rosary series", eyebrow: "Word on Fire", subtitle: "The series information could not be opened.") {
-                    Button("Go back", action: onClose).buttonStyle(.plain)
-                }
+                CompanionPage(title: "Rosary series", eyebrow: "Word on Fire", subtitle: "The series information could not be opened.") {}
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
                     .task { await loadCatalog() }
@@ -188,7 +182,6 @@ private struct RosaryMediaDestination: View {
 
 private struct VerseMomentDestination: View {
     let selection: VerseMomentSelection
-    let onClose: () -> Void
     @Environment(JohnRuntime.self) private var runtime
     @Environment(AppRouter.self) private var router
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -210,7 +203,7 @@ private struct VerseMomentDestination: View {
 
     var body: some View {
         ContentPage(title: "Verse of the moment", eyebrow: "\(countdown)",
-                    subtitle: "", onClose: onClose) {
+                    subtitle: "") {
             if guideDismissed == false {
                 SurfaceCard {
                     VStack(alignment: .leading, spacing: 12) {

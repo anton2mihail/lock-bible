@@ -30,7 +30,7 @@ final class ContentFlowUITests: XCTestCase {
         let favoriteUpdated = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label == %@", "Remove from favorites"), object: favorite)
         XCTAssertEqual(XCTWaiter.wait(for: [favoriteUpdated], timeout: 8), .completed)
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
@@ -43,7 +43,7 @@ final class ContentFlowUITests: XCTestCase {
         enterText(after, afterReflection, in: app)
         tapWhenReady(app.buttons["Save reflection"], in: app)
         XCTAssertTrue(app.staticTexts["Reflection saved on this device."].waitForExistence(timeout: 8))
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
         app.buttons["tab-pray"].tap()
         let novenaSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
@@ -67,12 +67,12 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(button(containing: "A morning offering", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Morning offering")
         XCTAssertEqual(app.buttons["prayer-favorite"].label, "Remove from favorites")
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
         XCTAssertEqual(textView(label: "Before Mass reflection", in: app).value as? String, beforeReflection)
         XCTAssertEqual(textView(label: "After Mass reflection", in: app).value as? String, afterReflection)
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
         app.buttons["tab-pray"].tap()
         let reopenedSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
@@ -96,22 +96,22 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(sirach, in: app)
         XCTAssertEqual(waitForPageTitle(app), "Sirach 27")
         XCTAssertTrue(app.staticTexts["Reading reference: Sirach 27:30—28:7"].waitForExistence(timeout: 8))
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
         XCTAssertTrue(app.staticTexts["Sep 13, 2026"].exists)
         XCTAssertTrue(button(containing: "Sirach 27:30—28:7", in: app).exists)
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
         app.buttons["tab-pray"].tap()
         tapWhenReady(button(containing: "Explore the Catholic faith", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Faith, rooted in Scripture")
         tapWhenReady(button(containing: "The Eucharist", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "The Eucharist")
-        tapWhenReady(app.buttons["content-back"], in: app)
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
     }
 
@@ -397,7 +397,7 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(card.waitForExistence(timeout: 8), "The card must keep the displayed verse reference")
         }
         step7Attach("step7-verse-moment-card", app: app)
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
 
         tapWhenReady(app.buttons["verse-moment-read-context"], in: app)
         let title = app.buttons["reader-title"]
@@ -436,7 +436,7 @@ final class ContentFlowUITests: XCTestCase {
         func backToToday() {
             app.buttons["tab-today"].tap()
             for _ in 0..<3 where !app.staticTexts["today-title"].isHittable {
-                let back = app.buttons["content-back"]
+                let back = systemBack(in: app)
                 if back.exists && back.isHittable { back.tap() } else { break }
             }
             XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 8))
@@ -708,6 +708,11 @@ final class ContentFlowUITests: XCTestCase {
 
     private func nextRosaryAction(in app: XCUIApplication) -> XCUIElement {
         app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@ OR label BEGINSWITH %@", "Complete ", "Begin this ")).firstMatch
+    }
+
+    /// The iOS 26 system glass back button of a pushed screen. It replaced the in-page `content-back` row.
+    private func systemBack(in app: XCUIApplication) -> XCUIElement {
+        app.navigationBars.buttons.firstMatch
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,

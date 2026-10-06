@@ -4,7 +4,6 @@ import SwiftUI
 struct RosaryMediaView: View {
     let episodeID: String?
     let catalog: RosaryHomeCatalog
-    let onClose: () -> Void
     let onOpenURL: (URL) -> Void
 
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -15,11 +14,10 @@ struct RosaryMediaView: View {
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var currentEpisode: RosaryMediaEpisode { model.episode }
 
-    init(episodeID: String?, catalog: RosaryHomeCatalog, onClose: @escaping () -> Void,
+    init(episodeID: String?, catalog: RosaryHomeCatalog,
          onOpenURL: @escaping (URL) -> Void) {
         self.episodeID = episodeID
         self.catalog = catalog
-        self.onClose = onClose
         self.onOpenURL = onOpenURL
         let chosen = catalog.mediaEpisodes.first { $0.id == episodeID } ?? catalog.mediaEpisodes.first ?? .unavailable
         _model = State(initialValue: RosaryMediaModel(episode: chosen))
@@ -28,10 +26,10 @@ struct RosaryMediaView: View {
     var body: some View {
         Group {
             if !catalog.isValid {
-                VStack(spacing: 16) {
-                    Text("Media is not available").font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
-                    Text("The Rosary media list could not be opened.").font(JohnTypography.sans(16)).foregroundStyle(colors.textDim)
-                    Button("Close", action: onClose).foregroundStyle(colors.tint)
+                ContentUnavailableView {
+                    Label("Media is not available", systemImage: "play.slash")
+                } description: {
+                    Text("The Rosary media list could not be opened.")
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(colors.background)
@@ -54,15 +52,6 @@ struct RosaryMediaView: View {
     private var mediaPage: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Button(action: onClose) {
-                    HStack(spacing: 6) {
-                        Text("‹").font(JohnTypography.sans(24))
-                        Text("Rosary").font(JohnTypography.sans(14, weight: .semibold))
-                    }.foregroundStyle(colors.tint).frame(minHeight: 40)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to Rosary")
-
                 VStack(alignment: .leading, spacing: 8) {
                     Text("WORD ON FIRE SERIES").font(JohnTypography.sans(12, weight: .semibold))
                         .tracking(1.5).foregroundStyle(colors.tint)

@@ -33,7 +33,7 @@ final class MediaNotificationUITests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 8))
-        tapWhenReady(app.buttons["Back to Rosary"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
         XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
         NSLog("MEDIA_DEBUG mode=audio episodeID=why-pray episodeTitle=Why Pray the Rosary? afterActivation=true routeReturn=true")
     }
@@ -52,28 +52,21 @@ final class MediaNotificationUITests: XCTestCase {
     #endif
 
 
+    /// The iOS 26 system glass back button of a pushed screen. It replaced the in-page "Back to Rosary" link and `content-back`.
+    private func systemBack(in app: XCUIApplication) -> XCUIElement {
+        app.navigationBars.buttons.firstMatch
+    }
+
     /// Leaves the media page and checks that the Rosary home appears (Step 7 media-lifecycle).
-    /// Observed (step7-media-lifecycle-01 recording): the page is a ScrollView. The in-page link "Back to Rosary" is the
-    /// first item of the scroll content (`RosaryMediaView.swift:58-65`). After playback the page can sit a little scrolled,
-    /// so the link lies under the status area, and a round system back control floats at the top left.
-    /// Order: scroll the page to its top and tap the in-page link; if the Rosary home does not appear, use the navigation
-    /// back control by identifier `BackButton`; then the swipe-back gesture from 8 pt inside the left edge
-    /// (more than 4 pt, so it is not the system edge gesture of the Simulator tool). Each step is logged.
+    /// The page is a pushed screen. Its one exit is the system glass back button at the top left; the in-page
+    /// "Back to Rosary" link was removed (audit item B1, `RosaryMediaView.swift`). After playback the page can sit
+    /// scrolled, but the system bar stays on screen.
+    /// Order: tap the navigation back control (the first button of the navigation bar, identifier `BackButton` on some
+    /// builds); then the swipe-back gesture from 8 pt inside the left edge (more than 4 pt, so it is not the system
+    /// edge gesture of the Simulator tool). Each step is logged.
     private func leaveMediaPageToRosaryHome(in app: XCUIApplication) {
         let rosaryHome = app.staticTexts["The Rosary with Bishop Barron"]
-        let link = app.buttons["Back to Rosary"]
-        let page = app.scrollViews.allElementsBoundByIndex
-            .filter { $0.exists && $0.isHittable }
-            .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height } ?? app.scrollViews.firstMatch
-        let safeTop = app.statusBars.firstMatch.exists ? app.statusBars.firstMatch.frame.maxY + 8 : 70
-        for _ in 0..<6 where !(link.exists && link.isHittable && link.frame.minY >= safeTop) {
-            page.swipeDown()
-        }
-        if link.exists && link.isHittable {
-            link.tap()
-            if rosaryHome.waitForExistence(timeout: 5) { NSLog("STEP7_MEDIA_EXIT method=in-page-link"); return }
-        }
-        let navBack = app.buttons["BackButton"].exists ? app.buttons["BackButton"] : app.navigationBars.buttons.firstMatch
+        let navBack = app.buttons["BackButton"].exists ? app.buttons["BackButton"] : systemBack(in: app)
         if navBack.exists && navBack.isHittable {
             navBack.tap()
             if rosaryHome.waitForExistence(timeout: 5) { NSLog("STEP7_MEDIA_EXIT method=navigation-back"); return }
@@ -140,7 +133,7 @@ final class MediaNotificationUITests: XCTestCase {
         attachment.name = "step7-media-failure"
         attachment.lifetime = .keepAlways
         add(attachment)
-        tapWhenReady(app.buttons["Back to Rosary"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
         XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
         NSLog("STEP7_MEDIA_FAILURE audioUnavailable=true")
     }
@@ -180,7 +173,7 @@ final class MediaNotificationUITests: XCTestCase {
         tapWhenReady(app.buttons["calendar-notifications-save"], in: app)
         XCTAssertTrue(app.staticTexts["Calendar notifications are off."].waitForExistence(timeout: 8))
 
-        tapWhenReady(app.buttons["content-back"], in: app)
+        tapWhenReady(systemBack(in: app), in: app)
         app.buttons["tab-pray"].tap()
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         tapWhenReady(button(containing: "Rosary reminder", in: app), in: app)

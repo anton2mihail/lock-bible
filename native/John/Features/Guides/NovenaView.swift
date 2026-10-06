@@ -3,7 +3,6 @@ import JohnCore
 
 struct NovenaView: View {
     let id: String
-    let onClose: () -> Void
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -18,6 +17,7 @@ struct NovenaView: View {
     @State private var intentionRevision = 0
     @State private var routeGeneration = 0
     @State private var saveQueue = NovenaProgressSaveQueue()
+    @State private var confirmingReset = false
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var novena: NovenaCatalogItem? { catalog?.novenas.first { $0.id == id } }
@@ -47,19 +47,16 @@ struct NovenaView: View {
     var body: some View {
         Group {
             if let loadMessage {
-                ContentPage(title: "Novena", eyebrow: nil, subtitle: nil, onClose: onClose) {
+                ContentPage(title: "Novena", eyebrow: nil, subtitle: nil) {
                     ContentMutedText(text: loadMessage)
-                    ContentButton(title: "Back to novenas", action: onClose)
                 }
             } else if let novena {
                 detail(novena)
             } else if catalog != nil {
                 ContentPage(title: "Novena not found", eyebrow: nil,
-                            subtitle: "This prayer is not in your offline library.", onClose: onClose) {
-                    ContentButton(title: "Back to novenas", action: onClose)
-                }
+                            subtitle: "This prayer is not in your offline library.") {}
             } else {
-                ContentPage(title: "Novena", eyebrow: nil, subtitle: nil, onClose: onClose) {
+                ContentPage(title: "Novena", eyebrow: nil, subtitle: nil) {
                     ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
                 }
             }
@@ -79,7 +76,7 @@ struct NovenaView: View {
     }
 
     private func detail(_ item: NovenaCatalogItem) -> some View {
-        NovenaDetailPage(onClose: onClose) {
+        NovenaDetailPage {
             ContentArtwork(name: artworkName(item.id))
                 .scaledToFill()
                 .aspectRatio(1.7, contentMode: .fill)
@@ -227,10 +224,14 @@ struct NovenaView: View {
                     .contentAnnouncement(saveMessage)
             }
             if isComplete {
-                ContentButton(title: "Start the novena again") {
-                    enqueueProgressChange({ _ in NovenaProgressSelectors.reset() }, clearIntentionOnSuccess: true)
-                }
-                .accessibilityHint("Clears all nine completed days and your intention")
+                ContentButton(title: "Start the novena again") { confirmingReset = true }
+                    .accessibilityHint("Clears all nine completed days and your intention")
+                    .confirmationDialog("Reset this novena?", isPresented: $confirmingReset, titleVisibility: .visible) {
+                        Button("Reset", role: .destructive) {
+                            enqueueProgressChange({ _ in NovenaProgressSelectors.reset() }, clearIntentionOnSuccess: true)
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    }
             } else {
                 ContentButton(title: selectedIsComplete ? "Day \(progress.selectedDay) complete" : "Mark day \(progress.selectedDay) complete") {
                     enqueueProgressChange { NovenaProgressSelectors.completeSelectedDay($0) }
@@ -357,7 +358,6 @@ private struct NovenaDayButtonStyle: ButtonStyle {
 }
 
 private struct NovenaDetailPage<Content: View>: View {
-    let onClose: () -> Void
     @ViewBuilder var content: Content
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
@@ -366,17 +366,6 @@ private struct NovenaDetailPage<Content: View>: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Button(action: onClose) {
-                    HStack(spacing: 6) {
-                        Text("‹").font(JohnTypography.sans(24))
-                        Text("Novenas").font(JohnTypography.sans(14, weight: .semibold))
-                    }
-                    .foregroundStyle(colors.tint)
-                    .frame(minHeight: 40)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to novenas")
                 content
             }
             .padding(.horizontal, 24)

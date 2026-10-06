@@ -3,7 +3,6 @@ import JohnCore
 
 struct CalendarNotificationsView: View {
     let initialSettings: CalendarNotificationSettings
-    let onClose: @MainActor () -> Void
     let onSave: @MainActor (CalendarNotificationSettings) async throws -> CalendarNotificationSettings
     let onOpenSystemSettings: @MainActor () async throws -> Void
 
@@ -20,11 +19,9 @@ struct CalendarNotificationsView: View {
     private var time: Date { featureTime(hour: settings.hour, minute: settings.minute) }
 
     init(initialSettings: CalendarNotificationSettings,
-         onClose: @escaping @MainActor () -> Void,
          onSave: @escaping @MainActor (CalendarNotificationSettings) async throws -> CalendarNotificationSettings,
          onOpenSystemSettings: @escaping @MainActor () async throws -> Void) {
         self.initialSettings = initialSettings
-        self.onClose = onClose
         self.onSave = onSave
         self.onOpenSystemSettings = onOpenSystemSettings
         _settings = State(initialValue: initialSettings)
@@ -32,8 +29,7 @@ struct CalendarNotificationsView: View {
 
     var body: some View {
         ContentPage(title: "A day in the Church", eyebrow: "Calendar notifications",
-                    subtitle: "A gentle morning notice for today’s saint, feast, or liturgical observance, with the Gospel reference when available.",
-                    onClose: onClose) {
+                    subtitle: "A gentle morning notice for today’s saint, feast, or liturgical observance, with the Gospel reference when available.") {
             VStack(alignment: .leading, spacing: 24) {
                 Text("Notify me each day").font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
                 Toggle("Enable calendar notifications", isOn: Binding(

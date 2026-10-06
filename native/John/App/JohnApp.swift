@@ -28,6 +28,7 @@ private struct JohnRootView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.scenePhase) private var scenePhase
+    @Namespace private var todayZoom
 
     var body: some View {
         VStack(spacing: 0) {
@@ -151,8 +152,11 @@ private struct JohnRootView: View {
                     .toolbar(.hidden, for: .navigationBar)
                     .navigationDestination(for: AppRoute.self) { route in
                         DestinationView(route: route)
+                            .todayZoomDestination(route)
                     }
             }
+            // Only the Today tab has zoom sources: its art cards open their pages with a zoom (audit B7).
+            .environment(\.todayZoomNamespace, tab == .today ? todayZoom : nil)
             // Scroll content goes under the floating bar with the default (automatic) bottom scroll edge effect.
         } label: {
             Label {
@@ -204,7 +208,6 @@ private struct JohnRootView: View {
             CompanionTodayView(clock: { runtime.featureNow() },
                                fixedTimeZone: runtime.featureTimeZone,
                                onNavigate: { router.push(.companion($0)) },
-                               onClose: {},
                                onOpenVerseMoment: {
                                    router.push(.verseMoment(VerseMomentSelection(verse: $0, translation: preferences.translation)))
                                })

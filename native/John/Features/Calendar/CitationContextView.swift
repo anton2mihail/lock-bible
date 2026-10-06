@@ -3,7 +3,6 @@ import JohnCore
 
 struct CitationContextView: View {
     let reference: String
-    let onClose: () -> Void
     let onOpenSearch: () -> Void
     let onOpenLectio: (PassageSelection) -> Void
 
@@ -45,8 +44,7 @@ struct CitationContextView: View {
     var body: some View {
         ContentPage(title: target.map { "\(bookName) \($0.chapter)" } ?? "Passage unavailable",
                     eyebrow: target == nil ? nil : "Scripture in context",
-                    subtitle: target == nil ? nil : "Reading reference: \(reference)",
-                    onClose: onClose) {
+                    subtitle: target == nil ? nil : "Reading reference: \(reference)") {
             if loading {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
             } else if let target, let chapter {
