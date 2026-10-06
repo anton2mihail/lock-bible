@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwiftUI
+import WidgetKit
 import JohnCore
 
 @MainActor @Observable final class SharedPreferencesModel {
@@ -9,6 +10,8 @@ import JohnCore
     var scope: RotationScope = .full
     var intervalMinutes = NativePersistentState().rotationIntervalMinutes
     var appearance: AppearanceMode = .system
+    var readerLocation: ReaderLocation?
+    var selectionHintDismissed = false
 
     static func projectedAppearance(for theme: String?) -> AppearanceMode {
         guard let theme, !theme.isEmpty else { return .system }
@@ -21,6 +24,8 @@ import JohnCore
         scope = state.verseScope
         intervalMinutes = state.rotationIntervalMinutes
         appearance = Self.projectedAppearance(for: state.themeScheme)
+        readerLocation = state.readerLocation
+        selectionHintDismissed = state.selectionHintDismissed
     }
 
     func colors(for colorScheme: ColorScheme) -> JohnColors {
@@ -49,13 +54,21 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     private(set) var startupComplete = false
     private(set) var hasNativeState = false
     private(set) var committedStateRevision: Int64?
+    private(set) var committedNativeState: NativePersistentState?
     @ObservationIgnored private let stateStore: NativeStateStore?
     @ObservationIgnored private var startupURLs: [URL] = []
     @ObservationIgnored private var isDrainingStartupURLs = false
+    @ObservationIgnored private var mutationOutcomeSequence: UInt64 = 0
+    @ObservationIgnored private var noticeService: LocalNoticeService?
+    @ObservationIgnored private var featureClock: () -> Date = Date.init
+    @ObservationIgnored private var featureZone: TimeZone = .autoupdatingCurrent
     @ObservationIgnored private let appResourceRoot: URL?
     @ObservationIgnored private let bible: BundledBibleRepository?
     @ObservationIgnored private let works: SQLiteWorksRepository?
     @ObservationIgnored private let rotation: IndexedRotationRepository?
+    @ObservationIgnored private let library: SQLiteLibraryRepository?
+    @ObservationIgnored private let searchRepository: SQLiteSearchRepository?
+    @ObservationIgnored let companionRepository: BundledCompanionRepository?
 
     init(bundle: Bundle = .main) {
         let root = bundle.resourceURL?.appendingPathComponent("App", isDirectory: true)
@@ -67,29 +80,63 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
             bible = bibleRepository
             rotation = rotationRepository
             works = SQLiteWorksRepository(roots: roots)
+            searchRepository = SQLiteSearchRepository(
+                databaseURL: root.appendingPathComponent("Databases/bible-search.db", isDirectory: false),
+                resourceRoots: roots
+            )
+            companionRepository = BundledCompanionRepository(roots: roots)
             today = TodayModel(appResources: root, rotation: rotationRepository)
             let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
             let applicationSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             if let documents, let applicationSupport {
                 let libraryURL = documents.appendingPathComponent("SQLite/user-library.db", isDirectory: false)
                 let legacyRoot = documents.appendingPathComponent("mmkv", isDirectory: true)
+                let recoveryDirectory = applicationSupport.appendingPathComponent("John/recovery", isDirectory: true)
                 stateStore = NativeStateStore(applicationSupportURL: applicationSupport,
                                               libraryURL: libraryURL,
                                               roots: roots,
                                               legacyReader: LegacyMMKVReader(rootURL: legacyRoot))
+                library = SQLiteLibraryRepository(databaseURL: libraryURL, recoveryDirectory: recoveryDirectory)
             } else {
                 stateStore = nil
+                library = nil
                 startupStatus = "The app cannot find its saved-data folders."
             }
         } else {
             stateStore = nil
+            library = nil
+            searchRepository = nil
             bible = nil
             rotation = nil
             works = nil
+            companionRepository = nil
             today = TodayModel(appResources: nil, rotation: nil)
             startupStatus = "App resources are missing."
         }
+        configureNoticeService()
+        #if DEBUG
+        configureFeatureClockFromArguments()
+        #endif
     }
+
+    func featureNow() -> Date { featureClock() }
+    var featureTimeZone: TimeZone { featureZone }
+
+    #if DEBUG
+    private func configureFeatureClockFromArguments() {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let dateIndex = arguments.firstIndex(of: "-L14FeatureDate"),
+              arguments.indices.contains(dateIndex + 1),
+              let zoneIndex = arguments.firstIndex(of: "-L14FeatureTimeZone"),
+              arguments.indices.contains(zoneIndex + 1),
+              let zone = TimeZone(identifier: arguments[zoneIndex + 1]) else { return }
+        let formatter = ISO8601DateFormatter()
+        guard let date = formatter.date(from: arguments[dateIndex + 1]) else { return }
+        featureClock = { date }
+        featureZone = zone
+        NSLog("John feature test clock configured zone=%@", zone.identifier)
+    }
+    #endif
 
     func start() async {
         guard !startupComplete else { return }
@@ -123,28 +170,58 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         }
         hasNativeState = true
         preferences.project(envelope.state)
+        committedNativeState = envelope.state
         committedStateRevision = envelope.revision
+        await writeWidgetProjection(envelope.state, reload: true)
         startupStatus = result.nativeStateCapability ?? result.libraryCapability ?? "Ready"
         startupComplete = true
         #if DEBUG
         NSLog("John startup committed envelope revision=%lld textSize=%@", envelope.revision, envelope.state.readingPreferences.textSize.rawValue)
         #endif
+        await refreshLocalNotifications()
     }
 
     func apply(_ mutation: NativeStateMutation) async {
-        guard startupComplete, hasNativeState, let stateStore else { return }
+        _ = await applyWithResult(mutation)
+    }
+
+    func applyWithResult(_ mutation: NativeStateMutation) async -> Bool {
+        guard startupComplete, hasNativeState, let stateStore else { return false }
+        mutationOutcomeSequence &+= 1
+        let outcomeSequence = mutationOutcomeSequence
         do {
             let envelope = try await stateStore.update(mutation)
-            preferences.project(envelope.state)
-            committedStateRevision = envelope.revision
-            nativeStateCapability = nil
-            settingSaveUncertain = false
+            let previousState = committedNativeState
+            if envelope.revision >= (committedStateRevision ?? 0) {
+                preferences.project(envelope.state)
+                committedNativeState = envelope.state
+                committedStateRevision = envelope.revision
+            }
+            if outcomeSequence == mutationOutcomeSequence {
+                let projectionState = committedNativeState ?? envelope.state
+                await writeWidgetProjection(
+                    projectionState,
+                    reload: previousState.map {
+                        $0.translationID != projectionState.translationID ||
+                        $0.verseScope != projectionState.verseScope ||
+                        $0.rotationIntervalMinutes != projectionState.rotationIntervalMinutes
+                    } ?? true
+                )
+            }
+            if outcomeSequence == mutationOutcomeSequence {
+                nativeStateCapability = nil
+                settingSaveUncertain = false
+            }
             #if DEBUG
             NSLog("John preference commit revision=%lld textSize=%@", envelope.revision, envelope.state.readingPreferences.textSize.rawValue)
             #endif
+            return true
         } catch {
-            nativeStateCapability = "The app cannot confirm that the setting was saved. Restart the app before you change saved settings."
-            settingSaveUncertain = true
+            if outcomeSequence == mutationOutcomeSequence {
+                nativeStateCapability = "The app cannot confirm that the setting was saved. Restart the app before you change saved settings."
+                settingSaveUncertain = true
+            }
+            return false
         }
     }
 
@@ -179,6 +256,18 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     #if DEBUG
     private func runScenarioFromLaunchArguments() async {
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-L22ServiceComparison") {
+            await runL22ServiceComparison(arguments)
+            return
+        }
+        if arguments.contains("-L09FixtureComparison") {
+            await runL09FixtureComparison(arguments)
+            return
+        }
+        if arguments.contains("-L10L11FixtureComparison") {
+            await runL10L11FixtureComparison(arguments)
+            return
+        }
         if arguments.contains("-L04RepositoryRunner") {
             await runRepositoryRunnerFromLaunchArguments(arguments)
             return
@@ -310,6 +399,97 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
             NSLog("John L04 repository checks passed output=%@", outputURL.path)
         } catch {
             NSLog("John L04 repository checks failed: %@", String(describing: error))
+        }
+    }
+
+    private func runL22ServiceComparison(_ arguments: [String]) async {
+        guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let fixtureIndex = arguments.firstIndex(of: "-L22FixtureRelativePath"),
+              arguments.indices.contains(fixtureIndex + 1),
+              let outputIndex = arguments.firstIndex(of: "-L22OutputRelativePath"),
+              arguments.indices.contains(outputIndex + 1),
+              let fixtureURL = debugScenarioURL(arguments[fixtureIndex + 1], under: documents),
+              let outputURL = debugScenarioURL(arguments[outputIndex + 1], under: documents) else {
+            NSLog("John L22 comparison rejected paths outside the process Documents folder.")
+            return
+        }
+        guard let repository = companionRepository else {
+            NSLog("John L22 comparison cannot read bundled calendar resources.")
+            return
+        }
+        NSLog("John L22 process bundle=%@ home=%@ documents=%@ fixture=%@ output=%@",
+              Bundle.main.bundleIdentifier ?? "unknown", NSHomeDirectory(), documents.path,
+              fixtureURL.path, outputURL.path)
+        do {
+            let report = try await L22ServiceComparison.run(sourceFixtureURL: fixtureURL) {
+                async let readings = repository.readings()
+                async let celebrations = repository.celebrations()
+                return try await (readings, celebrations)
+            }
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            let data = try encoder.encode(report)
+            try FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(),
+                                                    withIntermediateDirectories: true)
+            try data.write(to: outputURL, options: .atomic)
+            NSLog("John L22 comparison passed=%d observations=%lu output=%@",
+                  report.passed ? 1 : 0, report.observations.count, outputURL.path)
+        } catch {
+            NSLog("John L22 comparison failed: %@", String(describing: error))
+        }
+    }
+
+    private func runL09FixtureComparison(_ arguments: [String]) async {
+        guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let appRoot = appResourceRoot,
+              let fixtureIndex = arguments.firstIndex(of: "-L09FixtureRelativePath"),
+              arguments.indices.contains(fixtureIndex + 1),
+              let outputIndex = arguments.firstIndex(of: "-L09OutputRelativePath"),
+              arguments.indices.contains(outputIndex + 1),
+              let fixtureURL = debugScenarioURL(arguments[fixtureIndex + 1], under: documents),
+              let outputURL = debugScenarioURL(arguments[outputIndex + 1], under: documents) else {
+            NSLog("John L09 comparison rejected paths outside the process Documents folder.")
+            return
+        }
+        let databaseURL = appRoot.appendingPathComponent("Databases/bible-search.db", isDirectory: false)
+        NSLog("John L09 process bundle=%@ home=%@ documents=%@ fixture=%@ output=%@",
+              Bundle.main.bundleIdentifier ?? "unknown", NSHomeDirectory(), documents.path,
+              fixtureURL.path, outputURL.path)
+        do {
+            _ = try await L09FixtureComparison.run(fixtureURL: fixtureURL, appRoot: appRoot,
+                                                   databaseURL: databaseURL, outputURL: outputURL)
+            NSLog("John L09 comparison completed.")
+        } catch {
+            NSLog("John L09 comparison failed: %@", String(describing: error))
+        }
+    }
+
+    private func runL10L11FixtureComparison(_ arguments: [String]) async {
+        guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let fixtureIndex = arguments.firstIndex(of: "-L10FixtureRelativePath"),
+              arguments.indices.contains(fixtureIndex + 1),
+              let databaseIndex = arguments.firstIndex(of: "-L10DatabaseRelativePath"),
+              arguments.indices.contains(databaseIndex + 1),
+              let recoveryIndex = arguments.firstIndex(of: "-L10RecoveryRelativePath"),
+              arguments.indices.contains(recoveryIndex + 1),
+              let outputIndex = arguments.firstIndex(of: "-L10OutputRelativePath"),
+              arguments.indices.contains(outputIndex + 1),
+              let fixtureURL = debugScenarioURL(arguments[fixtureIndex + 1], under: documents),
+              let databaseURL = debugScenarioURL(arguments[databaseIndex + 1], under: documents),
+              let recoveryURL = debugScenarioURL(arguments[recoveryIndex + 1], under: documents),
+              let outputURL = debugScenarioURL(arguments[outputIndex + 1], under: documents) else {
+            NSLog("John L10 comparison rejected paths outside the process Documents folder.")
+            return
+        }
+        NSLog("John L10 process bundle=%@ home=%@ documents=%@ fixture=%@ database=%@ recovery=%@ output=%@",
+              Bundle.main.bundleIdentifier ?? "unknown", NSHomeDirectory(), documents.path,
+              fixtureURL.path, databaseURL.path, recoveryURL.path, outputURL.path)
+        do {
+            _ = try await L10L11FixtureComparison.run(fixtureURL: fixtureURL, databaseURL: databaseURL,
+                                                       recoveryDirectory: recoveryURL, outputURL: outputURL)
+            NSLog("John L10/L11 comparison completed.")
+        } catch {
+            NSLog("John L10/L11 comparison failed: %@", String(describing: error))
         }
     }
 
@@ -476,6 +656,217 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     func books(translation: TranslationID) async -> [BibleBookDescriptor] {
         guard let bible else { return [] }
         return (try? await bible.manifest(for: translation)) ?? []
+    }
+
+    func worksCatalog() async -> WorkCatalog? {
+        guard let works else { return nil }
+        return try? await works.catalog()
+    }
+
+    func workSection(workID: String, index: Int) async throws -> WorkSection {
+        guard let works else { throw CoreError.missingResource("Works database") }
+        return try await works.section(workID: workID, index: index)
+    }
+
+    func workSectionSummaries(workID: String) async throws -> [WorkSectionSummary] {
+        guard let works else { throw CoreError.missingResource("Works database") }
+        return try await works.sectionSummaries(workID: workID)
+    }
+
+    func translationMetadata(_ translation: TranslationID) async -> BibleTranslationMetadata? {
+        guard let bible else { return nil }
+        return try? await bible.metadata(for: translation)
+    }
+
+    func installedCalendarCoverage() async -> CalendarCoverage? {
+        guard let companionRepository,
+              let readings = try? await companionRepository.readings() else { return nil }
+        return CompanionCalendar.coverage(readings.dates)
+    }
+
+    func search(_ request: BibleSearchRequest) async throws -> BibleSearchResponse {
+        guard let searchRepository else { throw CoreError.missingResource("search database") }
+        return try await searchRepository.search(request)
+    }
+
+    func savedItems(filter: SavedFilter = .all) async throws -> [SavedItem] {
+        guard let library else { throw CoreError.unreadableLibrary("saved items unavailable") }
+        return try await library.listSavedItems(filter: filter)
+    }
+
+    func deleteSavedItem(_ item: SavedItem) async throws {
+        guard let library else { throw CoreError.unreadableLibrary("saved items unavailable") }
+        try await library.delete(item)
+    }
+
+    func restoreSavedItem(_ item: SavedItem) async throws {
+        guard let library else { throw CoreError.unreadableLibrary("saved items unavailable") }
+        try await library.restore(item)
+    }
+
+    func note(for passage: PassageID) async throws -> String {
+        guard let library else { throw CoreError.unreadableLibrary("saved notes unavailable") }
+        return try await library.note(for: passage)
+    }
+
+    func saveNote(_ passage: PassageSelection, text: String) async throws {
+        guard let library else { throw CoreError.unreadableLibrary("saved notes unavailable") }
+        try await library.saveNote(passage, text: text)
+    }
+
+    func deleteNote(for passage: PassageSelection) async throws {
+        guard let library else { throw CoreError.unreadableLibrary("saved notes unavailable") }
+        try await library.saveNote(passage, text: "")
+    }
+
+    func isBookmarked(_ passage: PassageID) async throws -> Bool {
+        guard let library else { throw CoreError.unreadableLibrary("bookmarks unavailable") }
+        return try await library.isBookmarked(passage)
+    }
+
+    func toggleBookmark(_ passage: PassageSelection) async throws -> Bool {
+        guard let library else { throw CoreError.unreadableLibrary("bookmarks unavailable") }
+        return try await library.toggleBookmark(passage)
+    }
+
+    func applyHighlight(_ passage: PassageSelection, color: HighlightColor) async throws {
+        guard let library else { throw CoreError.unreadableLibrary("highlights unavailable") }
+        try await library.applyHighlight(passage, color: color)
+    }
+
+    func clearHighlight(_ passage: PassageSelection) async throws {
+        guard let library else { throw CoreError.unreadableLibrary("highlights unavailable") }
+        try await library.clearHighlight(passage)
+    }
+
+    func chapterHighlights(translation: TranslationID, bookCode: String, chapter: Int) async -> [String: HighlightColor] {
+        guard let library else { return [:] }
+        do {
+            let values = try await library.chapterHighlights(
+                translationID: translation.rawValue,
+                bookCode: bookCode,
+                chapter: chapter
+            )
+            return Dictionary(values.map { ($0.verse, $0.color) }, uniquingKeysWith: { _, newest in newest })
+        } catch {
+            return [:]
+        }
+    }
+
+    func saveReaderLocation(bookCode: String, chapter: Int, scrollY: Double,
+                            anchor: ReaderAnchor? = nil) async {
+        guard let code = BookCode(rawValue: bookCode),
+              let location = try? ReaderLocation(
+                bookCode: code,
+                chapter: chapter,
+                scrollY: scrollY,
+                updatedAt: Int64(Date().timeIntervalSince1970 * 1_000),
+                anchor: anchor
+              ) else { return }
+        await apply(.setReaderLocation(location))
+    }
+
+    func translationAttribution(_ translation: TranslationID) async -> String {
+        guard let bible else { return "" }
+        return (try? await bible.metadata(for: translation).attribution) ?? ""
+    }
+
+    func translationAbbreviation(_ translation: TranslationID) async -> String {
+        guard let bible else { return "" }
+        return (try? await bible.metadata(for: translation).abbreviation) ?? ""
+    }
+
+    func saveCalendarNotifications(_ requested: CalendarNotificationSettings) async throws -> CalendarNotificationSettings {
+        guard let noticeService else { throw CoreError.missingResource("notification service") }
+        return try await noticeService.saveCalendar(requested)
+    }
+
+    func saveRosaryReminder(_ requested: RosaryReminderSettings) async throws -> RosaryReminderSettings {
+        guard let noticeService else { throw CoreError.missingResource("notification service") }
+        return try await noticeService.saveRosary(requested)
+    }
+
+    func refreshLocalNotifications() async {
+        guard let noticeService, startupComplete, hasNativeState, !settingSaveUncertain else { return }
+        do {
+            try await noticeService.refresh()
+        } catch {
+            #if DEBUG
+            NSLog("John notification refresh failed: %@", error.localizedDescription)
+            #endif
+        }
+    }
+
+    func notificationPermissionStatus() async -> NoticeAuthorizationStatus {
+        guard let noticeService else { return .notDetermined }
+        return await noticeService.permissionStatus()
+    }
+
+    private func configureNoticeService() {
+        noticeService = LocalNoticeService(
+            center: SystemNoticeCenter(),
+            now: { Date() },
+            timeZone: { .autoupdatingCurrent },
+            readCommitted: { [weak self] in
+                guard let self, self.startupComplete, let state = self.committedNativeState,
+                      !self.settingSaveUncertain else {
+                    throw LocalNoticeError.transactionFailed(
+                        operation: "Reading saved notification settings",
+                        cause: "Restart John before you change notification settings.",
+                        rollbackFailures: []
+                    )
+                }
+                return state
+            },
+            readCalendars: { [weak self] in
+                guard let repository = self?.companionRepository else {
+                    throw CoreError.missingResource("calendar resources")
+                }
+                async let readings = repository.readings()
+                async let celebrations = repository.celebrations()
+                return try await (readings, celebrations)
+            },
+            commit: { [weak self] mutation in
+                guard let self, await self.applyWithResult(mutation) else {
+                    throw LocalNoticeError.transactionFailed(
+                        operation: "Saving notification settings",
+                        cause: "The setting could not be saved.",
+                        rollbackFailures: []
+                    )
+                }
+            }
+        )
+    }
+
+    func rotatingVerse(at instant: Date, timeZone: TimeZone, translation: TranslationID,
+                       scope: RotationScope, intervalMinutes: Int) async -> RotatingVerse? {
+        guard let rotation,
+              let count = try? await rotation.poolCount(translation: translation, scope: scope),
+              let slot = try? RotationMath.slot(at: instant,
+                                                utcOffsetSeconds: timeZone.secondsFromGMT(for: instant),
+                                                intervalMinutes: intervalMinutes),
+              let index = try? RotationMath.index(for: slot, count: count) else { return nil }
+        return try? await rotation.verse(translation: translation, scope: scope, at: index)
+    }
+
+    private func writeWidgetProjection(_ state: NativePersistentState, reload: Bool) async {
+        let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String ?? "group.com.nrsv.verse"
+        guard let defaults = UserDefaults(suiteName: appGroup) else { return }
+        let translation = TranslationID(rawValue: state.translationID) ?? .webCE
+        let abbreviation = await translationAbbreviation(translation)
+        let attribution = await translationAttribution(translation)
+        if defaults.string(forKey: "widgetSchemaVersion") != "2" {
+            defaults.removeObject(forKey: "verses")
+        }
+        defaults.set("2", forKey: "widgetSchemaVersion")
+        defaults.set(state.rotationIntervalMinutes, forKey: "intervalMinutes")
+        defaults.set(state.verseScope.rawValue, forKey: "scope")
+        defaults.set(state.translationID, forKey: "translationId")
+        defaults.set(abbreviation, forKey: "abbreviation")
+        defaults.set(attribution, forKey: "attribution")
+        guard reload else { return }
+        WidgetCenter.shared.reloadTimelines(ofKind: "VerseWidget")
+        WidgetCenter.shared.reloadTimelines(ofKind: "VerseTimerWidget")
     }
 
     func chapter(translation: TranslationID, bookCode: String, number: Int) async -> BibleChapter? {

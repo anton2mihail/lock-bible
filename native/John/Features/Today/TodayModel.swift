@@ -2,23 +2,6 @@ import Foundation
 import Observation
 import JohnCore
 
-private struct ReadingReference: Decodable, Sendable {
-    let label: String
-    let reference: String
-}
-
-private struct ReadingEntry: Decodable, Sendable {
-    let title: String
-    let readings: [ReadingReference]
-}
-
-private struct CelebrationEntry: Decodable, Sendable {
-    let title: String
-    let season: String
-    let rank: String
-    let color: String?
-}
-
 enum LiturgicalSeason: String, Sendable {
     case advent, christmas, lent, triduum, easter, ordinary
 
@@ -47,17 +30,12 @@ enum LiturgicalSeason: String, Sendable {
 
 @MainActor @Observable final class TodayModel {
     private(set) var now = Date()
-    private var reading: ReadingEntry?
-    private var celebration: CelebrationEntry?
     private(set) var verse: RotatingVerse?
     private(set) var loadError: String?
 
     @ObservationIgnored private let appResources: URL?
     @ObservationIgnored private let rotation: (any RotationRepository)?
     @ObservationIgnored private let clock: any CoreClock
-    @ObservationIgnored private var readingsByDate: [String: ReadingEntry] = [:]
-    @ObservationIgnored private var celebrationsByDate: [String: CelebrationEntry] = [:]
-    @ObservationIgnored private var calendarsLoaded = false
 
     init(appResources: URL?, rotation: (any RotationRepository)?, clock: any CoreClock = SystemCoreClock()) {
         self.appResources = appResources
@@ -73,7 +51,7 @@ enum LiturgicalSeason: String, Sendable {
         formatter.dateFormat = "EEEE, MMMM d"
         return "JOHN 1:1  /  \(formatter.string(from: now))"
     }
-    var heroTitle: String { reading?.title ?? celebration?.title ?? season.title }
+    var heroTitle: String { season.title }
     var prayerTitle: String { Calendar.current.component(.hour, from: now) < 17 ? "A morning offering" : "An evening examen" }
     var prayerSubtitle: String { Calendar.current.component(.hour, from: now) < 17 ? "Offer this day, just as it is" : "Look back with gratitude and honesty" }
     var suggestedRosary: (id: String, title: String) {
@@ -98,37 +76,23 @@ enum LiturgicalSeason: String, Sendable {
 
     func artworkURL(_ name: String) -> URL? { artworkDirectory?.appendingPathComponent(name) }
 
-    func refresh(translation: TranslationID, scope: RotationScope, intervalMinutes: Int) async {
+    func refresh(translation: TranslationID, scope: RotationScope, intervalMinutes: Int,
+                 at requestedDate: Date? = nil, timeZone requestedTimeZone: TimeZone = .autoupdatingCurrent) async {
         let clockReading = clock.now()
-        now = clockReading.instant
-        loadCalendarIfNeeded()
-        let key = Self.key(for: now)
-        reading = readingsByDate[key]
-        celebration = celebrationsByDate[key]
+        let instant = requestedDate ?? clockReading.instant
+        let utcOffsetSeconds = requestedDate.map { requestedTimeZone.secondsFromGMT(for: $0) }
+            ?? clockReading.utcOffsetSeconds
+        now = instant
         guard let rotation else { verse = nil; return }
         do {
             let count = try await rotation.poolCount(translation: translation, scope: scope)
             guard count > 0 else { verse = nil; return }
-            let slot = try RotationMath.slot(at: now, utcOffsetSeconds: clockReading.utcOffsetSeconds, intervalMinutes: max(1, intervalMinutes))
+            let slot = try RotationMath.slot(at: instant, utcOffsetSeconds: utcOffsetSeconds, intervalMinutes: max(1, intervalMinutes))
             let index = try RotationMath.index(for: slot, count: count)
             verse = try await rotation.verse(translation: translation, scope: scope, at: index)
         } catch {
             verse = nil
             loadError = "The daily verse could not be loaded."
-        }
-    }
-
-    private func loadCalendarIfNeeded() {
-        guard !calendarsLoaded else { return }
-        calendarsLoaded = true
-        guard let appResources else { loadError = "Today’s local calendar could not be opened."; return }
-        do {
-            let readingsURL = appResources.appendingPathComponent("Calendar/readings-us.json")
-            let celebrationsURL = appResources.appendingPathComponent("Calendar/celebrations-us.json")
-            readingsByDate = try JSONDecoder().decode([String: ReadingEntry].self, from: Data(contentsOf: readingsURL))
-            celebrationsByDate = try JSONDecoder().decode([String: CelebrationEntry].self, from: Data(contentsOf: celebrationsURL))
-        } catch {
-            loadError = "Today’s local calendar could not be opened."
         }
     }
 

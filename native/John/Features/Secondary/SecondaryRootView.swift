@@ -15,20 +15,18 @@ struct SecondaryRootView: View {
         case .read:
             ReaderView()
         case .saved:
-            CompanionPage(title: "Saved", eyebrow: "Your library", subtitle: "Bookmarks, highlights, and notes.") {
-                SurfaceCard { MutedText(text: "Saved items appear here after you add them in the reader.") }
-            }
+            SavedView()
         case .pray:
-            CompanionPage(title: "Pray", eyebrow: "Prayer", subtitle: "Make room for stillness.") {
-                ActionLink(title: "The Rosary", subtitle: "Pray with the mysteries") { router.push(.rosaryGuide("joyful")) }
-                ActionLink(title: "Morning offering", subtitle: "Begin with intention") { router.push(.prayer("morning")) }
-            }
+            PrayerHomeView(timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
+                           onNavigate: { router.push(.companion($0)) }, onClose: {})
         case .settings:
-            CompanionPage(title: "Settings", eyebrow: "Your practice", subtitle: "Choose how John 1:1 works for you.") {
-                SettingsControls()
-            }
+            FullSettingsView(onOpenCalendarNotifications: { router.push(.calendarNotifications) })
         case .today:
-            TodayView()
+            CompanionTodayView(onNavigate: { router.push(.companion($0)) },
+                               onClose: {},
+                               onOpenVerseMoment: {
+                                   router.push(.verseMoment(VerseMomentSelection(verse: $0, translation: preferences.translation)))
+                               })
         }
     }
 }
@@ -63,23 +61,6 @@ struct SettingsControls: View {
         @Bindable var preferences = preferences
         SurfaceCard {
             VStack(alignment: .leading, spacing: 18) {
-                Picker("Bible", selection: Binding(
-                    get: { preferences.translation.rawValue },
-                    set: { value in
-                        guard let translation = TranslationID(rawValue: value) else { return }
-                        Task { await runtime.apply(.setTranslationID(translation.rawValue)) }
-                    }
-                )) {
-                    Text("WEB").tag(TranslationID.webCE.rawValue)
-                    Text("Douay-Rheims").tag(TranslationID.douayRheims.rawValue)
-                    Text("Vulgate").tag(TranslationID.vulgate.rawValue)
-                }
-                Picker("Appearance", selection: Binding(
-                    get: { preferences.appearance },
-                    set: { value in Task { await runtime.apply(.setThemeScheme(value == .system ? nil : value.rawValue)) } }
-                )) {
-                    ForEach(AppearanceMode.allCases) { mode in Text(mode.rawValue.capitalized).tag(mode) }
-                }
                 Picker("Text size", selection: Binding(
                     get: { preferences.reading.textSize.rawValue },
                     set: { value in
@@ -88,7 +69,7 @@ struct SettingsControls: View {
                     }
                 )) {
                     Text("Small").tag(ReaderTextSize.small.rawValue)
-                    Text("Medium").tag(ReaderTextSize.medium.rawValue)
+                    Text("Default").tag(ReaderTextSize.medium.rawValue)
                     Text("Large").tag(ReaderTextSize.large.rawValue)
                     Text("Extra large").tag(ReaderTextSize.extraLarge.rawValue)
                 }
@@ -102,8 +83,52 @@ struct SettingsControls: View {
                     }
                 )) {
                     Text("Paragraphs").tag(ReaderLayout.paragraphs.rawValue)
-                    Text("Verses").tag(ReaderLayout.verses.rawValue)
+                    Text("Verse by verse").tag(ReaderLayout.verses.rawValue)
                 }
+                .accessibilityIdentifier("settings-reading-layout")
+                .accessibilityHint("With VoiceOver on, the reader always goes verse by verse.")
+                Picker("Appearance", selection: Binding(
+                    get: { preferences.appearance },
+                    set: { value in Task { await runtime.apply(.setThemeScheme(value == .system ? nil : value.rawValue)) } }
+                )) {
+                    ForEach(AppearanceMode.allCases) { mode in Text(mode.rawValue.capitalized).tag(mode) }
+                }
+                .accessibilityIdentifier("settings-appearance")
+                Picker("Bible", selection: Binding(
+                    get: { preferences.translation.rawValue },
+                    set: { value in
+                        guard let translation = TranslationID(rawValue: value) else { return }
+                        Task { await runtime.apply(.setTranslationID(translation.rawValue)) }
+                    }
+                )) {
+                    Text("WEB").tag(TranslationID.webCE.rawValue)
+                    Text("Douay-Rheims").tag(TranslationID.douayRheims.rawValue)
+                    Text("Vulgate").tag(TranslationID.vulgate.rawValue)
+                }
+                .accessibilityIdentifier("settings-translation")
+                Picker("Line spacing", selection: Binding(
+                    get: { preferences.reading.lineSpacing.rawValue },
+                    set: { value in
+                        guard let spacing = ReaderLineSpacing(rawValue: value) else { return }
+                        Task { await runtime.apply(.setReaderLineSpacing(spacing)) }
+                    }
+                )) {
+                    Text("Compact").tag(ReaderLineSpacing.compact.rawValue)
+                    Text("Comfortable").tag(ReaderLineSpacing.comfortable.rawValue)
+                    Text("Relaxed").tag(ReaderLineSpacing.relaxed.rawValue)
+                }
+                .accessibilityIdentifier("settings-line-spacing")
+                Picker("Scripture typeface", selection: Binding(
+                    get: { preferences.reading.typeface.rawValue },
+                    set: { value in
+                        guard let typeface = ReaderTypeface(rawValue: value) else { return }
+                        Task { await runtime.apply(.setReaderTypeface(typeface)) }
+                    }
+                )) {
+                    Text("Serif").tag(ReaderTypeface.serif.rawValue)
+                    Text("Sans").tag(ReaderTypeface.sans.rawValue)
+                }
+                .accessibilityIdentifier("settings-scripture-typeface")
             }
             .pickerStyle(.menu)
         }

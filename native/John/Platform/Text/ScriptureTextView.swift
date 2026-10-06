@@ -2,24 +2,107 @@ import SwiftUI
 import UIKit
 import JohnCore
 
+@MainActor final class ReaderTextGeometryProbe {
+    weak var view: ReaderTextKitView?
+
+    struct Measurement {
+        let text: CGRect
+        let scroll: CGRect
+        let contentSize: CGSize
+        let contentOffsetY: CGFloat
+        let visibleViewport: CGRect
+        let visibleViewportInText: CGRect
+    }
+
+    func measure() -> Measurement? {
+        guard let view, let window = view.window else { return nil }
+        var ancestor: UIView? = view.superview
+        while let current = ancestor, !(current is UIScrollView) { ancestor = current.superview }
+        guard let scrollView = ancestor as? UIScrollView else { return nil }
+        let textRect = view.convert(view.bounds, to: window)
+        let scrollRect = scrollView.convert(scrollView.bounds, to: window)
+        let visibleRect = scrollRect.intersection(window.safeAreaLayoutGuide.layoutFrame)
+        guard !visibleRect.isNull, visibleRect.width > 0, visibleRect.height > 0 else { return nil }
+        return Measurement(text: textRect,
+                           scroll: scrollRect,
+                           contentSize: scrollView.contentSize,
+                           contentOffsetY: scrollView.contentOffset.y,
+                           visibleViewport: visibleRect,
+                           visibleViewportInText: view.convert(visibleRect, from: window))
+    }
+
+    func scrollTargetY(forLocalY localY: CGFloat, margin: CGFloat) -> CGFloat? {
+        guard let measurement = measure(), localY.isFinite else { return nil }
+        let target = max(0, measurement.contentOffsetY + measurement.text.minY - measurement.visibleViewport.minY + localY - margin)
+        #if DEBUG
+        NSLog("L08_RESTORE_TARGET offset=%.1f textY=%.1f viewportY=%.1f localY=%.1f margin=%.1f target=%.1f contentH=%.1f viewportH=%.1f",
+              measurement.contentOffsetY, measurement.text.minY, measurement.visibleViewport.minY,
+              localY, margin, target, measurement.contentSize.height, measurement.visibleViewport.height)
+        #endif
+        return target
+    }
+}
+
+struct ReaderAnchorCaptureRequest: Equatable {
+    let id: UUID
+    let localY: CGFloat
+    let bookCode: String
+    let chapter: Int
+    let scrollY: Double
+    let chapterRequestID: UUID
+}
+
+struct ReaderAnchorRestoreRequest: Equatable {
+    let id: UUID
+    let anchor: ReaderAnchor
+    let chapterRequestID: UUID
+}
+
+struct ReaderRenderSignature: Equatable {
+    let textSize: ReaderTextSize
+    let lineSpacing: ReaderLineSpacing
+    let typeface: ReaderTypeface
+    let layout: ReaderLayout
+    let dynamicTypeScale: CGFloat
+    let width: CGFloat
+    let chapterRequestID: UUID?
+}
+
 struct ScriptureTextView: UIViewRepresentable {
     let chapter: BibleChapter
     let layout: ChapterLayout
     let textSize: ReaderTextSize
     let lineSpacing: ReaderLineSpacing
     let typeface: ReaderTypeface
+    let readerLayout: ReaderLayout
+    let dynamicTypeScale: CGFloat
     let selectedRange: ClosedRange<Int>?
     let contextRange: ClosedRange<Int>?
+    let contextVerseIndex: Int?
     let highlights: [Int: HighlightColor]
+    let anchorCaptureRequest: ReaderAnchorCaptureRequest?
+    let anchorRestoreRequest: ReaderAnchorRestoreRequest?
+    let chapterRequestID: UUID?
+    let geometryProbe: ReaderTextGeometryProbe
     let isDark: Bool
     let onTapVerse: (Int) -> Void
+    let onContextVerseY: (CGFloat) -> Void
+    let onVisibleAnchor: (ReaderAnchorCaptureRequest, ReaderAnchor?) -> Void
+    let onAnchorRestoreY: (ReaderAnchorRestoreRequest, CGFloat?) -> Void
 
     func makeUIView(context: Context) -> ReaderTextKitView {
         let view = ReaderTextKitView()
+        geometryProbe.view = view
         view.onTapVerse = onTapVerse
         view.chapter = chapter
         view.verseLabels = chapter.verses.map(\.label)
         view.verseDescriptions = chapter.verses.map(\.text)
+        view.contextVerseIndex = contextVerseIndex
+        view.onContextVerseY = onContextVerseY
+        view.readerLayout = readerLayout
+        view.contextRange = contextRange
+        view.savedHighlights = highlights.mapValues(highlightColor)
+        view.selectionTint = UIColor(isDark ? JohnColors.dark.tint : JohnColors.light.tint)
         view.accessibilityIdentifier = "reader-scripture-text"
         view.backgroundColor = .clear
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -32,24 +115,78 @@ struct ScriptureTextView: UIViewRepresentable {
 
     func updateUIView(_ view: ReaderTextKitView, context: Context) {
         context.coordinator.parent = self
+        geometryProbe.view = view
+        let signature = ReaderRenderSignature(textSize: textSize, lineSpacing: lineSpacing,
+                                              typeface: typeface, layout: readerLayout,
+                                              dynamicTypeScale: dynamicTypeScale,
+                                              width: view.textContainer.size.width,
+                                              chapterRequestID: chapterRequestID)
+        let currentViewportY = geometryProbe.measure()?.visibleViewportInText.minY
+        let reflowAnchor: ReaderAnchor?
+        if anchorRestoreRequest == nil,
+           let previous = context.coordinator.renderSignature, previous != signature,
+           previous.chapterRequestID == signature.chapterRequestID,
+           let currentViewportY, currentViewportY.isFinite {
+            reflowAnchor = view.visibleAnchor(atY: currentViewportY)
+        } else {
+            reflowAnchor = nil
+        }
         view.onTapVerse = onTapVerse
         view.chapter = chapter
+        view.chapterRequestID = chapterRequestID
         view.verseLabels = chapter.verses.map(\.label)
         view.verseDescriptions = chapter.verses.map(\.text)
+        view.contextVerseIndex = contextVerseIndex
+        view.onContextVerseY = onContextVerseY
+        view.readerLayout = readerLayout
+        view.contextRange = contextRange
+        view.savedHighlights = highlights.mapValues(highlightColor)
+        view.selectionTint = UIColor(isDark ? JohnColors.dark.tint : JohnColors.light.tint)
         let result = makeAttributedText()
         view.verseRanges = result.verseRanges
+        view.verseBodyRanges = result.verseBodyRanges
         view.headingRanges = result.headingRanges
         view.activeSelection = selectedRange
         view.attributedText = result.text
         view.invalidateIntrinsicContentSize()
         view.setNeedsLayout()
+        view.layoutManager.ensureLayout(for: view.textContainer)
+
+        if let anchor = reflowAnchor, let y = view.documentY(for: anchor) {
+            if let chapterRequestID {
+                let request = ReaderAnchorRestoreRequest(id: UUID(), anchor: anchor, chapterRequestID: chapterRequestID)
+                context.coordinator.scheduleRestore(request, y: y)
+            }
+        }
+        context.coordinator.renderSignature = signature
+
+        if let request = anchorCaptureRequest, context.coordinator.lastCaptureID != request.id {
+            context.coordinator.lastCaptureID = request.id
+            let anchor = view.visibleAnchor(atY: request.localY)
+            DispatchQueue.main.async { self.onVisibleAnchor(request, anchor) }
+        }
+        if let request = anchorRestoreRequest, context.coordinator.lastRestoreID != request.id {
+            let y = view.documentY(for: request.anchor)
+            context.coordinator.scheduleRestore(request, y: y)
+        }
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, uiView: ReaderTextKitView, context: Context) -> CGSize? {
         guard let width = proposal.width, width > 0 else { return nil }
+        let previousWidth = uiView.textContainer.size.width
+        let widthChanged = previousWidth > 0 && abs(previousWidth - width) > 0.5
+        let viewportY = context.coordinator.parent.geometryProbe.measure()?.visibleViewportInText.minY
+        let reflowAnchor = widthChanged && context.coordinator.parent.anchorRestoreRequest == nil
+            ? viewportY.flatMap { $0.isFinite ? uiView.visibleAnchor(atY: $0) : nil }
+            : nil
         uiView.textContainer.size = CGSize(width: width, height: .greatestFiniteMagnitude)
         uiView.layoutManager.ensureLayout(for: uiView.textContainer)
         let height = uiView.layoutManager.usedRect(for: uiView.textContainer).height
+        if let reflowAnchor, let chapterRequestID = uiView.chapterRequestID,
+           let y = uiView.documentY(for: reflowAnchor) {
+            let request = ReaderAnchorRestoreRequest(id: UUID(), anchor: reflowAnchor, chapterRequestID: chapterRequestID)
+            context.coordinator.scheduleRestore(request, y: y)
+        }
         return CGSize(width: width, height: ceil(height))
     }
 
@@ -58,22 +195,94 @@ struct ScriptureTextView: UIViewRepresentable {
     @MainActor final class Coordinator: NSObject {
         var parent: ScriptureTextView
         weak var view: ReaderTextKitView?
+        var renderSignature: ReaderRenderSignature?
+        var lastCaptureID: UUID?
+        var lastRestoreID: UUID?
+        var scheduledRestoreID: UUID?
         init(parent: ScriptureTextView) { self.parent = parent }
 
+        func scheduleRestore(_ request: ReaderAnchorRestoreRequest, y: CGFloat?) {
+            guard lastRestoreID != request.id, scheduledRestoreID != request.id else { return }
+            scheduledRestoreID = request.id
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                var priorContentSize: CGSize?
+                var stableLayoutSamples = 0
+                for _ in 0..<40 {
+                    try? await Task.sleep(for: .milliseconds(50))
+                    guard parent.chapterRequestID == request.chapterRequestID else {
+                        if scheduledRestoreID == request.id { scheduledRestoreID = nil }
+                        return
+                    }
+                    guard scheduledRestoreID == request.id,
+                          let view,
+                          let measurement = parent.geometryProbe.measure(),
+                          measurement.text.width > 0,
+                          measurement.visibleViewport.height > 0,
+                          parent.chapterRequestID == request.chapterRequestID else { continue }
+                    view.layoutManager.ensureLayout(for: view.textContainer)
+                    let laidOutHeight = ceil(view.layoutManager.usedRect(for: view.textContainer).height)
+                    let textLayoutReady = laidOutHeight > 0
+                        && abs(measurement.text.height - laidOutHeight) <= 2
+                    let contentContainsText = measurement.contentSize.height >= laidOutHeight + 80
+                    if textLayoutReady && contentContainsText {
+                        if let priorContentSize,
+                           abs(priorContentSize.height - measurement.contentSize.height) <= 1,
+                           abs(priorContentSize.width - measurement.contentSize.width) <= 1 {
+                            stableLayoutSamples += 1
+                        } else {
+                            stableLayoutSamples = 0
+                        }
+                        priorContentSize = measurement.contentSize
+                    } else {
+                        stableLayoutSamples = 0
+                        priorContentSize = nil
+                    }
+                    guard stableLayoutSamples >= 2 else { continue }
+                    let readyY = view.documentY(for: request.anchor)
+                    guard scheduledRestoreID == request.id else { return }
+                    lastRestoreID = request.id
+                    scheduledRestoreID = nil
+                    #if DEBUG
+                    NSLog("L08_RESTORE_READY request=%@ anchor=%@:%d textH=%.1f layoutH=%.1f contentH=%.1f viewportH=%.1f oldY=%@ readyY=%@",
+                          request.id.uuidString, request.anchor.verseLabel.rawValue,
+                          request.anchor.utf16Offset, measurement.text.height, laidOutHeight,
+                          measurement.contentSize.height, measurement.scroll.height,
+                          y.map { String(format: "%.1f", $0) } ?? "none",
+                          readyY.map { String(format: "%.1f", $0) } ?? "none")
+                    #endif
+                    parent.onAnchorRestoreY(request, readyY)
+                    return
+                }
+                if scheduledRestoreID == request.id { scheduledRestoreID = nil }
+            }
+        }
+
         @objc func didTap(_ recognizer: UITapGestureRecognizer) {
-            guard let view, recognizer.state == .ended,
-                  let index = view.verseIndex(at: recognizer.location(in: view)) else { return }
+            guard let view, recognizer.state == .ended else { return }
+            let location = recognizer.location(in: view)
+            guard let index = view.verseIndex(at: location) else {
+                #if DEBUG
+                NSLog("John verse tap rejected x=%.1f y=%.1f", location.x, location.y)
+                #endif
+                return
+            }
+            #if DEBUG
+            NSLog("John verse tap accepted index=%ld x=%.1f y=%.1f", index, location.x, location.y)
+            #endif
             parent.onTapVerse(index)
         }
     }
 
-    private func makeAttributedText() -> (text: NSAttributedString, verseRanges: [Int: [NSRange]], headingRanges: [(String, NSRange)]) {
+    private func makeAttributedText() -> (text: NSAttributedString, verseRanges: [Int: [NSRange]], verseBodyRanges: [Int: [NSRange]], headingRanges: [(String, NSRange)]) {
         let output = NSMutableAttributedString()
         var verses: [Int: [NSRange]] = [:]
+        var verseBodyRanges: [Int: [NSRange]] = [:]
         var headings: [(String, NSRange)] = []
+        var previousBodyVerseIndex: Int?
         var previousKind: String?
         var previousWasHeading = false
-        let fontSize: CGFloat = switch textSize {
+        let baseFontSize: CGFloat = switch textSize {
         case .small: 16
         case .medium: 18
         case .large: 21
@@ -84,7 +293,8 @@ struct ScriptureTextView: UIViewRepresentable {
         case .comfortable: 1.67
         case .relaxed: 1.9
         }
-        let lineHeight = (fontSize * lineMultiplier).rounded()
+        let fontSize = baseFontSize * dynamicTypeScale
+        let lineHeight = (baseFontSize * lineMultiplier).rounded() * dynamicTypeScale
         let paragraphGap = (lineHeight * 0.5).rounded()
         let bodyColor = UIColor(isDark ? JohnColors.dark.text : JohnColors.light.text)
         let tintColor = UIColor(isDark ? JohnColors.dark.tint : JohnColors.light.tint)
@@ -93,7 +303,7 @@ struct ScriptureTextView: UIViewRepresentable {
         let indent = (fontSize * 1.25).rounded()
         let lineKinds: Set<String> = ["q1", "q2", "q3", "li"]
 
-        for block in layout.blocks {
+        for block in blocksForCurrentLayout() {
             switch block {
             case let .heading(kind, text, _):
                 if output.length > 0 && (output.string as NSString).substring(from: output.length - 1) != "\n" {
@@ -103,22 +313,27 @@ struct ScriptureTextView: UIViewRepresentable {
                 let isPsalmTitle = kind == "d"
                 let isSpeaker = kind == "sp"
                 let isMajor = kind == "ms"
-                let headingSize: CGFloat = isPsalmTitle ? (fontSize * 0.85).rounded() : (isSpeaker ? 14 : (isMajor ? 12 : fontSize))
+                let headingBaseSize: CGFloat = isPsalmTitle ? (baseFontSize * 0.85).rounded() : (isSpeaker ? 14 : (isMajor ? 12 : 16))
+                let headingSize = headingBaseSize * dynamicTypeScale
+                let headingBaseLineHeight: CGFloat = isPsalmTitle
+                    ? (lineHeight / dynamicTypeScale * 0.85).rounded()
+                    : (isSpeaker ? 21 : (isMajor ? 18 : 24))
                 let headingFont: UIFont
                 if isPsalmTitle {
-                    headingFont = UIFont(name: typeface == .serif ? "Georgia-Italic" : "SpaceGrotesk-Italic", size: headingSize)
-                        ?? UIFont.italicSystemFont(ofSize: headingSize)
+                    headingFont = typeface == .serif
+                        ? (UIFont(name: "Georgia-Italic", size: headingSize) ?? UIFont.italicSystemFont(ofSize: headingSize))
+                        : italicSpaceGrotesk(size: headingSize)
                 } else if isSpeaker {
-                    headingFont = UIFont(name: "SpaceGrotesk-Italic", size: headingSize) ?? UIFont.italicSystemFont(ofSize: headingSize)
+                    headingFont = italicSpaceGrotesk(size: headingSize)
                 } else if isMajor {
                     headingFont = UIFont(name: "SpaceGrotesk-SemiBold", size: headingSize) ?? UIFont.systemFont(ofSize: headingSize, weight: .semibold)
                 } else {
                     headingFont = UIFont(name: "SpaceGrotesk-SemiBold", size: headingSize) ?? UIFont.systemFont(ofSize: headingSize, weight: .semibold)
                 }
                 let paragraph = NSMutableParagraphStyle()
-                paragraph.minimumLineHeight = isPsalmTitle ? lineHeight * 0.85 : lineHeight
+                paragraph.minimumLineHeight = headingBaseLineHeight * dynamicTypeScale
                 paragraph.maximumLineHeight = paragraph.minimumLineHeight
-                paragraph.paragraphSpacingBefore = output.length == 0 ? 0 : (isSpeaker ? 8 : (isPsalmTitle ? 0 : 18))
+                paragraph.paragraphSpacingBefore = output.length == 0 ? 0 : (isSpeaker ? 12 : (isPsalmTitle ? 0 : 24))
                 paragraph.paragraphSpacing = isPsalmTitle || isMajor || kind == "s" ? 8 : 0
                 let headingText = isMajor ? text.uppercased() : text
                 var headingAttributes: [NSAttributedString.Key: Any] = [
@@ -132,33 +347,64 @@ struct ScriptureTextView: UIViewRepresentable {
                 output.append(NSAttributedString(string: "\n"))
                 previousWasHeading = true
                 previousKind = nil
+                previousBodyVerseIndex = nil
 
             case let .text(kind, stanzaBreak, segments):
                 if output.length > 0 && (output.string as NSString).substring(from: output.length - 1) != "\n" {
-                    output.append(NSAttributedString(string: "\n"))
+                    if let previousBodyVerseIndex, segments.first?.verseIndex == previousBodyVerseIndex {
+                        let separator = NSRange(location: output.length, length: 1)
+                        output.append(NSAttributedString(string: "\n", attributes: [
+                            .verseIndex: NSNumber(value: previousBodyVerseIndex), .verseBody: true,
+                        ]))
+                        verseBodyRanges[previousBodyVerseIndex, default: []].append(separator)
+                        verses[previousBodyVerseIndex, default: []].append(separator)
+                    } else {
+                        output.append(NSAttributedString(string: "\n"))
+                    }
                 }
                 let followsLine = lineKinds.contains(kind) && (previousKind.map(lineKinds.contains) ?? false)
-                let gap: CGFloat = previousKind == nil || previousWasHeading || (followsLine && !stanzaBreak) ? 0 : paragraphGap
+                let sourceGap: CGFloat = previousKind == nil || previousWasHeading || (followsLine && !stanzaBreak) ? 0 : paragraphGap
+                let gap: CGFloat = readerLayout == .verses
+                    ? (previousKind == nil ? 4 * dynamicTypeScale : (stanzaBreak || previousWasHeading || previousKind != kind ? 12 * dynamicTypeScale : 4 * dynamicTypeScale))
+                    : sourceGap
                 let paragraph = NSMutableParagraphStyle()
-                paragraph.minimumLineHeight = lineHeight
-                paragraph.maximumLineHeight = lineHeight
+                let rowLineHeight = readerLayout == .verses ? max(lineHeight, 36 * dynamicTypeScale) : lineHeight
+                paragraph.minimumLineHeight = rowLineHeight
+                paragraph.maximumLineHeight = rowLineHeight
                 paragraph.lineBreakMode = .byWordWrapping
                 paragraph.paragraphSpacingBefore = gap
+                paragraph.paragraphSpacing = readerLayout == .verses ? 4 * dynamicTypeScale : 0
                 let blockIndent: CGFloat = switch kind {
                 case "q2", "li", "pi", "mi": indent
                 case "q3": indent * 2
                 default: 0
                 }
-                paragraph.firstLineHeadIndent = blockIndent
-                paragraph.headIndent = blockIndent
+                let rowInset: CGFloat = readerLayout == .verses ? 8 : 0
+                paragraph.firstLineHeadIndent = blockIndent + rowInset
+                paragraph.headIndent = blockIndent + rowInset
+                paragraph.tailIndent = -rowInset
                 if kind == "pc" { paragraph.alignment = .center }
 
+                var previousSegmentVerseIndex: Int?
                 for (segmentIndex, segment) in segments.enumerated() {
-                    if segmentIndex > 0 { output.append(NSAttributedString(string: " ")) }
+                    if segmentIndex > 0 {
+                        if previousSegmentVerseIndex == segment.verseIndex {
+                            let separator = NSRange(location: output.length, length: 1)
+                            output.append(NSAttributedString(string: " ", attributes: [
+                                .verseIndex: NSNumber(value: segment.verseIndex), .verseBody: true,
+                                .paragraphStyle: paragraph,
+                            ]))
+                            verseBodyRanges[segment.verseIndex, default: []].append(separator)
+                            verses[segment.verseIndex, default: []].append(separator)
+                        } else {
+                            output.append(NSAttributedString(string: " "))
+                        }
+                    }
                     let start = output.length
                     if let label = segment.label {
-                        let labelFont = UIFont(name: "SpaceGrotesk-Medium", size: 14)
-                            ?? UIFont.systemFont(ofSize: 14, weight: .medium)
+                        let labelSize = 14 * dynamicTypeScale
+                        let labelFont = UIFont(name: "SpaceGrotesk-Medium", size: labelSize)
+                            ?? UIFont.systemFont(ofSize: labelSize, weight: .medium)
                         output.append(NSAttributedString(string: label + "\u{00A0}", attributes: [
                             .font: labelFont,
                             .foregroundColor: tintColor,
@@ -166,32 +412,63 @@ struct ScriptureTextView: UIViewRepresentable {
                             .paragraphStyle: paragraph,
                         ]))
                     }
+                    let bodyStart = output.length
                     output.append(NSAttributedString(string: segment.text, attributes: [
                         .font: scriptureFont,
                         .foregroundColor: bodyColor,
                         .verseIndex: NSNumber(value: segment.verseIndex),
+                        .verseBody: true,
                         .paragraphStyle: paragraph,
                     ]))
+                    let bodyRange = NSRange(location: bodyStart, length: output.length - bodyStart)
+                    verseBodyRanges[segment.verseIndex, default: []].append(bodyRange)
                     let range = NSRange(location: start, length: output.length - start)
                     verses[segment.verseIndex, default: []].append(range)
-                    if selectedRange?.contains(segment.verseIndex) == true {
+                    if readerLayout == .paragraphs, selectedRange?.contains(segment.verseIndex) == true {
                         output.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: range)
                         output.addAttribute(.underlineColor, value: tintColor, range: range)
                     }
-                    if let color = highlights[segment.verseIndex] {
+                    if readerLayout == .paragraphs, let color = highlights[segment.verseIndex] {
                         output.addAttribute(.backgroundColor, value: highlightColor(color), range: range)
                     }
-                    if highlights[segment.verseIndex] == nil,
+                    if readerLayout == .paragraphs, highlights[segment.verseIndex] == nil,
                        contextRange?.contains(segment.verseIndex) == true {
                         output.addAttribute(.backgroundColor, value: tintColor.withAlphaComponent(isDark ? 0.2 : 0.12), range: range)
                     }
+                    previousSegmentVerseIndex = segment.verseIndex
                 }
                 output.append(NSAttributedString(string: "\n", attributes: [.paragraphStyle: paragraph]))
                 previousKind = kind
                 previousWasHeading = false
+                previousBodyVerseIndex = segments.last?.verseIndex
             }
         }
-        return (output, verses, headings)
+        return (output, verses, verseBodyRanges, headings)
+    }
+
+    private func blocksForCurrentLayout() -> [ChapterLayoutBlock] {
+        guard readerLayout == .verses else { return layout.blocks }
+        var blocks: [ChapterLayoutBlock] = []
+        for (verseIndex, verseLayout) in layout.verses.enumerated() {
+            for (kind, text) in verseLayout.headings {
+                blocks.append(.heading(kind: kind, text: text, verseIndex: verseIndex))
+            }
+            var hasVerseLabel = false
+            for line in verseLayout.lines {
+                switch line {
+                case let .heading(kind, text):
+                    blocks.append(.heading(kind: kind, text: text, verseIndex: verseIndex))
+                case let .text(kind, stanzaBreak, text):
+                    blocks.append(.text(kind: kind, stanzaBreak: stanzaBreak, segments: [
+                        ChapterLayoutSegment(verseIndex: verseIndex,
+                                             label: hasVerseLabel ? nil : chapter.verses[verseIndex].label,
+                                             text: text)
+                    ]))
+                    hasVerseLabel = true
+                }
+            }
+        }
+        return blocks
     }
 
     private func highlightColor(_ color: HighlightColor) -> UIColor {
@@ -203,14 +480,29 @@ struct ScriptureTextView: UIViewRepresentable {
         }
         return UIColor(red: values.0 / 255, green: values.1 / 255, blue: values.2 / 255, alpha: isDark ? 0.24 : 1)
     }
+
+    private func italicSpaceGrotesk(size: CGFloat) -> UIFont {
+        let base = UIFont(name: "SpaceGrotesk-Regular", size: size) ?? UIFont.systemFont(ofSize: size)
+        let descriptor = base.fontDescriptor.withSymbolicTraits(.traitItalic) ?? base.fontDescriptor
+        return UIFont(descriptor: descriptor, size: size)
+    }
 }
 
 @MainActor final class ReaderTextKitView: UIView {
     var onTapVerse: ((Int) -> Void)?
     var chapter: BibleChapter?
     var verseRanges: [Int: [NSRange]] = [:] { didSet { setNeedsLayout() } }
+    var verseBodyRanges: [Int: [NSRange]] = [:] { didSet { setNeedsLayout() } }
+    var chapterRequestID: UUID?
     var headingRanges: [(String, NSRange)] = [] { didSet { setNeedsLayout() } }
     var activeSelection: ClosedRange<Int>? { didSet { setNeedsLayout() } }
+    var contextVerseIndex: Int? { didSet { lastContextVerseIndex = nil; setNeedsLayout() } }
+    var onContextVerseY: ((CGFloat) -> Void)?
+    private var lastContextVerseIndex: Int?
+    var readerLayout: ReaderLayout = .paragraphs { didSet { setNeedsDisplay() } }
+    var contextRange: ClosedRange<Int>? { didSet { setNeedsDisplay() } }
+    var savedHighlights: [Int: UIColor] = [:] { didSet { setNeedsDisplay() } }
+    var selectionTint: UIColor = .label { didSet { setNeedsDisplay() } }
     var verseLabels: [String] = [] { didSet { setNeedsLayout() } }
     var verseDescriptions: [String] = [] { didSet { setNeedsLayout() } }
     let textView: UITextView
@@ -253,7 +545,43 @@ struct ScriptureTextView: UIViewRepresentable {
     override func layoutSubviews() {
         super.layoutSubviews()
         textView.frame = bounds
+        layoutManager.ensureLayout(for: textContainer)
+        if let contextVerseIndex, lastContextVerseIndex != contextVerseIndex,
+           let range = verseRanges[contextVerseIndex]?.first {
+            let frame = rect(for: range)
+            if !frame.isNull, frame.height > 0 {
+                lastContextVerseIndex = contextVerseIndex
+                onContextVerseY?(frame.minY)
+            }
+        }
         buildAccessibilityElements()
+    }
+
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        guard readerLayout == .verses else { return }
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        for index in verseRanges.keys.sorted() {
+            guard let ranges = verseRanges[index] else { continue }
+            let union = ranges.map(rect(for:)).reduce(CGRect.null) { $0.union($1) }
+            guard !union.isNull, union.height > 0 else { continue }
+            let row = CGRect(x: 8, y: union.minY - 4, width: max(0, bounds.width - 16), height: max(44, union.height + 8))
+                .integral
+            let fill = savedHighlights[index] ?? (contextRange?.contains(index) == true
+                ? selectionTint.withAlphaComponent(0.12) : nil)
+            if let fill {
+                fill.setFill()
+                UIBezierPath(roundedRect: row, cornerRadius: 8).fill()
+            }
+            if activeSelection?.contains(index) == true {
+                context.saveGState()
+                selectionTint.setStroke()
+                let outline = UIBezierPath(roundedRect: row.insetBy(dx: 0.75, dy: 0.75), cornerRadius: 8)
+                outline.lineWidth = 1.5
+                outline.stroke()
+                context.restoreGState()
+            }
+        }
     }
 
     func verseIndex(at point: CGPoint) -> Int? {
@@ -267,6 +595,69 @@ struct ScriptureTextView: UIViewRepresentable {
         guard character < textStorage.length,
               let value = textStorage.attribute(.verseIndex, at: character, effectiveRange: nil) as? NSNumber else { return nil }
         return value.intValue
+    }
+
+    func visibleAnchor(atY requestedY: CGFloat) -> ReaderAnchor? {
+        guard let chapter, textStorage.length > 0 else { return nil }
+        layoutManager.ensureLayout(for: textContainer)
+        let y = max(0, requestedY)
+        var candidates: [(verseIndex: Int, range: NSRange, rect: CGRect)] = []
+        for verseIndex in verseBodyRanges.keys.sorted() {
+            let ranges = verseBodyRanges[verseIndex] ?? []
+            for range in ranges where range.length > 0 {
+                let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
+                guard glyphRange.length > 0 else { continue }
+                layoutManager.enumerateEnclosingRects(forGlyphRange: glyphRange,
+                    withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0), in: textContainer) { rect, _ in
+                        let local = rect.offsetBy(dx: self.textView.textContainerInset.left, dy: self.textView.textContainerInset.top)
+                        guard local.maxY >= y else { return }
+                        candidates.append((verseIndex, range, local))
+                    }
+            }
+        }
+        let best = candidates.sorted {
+            if abs($0.rect.minY - $1.rect.minY) > 0.5 { return $0.rect.minY < $1.rect.minY }
+            if abs($0.rect.minX - $1.rect.minX) > 0.5 { return $0.rect.minX < $1.rect.minX }
+            if $0.range.location != $1.range.location { return $0.range.location < $1.range.location }
+            return $0.verseIndex < $1.verseIndex
+        }.first
+        guard let best, chapter.verses.indices.contains(best.verseIndex),
+              let label = VerseLabel(rawValue: chapter.verses[best.verseIndex].label) else { return nil }
+        let point = CGPoint(x: max(best.rect.minX + 1, 1),
+                            y: min(max(y, best.rect.minY + 1), best.rect.maxY - 1))
+        let glyph = layoutManager.glyphIndex(for: CGPoint(x: point.x - textView.textContainerInset.left,
+                                                          y: point.y - textView.textContainerInset.top),
+                                             in: textContainer)
+        let character = min(max(layoutManager.characterIndexForGlyph(at: glyph), best.range.location),
+                            NSMaxRange(best.range) - 1)
+        let ordered = (verseBodyRanges[best.verseIndex] ?? []).sorted { $0.location < $1.location }
+        var offset = 0
+        for range in ordered {
+            if character < range.location { break }
+            offset += min(range.length, max(0, character - range.location))
+            if NSLocationInRange(character, range) { break }
+        }
+        return try? ReaderAnchor(verseLabel: label, utf16Offset: offset)
+    }
+
+    func documentY(for anchor: ReaderAnchor) -> CGFloat? {
+        guard let chapter,
+              let verseIndex = chapter.verses.firstIndex(where: { $0.label == anchor.verseLabel.rawValue }),
+              let ranges = verseBodyRanges[verseIndex], !ranges.isEmpty else { return nil }
+        layoutManager.ensureLayout(for: textContainer)
+        var remaining = anchor.utf16Offset
+        let ordered = ranges.sorted { $0.location < $1.location }
+        for (index, range) in ordered.enumerated() {
+            if remaining < range.length || index == ordered.count - 1 {
+                let character = range.location + min(remaining, max(0, range.length - 1))
+                let glyphRange = layoutManager.glyphRange(forCharacterRange: NSRange(location: character, length: 1), actualCharacterRange: nil)
+                guard glyphRange.length > 0 else { return nil }
+                let rect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphRange.location, length: 1), in: textContainer)
+                return rect.minY + textView.textContainerInset.top
+            }
+            remaining -= range.length
+        }
+        return nil
     }
 
     private func buildAccessibilityElements() {
@@ -315,4 +706,5 @@ private final class ReaderVerseAccessibilityElement: UIAccessibilityElement {
 
 private extension NSAttributedString.Key {
     static let verseIndex = NSAttributedString.Key("reader.verseIndex")
+    static let verseBody = NSAttributedString.Key("reader.verseBody")
 }

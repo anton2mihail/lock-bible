@@ -37,12 +37,29 @@ source_files = {
     "App": ["JohnApp.swift", "Runtime.swift"],
     "DesignSystem": ["Theme.swift", "FeatherIcon.swift", "FlatTabBar.swift", "AppComponents.swift"],
     "Features/Today": ["TodayModel.swift", "TodayView.swift"],
-    "Features/Secondary": ["SecondaryRootView.swift", "DestinationView.swift"],
-    "Features/Reader": ["ReaderScreenModel.swift", "ReaderView.swift", "GoToView.swift"],
+    "Features/Secondary": ["SecondaryRootView.swift", "DestinationView.swift", "SearchView.swift", "SavedView.swift"],
+    "Features/Reader": ["ReaderScreenModel.swift", "ReaderView.swift", "GoToView.swift", "ReaderSelectionToolbar.swift"],
+    "Features/Companion": ["CompanionRoute.swift", "ContentPage.swift", "CompanionTodayView.swift", "TeachingView.swift"],
+    "Features/Prayers": ["PrayerHomeView.swift", "PrayerLibraryView.swift", "PrayerDetailView.swift"],
+    "Features/Calendar": ["CalendarReadingsView.swift", "CitationContextView.swift"],
+    "Features/Guides": ["ConfessionView.swift", "LectioView.swift", "NovenaView.swift", "RosaryGuideView.swift", "RosaryHomeView.swift"],
+    "Features/Sharing": ["ScriptureCardView.swift"],
+    "Features/Works": ["WorksRoute.swift", "WorksSupport.swift", "WorksLibraryView.swift", "WorksCollectionView.swift", "WorkReaderView.swift", "WorksChapterCommentaryView.swift"],
+    "Features/Media": ["RosaryMediaModel.swift", "RosaryMediaView.swift"],
+    "Features/Settings": ["FullSettingsView.swift"],
+    "Features/Notifications": ["CalendarNotificationsView.swift", "FeatureTimePicker.swift", "RosaryReminderView.swift"],
     "Platform/Navigation": ["AppRouter.swift", "ExternalRouteParser.swift"],
+    "Platform/Notifications": ["NoticeCenter.swift", "LocalNoticeService.swift", "L22ServiceComparison.swift"],
+    "Platform/Media": ["RosaryCatalogModels.swift"],
     "Platform/Text": ["ScriptureTextView.swift"],
     "Widget": ["JohnWidget.swift"],
-    "SimulatorSupport": ["NativeSmokeUITests.swift"],
+    "SimulatorSupport": [
+        "NativeSmokeUITests.swift",
+        "ContentFlowUITests.swift",
+        "WorksSettingsUITests.swift",
+        "MediaNotificationUITests.swift",
+        "SearchNoteUITests.swift",
+    ],
 }
 
 # These Apple-platform source files match the iOS MMKVCore target. Keep the
@@ -101,7 +118,7 @@ for name, filetype in [
 app_resources_id = add("resource:App", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/App"; sourceTree = SOURCE_ROOT; }')
 widget_resources_id = add("resource:Widget", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/Widget"; sourceTree = SOURCE_ROOT; }')
 
-app_source_builds = [add(f"build-source-app:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for group in ("App", "DesignSystem", "Features/Today", "Features/Secondary", "Features/Reader", "Platform/Navigation", "Platform/Text") for p in [f"{group}/{name}" for name in source_files[group]]]
+app_source_builds = [add(f"build-source-app:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for group in ("App", "DesignSystem", "Features/Today", "Features/Secondary", "Features/Reader", "Features/Companion", "Features/Prayers", "Features/Calendar", "Features/Guides", "Features/Sharing", "Features/Works", "Features/Media", "Features/Settings", "Features/Notifications", "Platform/Navigation", "Platform/Notifications", "Platform/Media", "Platform/Text") for p in [f"{group}/{name}" for name in source_files[group]]]
 legacy_reader_ref = add("file:LegacyAdapter/LegacyMMKVReader.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LegacyMMKVReader.swift; path = LegacyAdapter/LegacyMMKVReader.swift; sourceTree = SOURCE_ROOT; }')
 legacy_reader_build = add("build-source-app:LegacyMMKVReader.swift", f"{{ isa = PBXBuildFile; fileRef = {legacy_reader_ref}; }}")
 scenario_runner_ref = add("file:source-fixtures/L04ScenarioRunner.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04ScenarioRunner.swift; path = "../../scripts/native/source-fixtures/l04/L04ScenarioRunner.swift"; sourceTree = SOURCE_ROOT; }')
@@ -110,7 +127,11 @@ recovery_runner_ref = add("file:source-fixtures/L04RecoveryScenarios.swift", '{ 
 recovery_runner_build = add("build-source-app:L04RecoveryScenarios.swift", f"{{ isa = PBXBuildFile; fileRef = {recovery_runner_ref}; }}")
 repository_runner_ref = add("file:source-fixtures/L04RepositoryRunner.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04RepositoryRunner.swift; path = "../../scripts/native/source-fixtures/l04/L04RepositoryRunner.swift"; sourceTree = SOURCE_ROOT; }')
 repository_runner_build = add("build-source-app:L04RepositoryRunner.swift", f"{{ isa = PBXBuildFile; fileRef = {repository_runner_ref}; }}")
-app_source_builds.extend([legacy_reader_build, scenario_runner_build, recovery_runner_build, repository_runner_build])
+search_comparison_ref = add("file:source-fixtures/L09FixtureComparison.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L09FixtureComparison.swift; path = "../../scripts/native/source-fixtures/l09/L09FixtureComparison.swift"; sourceTree = SOURCE_ROOT; }')
+search_comparison_build = add("build-source-app:L09FixtureComparison.swift", f"{{ isa = PBXBuildFile; fileRef = {search_comparison_ref}; }}")
+library_comparison_ref = add("file:source-fixtures/L10L11FixtureComparison.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L10L11FixtureComparison.swift; path = "../../scripts/native/source-fixtures/library/L10L11FixtureComparison.swift"; sourceTree = SOURCE_ROOT; }')
+library_comparison_build = add("build-source-app:L10L11FixtureComparison.swift", f"{{ isa = PBXBuildFile; fileRef = {library_comparison_ref}; }}")
+app_source_builds.extend([legacy_reader_build, scenario_runner_build, recovery_runner_build, repository_runner_build, search_comparison_build, library_comparison_build])
 widget_source_builds = [add(f"build-source-widget:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"Widget/{name}" for name in source_files["Widget"]]]
 ui_source_builds = [add(f"build-source-uitest:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"SimulatorSupport/{name}" for name in source_files["SimulatorSupport"]]]
 mmkv_no_arc = {"CodedInputDataCrypt.cpp", "MMKV_IO.cpp", "CodedOutputData.cpp", "MMKV.cpp", "MiniPBCoder.cpp", "MMBuffer.cpp", "CodedInputData.cpp"}
@@ -190,8 +211,8 @@ app_common = {
     "SWIFT_OBJC_BRIDGING_HEADER": '"LegacyAdapter/LegacyMMKVAdapter.h"',
 }
 app_config_ids.extend([
-    build_config("Debug", {**app_common, "CODE_SIGN_ENTITLEMENTS": '"Config/John-App-Development.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "app"),
-    build_config("Release", {**app_common, "CODE_SIGN_ENTITLEMENTS": '"Config/John-App-Update.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse"'}, "app"),
+    build_config("Debug", {**app_common, "APP_GROUP_IDENTIFIER": '"group.com.nrsv.verse.dev"', "CODE_SIGN_ENTITLEMENTS": '"Config/John-App-Development.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "app"),
+    build_config("Release", {**app_common, "APP_GROUP_IDENTIFIER": '"group.com.nrsv.verse"', "CODE_SIGN_ENTITLEMENTS": '"Config/John-App-Update.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse"'}, "app"),
 ])
 widget_common = {
     "APPLICATION_EXTENSION_API_ONLY": "YES",
@@ -205,8 +226,8 @@ widget_common = {
     "TARGETED_DEVICE_FAMILY": '"1,2"',
 }
 widget_config_ids.extend([
-    build_config("Debug", {**widget_common, "CODE_SIGN_ENTITLEMENTS": '"Config/John-Widget-Development.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev.widget"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "widget"),
-    build_config("Release", {**widget_common, "CODE_SIGN_ENTITLEMENTS": '"Config/John-Widget-Update.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.widget"'}, "widget"),
+    build_config("Debug", {**widget_common, "APP_GROUP_IDENTIFIER": '"group.com.nrsv.verse.dev"', "CODE_SIGN_ENTITLEMENTS": '"Config/John-Widget-Development.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev.widget"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "widget"),
+    build_config("Release", {**widget_common, "APP_GROUP_IDENTIFIER": '"group.com.nrsv.verse"', "CODE_SIGN_ENTITLEMENTS": '"Config/John-Widget-Update.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.widget"'}, "widget"),
 ])
 ui_common = {
     "GENERATE_INFOPLIST_FILE": "YES",
@@ -272,7 +293,7 @@ staged_group = add("group:Staged", f"{{ isa = PBXGroup; children = ({app_resourc
 core_group = add("group:JohnCore", '{ isa = PBXGroup; children = (); name = JohnCore; path = Packages/JohnCore; sourceTree = SOURCE_ROOT; }')
 adapter_group = add("group:LegacyAdapter", f"{{ isa = PBXGroup; children = ({legacy_reader_ref}, {', '.join(adapter_children)}, {adapter_foundation_ref}, {adapter_zlib_ref}, {adapter_libcxx_ref}, ); name = LegacyAdapter; path = LegacyAdapter; sourceTree = \"<group>\"; }}")
 scenario_group = add("group:ScenarioRunner", f"{{ isa = PBXGroup; children = ({scenario_runner_ref}, {recovery_runner_ref}, {repository_runner_ref}, ); name = \"L04 simulator scenarios\"; sourceTree = \"<group>\"; }}")
-main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Platform/Navigation"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, core_group, adapter_group, scenario_group, products_group]
+main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Features/Companion"], group_ids["Features/Prayers"], group_ids["Features/Calendar"], group_ids["Features/Guides"], group_ids["Features/Sharing"], group_ids["Features/Works"], group_ids["Features/Media"], group_ids["Features/Settings"], group_ids["Features/Notifications"], group_ids["Platform/Navigation"], group_ids["Platform/Notifications"], group_ids["Platform/Media"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, core_group, adapter_group, scenario_group, products_group]
 main_group = add("group-main", f"{{ isa = PBXGroup; children = ({', '.join(main_children)}, ); sourceTree = \"<group>\"; }}")
 
 container_proxy = add("proxy-app-embeds-widget", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {widget_target_id}; remoteInfo = JohnWidget; }}")

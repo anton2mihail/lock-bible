@@ -19,7 +19,7 @@ struct GoToView: View {
                 VStack(alignment: .leading, spacing: 22) {
                     HStack(alignment: .firstTextBaseline) {
                         Text("Go to")
-                            .font(JohnTypography.title(36))
+                            .font(JohnTypography.sans(36, weight: .bold))
                             .tracking(-0.8)
                             .foregroundStyle(colors.text)
                             .accessibilityAddTraits(.isHeader)
@@ -47,10 +47,7 @@ struct GoToView: View {
                                                     .font(JohnTypography.sans(16, weight: book.code == initialBookCode ? .semibold : .regular))
                                                     .foregroundStyle(book.code == initialBookCode ? colors.tint : colors.text)
                                                 Spacer()
-                                                Text(book.chapterCount == 1 ? "1 chapter" : "\(book.chapterCount) chapters")
-                                                    .font(JohnTypography.sans(12))
-                                                    .foregroundStyle(colors.textDim)
-                                                if book.chapterCount > 1 {
+                                            if book.chapterCount > 1 {
                                                     FeatherIcon(name: openBookCode == book.code ? "chevron-up" : "chevron-down", color: colors.textDim)
                                                 }
                                             }
@@ -65,7 +62,7 @@ struct GoToView: View {
                                         .id(book.code)
 
                                         if openBookCode == book.code {
-                                            LazyVGrid(columns: Array(repeating: GridItem(.fixed(50), spacing: 10), count: 5), spacing: 10) {
+                                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 52, maximum: 52), spacing: 10)], spacing: 10) {
                                                 ForEach(1...book.chapterCount, id: \.self) { number in
                                                     Button {
                                                         router.openReader(bookCode: book.code, chapter: number, translation: preferences.translation)
@@ -73,7 +70,7 @@ struct GoToView: View {
                                                         Text(String(number))
                                                             .font(JohnTypography.sans(15, weight: number == initialChapter && book.code == initialBookCode ? .semibold : .regular))
                                                             .foregroundStyle(number == initialChapter && book.code == initialBookCode ? colors.card : colors.text)
-                                                            .frame(width: 50, height: 50)
+                                                            .frame(width: 52, height: 52)
                                                             .background(number == initialChapter && book.code == initialBookCode ? colors.tint : colors.card,
                                                                         in: RoundedRectangle(cornerRadius: 11))
                                                             .overlay(RoundedRectangle(cornerRadius: 11).stroke(colors.border, lineWidth: 1))
@@ -81,6 +78,7 @@ struct GoToView: View {
                                                     .buttonStyle(.plain)
                                                     .accessibilityLabel("\(book.name) chapter \(number)")
                                                     .accessibilityIdentifier("go-to-chapter-\(book.code)-\(number)")
+                                                    .id("go-to-chapter-\(book.code)-\(number)")
                                                 }
                                             }
                                             .padding(.vertical, 12)
@@ -103,7 +101,8 @@ struct GoToView: View {
                 if let initialBookCode, books.contains(where: { $0.code == initialBookCode && $0.chapterCount > 1 }) {
                     openBookCode = initialBookCode
                     await Task.yield()
-                    withAnimation(.none) { proxy.scrollTo("chapters-\(initialBookCode)", anchor: .center) }
+                    let selected = initialChapter ?? 1
+                    withAnimation(.none) { proxy.scrollTo("go-to-chapter-\(initialBookCode)-\(selected)", anchor: .center) }
                 }
             }
         }

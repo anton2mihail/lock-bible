@@ -39,6 +39,7 @@ struct ReaderChapterRequest: Identifiable, Sendable, Hashable {
 enum AppRoute: Hashable, Sendable {
     case search
     case passage(PassageSelection)
+    case noteEditor(PassageSelection)
     case goTo(bookCode: String?, chapter: Int?)
     case works
     case daily(String)
@@ -46,9 +47,21 @@ enum AppRoute: Hashable, Sendable {
     case rosaryGuide(String)
     case prayer(String)
     case novena(String)
-    case verseMoment
     case learn
     case confession
+    case companion(CompanionRoute)
+    case verseMoment(VerseMomentSelection)
+    case calendarNotifications
+    case rosaryReminder
+    case rosaryMedia(String)
+    case workCollection(String)
+    case workReader(workID: String, section: Int?)
+    case worksChapterCommentary(bookCode: String?, chapter: Int?, bookName: String)
+}
+
+struct VerseMomentSelection: Hashable, Sendable {
+    let verse: RotatingVerse
+    let translation: TranslationID
 }
 
 enum AppSheet: String, Identifiable {
@@ -100,6 +113,9 @@ enum AppSheet: String, Identifiable {
         case let .daily(date):
             selectedTab = .today
             paths[.today, default: []].append(.daily(date))
+        case .rosary:
+            selectedTab = .pray
+            paths[.pray] = [.companion(.rosaryHome)]
         case let .read(bookCode, chapter, verse, endVerse, requestedTranslation):
             let translation = requestedTranslation ?? runtime.preferences.translation
             guard let passage = await runtime.passage(translation: translation, bookCode: bookCode,

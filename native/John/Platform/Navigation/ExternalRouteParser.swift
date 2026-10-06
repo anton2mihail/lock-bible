@@ -3,6 +3,7 @@ import JohnCore
 
 enum ExternalRoute: Sendable {
     case daily(String)
+    case rosary
     case read(bookCode: String, chapter: Int, verse: String, endVerse: String?, translation: TranslationID?)
 }
 
@@ -16,6 +17,7 @@ enum ExternalRouteParser {
             guard let date = values["date"], isValidDateKey(date) else { return nil }
             return .daily(date)
         }
+        if host == "pray", components.path == "/rosary" { return .rosary }
         guard host == "read",
               let book = values["book"], !book.isEmpty,
               let chapter = values["chapter"].flatMap(Int.init), chapter > 0,

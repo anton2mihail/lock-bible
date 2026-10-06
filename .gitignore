@@ -99,5 +99,8 @@ scripts/.cache/
 .expo/
 .ccel-cache/
 
+# Generated native release resource bundle (source manifest and staging scripts stay tracked).
+/native/John/Resources/Release/Resources/
+
 # Playwright CLI page snapshots and console logs
 .playwright-cli/

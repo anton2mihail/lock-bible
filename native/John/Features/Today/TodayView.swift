@@ -111,7 +111,7 @@ struct TodayView: View {
                             .padding(.vertical, 13)
                             .background(colors.tint, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                             ActionRow(title: "Verse & lock screen widget", subtitle: "Read in context, share, or set up your widget") {
-                                router.push(.verseMoment)
+                                router.push(.verseMoment(VerseMomentSelection(verse: verse, translation: preferences.translation)))
                             }
                         }
                     }

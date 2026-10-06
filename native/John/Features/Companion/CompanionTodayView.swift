@@ -132,11 +132,11 @@ struct CompanionTodayView: View {
 
     @MainActor private func refresh() async {
         now = clock()
-        if fixedTimeZone == nil {
-            await runtime.today.refresh(translation: preferences.translation,
-                                        scope: preferences.scope,
-                                        intervalMinutes: preferences.intervalMinutes)
-        }
+        await runtime.today.refresh(translation: preferences.translation,
+                                    scope: preferences.scope,
+                                    intervalMinutes: preferences.intervalMinutes,
+                                    at: now,
+                                    timeZone: timeZone)
         guard let repository = runtime.companionRepository else {
             message = "Today’s local calendar could not be opened."
             return
