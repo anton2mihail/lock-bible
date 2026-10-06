@@ -49,3 +49,28 @@ Main clears the old chapter and layout at load start. Back retains a separate cu
 The new `openChapter` has further suspension points while it loads highlights, attribution, and durable location. A new request or Back can run at each `await`. Capture the load identity and edition. Check them before applying each result. Clear prior fills and attribution at load start. Apply only values for the active chapter. A late response must not set context, fill, or location for a later request. Check this with one bounded DEBUG delay and a second request or Back.
 
 The source Fathers section has one visible card row. Its text is the catalog author/work count. `The Church Fathers` is the section label. `The Fathers and Doctors. … works, available offline.` is the accessibility label. Do not add a visible card title or a separate count. Keep the fixed book-list header, Continue reading, and Fathers area within the source horizontal padding.
+
+The source grid gap is 12 points. Current chapter cells expose selected accessibility state. A repeated identical passage request must repeat context positioning. Use the fresh request or load ID for scroll completion. Source context positioning subtracts 24 points from the verse position. A book/chapter/verse-only completion key suppresses a valid repeat.
+
+## Dynamic Type and verse rows
+
+The pinned React Native source supplies the system font-scale mapping in `node_modules/react-native/React/CoreModules/RCTAccessibilityManager.mm`, lines 259–271. The normal iOS category is Large, with multiplier 1.0. The first native mapping incorrectly used 1.12 there. Use the source mapping once for Scripture and its reading measure.
+
+| SwiftUI category | Source multiplier |
+| --- | --- |
+| xSmall | 0.823 |
+| small | 0.882 |
+| medium | 0.941 |
+| large | 1.0 |
+| xLarge | 1.118 |
+| xxLarge | 1.235 |
+| xxxLarge | 1.353 |
+| accessibility1 | 1.786 |
+| accessibility2 | 2.143 |
+| accessibility3 | 2.643 |
+| accessibility4 | 3.143 |
+| accessibility5 | 3.571 |
+
+Keep source rounding before system scaling. Scripture line height is `round(baseFontSize * lineMultiplier)`. Psalm title size is `round(baseFontSize * 0.85)`. Apply the system multiplier to those values once. Default Medium Scripture must remain 18 points at the normal system category.
+
+Verse layout has distinct row geometry. `VerseChapter` uses a minimum 44-point row, horizontal padding 8, vertical padding 4, an 8-point corner radius, and a 1.5-point selected outline. Its 12-point paragraph gap depends on `startsBlock`, heading presence, line kind, and stanza break. Splitting each verse into a paragraph does not supply these rules. Check actual John verse rows and saved-fill/selection behavior before L08 acceptance.
