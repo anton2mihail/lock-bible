@@ -26,4 +26,8 @@ Source reports a passing strict Swift 6 arm64 simulator SDK/XCTest type-check. T
 
 Source will prepare only `SimulatorSupport/MediaNotificationUITests.swift`. Use current source leaf identifiers and meaningful episode/mode/route state checks. Keep Debug sample playback and Release approval gating as distinct conditions. Do not infer player destruction from a changed title alone. Main retains actual lifecycle/player evidence and simulator operation.
 
+## Media and notification test source acceptance
+
+The corrected test at `6f9d025` has SHA-256 `72399bbe5a3c222e6a1a247d75c361ee95d6e06c0e6d9b97398f9acbb1273113`. Its Debug scope is mode state, exact episode identities, activation, and route return. Its Release scope checks the source catalog's unapproved-media fallback and absence of player controls. The series link uses a generic accessibility element query. Its notice scope checks disabled-save feedback only. These are suitable bounded UI assertions. They do not prove player pause/release, real system permission, request cancellation, delivery, or durable state. Simulator results remain open.
+
 Notification UI tests may use the existing settings callbacks and current save/status controls. Main owns OS permission setup, actual pending-request inspection, delivery, and warm/cold response checks. The accepted 25-observation injected-center result does not replace these system checks.
