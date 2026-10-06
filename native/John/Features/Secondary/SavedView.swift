@@ -128,6 +128,21 @@ struct SavedView: View {
                 SavedRow(item: item, colors: colors,
                          open: { open(item) }, editNote: { open(item) }, delete: { Task { await delete(item) } })
                     .listRowBackground(colors.background)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            Task { await delete(item) }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                    .contextMenu {
+                        Button { open(item) } label: { Label("Open", systemImage: "book") }
+                        Button(role: .destructive) {
+                            Task { await delete(item) }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             }
         }
         .listStyle(.plain)
