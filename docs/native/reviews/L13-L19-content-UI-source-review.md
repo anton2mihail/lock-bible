@@ -62,3 +62,15 @@ Lectio now has a whole-file source implementation. Its footer must use the passa
 The Rosary session transitions use the staged source session values. The first UI file shows artwork on prayer steps. The source shows artwork only when the step has no prayer and has a mystery index. Correct this condition. Use the guide's local source card, rail, header, completion, and action styles. Generic companion panels have different metrics. The source actions are vertical. Beads are 34 points. Bead numbers and the close glyph cap at 1.4 system scale. Prayer text uses 20/34; meditation uses 18/30. Completion centers within the viewport and uses a 36-point glyph inside its 96-point circle.
 
 Main must compile these new files together before the content runtime batch. Check all five Rosary sessions against the accepted exact steps. Observe repeat, back, completion, and reset. Check artwork and credits on a mystery step and their absence on prayer steps. Media opening remains outside this guide check.
+
+## Complete route-file boundary
+
+Citation context and Scripture card files are present. The new route-file set can enter the coherent app compile after these concrete corrections. Source can start isolated Works files from `L20-L21-Works-handoff.md` in parallel. Shared Core writes still require a build boundary with Main.
+
+Citation context must clear old target and chapter state before each reference load. An invalid reused reference must not show the prior chapter. Chapter changes and verse resolution need a load-generation guard. Preserve the source chapter title, reference subtitle, endpoint-disabled navigation, and Reader typography. Its “Search the Bible” callback opens Search. A Read-root callback is different.
+
+Scripture card must export the rendered card as a 1080-pixel PNG and open the native share sheet. A text-only ShareLink does not complete L19. Keep a separate text fallback, busy and ready states, error feedback, and temporary-image cleanup. Preserve the source left alignment, spacing, wordmark, reference, and actual edition attribution. Use UTF-16 length for the 900-unit quote threshold. Remove the duplicate private `Color.init(hex:)`; the shared theme already supplies it.
+
+Rosary home must use exactly the development-or-approved media gate. In development, its action opens the native media route. In release without approved media, it opens the official URL. Main owns the later L23 player. The official series footer remains an actual link. Reminder navigation has no permission or schedule side effect in this batch; L22 remains separate.
+
+Full target compilation, rendered-image inspection, native share-sheet cancellation, citation navigation, and both media gate branches remain simulator acceptance items. No content placeholder or text-only export is accepted as complete.
