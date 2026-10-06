@@ -8,6 +8,7 @@ struct ReaderView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+@ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @State private var readerScrollPosition = ScrollPosition(idType: String.self)
     @State private var textGeometryProbe = ReaderTextGeometryProbe()
@@ -354,7 +355,7 @@ struct ReaderView: View {
                     Text("Choose a chapter")
                         .font(JohnTypography.sans(14))
                         .foregroundStyle(colors.textDim)
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 52, maximum: 52), spacing: 12)], spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: chapterCellSize, maximum: chapterCellSize), spacing: 12)], spacing: 12) {
                         ForEach(1...book.chapterCount, id: \.self) { number in
                             Button {
                                 Task { await model.openChapter(book, number: number, using: runtime) }
@@ -362,7 +363,7 @@ struct ReaderView: View {
                                 Text(String(number))
                                     .font(JohnTypography.sans(16, weight: .medium))
                                     .foregroundStyle(number == model.currentChapterNumber ? colors.background : colors.text)
-                                    .frame(width: 52, height: 52)
+                                    .frame(width: chapterCellSize, height: chapterCellSize)
                                     .background(number == model.currentChapterNumber ? colors.tint : colors.card, in: RoundedRectangle(cornerRadius: 12))
                                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(colors.border, lineWidth: 1))
                             }

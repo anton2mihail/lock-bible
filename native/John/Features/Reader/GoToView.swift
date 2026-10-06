@@ -10,6 +10,7 @@ struct GoToView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var books: [BibleBookDescriptor] = []
     @State private var openBookCode: String?
+    @ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
 
@@ -62,7 +63,7 @@ struct GoToView: View {
                                         .id(book.code)
 
                                         if openBookCode == book.code {
-                                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 52, maximum: 52), spacing: 10)], spacing: 10) {
+                                            LazyVGrid(columns: [GridItem(.adaptive(minimum: chapterCellSize, maximum: chapterCellSize), spacing: 10)], spacing: 10) {
                                                 ForEach(1...book.chapterCount, id: \.self) { number in
                                                     Button {
                                                         router.openReader(bookCode: book.code, chapter: number, translation: preferences.translation)
@@ -70,7 +71,7 @@ struct GoToView: View {
                                                         Text(String(number))
                                                             .font(JohnTypography.sans(15, weight: number == initialChapter && book.code == initialBookCode ? .semibold : .regular))
                                                             .foregroundStyle(number == initialChapter && book.code == initialBookCode ? colors.card : colors.text)
-                                                            .frame(width: 52, height: 52)
+                                                            .frame(width: chapterCellSize, height: chapterCellSize)
                                                             .background(number == initialChapter && book.code == initialBookCode ? colors.tint : colors.card,
                                                                         in: RoundedRectangle(cornerRadius: 11))
                                                             .overlay(RoundedRectangle(cornerRadius: 11).stroke(colors.border, lineWidth: 1))
