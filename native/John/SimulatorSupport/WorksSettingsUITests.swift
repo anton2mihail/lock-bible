@@ -134,7 +134,7 @@ final class WorksSettingsUITests: XCTestCase {
         homilyTen.tap()
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label == %@", "Contents, section 10 of 88")).firstMatch.waitForExistence(timeout: 12))
 
-        let prose = app.descendants(matching: .any).matching(identifier: "works-prose-text").firstMatch
+        let prose = app.descendants(matching: .any).matching(identifier: "works-prose").firstMatch
         XCTAssertTrue(prose.waitForExistence(timeout: 12))
         waitForLabel(prose, containing: sectionAnchor)
         let footerLabels = ["Previous section", "Contents, section 10 of 88", "Next section"]
@@ -181,7 +181,7 @@ final class WorksSettingsUITests: XCTestCase {
         tapWhenReady(resumed, in: app)
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Contents, section 10 of 88"].waitForExistence(timeout: 10))
-        let resumedProse = app.descendants(matching: .any).matching(identifier: "works-prose-text").firstMatch
+        let resumedProse = app.descendants(matching: .any).matching(identifier: "works-prose").firstMatch
         waitForLabel(resumedProse, containing: sectionAnchor)
         let resumedPage = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Page 1 of")).firstMatch
         XCTAssertTrue(resumedPage.waitForExistence(timeout: 8), "Resume must show the saved page")
