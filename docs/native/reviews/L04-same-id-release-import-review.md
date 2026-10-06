@@ -2,7 +2,7 @@
 
 Date: 5 October 2026
 Reviewer: GPT-6.1 Sol
-Status: first launch accepted; restart and native-wins checks open
+Status: bounded Release import and native-wins runtime accepted; integration commit pending
 
 ## Install sequence
 
@@ -28,15 +28,23 @@ The first-launch report contains the exact original 1/1/1 rows. All five origina
 
 This first-launch scope is accepted. It proves the typed importer on the actual seeded same-ID simulator data. It does not yet prove a fresh-process restart or native-wins behavior.
 
-## Remaining checks
+## Restart and native-wins acceptance
 
-1. Record the installed native Release executable hash against the product.
-2. Inspect the app-created recovery backup. Check integrity, schema, exact rows, and its self-contained journal state.
-3. Start a fresh native process. Check the committed envelope and retained original data.
-4. Change a preference through native UI. Check the committed value and revision.
-5. Restart in a fresh process. Check that native state wins over the unchanged legacy preference.
-6. Record the matching scoped app integration commit.
+Sol reviewed `native-import-restart-01.json`, `native-wins-restart-result.json`, the UI test source, and `native-wins-ui-test.log`. The first restart report uses PID 58449 and retains revision 1, the complete typed state, exact original rows, and all five file hashes.
 
-SpringBoard denied the first restart command after termination. Main must preserve that error and inspect the specific process state. Do not uninstall the app or reset broad simulator services to obtain a passing result.
+The UI test targets `com.nrsv.verse`. It changes Settings from imported Medium to Large. It terminates PID 68968 and launches the same Release app again. Settings then reads Large. The test passes in 22.322 seconds with zero failures. The final process is PID 69399.
 
-Gate A remains open. Signed App Group access, the full release fixture, physical-device update behavior, and final release readiness remain later requirements.
+The final envelope has revision 2, importVersion 1, and Large text size. Its unrelated state fields and original import hashes remain unchanged. The original legacy MMKV files still contain the imported source bytes. The original DB, WAL, SHM, data, and CRC hashes remain unchanged. The complete bookmark, highlight, and note rows match the first-launch report.
+
+The installed Release executable matches the product SHA-256 above. The app-created recovery backup is 45,056 bytes. Its schema is 1, integrity is `ok`, and its exact 1/1/1 rows match the original library. Its SHA-256 is `db7ce346df38cab53fa7101f6844023e2dd56fe1e327e1925b1bba77eedc7522`.
+
+This bounded same-ID Release runtime is accepted. Main must add the final process and backup journal records to its report. No repeat app run is required for this record.
+
+## Remaining handoff
+
+1. Attach the final PID sequence and backup journal/header/sidecar record.
+2. Record the matching scoped app integration commit.
+
+SpringBoard denied the first restart command after termination. Main preserved that failure. The later restart and UI test pass. This failed command does not negate the later observed fresh processes.
+
+Gate A remains open for the report and commit handoff. Signed App Group access, the full release fixture, physical-device update behavior, and final release readiness remain later requirements.
