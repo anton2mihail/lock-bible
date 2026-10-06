@@ -98,6 +98,7 @@ struct SearchView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 8)
+        .sensoryFeedback(.selection, trigger: scope)
     }
 
     @ViewBuilder private var content: some View {

@@ -123,6 +123,7 @@ struct SavedView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 12)
+        .sensoryFeedback(.selection, trigger: filter)
     }
 
     private var savedList: some View {

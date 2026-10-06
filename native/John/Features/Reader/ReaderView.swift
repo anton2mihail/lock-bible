@@ -25,6 +25,7 @@ struct ReaderView: View {
     @State private var lastContextRequest: String?
     @State private var selectedBookmarkState: Bool?
     @State private var selectionFeedback: String?
+@State private var feedbackHaptic = ReaderFeedbackHaptic()
     @State private var isSelectionMutationRunning = false
     @State private var selectionIdentity = UUID()
     @State private var selectionSharePayload: ReaderSharePayload?
@@ -91,10 +92,12 @@ struct ReaderView: View {
             selectedBookmarkState = isSaved
             selectionFeedback = isSaved ? "Bookmark saved" : "Bookmark removed"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: false)
         } catch {
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectionFeedback = "Bookmark could not be updated"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: true)
         }
     }
 
@@ -121,6 +124,7 @@ struct ReaderView: View {
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectionFeedback = "Highlight could not be updated"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: true)
         }
     }
 
@@ -133,6 +137,7 @@ struct ReaderView: View {
         UIPasteboard.general.string = "\(passage.scriptureText)\n\(reference(for: passage)) (\(abbreviation))"
         selectionFeedback = "Passage copied"
         UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+        feedbackHaptic.fire(failed: false)
     }
 
     @MainActor private func shareSelectedPassage() async {
@@ -166,6 +171,7 @@ struct ReaderView: View {
             }
         }
         .background(colors.background)
+        .sensoryFeedback(trigger: feedbackHaptic) { _, event in event.feedback }
         .task(id: preferences.translation) {
             await model.loadBooks(translation: preferences.translation, using: runtime)
             if let catalog = await runtime.worksCatalog() { workCatalog = catalog }
@@ -649,6 +655,7 @@ struct ReaderView: View {
                                                         selectionID: payload.selectionID) else { return }
                                 selectionFeedback = "Share sheet could not be opened"
                                 UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+                                feedbackHaptic.fire(failed: true)
                             }
                                 .presentationDetents([.medium, .large])
                         }
@@ -896,4 +903,21 @@ private struct ReaderActivitySheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+
+/// One haptic event for a finished Reader selection action. The counter makes two equal
+/// outcomes in a row (for example two copies) fire twice.
+private struct ReaderFeedbackHaptic: Equatable {
+    private var count = 0
+    private var failed = false
+
+    mutating func fire(failed: Bool) {
+        count += 1
+        self.failed = failed
+    }
+
+    var feedback: SensoryFeedback? {
+        guard count > 0 else { return nil }
+        return failed ? .error : .success
+    }
 }
