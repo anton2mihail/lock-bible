@@ -13,6 +13,12 @@ struct DestinationView: View {
             SearchView()
         case .passage(let passage):
             ReaderDestination(passage: passage)
+        case .goTo(let bookCode, let chapter):
+            GoToView(initialBookCode: bookCode, initialChapter: chapter)
+        case .works:
+            CompanionPage(title: "The Church Fathers", eyebrow: "Works", subtitle: "Browse writings from the Fathers and Doctors.") {
+                MutedText(text: "The works library opens in a later feature ticket.")
+            }
         case .daily(let value):
             if value.contains(":") {
                 ReaderDestination(reference: value)

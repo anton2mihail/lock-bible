@@ -27,19 +27,36 @@ project_id = oid("JohnProject")
 app_target_id = oid("target-app")
 widget_target_id = oid("target-widget")
 ui_target_id = oid("target-ui-tests")
+adapter_target_id = oid("target-legacy-adapter")
 app_product_id = oid("product:John.app")
 widget_product_id = oid("product:JohnWidget.appex")
 ui_product_id = oid("product:JohnUITests.xctest")
+adapter_product_id = oid("product:libJohnLegacyAdapter.a")
 
 source_files = {
     "App": ["JohnApp.swift", "Runtime.swift"],
     "DesignSystem": ["Theme.swift", "FeatherIcon.swift", "FlatTabBar.swift", "AppComponents.swift"],
     "Features/Today": ["TodayModel.swift", "TodayView.swift"],
     "Features/Secondary": ["SecondaryRootView.swift", "DestinationView.swift"],
+    "Features/Reader": ["ReaderScreenModel.swift", "ReaderView.swift", "GoToView.swift"],
     "Platform/Navigation": ["AppRouter.swift", "ExternalRouteParser.swift"],
+    "Platform/Text": ["ScriptureTextView.swift"],
     "Widget": ["JohnWidget.swift"],
     "SimulatorSupport": ["NativeSmokeUITests.swift"],
 }
+
+# These Apple-platform source files match the iOS MMKVCore target. Keep the
+# vendored project as the source authority and exclude its watch target.
+mmkv_core_sources = [
+    "ThreadLock.cpp", "MemoryFile_OSX.cpp", "KeyValueHolder.cpp", "MMKV.cpp",
+    "CodedInputDataCrypt_OSX.cpp", "MiniPBCoder_OSX.cpp", "AESCrypt.cpp",
+    "openssl_cfb128.cpp", "CodedOutputData.cpp", "openssl_md5_dgst.cpp",
+    "openssl_aes-armv4.S", "CodedInputDataCrypt.cpp", "MemoryFile.cpp",
+    "CodedInputData.cpp", "MMKVLog.cpp", "PBUtility.cpp", "MiniPBCoder.cpp",
+    "MMKV_IO.cpp", "openssl_md5_one.cpp", "openssl_aes_core.cpp", "MMBuffer.cpp",
+    "CodedInputData_OSX.cpp", "openssl_aesv8-armx.S", "MMKV_OSX.cpp",
+    "InterProcessLock.cpp",
+]
 
 file_refs: dict[str, str] = {}
 group_files: dict[str, list[str]] = {}
@@ -51,6 +68,21 @@ for group, files in source_files.items():
         file_refs[path] = ref
         children.append(ref)
     group_files[group] = children
+
+adapter_file_refs: dict[str, str] = {}
+adapter_children = []
+adapter_source_paths = ["LegacyMMKVAdapter.mm", *mmkv_core_sources]
+for path in adapter_source_paths:
+    is_wrapper = path == "LegacyMMKVAdapter.mm"
+    vendor_path = f"aes/openssl/{path}" if path.startswith("openssl_") else f"aes/{path}" if path == "AESCrypt.cpp" else path
+    source_path = f"LegacyAdapter/{path}" if is_wrapper else f"LegacyAdapter/Vendor/MMKVCore/{vendor_path}"
+    ref = add(f"file:LegacyAdapter/{path}", f"{{ isa = PBXFileReference; lastKnownFileType = {'sourcecode.cpp.objcpp' if is_wrapper or path.endswith('.cpp') else 'sourcecode.asm'}; name = {q(path)}; path = {q(source_path)}; sourceTree = SOURCE_ROOT; }}")
+    adapter_file_refs[path] = ref
+    adapter_children.append(ref)
+adapter_group_files = [
+    ("root", adapter_children),
+    ("vendor", []),
+]
 
 plist_refs = {}
 for name, filetype in [
@@ -69,9 +101,23 @@ for name, filetype in [
 app_resources_id = add("resource:App", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/App"; sourceTree = SOURCE_ROOT; }')
 widget_resources_id = add("resource:Widget", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/Widget"; sourceTree = SOURCE_ROOT; }')
 
-app_source_builds = [add(f"build-source-app:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for group in ("App", "DesignSystem", "Features/Today", "Features/Secondary", "Platform/Navigation") for p in [f"{group}/{name}" for name in source_files[group]]]
+app_source_builds = [add(f"build-source-app:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for group in ("App", "DesignSystem", "Features/Today", "Features/Secondary", "Features/Reader", "Platform/Navigation", "Platform/Text") for p in [f"{group}/{name}" for name in source_files[group]]]
+legacy_reader_ref = add("file:LegacyAdapter/LegacyMMKVReader.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LegacyMMKVReader.swift; path = LegacyAdapter/LegacyMMKVReader.swift; sourceTree = SOURCE_ROOT; }')
+legacy_reader_build = add("build-source-app:LegacyMMKVReader.swift", f"{{ isa = PBXBuildFile; fileRef = {legacy_reader_ref}; }}")
+scenario_runner_ref = add("file:source-fixtures/L04ScenarioRunner.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04ScenarioRunner.swift; path = "../../scripts/native/source-fixtures/l04/L04ScenarioRunner.swift"; sourceTree = SOURCE_ROOT; }')
+scenario_runner_build = add("build-source-app:L04ScenarioRunner.swift", f"{{ isa = PBXBuildFile; fileRef = {scenario_runner_ref}; }}")
+recovery_runner_ref = add("file:source-fixtures/L04RecoveryScenarios.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04RecoveryScenarios.swift; path = "../../scripts/native/source-fixtures/l04/L04RecoveryScenarios.swift"; sourceTree = SOURCE_ROOT; }')
+recovery_runner_build = add("build-source-app:L04RecoveryScenarios.swift", f"{{ isa = PBXBuildFile; fileRef = {recovery_runner_ref}; }}")
+repository_runner_ref = add("file:source-fixtures/L04RepositoryRunner.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04RepositoryRunner.swift; path = "../../scripts/native/source-fixtures/l04/L04RepositoryRunner.swift"; sourceTree = SOURCE_ROOT; }')
+repository_runner_build = add("build-source-app:L04RepositoryRunner.swift", f"{{ isa = PBXBuildFile; fileRef = {repository_runner_ref}; }}")
+app_source_builds.extend([legacy_reader_build, scenario_runner_build, recovery_runner_build, repository_runner_build])
 widget_source_builds = [add(f"build-source-widget:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"Widget/{name}" for name in source_files["Widget"]]]
 ui_source_builds = [add(f"build-source-uitest:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"SimulatorSupport/{name}" for name in source_files["SimulatorSupport"]]]
+mmkv_no_arc = {"CodedInputDataCrypt.cpp", "MMKV_IO.cpp", "CodedOutputData.cpp", "MMKV.cpp", "MiniPBCoder.cpp", "MMBuffer.cpp", "CodedInputData.cpp"}
+adapter_source_builds = []
+for path in adapter_source_paths:
+    settings = ' settings = { COMPILER_FLAGS = "-fno-objc-arc"; };' if path in mmkv_no_arc else ""
+    adapter_source_builds.append(add(f"build-source-adapter:{path}", f"{{ isa = PBXBuildFile; fileRef = {adapter_file_refs[path]};{settings} }}"))
 feather_build = add("build-resource-feather", f"{{ isa = PBXBuildFile; fileRef = {plist_refs['Resources/Feather.ttf']}; }}")
 app_resource_build = add("build-resource-app-folder", f"{{ isa = PBXBuildFile; fileRef = {app_resources_id}; }}")
 widget_resource_build = add("build-resource-widget-folder", f"{{ isa = PBXBuildFile; fileRef = {widget_resources_id}; }}")
@@ -80,6 +126,14 @@ app_package_dep = oid("JohnCoreAppProduct")
 widget_package_dep = oid("JohnCoreWidgetProduct")
 app_package_build = add("build-package-app", f"{{ isa = PBXBuildFile; productRef = {app_package_dep}; }}")
 widget_package_build = add("build-package-widget", f"{{ isa = PBXBuildFile; productRef = {widget_package_dep}; }}")
+adapter_product_build = add("build-link-adapter-app", f"{{ isa = PBXBuildFile; fileRef = {adapter_product_id}; }}")
+adapter_foundation_ref = add("framework:Foundation", '{ isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; }')
+adapter_zlib_ref = add("framework:libz", '{ isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libz.tbd"; path = usr/lib/libz.tbd; sourceTree = SDKROOT; }')
+adapter_libcxx_ref = add("framework:libc++", '{ isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; }')
+adapter_foundation_build = add("build-framework-adapter-foundation", f"{{ isa = PBXBuildFile; fileRef = {adapter_foundation_ref}; }}")
+adapter_zlib_build = add("build-framework-adapter-zlib", f"{{ isa = PBXBuildFile; fileRef = {adapter_zlib_ref}; }}")
+app_zlib_build = add("build-framework-app-zlib", f"{{ isa = PBXBuildFile; fileRef = {adapter_zlib_ref}; }}")
+app_libcxx_build = add("build-framework-app-libcxx", f"{{ isa = PBXBuildFile; fileRef = {adapter_libcxx_ref}; }}")
 widget_embed_build = add("build-embed-widget", f"{{ isa = PBXBuildFile; fileRef = {widget_product_id}; settings = {{ ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }}; }}")
 
 
@@ -92,7 +146,9 @@ def phase(phase_name: str, phase_type: str, files: list[str], **extra: str) -> s
 app_sources_phase = phase("phase-app-sources", "PBXSourcesBuildPhase", app_source_builds)
 widget_sources_phase = phase("phase-widget-sources", "PBXSourcesBuildPhase", widget_source_builds)
 ui_sources_phase = phase("phase-ui-sources", "PBXSourcesBuildPhase", ui_source_builds)
-app_frameworks_phase = phase("phase-app-frameworks", "PBXFrameworksBuildPhase", [app_package_build])
+adapter_sources_phase = phase("phase-adapter-sources", "PBXSourcesBuildPhase", adapter_source_builds)
+adapter_frameworks_phase = phase("phase-adapter-frameworks", "PBXFrameworksBuildPhase", [adapter_foundation_build, adapter_zlib_build])
+app_frameworks_phase = phase("phase-app-frameworks", "PBXFrameworksBuildPhase", [app_package_build, adapter_product_build, app_zlib_build, app_libcxx_build])
 widget_frameworks_phase = phase("phase-widget-frameworks", "PBXFrameworksBuildPhase", [widget_package_build])
 ui_frameworks_phase = phase("phase-ui-frameworks", "PBXFrameworksBuildPhase", [])
 app_resources_phase = phase("phase-app-resources", "PBXResourcesBuildPhase", [app_resource_build, feather_build])
@@ -103,6 +159,7 @@ embed_phase = phase("phase-embed-widget", "PBXCopyFilesBuildPhase", [widget_embe
 app_config_ids = []
 widget_config_ids = []
 ui_config_ids = []
+adapter_config_ids = []
 project_config_ids = []
 
 def build_config(name: str, settings: dict[str, str], config_id: str | None = None) -> str:
@@ -130,6 +187,7 @@ app_common = {
     "SWIFT_EMIT_LOC_STRINGS": "NO",
     "TARGETED_DEVICE_FAMILY": '"1,2"',
     "ENABLE_PREVIEWS": "YES",
+    "SWIFT_OBJC_BRIDGING_HEADER": '"LegacyAdapter/LegacyMMKVAdapter.h"',
 }
 app_config_ids.extend([
     build_config("Debug", {**app_common, "CODE_SIGN_ENTITLEMENTS": '"Config/John-App-Development.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "app"),
@@ -162,6 +220,23 @@ ui_config_ids.extend([
     build_config("Debug", {**ui_common, "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "ui"),
     build_config("Release", ui_common, "ui"),
 ])
+adapter_common = {
+    "CLANG_ENABLE_OBJC_ARC": "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD": '"gnu++20"',
+    "CLANG_CXX_LIBRARY": '"libc++"',
+    "GCC_PREPROCESSOR_DEFINITIONS": '"$(inherited) FORCE_POSIX=1"',
+    "HEADER_SEARCH_PATHS": '"$(inherited) $(SRCROOT)/LegacyAdapter/Vendor/MMKVCore $(SRCROOT)/LegacyAdapter/Vendor/MMKVCore/aes $(SRCROOT)/LegacyAdapter/Vendor/MMKVCore/aes/openssl $(SRCROOT)/LegacyAdapter/Vendor/MMKVCore/crc32"',
+    "IPHONEOS_DEPLOYMENT_TARGET": "26.0",
+    "MACH_O_TYPE": "staticlib",
+    "PRODUCT_NAME": '"JohnLegacyAdapter"',
+    "SKIP_INSTALL": "YES",
+    "SUPPORTED_PLATFORMS": '"iphoneos iphonesimulator"',
+    "TARGETED_DEVICE_FAMILY": '"1,2"',
+}
+adapter_config_ids.extend([
+    build_config("Debug", {**adapter_common, "GCC_PREPROCESSOR_DEFINITIONS": '"$(inherited) FORCE_POSIX=1 DEBUG=1"', "GCC_OPTIMIZATION_LEVEL": "0"}, "adapter-debug"),
+    build_config("Release", adapter_common, "adapter-release"),
+])
 
 
 def config_list(name: str, ids: list[str]) -> str:
@@ -171,13 +246,15 @@ project_config_list = config_list("config-list-project", project_config_ids)
 app_config_list = config_list("config-list-app", app_config_ids)
 widget_config_list = config_list("config-list-widget", widget_config_ids)
 ui_config_list = config_list("config-list-ui", ui_config_ids)
+adapter_config_list = config_list("config-list-adapter", adapter_config_ids)
 
-products_group = add("group-products", f"{{ isa = PBXGroup; children = ({app_product_id}, {widget_product_id}, {ui_product_id}, ); name = Products; sourceTree = \"<group>\"; }}")
+products_group = add("group-products", f"{{ isa = PBXGroup; children = ({app_product_id}, {widget_product_id}, {ui_product_id}, {adapter_product_id}, ); name = Products; sourceTree = \"<group>\"; }}")
 app_product = add("product:John.app", '{ isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = John.app; sourceTree = BUILT_PRODUCTS_DIR; }')
 widget_product = add("product:JohnWidget.appex", '{ isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = JohnWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; }')
 ui_product = add("product:JohnUITests.xctest", '{ isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JohnUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }')
+adapter_product = add("product:libJohnLegacyAdapter.a", '{ isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJohnLegacyAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; }')
 # Keep stable IDs for product references used by targets.
-if app_product != app_product_id or widget_product != widget_product_id or ui_product != ui_product_id:
+if app_product != app_product_id or widget_product != widget_product_id or ui_product != ui_product_id or adapter_product != adapter_product_id:
     raise ValueError("product ID generation changed")
 
 # Group paths are relative to SRCROOT, not the .xcodeproj directory.
@@ -193,25 +270,31 @@ widget_group = add("group:WidgetInfo", f"{{ isa = PBXGroup; children = ({widget_
 resources_group = add("group:Resources", f"{{ isa = PBXGroup; children = ({plist_refs['Resources/Feather.ttf']}, {plist_refs['Resources/Feather-LICENSE.txt']}, ); path = Resources; sourceTree = \"<group>\"; }}")
 staged_group = add("group:Staged", f"{{ isa = PBXGroup; children = ({app_resources_id}, {widget_resources_id}, ); name = \"Staged Resources\"; sourceTree = \"<group>\"; }}")
 core_group = add("group:JohnCore", '{ isa = PBXGroup; children = (); name = JohnCore; path = Packages/JohnCore; sourceTree = SOURCE_ROOT; }')
-main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Platform/Navigation"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, core_group, products_group]
+adapter_group = add("group:LegacyAdapter", f"{{ isa = PBXGroup; children = ({legacy_reader_ref}, {', '.join(adapter_children)}, {adapter_foundation_ref}, {adapter_zlib_ref}, {adapter_libcxx_ref}, ); name = LegacyAdapter; path = LegacyAdapter; sourceTree = \"<group>\"; }}")
+scenario_group = add("group:ScenarioRunner", f"{{ isa = PBXGroup; children = ({scenario_runner_ref}, {recovery_runner_ref}, {repository_runner_ref}, ); name = \"L04 simulator scenarios\"; sourceTree = \"<group>\"; }}")
+main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Platform/Navigation"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, core_group, adapter_group, scenario_group, products_group]
 main_group = add("group-main", f"{{ isa = PBXGroup; children = ({', '.join(main_children)}, ); sourceTree = \"<group>\"; }}")
 
 container_proxy = add("proxy-app-embeds-widget", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {widget_target_id}; remoteInfo = JohnWidget; }}")
 widget_dependency = add("dependency-app-widget", f"{{ isa = PBXTargetDependency; target = {widget_target_id}; targetProxy = {container_proxy}; }}")
+adapter_proxy = add("proxy-app-adapter", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {adapter_target_id}; remoteInfo = JohnLegacyAdapter; }}")
+adapter_dependency = add("dependency-app-adapter", f"{{ isa = PBXTargetDependency; target = {adapter_target_id}; targetProxy = {adapter_proxy}; }}")
 
-app_target = add("target-app", f"{{ isa = PBXNativeTarget; buildConfigurationList = {app_config_list}; buildPhases = ({app_sources_phase}, {app_frameworks_phase}, {app_resources_phase}, {embed_phase}, ); buildRules = (); dependencies = ({widget_dependency}, ); name = John; packageProductDependencies = ({app_package_dep}, ); productName = John; productReference = {app_product_id}; productType = \"com.apple.product-type.application\"; }}")
+app_target = add("target-app", f"{{ isa = PBXNativeTarget; buildConfigurationList = {app_config_list}; buildPhases = ({app_sources_phase}, {app_frameworks_phase}, {app_resources_phase}, {embed_phase}, ); buildRules = (); dependencies = ({widget_dependency}, {adapter_dependency}, ); name = John; packageProductDependencies = ({app_package_dep}, ); productName = John; productReference = {app_product_id}; productType = \"com.apple.product-type.application\"; }}")
 widget_target = add("target-widget", f"{{ isa = PBXNativeTarget; buildConfigurationList = {widget_config_list}; buildPhases = ({widget_sources_phase}, {widget_frameworks_phase}, {widget_resources_phase}, ); buildRules = (); dependencies = (); name = JohnWidget; packageProductDependencies = ({widget_package_dep}, ); productName = JohnWidget; productReference = {widget_product_id}; productType = \"com.apple.product-type.app-extension\"; }}")
 ui_target = add("target-ui-tests", f"{{ isa = PBXNativeTarget; buildConfigurationList = {ui_config_list}; buildPhases = ({ui_sources_phase}, {ui_frameworks_phase}, {ui_resources_phase}, ); buildRules = (); dependencies = (); name = JohnUITests; packageProductDependencies = (); productName = JohnUITests; productReference = {ui_product_id}; productType = \"com.apple.product-type.bundle.ui-testing\"; }}")
+adapter_target = add("target-legacy-adapter", f"{{ isa = PBXNativeTarget; buildConfigurationList = {adapter_config_list}; buildPhases = ({adapter_sources_phase}, {adapter_frameworks_phase}, ); buildRules = (); dependencies = (); name = JohnLegacyAdapter; packageProductDependencies = (); productName = JohnLegacyAdapter; productReference = {adapter_product_id}; productType = \"com.apple.product-type.library.static\"; }}")
 
 objects[app_product_id] = objects.pop(app_product)
 objects[widget_product_id] = objects.pop(widget_product)
 objects[ui_product_id] = objects.pop(ui_product)
+objects[adapter_product_id] = objects.pop(adapter_product)
 
 objects[app_package_ref] = '{ isa = XCLocalSwiftPackageReference; relativePath = Packages/JohnCore; }'
 objects[app_package_dep] = f'{{ isa = XCSwiftPackageProductDependency; package = {app_package_ref}; productName = JohnCore; }}'
 objects[widget_package_dep] = f'{{ isa = XCSwiftPackageProductDependency; package = {app_package_ref}; productName = JohnCore; }}'
 
-objects[project_id] = f'''{{ isa = PBXProject; attributes = {{ BuildIndependentTargetsInParallel = 1; LastUpgradeCheck = 2660; TargetAttributes = {{ {app_target} = {{ CreatedOnToolsVersion = 26.6; }}; {widget_target} = {{ CreatedOnToolsVersion = 26.6; }}; {ui_target} = {{ CreatedOnToolsVersion = 26.6; TestTargetID = {app_target}; }}; }}; }}; buildConfigurationList = {project_config_list}; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = {main_group}; packageReferences = ({app_package_ref}, ); productRefGroup = {products_group}; projectDirPath = ""; projectRoot = ""; targets = ({app_target}, {widget_target}, {ui_target}, ); }}'''
+objects[project_id] = f'''{{ isa = PBXProject; attributes = {{ BuildIndependentTargetsInParallel = 1; LastUpgradeCheck = 2660; TargetAttributes = {{ {app_target} = {{ CreatedOnToolsVersion = 26.6; }}; {widget_target} = {{ CreatedOnToolsVersion = 26.6; }}; {ui_target} = {{ CreatedOnToolsVersion = 26.6; TestTargetID = {app_target}; }}; {adapter_target} = {{ CreatedOnToolsVersion = 26.6; }}; }}; }}; buildConfigurationList = {project_config_list}; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = {main_group}; packageReferences = ({app_package_ref}, ); productRefGroup = {products_group}; projectDirPath = ""; projectRoot = ""; targets = ({app_target}, {widget_target}, {ui_target}, {adapter_target}, ); }}'''
 
 header = "// !$*UTF8*$!\n{\n\tarchiveVersion = 1;\n\tclasses = {};\n\tobjectVersion = 60;\n\tobjects = {\n"
 body = "".join(f"\t\t{k} = {v};\n" for k, v in sorted(objects.items()))

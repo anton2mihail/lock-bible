@@ -12,30 +12,8 @@ struct SecondaryRootView: View {
 
     var body: some View {
         switch tab {
-        case .read where runtime.reader.passage != nil:
-            ReaderDestination(passage: runtime.reader.passage!)
         case .read:
-            CompanionPage(title: "Read", eyebrow: "Scripture", subtitle: "Return to the words that hold you.") {
-                SurfaceCard {
-                    VStack(alignment: .leading, spacing: 14) {
-                        Text("Open a passage")
-                            .font(JohnTypography.serif(22))
-                            .foregroundStyle(colors.text)
-                        Button("John 1:1") {
-                            Task {
-                                if let passage = await runtime.passage(reference: "John 1:1", translation: preferences.translation) {
-                                    router.openReader(passage: passage)
-                                }
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .accessibilityIdentifier("read-open-john-1-1")
-                        Button("Search Scripture") { router.push(.search) }
-                            .accessibilityIdentifier("read-search")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
+            ReaderView()
         case .saved:
             CompanionPage(title: "Saved", eyebrow: "Your library", subtitle: "Bookmarks, highlights, and notes.") {
                 SurfaceCard { MutedText(text: "Saved items appear here after you add them in the reader.") }
@@ -79,6 +57,7 @@ private struct ActionLink: View {
 }
 
 struct SettingsControls: View {
+    @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
     var body: some View {
         @Bindable var preferences = preferences
@@ -86,18 +65,27 @@ struct SettingsControls: View {
             VStack(alignment: .leading, spacing: 18) {
                 Picker("Bible", selection: Binding(
                     get: { preferences.translation.rawValue },
-                    set: { preferences.translation = TranslationID(rawValue: $0) ?? .webCE }
+                    set: { value in
+                        guard let translation = TranslationID(rawValue: value) else { return }
+                        Task { await runtime.apply(.setTranslationID(translation.rawValue)) }
+                    }
                 )) {
                     Text("WEB").tag(TranslationID.webCE.rawValue)
                     Text("Douay-Rheims").tag(TranslationID.douayRheims.rawValue)
                     Text("Vulgate").tag(TranslationID.vulgate.rawValue)
                 }
-                Picker("Appearance", selection: $preferences.appearance) {
+                Picker("Appearance", selection: Binding(
+                    get: { preferences.appearance },
+                    set: { value in Task { await runtime.apply(.setThemeScheme(value == .system ? nil : value.rawValue)) } }
+                )) {
                     ForEach(AppearanceMode.allCases) { mode in Text(mode.rawValue.capitalized).tag(mode) }
                 }
                 Picker("Text size", selection: Binding(
                     get: { preferences.reading.textSize.rawValue },
-                    set: { preferences.setTextSize(ReaderTextSize(rawValue: $0) ?? .medium) }
+                    set: { value in
+                        guard let size = ReaderTextSize(rawValue: value) else { return }
+                        Task { await runtime.apply(.setReaderTextSize(size)) }
+                    }
                 )) {
                     Text("Small").tag(ReaderTextSize.small.rawValue)
                     Text("Medium").tag(ReaderTextSize.medium.rawValue)
@@ -105,16 +93,28 @@ struct SettingsControls: View {
                     Text("Extra large").tag(ReaderTextSize.extraLarge.rawValue)
                 }
                 .accessibilityIdentifier("settings-text-size")
-                .accessibilityValue(preferences.reading.textSize.rawValue.capitalized)
+                .accessibilityValue(textSizeAccessibilityValue)
                 Picker("Reading layout", selection: Binding(
                     get: { preferences.reading.layout.rawValue },
-                    set: { preferences.setLayout(ReaderLayout(rawValue: $0) ?? .paragraphs) }
+                    set: { value in
+                        guard let layout = ReaderLayout(rawValue: value) else { return }
+                        Task { await runtime.apply(.setReaderLayout(layout)) }
+                    }
                 )) {
                     Text("Paragraphs").tag(ReaderLayout.paragraphs.rawValue)
                     Text("Verses").tag(ReaderLayout.verses.rawValue)
                 }
             }
             .pickerStyle(.menu)
+        }
+    }
+
+    private var textSizeAccessibilityValue: String {
+        switch preferences.reading.textSize {
+        case .small: "Small"
+        case .medium: "Medium"
+        case .large: "Large"
+        case .extraLarge: "Extra large"
         }
     }
 }

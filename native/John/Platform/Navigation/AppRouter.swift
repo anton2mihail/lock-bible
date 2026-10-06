@@ -14,9 +14,33 @@ struct PassageRequest: Identifiable, Sendable, Hashable {
     }
 }
 
+struct ReaderChapterRequest: Identifiable, Sendable, Hashable {
+    let id: UUID
+    let bookCode: String
+    let chapter: Int
+    let translationID: TranslationID
+    let verse: String?
+    let endVerse: String?
+
+    init(bookCode: String, chapter: Int, translationID: TranslationID, verse: String? = nil, endVerse: String? = nil) {
+        self.init(id: UUID(), bookCode: bookCode, chapter: chapter, translationID: translationID, verse: verse, endVerse: endVerse)
+    }
+
+    init(id: UUID, bookCode: String, chapter: Int, translationID: TranslationID, verse: String? = nil, endVerse: String? = nil) {
+        self.id = id
+        self.bookCode = bookCode
+        self.chapter = chapter
+        self.translationID = translationID
+        self.verse = verse
+        self.endVerse = endVerse
+    }
+}
+
 enum AppRoute: Hashable, Sendable {
     case search
     case passage(PassageSelection)
+    case goTo(bookCode: String?, chapter: Int?)
+    case works
     case daily(String)
     case sunday
     case rosaryGuide(String)
@@ -36,6 +60,7 @@ enum AppSheet: String, Identifiable {
     var selectedTab: AppTab = .today
     var sheet: AppSheet?
     private(set) var latestPassageRequest: PassageRequest?
+    private(set) var latestChapterRequest: ReaderChapterRequest?
     private var paths: [AppTab: [AppRoute]] = [:]
 
     func path(for tab: AppTab) -> [AppRoute] { paths[tab, default: []] }
@@ -49,6 +74,18 @@ enum AppSheet: String, Identifiable {
         selectedTab = .read
         paths[.read] = []
         latestPassageRequest = PassageRequest(passage: passage)
+        #if DEBUG
+        NSLog("John Reader request created id=%@ kind=passage", latestPassageRequest!.id.uuidString)
+        #endif
+    }
+    func openReader(bookCode: String, chapter: Int, translation: TranslationID, verse: String? = nil, endVerse: String? = nil) {
+        selectedTab = .read
+        paths[.read] = []
+        latestChapterRequest = ReaderChapterRequest(bookCode: bookCode, chapter: chapter, translationID: translation,
+                                                    verse: verse, endVerse: endVerse)
+        #if DEBUG
+        NSLog("John Reader request created id=%@ kind=chapter", latestChapterRequest!.id.uuidString)
+        #endif
     }
     func openSavedItem(_ item: SavedItem, using runtime: JohnRuntime) async {
         guard let translation = TranslationID(rawValue: item.translationID),
@@ -81,14 +118,22 @@ enum AppSheet: String, Identifiable {
 }
 
 @MainActor @Observable final class ReaderModel {
-    private(set) var passage: PassageSelection?
-    private(set) var requestID: UUID?
+    private(set) var openRequest: ReaderChapterRequest?
     private(set) var errorMessage: String?
 
     func accept(_ request: PassageRequest) {
-        guard requestID != request.id else { return }
-        requestID = request.id
-        passage = request.passage
+        guard openRequest?.id != request.id else { return }
+        openRequest = ReaderChapterRequest(id: request.id, bookCode: request.passage.bookCode.rawValue,
+                                           chapter: request.passage.chapter,
+                                           translationID: request.passage.translationID,
+                                           verse: request.passage.startVerse.rawValue,
+                                           endVerse: request.passage.endVerse.rawValue)
+        errorMessage = nil
+    }
+
+    func accept(_ request: ReaderChapterRequest) {
+        guard openRequest?.id != request.id else { return }
+        openRequest = request
         errorMessage = nil
     }
 }
