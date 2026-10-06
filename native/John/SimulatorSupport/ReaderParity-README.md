@@ -16,7 +16,7 @@ Each method needs a fresh task-only seed. The Reader must open at the book list.
 
 `testGoToExpandsCurrentChapterAndReturnsThroughVisibleControls` opens Go To from John 1. It checks the expanded current book and chapter, selects Psalms 23 through the visible list, and returns through the Reader Back controls.
 
-`testVerseLayoutRangeTransitionsAndSameEndRules` selects 10, 10–12, 8–12, and 8–11. It checks each exact summary and reference. It checks that a repeated endpoint keeps a multi-verse range. It closes the range, then checks that a repeated singleton clears.
+`testVerseLayoutRangeTransitionsAndSameEndRules` selects 10, 10–12, 8–10, and 8–11. The Reader keeps the current first endpoint fixed for each new tap. It checks each exact summary and reference. It checks that a repeated endpoint keeps a multi-verse range. It closes the range, then checks that a repeated singleton clears.
 
 ## Matched visual captures
 

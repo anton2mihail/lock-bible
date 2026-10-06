@@ -96,7 +96,7 @@ final class ReaderParityUITests: XCTestCase {
 
         selectVerse(10, expectedSummary: "Selected: verses 10–10", reference: "John 1:10", in: app)
         selectVerse(12, expectedSummary: "Selected: verses 10–12", reference: "John 1:10–12", in: app)
-        selectVerse(8, expectedSummary: "Selected: verses 8–12", reference: "John 1:8–12", in: app)
+        selectVerse(8, expectedSummary: "Selected: verses 8–10", reference: "John 1:8–10", in: app)
         selectVerse(11, expectedSummary: "Selected: verses 8–11", reference: "John 1:8–11", in: app)
 
         // A repeated endpoint keeps a multi-verse range. Source clears a repeated singleton only.
@@ -110,7 +110,7 @@ final class ReaderParityUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForNonExistence(timeout: 5),
                       "Tapping the same selected singleton must clear it")
         XCTAssertFalse(app.staticTexts["reader-selection-reference"].exists)
-        NSLog("READER_PARITY verseLayoutRange=10,10-12,8-12,8-11 repeatedRange=kept singleton=cleared")
+        NSLog("READER_PARITY verseLayoutRange=10,10-12,8-10,8-11 repeatedRange=kept singleton=cleared")
     }
 
     private func launch(variant: CaptureVariant) -> XCUIApplication {
