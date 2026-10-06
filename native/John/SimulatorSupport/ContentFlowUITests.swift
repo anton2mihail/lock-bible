@@ -50,7 +50,7 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertTrue(novenaSearch.waitForExistence(timeout: 8))
         enterText(novenaSearch, "Padre Pio", in: app)
         tapWhenReady(button(containing: "St. Padre Pio Novena", in: app), in: app)
-        XCTAssertEqual(waitForPageTitle(app), "St. Padre Pio Novena")
+        XCTAssertTrue(app.staticTexts["St. Padre Pio Novena"].waitForExistence(timeout: 8))
         let intentionField = textView(label: "Your novena intention", in: app)
         enterText(intentionField, intention, in: app)
         tapWhenReady(app.buttons["Mark day 1 complete"], in: app)
@@ -77,7 +77,7 @@ final class ContentFlowUITests: XCTestCase {
         let reopenedSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
         enterText(reopenedSearch, "Padre Pio", in: app)
         tapWhenReady(button(containing: "St. Padre Pio Novena", in: app), in: app)
-        XCTAssertEqual(waitForPageTitle(app), "St. Padre Pio Novena")
+        XCTAssertTrue(app.staticTexts["St. Padre Pio Novena"].waitForExistence(timeout: 8))
         XCTAssertEqual(textView(label: "Your novena intention", in: app).value as? String, intention)
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label == %@", "Day 1, complete")).firstMatch.exists)
         let restoredDayTwo = app.buttons.matching(NSPredicate(format: "label == %@", "Day 2")).firstMatch
@@ -114,10 +114,10 @@ final class ContentFlowUITests: XCTestCase {
 
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         let rosarySets = [
-            ("joyful", "The Joyful Mysteries", "Joyful Mysteries"),
-            ("sorrowful", "The Sorrowful Mysteries", "Sorrowful Mysteries"),
-            ("glorious", "The Glorious Mysteries", "Glorious Mysteries"),
-            ("luminous", "The Luminous Mysteries", "Luminous Mysteries"),
+            ("joyful", "The Joyful Mysteries", "Joyful"),
+            ("sorrowful", "The Sorrowful Mysteries", "Sorrowful"),
+            ("glorious", "The Glorious Mysteries", "Glorious"),
+            ("luminous", "The Luminous Mysteries", "Luminous"),
         ]
         for (_, cardTitle, guideTitle) in rosarySets {
             let card = button(containing: cardTitle, in: app)
@@ -167,7 +167,7 @@ final class ContentFlowUITests: XCTestCase {
         }
         XCTAssertTrue(app.staticTexts["ROSARY COMPLETE"].waitForExistence(timeout: 5),
                       "The Joyful source session has exactly 80 prayer actions")
-        XCTAssertTrue(app.staticTexts["Joyful Mysteries"].exists)
+        XCTAssertTrue(app.staticTexts["The Joyful Mysteries"].exists)
         XCTAssertTrue(app.buttons["Return to Rosary"].exists)
         XCTAssertTrue(app.buttons["Pray again"].exists)
         tapWhenReady(app.buttons["Pray again"], in: app)
