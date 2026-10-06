@@ -32,3 +32,11 @@ Sol viewed `reader-ui-04-attachments/006530A8-EEEB-4BDD-AFA4-4CF3E36FE5D9.png` a
 The first John paragraphs have the same visible body font and line breaks. The header still needs source corrections. Its horizontal 20-point padding is nested inside the outer 24-point padding. Remove that duplicate inset so the chapter title aligns with the text at 24 points. Back and the title chevron use the source text color. Aa and Search use the accent color. Use the staged `App/Artwork/icons/caretLeft` source PNG variants at 24 points for Back.
 
 Show the exact selection hint when the committed `selectionHintDismissed` flag is false. Check its dismissal behavior with the full verse actions. Obtain a matched valid-library capture before normal visual acceptance. These changes do not block the short remaining range probe.
+
+## Shared-line touch checkpoint
+
+The short `reader-range-visible-01` run asserts the actual selected labels. Its first two taps match `[10]` and `[10, 11, 12]`. The next point targets the union accessibility frame for verse 8, but it selects verse 7. The later taps observe `[7, 8, 9, 10]`, then `[7]`, then no selection. The intended verse 8 sequence is not accepted.
+
+Paragraph verses can share a line. Their union rectangles can include another verse's ink. Main must use an actual visible word owned by verse 8. Keep exact glyph ownership and blank-space rejection. Do not assign the whole union rectangle to a verse to satisfy the test.
+
+The native accessibility element already overrides `accessibilityActivate()` and calls the exact verse index. A touch activation point can use owned visible glyph geometry. This is separate from VoiceOver activation and the selection reducer. Search and library data checks can proceed on the same binary.

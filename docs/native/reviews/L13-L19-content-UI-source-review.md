@@ -1,6 +1,6 @@
 # Content UI source review
 
-Date: 6 October 2026.
+Date: 5 October 2026.
 Reviewer: GPT-6.1 Sol.
 Status: implementation continues; source corrections required.
 
@@ -21,3 +21,9 @@ The first shared components differ from `src/components/companion/Companion.tsx`
 | Reuse a prayer detail with a new ID | Load the new ID and reject stale results. Preserve the invalid-ID fallback. | `PrayerDetailView.swift` |
 
 Source can continue other assigned content views while it applies these corrections. Main must capture matched old/native page, search, favorite, and error states before L16 acceptance. No content UI parity is accepted by this source review.
+
+## Corrected source boundary
+
+The shared file now puts the 740-point cap outside its padding. Its bottom content padding is 48. Action row padding is inside the 72-point minimum. Panel and row borders use the display scale. Section detail has the source eight-point gap. Native font metrics provide a line-spacing estimate; simulator baseline measurement remains required.
+
+The prayer library now checks load errors before empty results. It uses the raw query for Kept close visibility and removes extra category row gaps. The favorite queue keeps the durable save boundary. Main can add the four new files to the next app build. Their complete UI and visual acceptance remain open.
