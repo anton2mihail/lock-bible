@@ -41,10 +41,12 @@ struct RosaryMediaView: View {
         }
         .onAppear { if catalog.isValid { model.activate() } }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { model.activate() } else { model.pause() }
+            if phase == .active, catalog.isValid { model.activate() } else { model.pause() }
         }
         .onChange(of: episodeID) { _, nextID in
-            if let next = catalog.mediaEpisodes.first(where: { $0.id == nextID }) { model.selectEpisode(next) }
+            if let next = catalog.mediaEpisodes.first(where: { $0.id == nextID }) ?? catalog.mediaEpisodes.first {
+                model.selectEpisode(next)
+            }
         }
         .onDisappear { model.deactivate() }
     }
@@ -64,9 +66,6 @@ struct RosaryMediaView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("WORD ON FIRE SERIES").font(JohnTypography.sans(12, weight: .semibold))
                         .tracking(1.5).foregroundStyle(colors.tint)
-#if DEBUG
-                    Text("6 episodes").font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
-#endif
                     Text(currentEpisode.title).font(JohnTypography.sans(36, weight: .bold))
                         .foregroundStyle(colors.text).accessibilityAddTraits(.isHeader)
                     Text(currentEpisode.subtitle).font(JohnTypography.sans(16))
@@ -252,6 +251,6 @@ private struct RosaryVideoController: UIViewControllerRepresentable {
 
 private struct RosaryMediaPressStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label.opacity(configuration.isPressed ? 0.72 : 1).scaleEffect(configuration.isPressed ? 0.99 : 1)
+        configuration.label.opacity(configuration.isPressed ? 0.72 : 1)
     }
 }

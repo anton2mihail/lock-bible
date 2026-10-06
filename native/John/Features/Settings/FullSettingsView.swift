@@ -195,13 +195,12 @@ private struct SettingsChoiceGroup: View {
         VStack(alignment: .leading, spacing: 8) {
             if topSeparator { Rectangle().fill(colors.separator).frame(height: 1).padding(.horizontal, -16) }
             Text(label).font(JohnTypography.sans(14, weight: .medium)).foregroundStyle(colors.text)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), alignment: .leading)], alignment: .leading, spacing: 8) {
+            IntrinsicWrappingLayout(spacing: 8) {
                 ForEach(options) { option in
                     Button(action: option.action) {
                         Text(option.title).font(JohnTypography.sans(14, weight: .medium))
                             .foregroundStyle(option.selected ? colors.card : colors.text)
                             .padding(.horizontal, 12).frame(minHeight: 44)
-                            .frame(maxWidth: .infinity)
                             .background(option.selected ? colors.tint : colors.background, in: RoundedRectangle(cornerRadius: 10))
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(option.selected ? colors.tint : colors.border, lineWidth: 1))
                     }
@@ -214,6 +213,51 @@ private struct SettingsChoiceGroup: View {
             if let hint { Text(hint).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim) }
         }
         .padding(.vertical, 12)
+    }
+}
+
+private struct IntrinsicWrappingLayout: Layout {
+    var spacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let availableWidth = proposal.width ?? .infinity
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var maxX: CGFloat = 0
+        for subview in subviews {
+            let ideal = subview.sizeThatFits(.unspecified)
+            let width = min(ideal.width, availableWidth)
+            let size = subview.sizeThatFits(ProposedViewSize(width: width, height: nil))
+            if x > 0 && x + size.width > availableWidth {
+                y += rowHeight + spacing
+                x = 0
+                rowHeight = 0
+            }
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+            maxX = max(maxX, x - spacing)
+        }
+        return CGSize(width: min(maxX, availableWidth), height: y + rowHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX
+        var y = bounds.minY
+        var rowHeight: CGFloat = 0
+        for subview in subviews {
+            let ideal = subview.sizeThatFits(.unspecified)
+            let width = min(ideal.width, bounds.width)
+            let size = subview.sizeThatFits(ProposedViewSize(width: width, height: nil))
+            if x > bounds.minX && x + size.width > bounds.maxX {
+                y += rowHeight + spacing
+                x = bounds.minX
+                rowHeight = 0
+            }
+            subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(width: size.width, height: size.height))
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+        }
     }
 }
 
