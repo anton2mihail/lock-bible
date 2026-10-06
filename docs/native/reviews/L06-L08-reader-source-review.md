@@ -2,7 +2,7 @@
 
 Date: 5 October 2026.
 Reviewer: GPT-6.1 Sol.
-Status: preparation only. Gate A storage checks have priority.
+Status: Gate B source work is active. Gate A is closed. Full Reader acceptance remains open.
 
 The Reader files are not accepted as complete tickets. Main owns their implementation and simulator checks. The current source supplies book/chapter navigation, the source selection reducer, and a TextKit view. These findings must be resolved before full Reader acceptance.
 
@@ -40,4 +40,12 @@ The current model now clears pending manifest IDs on Back and book selection. Ne
 | An iPad or large text changes the Reader column | Use the source 34-em measure. Its outer cap is `round(base fontSize * system fontScale * 34 + horizontal padding * 2)`. The current fixed 740-point cap changes Reader wrapping. Scale text once. Later companion passage pages keep their separate source Page cap of 740 points. Check matched iPad Reader wrapping and a large-text anchor. | `src/theme/useReaderTypography.ts`, `src/components/companion/Companion.tsx`; native `ReaderView.swift` and shared typography |
 | Next, Previous, or another chapter starts a pending load | Clear the prior chapter/layout at load start, or render only text with the active load identity. The current model changes the header coordinates before it awaits, but keeps the old tappable text. Check one navigation with a bounded DEBUG load delay. | `ReaderScreenModel.openChapter`; `ReaderView.chapterReader` |
 
-These findings stay within the approved full scope. The current Reader commit can record preparation, but it cannot close L06–L08. Main keeps storage builds stable first. Use matched John, Psalm, and Song captures, real range taps, late-Psalm navigation, and one large-text anchor check for production acceptance.
+These findings stay within the approved full scope. The current Reader commit can record preparation, but it cannot close L06–L08. Use matched John, Psalm, and Song captures, real range taps, late-Psalm navigation, and one large-text anchor check for production acceptance.
+
+## First Gate B source change
+
+Main clears the old chapter and layout at load start. Back retains a separate current-chapter marker. The header now scrolls with chapter text. Reader headings use 36-point SpaceGrotesk. Adaptive grids use 52-point cells. GoTo targets the selected cell. The model now loads saved highlights and edition attribution. These are source changes. Simulator acceptance remains open.
+
+The new `openChapter` has further suspension points while it loads highlights, attribution, and durable location. A new request or Back can run at each `await`. Capture the load identity and edition. Check them before applying each result. Clear prior fills and attribution at load start. Apply only values for the active chapter. A late response must not set context, fill, or location for a later request. Check this with one bounded DEBUG delay and a second request or Back.
+
+The source Fathers section has one visible card row. Its text is the catalog author/work count. `The Church Fathers` is the section label. `The Fathers and Doctors. … works, available offline.` is the accessibility label. Do not add a visible card title or a separate count. Keep the fixed book-list header, Continue reading, and Fathers area within the source horizontal padding.

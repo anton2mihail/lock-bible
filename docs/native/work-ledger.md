@@ -4,7 +4,7 @@ Updated: 5 October 2026
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 
-Latest checkpoint: Gate A is accepted at Main integration `df8cc9b`. The same-ID Release import and native-wins checks pass with exact original data preservation. Main attached the final PID and self-contained backup records. Gate B is active. Source Search is accepted at `88ec254`; its simulator comparison remains open. Main continues full L06–L12. Source prepares the exact note-trim correction and L10/L11 comparison. All 29 routes and later gates remain in scope. See `reviews/Gate-A-acceptance.md` and `reviews/Gate-B-dispatch-contract.md`.
+Latest checkpoint: Gate A is accepted at Main integration `df8cc9b`. The same-ID Release import and native-wins checks pass with exact original data preservation. Main attached the final PID and self-contained backup records. Gate B is active. Source Search is accepted at `88ec254`; its simulator comparison remains open. The narrow note-trim correction and 19-observation comparator are source-accepted at `d6d5c00`; their simulator results remain open. Main has sent the first Reader source change. Source starts separate L13–L16 content preparation. All 29 routes and later gates remain in scope. See `reviews/Gate-A-acceptance.md` and `reviews/Gate-B-dispatch-contract.md`.
 
 | Ticket | Owner | Depends on | Status | Implementation SHA | Sol verdict | Evidence / note |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -18,9 +18,9 @@ Latest checkpoint: Gate A is accepted at Main integration `df8cc9b`. The same-ID
 | L05 | Main Luna | L02, S01 | Foundation, cold startup, durable size, failure-state controls, and same-process repeated URLs pass | `c997283`, `df8cc9b` | Foundation accepted; full chrome remains later | `Gate-A-acceptance.md`; full Reader and route comparisons remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Accepted for the foundation scope | `df8cc9b` | Accepted | `Gate-A-acceptance.md`; full Reader, route fidelity, signing, and final release remain later gates |
 | L06–L07 | Main Luna | Reviewed L04 runtime; L01 | Bounded production source work started at a safe build boundary | Pending | Full source and runtime review open | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
-| L08–L12 | Main and Source Luna | Plan dependencies | L08 source work active; L09 source accepted; L10 source correction/comparison active; remaining UI queued | L09 `88ec254`; source fixtures `2429a8b`, `7473d79`, `ee6ca10`, `cb355d4` | Native feature runtime pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
+| L08–L12 | Main and Source Luna | Plan dependencies | L08 source work active; L09 source accepted; L10 note trim and comparator source accepted; remaining UI queued | L09 `88ec254`; L10 `d6d5c00`; source fixtures `2429a8b`, `7473d79`, `ee6ca10`, `cb355d4` | Native feature runtime pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
 | Gate B | GPT-6.1 Sol | L06–L12 | Active | N/A | Pending | Full Reader/Aa, exact Search, existing-user library, Saved/notes, Verse Moment/widgets, offline fresh/upgrade flows |
-| L13–L19 | Luna | Plan dependencies | Production queued; calendar, novena, Today, and Rosary source fixtures accepted | Source fixtures `1439075`, `67158cf`, `123ce62`, `32efc89` | Native runtime pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
+| L13–L19 | Luna | Plan dependencies | Separate L13–L16 Core preparation active; calendar, novena, Today, and Rosary source fixtures accepted | Source fixtures `1439075`, `67158cf`, `123ce62`, `32efc89` | Native runtime pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
 | Gate C | GPT-6.1 Sol | L13–L19 | Queued | N/A | Pending | Devotional routes, source content, persistent and temporary state |
 | L20–L24 | Luna | Plan dependencies | Queued | Pending | Pending | Works, pagination, notices, media, complete Settings and attribution |
 | Gate D | GPT-6.1 Sol | L20–L24 | Queued | N/A | Pending | Works, notices, media gates, Settings |
@@ -73,7 +73,7 @@ No app source or target behavior changes are part of L00.
 - Sol accepted the corrected legacy-read mode for a copied-byte simulator proof. It read `bible.reader.textSize`, queried FTS5 for three editions, and decoded the requested Works section. The process returned exit 0. MMKV data/CRC and both input databases kept the same hashes. Output: `build/native-evidence/L01/storage-runtime/run-02.txt`. This does not prove same-ID app migration or compare the decoded preference value.
 - The proof ran in the pinned iOS 26.5 simulator using a separate `com.nrsv.storageproof` app bundle. Its final output line says “No simulator was opened,” although `simctl launch` started the app process in the simulator. SQLite and zlib version strings were not reported.
 
-## Gate A checkpoint
+## Earlier Gate A checkpoints
 
 The L02 images prove the native shell and live in-memory reading controls. They do not prove the full Reader, durable preferences, migration, or widget behavior. Gate A remains open. Main can prepare bounded Reader navigation and rendering after its foundation commit. Source continues storage corrections. Main remains the only simulator and project writer.
 
