@@ -25,7 +25,7 @@
 		1214F166F5FFDE545AFE07E4 = { isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "John-Widget-Development.entitlements"; sourceTree = "<group>"; };
 		14A0E781CE9C85D0062D3D60 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04ScenarioRunner.swift; path = "../../scripts/native/source-fixtures/l04/L04ScenarioRunner.swift"; sourceTree = SOURCE_ROOT; };
 		18031E63D777AFD04D8AB486 = { isa = PBXBuildFile; fileRef = 81CA08871C9BC6727A5FEA56; };
-		18647DD13F438CA9AC83A3CE = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (CE7EF6F10F979CA7F99BDC53, 4214D8D9013315A12927CB8D, A8524F2B64E107CA2CCD2937, 55070EEED4EA9DAA338F0AAF, 2F8504FF66C05680310D247E, 6783384B649A56B37F8D7065, 783B12165B2850A58468781F, 92D0C1446EC8DDFA81AD9B93, F862FA723256B298B1F7711E, DF3777E880C382EAD0BEEF3D, C4F98B18BA8F98EB30AE141F, 3B37D590ADB53FA9ED5DBD33, 78E1A5F1955E86B184FF5357, 25D89229B06C04302A08CAF6, );  runOnlyForDeploymentPostprocessing = 0; };
+		18647DD13F438CA9AC83A3CE = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (CE7EF6F10F979CA7F99BDC53, 4214D8D9013315A12927CB8D, A8524F2B64E107CA2CCD2937, 55070EEED4EA9DAA338F0AAF, 2F8504FF66C05680310D247E, 6783384B649A56B37F8D7065, 783B12165B2850A58468781F, 92D0C1446EC8DDFA81AD9B93, F862FA723256B298B1F7711E, DF3777E880C382EAD0BEEF3D, C4F98B18BA8F98EB30AE141F, 3B37D590ADB53FA9ED5DBD33, 78E1A5F1955E86B184FF5357, 25D89229B06C04302A08CAF6, 9F9CABE934166A6A6A5461EE, );  runOnlyForDeploymentPostprocessing = 0; };
 		18CAAA0393A1F42FA30AFB9D = { isa = PBXBuildFile; fileRef = 82EB9749DC80A628055819D0; };
 		1A80DF9BACCD5C988E85D1DC = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScriptureCardUITests.swift"; sourceTree = "<group>"; };
 		1B12905E150121FB0EA6DB88 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LectioTimerUITests.swift"; sourceTree = "<group>"; };
@@ -107,7 +107,7 @@
 		509C5C5D88A44E6E07B42DBE = { isa = PBXBuildFile; fileRef = 58008B60A25A960F8A61925F; };
 		514974A136396B50DB94ADF5 = { isa = PBXBuildFile; fileRef = 0C8D0006F3260C5CAD12201E; };
 		5336569DB9387972BD111532 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorksCollectionView.swift"; sourceTree = "<group>"; };
-		533E4D7C7E1CD38EFB1E98C9 = { isa = PBXGroup; children = (CD7C7ED76F5585C2D31D47FF, 848777AC84B51AC9C662188A, CB0F399D63929EE3907305A8, BC189718A55C6ACAF4DBC42C, 889EC63E6E01DA70EB67CC64, 1A80DF9BACCD5C988E85D1DC, CFDD647FBB54807917E66350, A1A1765B42A5FE6161DE2F4A, B6CC0C35E1D5983AA70B254A, 1B12905E150121FB0EA6DB88, E501162DFF131D97FE179C09, 0C62F7C7392D4F55DC7F6959, 4DF889BF4521B13C40C4DE95, F23E65C7B9472ADC80F5C403, ); path = "SimulatorSupport"; sourceTree = "<group>"; };
+		533E4D7C7E1CD38EFB1E98C9 = { isa = PBXGroup; children = (CD7C7ED76F5585C2D31D47FF, 848777AC84B51AC9C662188A, CB0F399D63929EE3907305A8, BC189718A55C6ACAF4DBC42C, 889EC63E6E01DA70EB67CC64, 1A80DF9BACCD5C988E85D1DC, CFDD647FBB54807917E66350, A1A1765B42A5FE6161DE2F4A, B6CC0C35E1D5983AA70B254A, 1B12905E150121FB0EA6DB88, E501162DFF131D97FE179C09, 0C62F7C7392D4F55DC7F6959, 4DF889BF4521B13C40C4DE95, F23E65C7B9472ADC80F5C403, D31C7AC0C6218D802D0CC365, ); path = "SimulatorSupport"; sourceTree = "<group>"; };
 		537E930D67EB611ECB6FC1F8 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "openssl_cfb128.cpp"; path = "LegacyAdapter/Vendor/MMKVCore/aes/openssl/openssl_cfb128.cpp"; sourceTree = SOURCE_ROOT; };
 		55070EEED4EA9DAA338F0AAF = { isa = PBXBuildFile; fileRef = BC189718A55C6ACAF4DBC42C; };
 		5619E268CFFE28118C19FC6A = { isa = PBXGroup; children = (49F7C8A38974288656001FC9, 588FB31FEC0BCE10D56BA9A0, 1214F166F5FFDE545AFE07E4, 6664CB118CCCC72F47701F90, ); path = Config; sourceTree = "<group>"; };
@@ -194,6 +194,7 @@
 		9D5BC755D610CAC43A50A70C = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L04RepositoryRunner.swift; path = "../../scripts/native/source-fixtures/l04/L04RepositoryRunner.swift"; sourceTree = SOURCE_ROOT; };
 		9D9412516C58C3F929F5A30C = { isa = PBXGroup; children = (AA965765EB4B7DC4B143F759, 39E4C705BF0C821876D748DC, A866BC6E4C6A5A7491A0CA27, ); path = "Features/Prayers"; sourceTree = "<group>"; };
 		9E815433D214772C8DE7F3E8 = { isa = PBXBuildFile; fileRef = 970FAFDF5B806CD2FB2046C1; };
+		9F9CABE934166A6A6A5461EE = { isa = PBXBuildFile; fileRef = D31C7AC0C6218D802D0CC365; };
 		A024F06580C79B7582C3806A = { isa = PBXGroup; children = (E2F8C9D09C04A93709C8D537, 86C1BE1B2C6F3A9CD921E100, ); path = Resources; sourceTree = "<group>"; };
 		A0EAD57AE29682C7D17027FE = { isa = PBXBuildFile; fileRef = 42D50980E7D625C7C0C4F650; };
 		A0F22802504B654E4685FA18 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppComponents.swift"; sourceTree = "<group>"; };
@@ -261,6 +262,7 @@
 		D0B216E94EA4FD1A9EAD70AE = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TodayModel.swift"; sourceTree = "<group>"; };
 		D1391FEBA84068F136F9B683 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = "PBUtility.cpp"; path = "LegacyAdapter/Vendor/MMKVCore/PBUtility.cpp"; sourceTree = SOURCE_ROOT; };
 		D167635DCD8F3B5E06FE5C68 = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = John.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D31C7AC0C6218D802D0CC365 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoreScreenshotUITests.swift"; sourceTree = "<group>"; };
 		D638A16E39BDD7245C7172DA = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompanionRoute.swift"; sourceTree = "<group>"; };
 		D66561CE2C50E8251C401705 = { isa = XCBuildConfiguration; buildSettings = { GENERATE_INFOPLIST_FILE = YES; PRODUCT_BUNDLE_IDENTIFIER = "com.nrsv.verse.dev.uitests"; PRODUCT_NAME = "JohnUITests"; SWIFT_EMIT_LOC_STRINGS = NO; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = "John"; }; name = "Release"; };
 		D82B4FB40DEE66D32AC809ED = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LectioView.swift"; sourceTree = "<group>"; };

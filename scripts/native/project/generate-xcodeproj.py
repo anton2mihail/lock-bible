@@ -68,6 +68,7 @@ source_files = {
         "ReleasePerformanceUITests.swift",
         "PositiveNoticeUITests.swift",
         "WidgetHomeScreenUITests.swift",
+        "StoreScreenshotUITests.swift",
     ],
 }
 
