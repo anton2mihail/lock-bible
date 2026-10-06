@@ -32,7 +32,7 @@ public enum CompanionReferenceTargetParser {
             )
         }
         normalized = normalized.replacingOccurrences(
-            of: #"^(Philemon|Jude|2 John|3 John) (\d+)(?![\d:])"#,
+            of: #"^(Philemon|Jude|2 John|3 John) ([0-9]+)(?![0-9:])"#,
             with: "$1 1:$2", options: [.regularExpression, .caseInsensitive]
         )
         guard let regex = try? NSRegularExpression(pattern: #"^(.+?)\s+([0-9]+):"#, options: [.caseInsensitive]),
