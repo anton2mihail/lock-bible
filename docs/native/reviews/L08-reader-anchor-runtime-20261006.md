@@ -13,3 +13,13 @@ Idle scrolling saves John 1, verse 50, UTF-16 offset 85. The test changes the co
 The reflow and restart PNGs are byte-identical at `48e1c290ce8704d0bf20def7ee34c1a4cdd6b7917ff450897a95e18df939c50c`. The reviewer viewed both states and the lower-control image. The library hash stays unchanged.
 
 This accepts anchor identity and visible verse restoration for this profile, plus lower-control reachability. It does not prove the exact offset's pixel position, width reflow, all typography settings, or all editions. The lower-scroll image has no text/status overlap. It does not isolate the top mask edge. Collect a short chapter-top image and a small-scroll clipping observation. Do not repeat the complete accepted journey.
+
+## Later chapter-top check: Build21
+
+The later check accepts the removal of the duplicate mask inset. The reviewer viewed both images in `L08/reader-top-edge-02-attachments/`. At natural chapter entry, the full Back/Aa/Search row, John 1 title, and selection hint appear below the status area. After the short drag, the header scrolls with the chapter and the status area stays clear. The images do not isolate Scripture ink at the exact 62-point boundary.
+
+The executable matches the installed app at `8bd5c3abe2ad14820d53b6e0108e5f96a8f6a47217553d94d76e292ceae2e895`. The debug library matches at `43e7ee93f576836216a0f6526345657b886e0dc246ff4f34e86dbc063aa17ce2`. App PID is 63247; test runner PID is 63203. ReaderView source hash is `7b9eef52a1ec7fb5f88795fc439978d634d976eefeccd780f491d8409f0ee6c5`.
+
+The test reports a failure at its `frame.minY` string predicate. Its final frame log records verse 1 moving from y199.3 to y148 points. This is a test-query defect. The test status remains failed. The image and frame evidence support the limited layout verdict above. Use a block predicate that reads the frame for any later test change. Do not repeat the accepted anchor journey for this query fix.
+
+Evidence: `build/native-evidence/L08/reader-top-edge-02-run.txt`, `reader-top-edge-02.xcresult`, and the top/small-scroll images. Full Reader typography and paired source/native visuals remain open.
