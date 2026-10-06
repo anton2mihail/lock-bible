@@ -2,7 +2,7 @@
 
 Date: 6 October 2026.
 Owner: GPT-6.1 Sol.
-Status: Initial bytes and privacy reasons reviewed. Four source corrections remain. Archive acceptance remains open.
+Status: Corrected resource preparation accepted. The README command correction is pending. Archive acceptance remains open.
 
 The initial stage has 31 resource rows. Each output SHA-256 matches its manifest. Each copied output matches its source SHA-256. The tree has no missing or unexpected resource file. The generator hash is `6b1962f1d7cebe13307a7a70b282e68c6c8db434ae2b2f81c0dcdb7f859002ff`. The manifest hash is `8458b76dcb719930cf26508fffaa768289ed91f79cb1c875497ab5c298f4b33c`.
 
@@ -30,3 +30,11 @@ The current `Feather-MIT.txt` has the Joel Arvidsson vector-icons notice. Source
 Main owns asset compilation, launch Info configuration, root privacy-manifest membership, font membership, license membership, signing, and archive builds. Resource preparation does not prove runtime entitlement access or archive acceptance. Main must keep DEBUG comparison helpers, sample media, short test notification triggers, and diagnostic paths out of Release.
 
 The current machine has iOS 26.5. An iOS 26.0 runtime check remains open. Paired phones may permit later limited device evidence. Do not operate a phone before the simulator gates and explicit device selection.
+
+## Corrected stage checkpoint
+
+The corrected generator stages 33 rows under `native/John/Resources/Release/Resources`. The exact old storyboard and both Feather notices are present. The pinned upstream notice is from revision `3dc050d97405062eba78aa57115c0a15c63abdaa`, with SHA-256 `308028e93fcf84972523cdf6e616f73168546b4953895f516d01287f16fe7bee`.
+
+Sol compared the default output with fresh `L28/resources-e` and `resources-f` trees. All files and manifests match byte for byte. All 33 copied/generated row hashes pass. The manifest hash is `197839eb9aafb3c9f2a8ba101c2f55016afdf8765515ae249fdcba6897b2bc40`. The generator hash is `7e5251b2500924ece35b5b858a48d283fecce00bd7fa116dceff9a92d3e6a7c6`. Source reports matching decoded 1024 by 1024 RGBA pixels for the three icon pairs. The stage keeps the old iOS PNG encoding.
+
+The generator now verifies a temporary tree before publication. It rejects an existing nonempty output and preserves it. Source must correct the README example to `--fresh-output --output-root PATH`; the first option is a flag. Main must copy the staged Feather file as one bundle-root file or update its registration path. Keep the generated Resources subtree ignored and the generator, pinned notice, and README tracked. Final target membership and archive checks remain open.
