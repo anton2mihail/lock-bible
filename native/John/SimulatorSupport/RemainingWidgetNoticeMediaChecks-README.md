@@ -24,6 +24,10 @@ For the real system check, Main must record the initial authorization state. Mai
 
 ## Release media
 
-Run `testReleaseUnapprovedMediaUsesExternalFallback` on a Release build with the reviewed Rosary catalog that has no approved direct media URI. Confirm that no player-mode buttons exist and that the external action remains visible. Do not open the external link. The test proves the visible fallback only. It does not prove player release or playback.
+Run `testReleaseUnapprovedMediaUsesExternalFallback` on a Release build with the reviewed Rosary catalog that has no approved direct media URI. Confirm that no player-mode buttons exist and that the external action remains visible. Do not open an external link.
 
-Use the Debug media test for the in-app mode, episode, activation, and return checks. Keep those results separate from Release evidence.
+Check all six `ROSARY_MEDIA_EPISODES` IDs: `why-pray`, `how-to-pray`, `joyful`, `sorrowful`, `glorious`, and `luminous`. Compare each external action destination with that episode's `officialUrl` in the reviewed catalog. Use the observed URL or the reviewed callback bound to that exact selected episode. Do not tap a link. If neither source is available, mark the destination check unavailable. Record a missing or changed destination as a failure.
+
+Record the Release build configuration that excludes `#if DEBUG` sample sources. Check the Release executable and bundled catalog for the Debug sample URLs `commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4` and `www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3`. Treat these URL checks as package evidence. Do not infer that a sample player is absent only from missing mode controls or strings. Record the Release fallback UI and available controls as separate UI evidence. Keep all six official destinations available.
+
+Use `testDebugMediaModeEpisodeAndRouteReturnAfterActivation` only with the task-owned Debug install and its existing `#if DEBUG` sample source. Record the Debug bundle ID and executable hash. Do not use this sample source in a Release build. The test proves mode, episode, activation, and route return only. It does not prove player release or playback.
