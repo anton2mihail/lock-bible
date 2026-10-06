@@ -4,7 +4,7 @@ Updated: 5 October 2026
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 
-Latest checkpoint: three corrected MMKV error paths, three envelope recovery cases, and both actual process interruption boundaries are accepted. The closed-WAL fallback is dispatched. Same-ID production import, durable startup preferences, queued/repeated URLs, and matching new implementation commits remain Gate A work. See `reviews/L04-error-recovery-and-closed-wal-review.md`.
+Latest checkpoint: three corrected MMKV error paths, three envelope recovery cases, and both actual process interruption boundaries are accepted. Their wrapper and fixture commits are recorded. The closed-WAL fallback source and final repository runner are accepted for simulator validation. Same-ID production import, durable startup preferences, queued/repeated URLs, the failure-state banner fix, and matching new implementation commits remain Gate A work. See `reviews/L04-error-recovery-and-closed-wal-review.md` and `reviews/L04-private-read-copy-source-review.md`.
 
 | Ticket | Owner | Depends on | Status | Implementation SHA | Sol verdict | Evidence / note |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -14,13 +14,13 @@ Latest checkpoint: three corrected MMKV error paths, three envelope recovery cas
 | S01 | GPT-6.1 Sol | L01 | Contracts accepted | `587be12` | Accepted | ADRs 0001–0006 and Core contracts |
 | L02 | Main Luna | S01 | Swift 6 build and expanded simulator UI test pass | `c997283` | Foundation accepted; hosted CI unobserved | `docs/native/L02-runtime.md`; post-cleanup integrity and UI automation target remain open |
 | L03 | Source Luna | S01, L02 | Indexed resources and provenance correction accepted | `3e84efa`, `91a57a8` | Source staging accepted | 377 exact files; manifest `dc108b37a9d3cca837b931026add9db619642a9a395c231cc98b8ea487fe6ebc` |
-| L04 | Source Luna; Main owns runtime | L02, L03 | Fresh import, process reads, corruption rejection, envelope recovery, and both interruption boundaries pass; closed-WAL and update checks remain open | `2aaef1d`, `0fa667f`, `f01857b`, `a647491`, `41608bd`; runner `c6c79bb`; new accepted scopes await commit | Accepted scenarios; full runtime gate open | `L04-error-recovery-and-closed-wal-review.md`; `L04-runtime-acceptance-contract.md` |
+| L04 | Source Luna; Main owns runtime | L02, L03 | Fresh import, process reads, corruption rejection, envelope recovery, and both interruption boundaries pass; closed-WAL and update checks remain open | `2aaef1d`, `0fa667f`, `f01857b`, `a647491`, `41608bd`, `d3e7b73`, `f7dfb6e`; runner `082661c`; production fallback and app integration await commit | Accepted scenarios; full runtime gate open | `L04-error-recovery-and-closed-wal-review.md`; `L04-private-read-copy-source-review.md`; `L04-runtime-acceptance-contract.md` |
 | L05 | Main Luna | L02, S01 | Five-tab shell and live in-memory controls observed | `c997283` | Foundation accepted; full startup/chrome open | `L02-L05-runtime-checkpoint.md`; startup queue and full chrome remain open |
 | Gate A | GPT-6.1 Sol | L02–L05 | Open | N/A | Not accepted | Safe importer runtime, exact resources, source-matched UI foundation, and matching commits required |
 | L06–L07 | Main Luna | Gate A; L01 | Bounded Reader preparation started | Pending | Integration waits for Gate A | Source browse/navigation, original Reader chrome, TextKit chapter text and selection |
 | L08–L12 | Luna | Plan dependencies | Queued | Pending | Pending | Aa/Settings, Search, library actions, Saved/notes, Verse Moment/widgets |
 | Gate B | GPT-6.1 Sol | L06–L12 | Queued | N/A | Pending | Fresh and upgrade vertical slice; offline reader/library/widgets |
-| L13–L19 | Luna | Plan dependencies | Queued | Pending | Pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
+| L13–L19 | Luna | Plan dependencies | Production queued; calendar and novena source fixtures accepted | Source fixture `1439075` | Native runtime pending | Calendar, Today, prayers, teaching, novenas, Rosary, Lectio/Confession, share cards |
 | Gate C | GPT-6.1 Sol | L13–L19 | Queued | N/A | Pending | Devotional routes, source content, persistent and temporary state |
 | L20–L24 | Luna | Plan dependencies | Queued | Pending | Pending | Works, pagination, notices, media, complete Settings and attribution |
 | Gate D | GPT-6.1 Sol | L20–L24 | Queued | N/A | Pending | Works, notices, media gates, Settings |
