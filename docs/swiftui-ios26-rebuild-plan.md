@@ -4,7 +4,7 @@ Prepared 5 October 2026. Baseline: repository commit `b64e1fc`, JavaScript app v
 
 **User preferences:** use simulator testing for almost all checks. Treat 99% as the intended emphasis. Unit tests are rare exceptions. Use ASD-STE100 Simplified Technical English in plans, model prompts, progress reports, reviews, and final reports. Use short sentences and direct instructions. Preserve code, API names, paths, URLs, and source content.
 
-**Execution status:** Sol accepted Gate A at Main integration `df8cc9b`. The app and widget build with Swift 6. Fresh import, same-ID Release import, native preference restart, error rejection, envelope recovery, interruptions, closed-WAL access, startup routing, and bounded production repository checks pass. Gate B is active. Reader changes, Search, library actions, Saved, and widgets retain their full feature checks. Source Search and note-trim code build for the simulator SDK; their feature comparisons remain open. Separate content preparation has started. All 29 route comparisons and final release/update acceptance remain open. Track current status in the [native work ledger](native/work-ledger.md). The approved baseline remains in force.
+**Execution status:** Sol accepted Gate A at Main integration `df8cc9b`. The app and widget build with Swift 6. Fresh import, same-ID small Release import, native preference restart, error rejection, envelope recovery, interruptions, closed-WAL access, startup routing, and bounded production repository checks pass. Search/parser and the 19-observation library comparisons pass in the simulator. The full seeded existing-note/Saved/filter/delete/Undo flow is accepted at review `8f66582`. Complete Reader, content, Works, media, Settings, and widget sources are present. Full Reader, all-route runtime/visual checks, widgets, notices, and complete release/update acceptance remain open. Corrected notification service source is accepted at `6e87cfa`. Main owns shared integration and simulator control. Source prepares the remaining isolated source/resource scopes. Follow the [remaining gate order](native/reviews/Remaining-gate-runtime-order.md) and [native work ledger](native/work-ledger.md). The approved baseline remains in force.
 
 ## 1. Outcome and model ownership
 
@@ -20,7 +20,7 @@ Use the models as follows throughout execution:
 | Progress requests and fix requests | **GPT-6.1 Sol** — `gpt-6.1-sol` | Ask Luna for concrete updates, missing evidence, corrections, and follow-up fixes; re-review the resulting changes |
 | Release readiness | **GPT-6.1 Sol** — `gpt-6.1-sol` | Assess migration, full parity, physical-device validation, and remaining risks |
 
-Use Sol `high` for architecture and code review. Use Luna `medium` for routine work. Use Luna `high` for migration, text rendering, pagination, and notification scheduling. These are proposed execution settings. No model sessions have been created.
+Use Sol `high` for architecture and code review. Use Luna `medium` for routine work. Use Luna `high` for migration, text rendering, pagination, and notification scheduling. Current execution uses two Luna workers with Sol review. Main owns shared app/project integration and simulator control. Source owns isolated Core, resources, feature files, and platform preparation at agreed source boundaries.
 
 Sol owns decisions and review. Luna writes the code and each requested fix. If a ticket is too broad, Sol divides it into smaller tasks. If a technical choice needs proof, Luna builds a prototype. Sol then makes the decision.
 
