@@ -38,7 +38,6 @@ struct ReaderChapterRequest: Identifiable, Sendable, Hashable {
 
 enum AppRoute: Hashable, Sendable {
     case search
-    case passage(PassageSelection)
     case noteEditor(PassageSelection)
     case goTo(bookCode: String?, chapter: Int?)
     case works

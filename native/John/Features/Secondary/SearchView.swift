@@ -79,7 +79,7 @@ struct SearchView: View {
     }
 
     private var scopePicker: some View {
-        HStack(spacing: 8) {
+        AdaptiveChipStack {
             ForEach(SearchScopeChoice.allCases) { choice in
                 Button {
                     scope = choice.scope
@@ -98,6 +98,7 @@ struct SearchView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 8)
+        .sensoryFeedback(.selection, trigger: scope)
     }
 
     @ViewBuilder private var content: some View {
@@ -149,6 +150,7 @@ struct SearchView: View {
                     .font(JohnTypography.sans(12, weight: .medium))
                     .textCase(nil)
                     .foregroundStyle(colors.textDim)
+                    .numericChange(response.results.count)
                     .accessibilityIdentifier("search-result-count")
             }
         }

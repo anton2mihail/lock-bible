@@ -11,6 +11,7 @@ struct LectioView: View {
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.scenePhase) private var scenePhase
     @State private var passage: PassageSelection?
     @State private var translationAttribution = ""
     @State private var loadFailed = false
@@ -48,7 +49,17 @@ struct LectioView: View {
         }
         .task(id: initialPassage?.id.legacyKey ?? "current") { await loadPassageIfNeeded() }
         .task(id: deadline) { await runTimer() }
-        .onDisappear { deadline = nil }
+        .onChange(of: deadline != nil) { _, _ in updateIdleTimer() }
+        .onChange(of: scenePhase) { _, _ in updateIdleTimer() }
+        .onDisappear {
+            deadline = nil
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
+    }
+
+    /// The screen must not lock during the silent minute. Every other state restores the system default.
+    private func updateIdleTimer() {
+        UIApplication.shared.isIdleTimerDisabled = deadline != nil && scenePhase == .active
     }
 
     private func guide(_ selection: PassageSelection) -> some View {
@@ -73,6 +84,7 @@ struct LectioView: View {
                         .font(JohnTypography.serif(24))
                         .lineSpacing(ContentTypography.additionalSpacing(fontName: "Lora-Regular", size: 24, targetLineHeight: 36))
                         .foregroundStyle(colors.text)
+                        .numericChange(seconds, countsDown: true)
                     ContentButton(title: deadline != nil ? "End the timer" : "Begin one quiet minute") {
                         if deadline != nil {
                             deadline = nil

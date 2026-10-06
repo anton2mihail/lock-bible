@@ -23,6 +23,7 @@ struct ReaderSelectionToolbar: View {
     let onCard: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @State private var swatchTapCount = 0
     @ScaledMetric(relativeTo: .caption) private var scaledLabelSize: CGFloat = 12
     @ScaledMetric(relativeTo: .caption) private var scaledReferenceSize: CGFloat = 14
     @ScaledMetric(relativeTo: .caption) private var scaledFeedbackSize: CGFloat = 12
@@ -92,6 +93,7 @@ struct ReaderSelectionToolbar: View {
         .padding(.bottom, 8)
         .background(colors.card)
         .overlay(alignment: .top) { Rectangle().fill(colors.border).frame(height: 1 / displayScale) }
+        .sensoryFeedback(.selection, trigger: swatchTapCount)
     }
 
     @Environment(\.displayScale) private var displayScale
@@ -131,6 +133,7 @@ struct ReaderSelectionToolbar: View {
     private func swatch(_ color: HighlightColor) -> some View {
         let selected = highlightColor == color
         return Button {
+            swatchTapCount += 1
             if selected { onClearHighlight() } else { onHighlight(color) }
         } label: {
             Circle()

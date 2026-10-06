@@ -102,6 +102,7 @@ struct ScriptureTextView: UIViewRepresentable {
         view.readerLayout = readerLayout
         view.contextRange = contextRange
         view.savedHighlights = highlights.mapValues(highlightColor)
+        view.highlightNames = highlights.mapValues { "\($0.rawValue.capitalized) highlight" }
         view.selectionTint = UIColor(isDark ? JohnColors.dark.tint : JohnColors.light.tint)
         view.accessibilityIdentifier = "reader-scripture-text"
         view.backgroundColor = .clear
@@ -141,6 +142,7 @@ struct ScriptureTextView: UIViewRepresentable {
         view.readerLayout = readerLayout
         view.contextRange = contextRange
         view.savedHighlights = highlights.mapValues(highlightColor)
+        view.highlightNames = highlights.mapValues { "\($0.rawValue.capitalized) highlight" }
         view.selectionTint = UIColor(isDark ? JohnColors.dark.tint : JohnColors.light.tint)
         view.resetVerseRowMinimumAdjustments()
         let result = makeAttributedText()
@@ -528,6 +530,8 @@ struct ScriptureTextView: UIViewRepresentable {
     var readerLayout: ReaderLayout = .paragraphs { didSet { setNeedsDisplay() } }
     var contextRange: ClosedRange<Int>? { didSet { setNeedsDisplay() } }
     var savedHighlights: [Int: UIColor] = [:] { didSet { setNeedsDisplay() } }
+    /// Spoken name of each saved highlight, by verse index. VoiceOver reads it as the verse value.
+    var highlightNames: [Int: String] = [:] { didSet { setNeedsLayout() } }
     var selectionTint: UIColor = .label { didSet { setNeedsDisplay() } }
     var verseLabels: [String] = [] { didSet { setNeedsLayout() } }
     var verseDescriptions: [String] = [] { didSet { setNeedsLayout() } }
@@ -602,6 +606,10 @@ struct ScriptureTextView: UIViewRepresentable {
         backgroundColor = .clear
         textView.isAccessibilityElement = false
         textView.accessibilityElementsHidden = true
+        accessibilityCustomRotors = [
+            makeRotor(systemType: .heading) { $0.accessibilityTraits.contains(.header) },
+            makeRotor(name: "Highlights") { ($0 as? ReaderVerseAccessibilityElement)?.accessibilityValue != nil },
+        ]
         textView.isEditable = false
         textView.isSelectable = false
         textView.isScrollEnabled = false
@@ -737,6 +745,36 @@ struct ScriptureTextView: UIViewRepresentable {
         return nil
     }
 
+    private func makeRotor(name: String, include: @escaping (UIAccessibilityElement) -> Bool) -> UIAccessibilityCustomRotor {
+        UIAccessibilityCustomRotor(name: name) { [weak self] predicate in
+            self?.rotorResult(for: predicate, include: include)
+        }
+    }
+
+    private func makeRotor(systemType: UIAccessibilityCustomRotor.SystemRotorType,
+                           include: @escaping (UIAccessibilityElement) -> Bool) -> UIAccessibilityCustomRotor {
+        UIAccessibilityCustomRotor(systemType: systemType) { [weak self] predicate in
+            self?.rotorResult(for: predicate, include: include)
+        }
+    }
+
+    /// Finds the next or previous element in reading order that the rotor includes.
+    private func rotorResult(for predicate: UIAccessibilityCustomRotorSearchPredicate,
+                             include: (UIAccessibilityElement) -> Bool) -> UIAccessibilityCustomRotorItemResult? {
+        let elements = (accessibilityElements ?? []).compactMap { $0 as? UIAccessibilityElement }
+        let current = predicate.currentItem.targetElement as? UIAccessibilityElement
+        let currentIndex = current.flatMap { current in elements.firstIndex { $0 === current } }
+        let forward = predicate.searchDirection == .next
+        let candidates: [UIAccessibilityElement]
+        if let currentIndex {
+            candidates = forward ? Array(elements[(currentIndex + 1)...]) : Array(elements[..<currentIndex].reversed())
+        } else {
+            candidates = forward ? elements : elements.reversed()
+        }
+        guard let target = candidates.first(where: include) else { return nil }
+        return UIAccessibilityCustomRotorItemResult(targetElement: target, targetRange: nil)
+    }
+
     private func buildAccessibilityElements() {
         var ordered: [(Int, UIAccessibilityElement)] = []
         guard let chapter else { accessibilityElements = []; return }
@@ -749,6 +787,7 @@ struct ScriptureTextView: UIViewRepresentable {
             element.accessibilityIdentifier = "reader-verse-\(verse.label)"
             element.accessibilityLabel = "Verse \(verse.label). \(verse.text)"
             element.accessibilityTraits = .button
+            element.accessibilityValue = highlightNames[index]
             if activeSelection?.contains(index) == true { element.accessibilityTraits.insert(.selected) }
             element.accessibilityFrameInContainerSpace = union
             element.activate = { [weak self] in self?.onTapVerse?(index); return true }
