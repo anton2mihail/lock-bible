@@ -39,7 +39,6 @@ struct ReaderChapterRequest: Identifiable, Sendable, Hashable {
 
 enum AppRoute: Hashable, Sendable {
     case search
-    case passage(PassageSelection)
     case noteEditor(PassageSelection)
     case goTo(bookCode: String?, chapter: Int?)
     case works
@@ -94,20 +93,55 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
     private(set) var latestChapterRequest: ReaderChapterRequest?
     private var paths: [AppTab: [AppRoute]] = [:]
 
-    /// The only way to change the selected tab. The system tab bar writes through this method.
-    func select(_ tab: AppTab) {
+    /// The tab that code changed last (a programmatic select, a deep link, a notification route, or an `openReader…` call),
+    /// and when. SwiftUI can write the selected tab back through the `TabView` binding after a programmatic change
+    /// (an echo). For a short time `selectFromTabBar` treats a same-tab write for this tab as such an echo and does not pop.
+    @ObservationIgnored private var routedByCode: (tab: AppTab, at: ContinuousClock.Instant)?
+    private static let echoWindow: Duration = .seconds(1)
+
+    private func markRoutedByCode(_ tab: AppTab) { routedByCode = (tab, ContinuousClock.now) }
+    private func isRecentlyRoutedByCode(_ tab: AppTab) -> Bool {
+        guard let mark = routedByCode, mark.tab == tab else { return false }
+        return mark.at.duration(to: ContinuousClock.now) < Self.echoWindow
+    }
+    private func applySelection(_ tab: AppTab) {
         guard tab != selectedTab else { return }
         selectedTab = tab
         if tab == .read { readEntryID = UUID() }
     }
 
-    /// A tab bar tap. A tap on the tab that is already selected pops that tab to its root, as iOS users expect.
+    /// Changes the selected tab from code. It marks the tab as routed by code, also when the tab is already selected,
+    /// because the caller changes that tab's path right after. The system tab bar writes through `selectFromTabBar`.
+    func select(_ tab: AppTab) {
+        markRoutedByCode(tab)
+        applySelection(tab)
+    }
+
+    /// A write from the tab bar binding. A real tap on the tab that is already selected pops that tab to its root, as iOS
+    /// users expect. While the tab is marked as routed by code (about 1 s), a same-tab write is treated as an echo: it
+    /// clears the mark and returns without popping. A write for a different tab clears the mark. A real re-tap within
+    /// that short time after a deep link is ignored.
     func selectFromTabBar(_ tab: AppTab) {
-        if tab == selectedTab {
-            paths[tab] = []
+        let same = tab == selectedTab
+        let pathCount = paths[tab, default: []].count
+        var popped = false
+        var echo = false
+        if same {
+            if isRecentlyRoutedByCode(tab) {
+                echo = true
+            } else {
+                popped = pathCount > 0
+                paths[tab] = []
+            }
+            routedByCode = nil
         } else {
-            select(tab)
+            routedByCode = nil
+            applySelection(tab)
         }
+        #if DEBUG
+        NSLog("JOHN_TABBAR_WRITE tab=%@ same=%d pathCount=%d popped=%d ignoredEcho=%d", tab.rawValue, same ? 1 : 0,
+              pathCount, popped ? 1 : 0, echo ? 1 : 0)
+        #endif
     }
 
     func path(for tab: AppTab) -> [AppRoute] { paths[tab, default: []] }
@@ -165,9 +199,11 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             let key = date ?? CompanionCalendar.dateKey(runtime.featureNow(), timeZone: runtime.featureTimeZone)
             select(.today)
             paths[.today, default: []].append(.daily(key))
+            markRoutedByCode(.today)
         case .rosary:
             select(.pray)
             paths[.pray] = [.companion(.rosaryHome)]
+            markRoutedByCode(.pray)
         case let .read(bookCode, chapter, verse, endVerse, requestedTranslation):
             // Old app: the Read tab opens for every `read` URL. Then ReaderScreen.tsx:286-308 decides.
             let translation = requestedTranslation ?? runtime.preferences.translation

@@ -8,6 +8,8 @@ struct ReaderView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
+    @Environment(\.displayScale) private var displayScale
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @State private var readerScrollPosition = ScrollPosition(idType: String.self)
     @State private var textGeometryProbe = ReaderTextGeometryProbe()
@@ -24,6 +26,7 @@ struct ReaderView: View {
     @State private var lastContextRequest: String?
     @State private var selectedBookmarkState: Bool?
     @State private var selectionFeedback: String?
+    @State private var feedbackHaptic = ReaderFeedbackHaptic()
     @State private var isSelectionMutationRunning = false
     @State private var selectionIdentity = UUID()
     @State private var selectionSharePayload: ReaderSharePayload?
@@ -90,10 +93,12 @@ struct ReaderView: View {
             selectedBookmarkState = isSaved
             selectionFeedback = isSaved ? "Bookmark saved" : "Bookmark removed"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: false)
         } catch {
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectionFeedback = "Bookmark could not be updated"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: true)
         }
     }
 
@@ -120,6 +125,7 @@ struct ReaderView: View {
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectionFeedback = "Highlight could not be updated"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: true)
         }
     }
 
@@ -132,6 +138,7 @@ struct ReaderView: View {
         UIPasteboard.general.string = "\(passage.scriptureText)\n\(reference(for: passage)) (\(abbreviation))"
         selectionFeedback = "Passage copied"
         UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+        feedbackHaptic.fire(failed: false)
     }
 
     @MainActor private func shareSelectedPassage() async {
@@ -165,6 +172,7 @@ struct ReaderView: View {
             }
         }
         .background(colors.background)
+        .sensoryFeedback(trigger: feedbackHaptic) { _, event in event.feedback }
         .task(id: preferences.translation) {
             await model.loadBooks(translation: preferences.translation, using: runtime)
             if let catalog = await runtime.worksCatalog() { workCatalog = catalog }
@@ -356,7 +364,7 @@ struct ReaderView: View {
                     Text("Choose a chapter")
                         .font(JohnTypography.sans(14))
                         .foregroundStyle(colors.textDim)
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 52, maximum: 52), spacing: 12)], spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: chapterCellSize, maximum: chapterCellSize), spacing: 12)], spacing: 12) {
                         ForEach(1...book.chapterCount, id: \.self) { number in
                             Button {
                                 Task { await model.openChapter(book, number: number, using: runtime) }
@@ -364,7 +372,7 @@ struct ReaderView: View {
                                 Text(String(number))
                                     .font(JohnTypography.sans(16, weight: .medium))
                                     .foregroundStyle(number == model.currentChapterNumber ? colors.background : colors.text)
-                                    .frame(width: 52, height: 52)
+                                    .frame(width: chapterCellSize, height: chapterCellSize)
                                     .background(number == model.currentChapterNumber ? colors.tint : colors.card, in: RoundedRectangle(cornerRadius: 12))
                                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(colors.border, lineWidth: 1))
                             }
@@ -650,6 +658,7 @@ struct ReaderView: View {
                                                         selectionID: payload.selectionID) else { return }
                                 selectionFeedback = "Share sheet could not be opened"
                                 UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+                                feedbackHaptic.fire(failed: true)
                             }
                                 .presentationDetents([.medium, .large])
                         }
@@ -718,7 +727,9 @@ struct ReaderView: View {
                     .foregroundStyle(colors.text)
                     .accessibilityAddTraits(.isHeader)
                 VStack(spacing: 0) {
-                    ForEach(Array(entries.prefix(3)), id: \.self) { entry in
+                    ForEach(Array(entries.prefix(3).enumerated()), id: \.element) { offset, entry in
+                        let isLastShown = offset == min(entries.count, 3) - 1
+                        let showsSeparator = !isLastShown || entries.count > 3
                         Button {
                             router.push(.workReader(workID: entry.workID, section: entry.sectionIndex))
                         } label: {
@@ -736,8 +747,14 @@ struct ReaderView: View {
                                 Spacer(minLength: 0)
                                 FeatherIcon(name: "chevron-right", color: colors.tint)
                             }
+                            .padding(.vertical, 8)
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .contentShape(Rectangle())
+                            .overlay(alignment: .bottom) {
+                                if showsSeparator {
+                                    Rectangle().fill(colors.separator).frame(height: 1 / displayScale)
+                                }
+                            }
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(entry.sectionTitle), \(entry.workTitle)")
@@ -897,4 +914,21 @@ private struct ReaderActivitySheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+
+/// One haptic event for a finished Reader selection action. The counter makes two equal
+/// outcomes in a row (for example two copies) fire twice.
+private struct ReaderFeedbackHaptic: Equatable {
+    private var count = 0
+    private var failed = false
+
+    mutating func fire(failed: Bool) {
+        count += 1
+        self.failed = failed
+    }
+
+    var feedback: SensoryFeedback? {
+        guard count > 0 else { return nil }
+        return failed ? .error : .success
+    }
 }

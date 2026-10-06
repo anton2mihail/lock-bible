@@ -227,6 +227,8 @@ final class ReaderParityUITests: XCTestCase {
             return XCUIApplication(bundleIdentifier: "invalid.baseline.bundle.id")
         }
         let app = bundleID == "unprovided" ? XCUIApplication() : XCUIApplication(bundleIdentifier: bundleID)
+        // Native only: keep the full tab bar (no Read-tab minimize). Never for the old app (Liquid-glass-tabview-review.md fix 2).
+        if variant == .native { app.launchArguments += ["-JohnTabBarMinimize", "never"] }
         app.launch()
         if variant == .native {
             XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
@@ -539,12 +541,14 @@ final class ReaderParityUITests: XCTestCase {
                 viewport.origin.y = max(viewport.minY, title.frame.maxY + 8)
             }
         }
-        let nativeTabs = ["tab-today", "tab-read", "tab-pray", "tab-saved", "tab-settings"]
-            .map { app.buttons[$0] }
+        // Native: the tab bar element edge, else the tab button tops minus 12 pt. The old app keeps its button-top rule.
+        if let top = tabBarTopEdge(in: app, within: viewport) {
+            viewport.size.height = min(viewport.height, top - viewport.minY)
+        }
         let baselineTabs = ["Today", "Read", "Saved", "Pray", "Settings"]
             .map { baselineTab($0, in: app) }
-        let tabs = (nativeTabs + baselineTabs).filter { $0.exists && $0.frame.intersects(viewport) }
-        if let top = tabs.map(\.frame.minY).min() {
+            .filter { $0.exists && $0.frame.intersects(viewport) }
+        if let top = baselineTabs.map(\.frame.minY).min() {
             viewport.size.height = min(viewport.height, top - viewport.minY)
         }
         return viewport
@@ -758,5 +762,16 @@ final class ReaderParityUITests: XCTestCase {
             ProcessInfo.processInfo.environment[key] ?? "unprovided"
         }
 
+    }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
     }
 }

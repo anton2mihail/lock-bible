@@ -73,6 +73,7 @@ final class ScriptureCardUITests: XCTestCase {
 
     /// Opens the Scripture card from Today, then Verse Moment. It needs no owned-word point, so it works on every device.
     private func openCardFromVerseMoment(in app: XCUIApplication) {
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: app)
@@ -222,6 +223,7 @@ final class ScriptureCardUITests: XCTestCase {
         try requireStep7("measure-word-points")
         let extraLarge = ProcessInfo.processInfo.environment["STEP7_TEXT_SIZE"] == "Extra large"
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         setReadingProfile(in: app,
                           textSizeIdentifier: extraLarge ? "settings-text-size-extra-large" : "settings-text-size-default",
@@ -294,6 +296,7 @@ final class ScriptureCardUITests: XCTestCase {
 
     private func openLongWebPassage(in app: XCUIApplication, points: (CGPoint, CGPoint)? = nil,
                                     verifiedPhone: Bool = true) {
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         setReadingProfile(in: app)
         app.buttons["tab-read"].tap()
@@ -488,9 +491,7 @@ final class ScriptureCardUITests: XCTestCase {
             .filter { $0.exists && $0.isHittable }
             .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
         var visible = (scroll?.frame ?? app.frame).intersection(app.frame)
-        let tabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-            .allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(visible) }
-        if let top = tabs.map(\.frame.minY).min() {
+        if let top = tabBarTopEdge(in: app, within: visible) {
             visible.size.height = min(visible.height, top - visible.minY)
         }
         let navBottom = app.navigationBars.allElementsBoundByIndex
@@ -530,5 +531,16 @@ final class ScriptureCardUITests: XCTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
     }
 }

@@ -4,6 +4,7 @@ import XCTest
 final class NativeSmokeUITests: XCTestCase {
     func testReaderVerseWordPointDiagnostic() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -38,9 +39,7 @@ final class NativeSmokeUITests: XCTestCase {
             let scroll = app.scrollViews["reader-chapter-scroll"]
             XCTAssertTrue(scroll.waitForExistence(timeout: 8))
             var viewport = scroll.frame.intersection(app.frame)
-            let tabs = ["tab-today", "tab-read", "tab-pray", "tab-saved", "tab-settings"]
-                .map { app.buttons[$0] }.filter { $0.exists }
-            if let tabTop = tabs.map(\.frame.minY).min() {
+            if let tabTop = tabBarTopEdge(in: app, within: viewport) {
                 viewport.size.height = min(viewport.height, tabTop - viewport.minY)
             }
             for _ in 0..<12 {
@@ -56,7 +55,7 @@ final class NativeSmokeUITests: XCTestCase {
                     .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(
                         dx: end.x / app.frame.width, dy: end.y / app.frame.height)))
                 viewport = scroll.frame.intersection(app.frame)
-                if let tabTop = tabs.map(\.frame.minY).min() {
+                if let tabTop = tabBarTopEdge(in: app, within: viewport) {
                     viewport.size.height = min(viewport.height, tabTop - viewport.minY)
                 }
             }
@@ -80,6 +79,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testSavedUndoGeometryProbe() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-saved"].tap()
@@ -111,6 +111,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testValidLibrarySavedFiltersNoteEditDeleteAndUndo() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -203,6 +204,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testSearchResultsAndSavedFilters() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -236,6 +238,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testVerseMomentReaderAndWorksFooter() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -274,6 +277,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testWorksReaderFooter() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.buttons["tab-read"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -308,6 +312,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testScriptureCardExportsPNG() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch.tap()
@@ -327,6 +332,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderSourceNavigationRangeAndVerseLayout() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         app.buttons["tab-settings"].tap()
         app.buttons["translation-web-ce"].tap()
@@ -424,6 +430,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderRealVisibleVerseTapRange() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -466,6 +473,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderSelectionBookmarkAndAllHighlightColors() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -531,6 +539,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderAnchorReflowRestartAndLowerControls() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -599,6 +608,7 @@ final class NativeSmokeUITests: XCTestCase {
         attachScreenshot("L08-reader-anchor-after-large-text", app: app)
 
         app.terminate()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -617,6 +627,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderTopSafeAreaAndSmallScrollProbe() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-read"].tap()
@@ -656,6 +667,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderAppearanceAccessibilityValues() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons["tab-settings"].tap()
@@ -693,6 +705,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testPsalmTwoLoadedVerseGeometryDiagnostic() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -732,6 +745,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testPsalmTwoVerseTwelveGeometryDiagnostic() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -861,6 +875,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testPrimaryTabsAndSharedReaderAppearance() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -906,6 +921,7 @@ final class NativeSmokeUITests: XCTestCase {
         let app = XCUIApplication()
         let readURL = URL(string: "nrsv://read?book=JHN&chapter=1&verse=1")!
         app.launchArguments = ["-L04TestStartupDelaySeconds", "5"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["Loading saved data."].waitForExistence(timeout: 3))
         app.open(readURL)
@@ -928,6 +944,7 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(extraLarge.isSelected)
         app.terminate()
 
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         settingsTab.tap()
@@ -937,6 +954,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testSameIDReleasePreferenceSurvivesFreshProcess() throws {
         let app = XCUIApplication(bundleIdentifier: "com.nrsv.verse")
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         app.buttons["tab-settings"].tap()
@@ -951,6 +969,7 @@ final class NativeSmokeUITests: XCTestCase {
         NSLog("L04_SAME_ID_RELEASE_NATIVE_SIZE_UPDATED value=Large")
         app.terminate()
 
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         app.buttons["tab-settings"].tap()
@@ -961,6 +980,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testSameProcessRepeatedReadyURLs() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         app.buttons["tab-settings"].tap()
@@ -990,5 +1010,16 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(firstReader.waitForExistence(timeout: 5))
         NSLog("L04_READY_URL_PHASE_2_DELIVERED firstID=%@ secondID=%@", firstRequestID, secondRequestID)
         Thread.sleep(forTimeInterval: 15)
+    }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
     }
 }

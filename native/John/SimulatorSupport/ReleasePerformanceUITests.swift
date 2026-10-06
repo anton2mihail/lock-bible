@@ -99,6 +99,8 @@ final class ReleasePerformanceUITests: XCTestCase {
         attachScreenshot("reader-long-chapter-after", from: app)
         NSLog("L26_LONG_READER chapter=PSA:119 laterVerse=%@ visible=%@",
               lastPsalmVerse.label, lastPsalmVerse.isHittable ? "true" : "false")
+        // The Reader scroll can minimize the glass bar. Expand it and check the tab button before any later navigation.
+        expandTabBar(in: app, expecting: "tab-read")
 
         app.buttons["reader-back"].tap() // chapter back to chapter list
         app.buttons["reader-back"].tap() // chapter list back to book list
@@ -318,5 +320,26 @@ final class ReleasePerformanceUITests: XCTestCase {
         static func missing(_ value: String) -> Self {
             Self(description: "Missing required L26 configuration: \(value)")
         }
+    }
+
+    /// The Liquid Glass tab bar minimizes while the Read tab scrolls. Release has no `-JohnTabBarMinimize never`
+    /// (that argument exists only in Debug). Before a tab tap after a Reader scroll, expand the bar (tap the minimized
+    /// bar, then scroll up) and check that the target tab button is hittable (Liquid-glass-tabview-review.md fix 5).
+    private func expandTabBar(in app: XCUIApplication, expecting tabID: String) {
+        let tab = app.buttons[tabID]
+        for attempt in 0..<4 {
+            if tab.exists && tab.isHittable { return }
+            if attempt % 2 == 0 {
+                let bar = app.tabBars.firstMatch
+                if bar.exists && bar.isHittable { bar.tap() }
+            } else {
+                let scroll = app.scrollViews.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+                    .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+                scroll?.swipeDown()
+            }
+            _ = tab.waitForExistence(timeout: 2)
+            RunLoop.current.run(until: Date().addingTimeInterval(0.5))
+        }
+        XCTAssertTrue(tab.exists && tab.isHittable, "\(tabID) must be hittable after the tab bar expands")
     }
 }

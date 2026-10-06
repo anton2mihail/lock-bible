@@ -79,3 +79,37 @@ struct SurfaceCard<Content: View>: View {
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(preferences.colors(for: colorScheme).separator, lineWidth: 0.5))
     }
 }
+
+/// Lays chips out in one equal-width row. When the labels no longer fit on one line
+/// (large Dynamic Type sizes), it stacks them in a column so no label breaks mid-word.
+struct AdaptiveChipStack<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) { content }
+            VStack(spacing: 8) { content }
+        }
+    }
+}
+
+/// Rolls the digits of a changing counter and keeps them the same width.
+/// With Reduce Motion on, the number changes without any animation.
+private struct NumericChangeModifier<Value: Equatable>: ViewModifier {
+    let value: Value
+    let countsDown: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .monospacedDigit()
+            .contentTransition(reduceMotion ? .identity : .numericText(countsDown: countsDown))
+            .animation(reduceMotion ? nil : .default, value: value)
+    }
+}
+
+extension View {
+    func numericChange<Value: Equatable>(_ value: Value, countsDown: Bool = false) -> some View {
+        modifier(NumericChangeModifier(value: value, countsDown: countsDown))
+    }
+}

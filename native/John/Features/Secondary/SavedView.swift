@@ -6,6 +6,7 @@ struct SavedView: View {
     @Environment(AppRouter.self) private var router
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var filter: SavedFilter = .all
     @State private var items: [SavedItem] = []
     @State private var loading = false
@@ -13,6 +14,7 @@ struct SavedView: View {
     @State private var undoItem: SavedItem?
     @State private var noteItem: SavedItem?
     @State private var generation = 0
+    @State private var loadedFilter: SavedFilter?
     @State private var undoToken = UUID()
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
@@ -70,8 +72,10 @@ struct SavedView: View {
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(colors.border, lineWidth: 1))
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .animation(reduceMotion ? nil : .snappy, value: undoItem?.id)
         .background(colors.background.ignoresSafeArea())
         .task(id: filter.rawValue) { await reload() }
         .onChange(of: router.selectedTab) { _, tab in
@@ -94,7 +98,7 @@ struct SavedView: View {
     }
 
     private var filterBar: some View {
-        HStack(spacing: 8) {
+        AdaptiveChipStack {
             ForEach(SavedFilterChoice.allCases) { choice in
                 Button {
                     filter = choice.filter
@@ -113,6 +117,7 @@ struct SavedView: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 12)
+        .sensoryFeedback(.selection, trigger: filter)
     }
 
     private var savedList: some View {
@@ -121,6 +126,21 @@ struct SavedView: View {
                 SavedRow(item: item, colors: colors,
                          open: { open(item) }, editNote: { open(item) }, delete: { Task { await delete(item) } })
                     .listRowBackground(colors.background)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            Task { await delete(item) }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                    .contextMenu {
+                        Button { open(item) } label: { Label("Open", systemImage: "book") }
+                        Button(role: .destructive) {
+                            Task { await delete(item) }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             }
         }
         .listStyle(.plain)
@@ -165,16 +185,22 @@ struct SavedView: View {
     @MainActor private func reload() async {
         generation += 1
         let current = generation
-        loading = true
+        let requestedFilter = filter
+        // Rows from another filter would be wrong, so drop them. Rows of the same filter stay
+        // visible during a refresh, so the list does not flash a spinner on each visit.
+        if loadedFilter != requestedFilter { items = [] }
+        loading = items.isEmpty
         defer { if current == generation { loading = false } }
         do {
-            let result = try await runtime.savedItems(filter: filter)
+            let result = try await runtime.savedItems(filter: requestedFilter)
             guard current == generation else { return }
             items = result
+            loadedFilter = requestedFilter
             message = nil
         } catch {
             guard current == generation else { return }
             items = []
+            loadedFilter = requestedFilter
             message = "Saved passages could not be loaded. Close and reopen this tab."
         }
     }
@@ -318,6 +344,7 @@ struct SavedNoteEditor: View {
     let onSaved: () async -> Void
     let onClose: (() -> Void)?
     @State private var draft: String
+    @State private var originalText: String
     @State private var passage: PassageSelection?
     @State private var hasPersistedNote = false
     @State private var isLoading = true
@@ -331,6 +358,7 @@ struct SavedNoteEditor: View {
         self.onSaved = onSaved
         self.onClose = onClose
         _draft = State(initialValue: item.noteText ?? "")
+        _originalText = State(initialValue: item.noteText ?? "")
         _passage = State(initialValue: nil)
         _hasPersistedNote = State(initialValue: item.kind == .note)
     }
@@ -342,6 +370,7 @@ struct SavedNoteEditor: View {
         self.onSaved = onSaved
         self.onClose = onClose
         _draft = State(initialValue: "")
+        _originalText = State(initialValue: "")
         _passage = State(initialValue: passage)
         _hasPersistedNote = State(initialValue: false)
     }
@@ -429,6 +458,7 @@ struct SavedNoteEditor: View {
                     .accessibilityIdentifier("saved-note-save")
             }
         }
+        .interactiveDismissDisabled(draft != originalText)
         .overlay {
             if isLoading { ProgressView("Loading note…") }
         }
@@ -440,6 +470,7 @@ struct SavedNoteEditor: View {
             passage = initialPassage
             do {
                 draft = try await runtime.note(for: initialPassage.id)
+                originalText = draft
                 hasPersistedNote = draftHasContent
                 isLoadReady = true
             } catch {

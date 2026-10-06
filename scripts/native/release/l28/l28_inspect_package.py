@@ -33,6 +33,8 @@ EXPECT = {"appId": "com.nrsv.verse", "widgetId": "com.nrsv.verse.widget", "group
 EXCLUDED_STRINGS = ["-L29MediaFailureURI", "-L29SharedProbeRelativePath", "l29-widget-probe", "l29.widgetProbe",
                     "commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
                     "www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"]
+# Debug-only launch arguments (C15). `-JohnTabBarMinimize` is read only inside `#if DEBUG` (JohnApp.swift). Release must not contain it.
+KNOWN_DEBUG_ARGS = ["-JohnTabBarMinimize"]
 FORBIDDEN_FILES = ("*.debug.dylib", "__preview.dylib", "*.xctest", "*.dSYM", "XC*.framework", "libXCTest*", "*.swiftmodule")
 
 # Required-reason API categories. Symbol hints are undefined symbols or Objective-C/Swift names in the executable.
@@ -147,8 +149,10 @@ def extended_debug_args(source_root):
     for path in Path(source_root, "native/John").rglob("*.swift"):
         if "SimulatorSupport" in path.parts:
             continue
-        for match in re.finditer(r'"(-L\d\d[A-Za-z0-9]+)"', path.read_text(errors="replace")):
+        for match in re.finditer(r'"(-(?:L\d\d|John)[A-Za-z0-9]+)"', path.read_text(errors="replace")):
             found.add(match.group(1))
+    # Debug-only launch arguments that must be in the list even if the source scan misses them.
+    found.update(KNOWN_DEBUG_ARGS)
     return sorted(found)
 
 
@@ -345,7 +349,8 @@ def main():
     if args.extended_debug_args:
         names = extended_debug_args(args.source_root)
         ext = {k: v for k, v in scan_bytes(app, names).items() if v}
-        record("C15", "REVIEW" if ext else "PASS", "Extended DEBUG launch-argument names found in source (informational)",
+        record("C15", "FAIL" if ext.get("-JohnTabBarMinimize") else "REVIEW" if ext else "PASS",
+           "Extended DEBUG launch-argument names found in source (-JohnTabBarMinimize is a FAIL in Release)",
                f"names {names}; hits in package {ext or 'none'}")
 
     # Icon and launch resources

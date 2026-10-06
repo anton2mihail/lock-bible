@@ -16,8 +16,6 @@ struct DestinationView: View {
             SearchView()
         case .companion(let route):
             companionDestination(route)
-        case .passage(let passage):
-            ReaderDestination(passage: passage)
         case .noteEditor(let passage):
             SavedNoteEditor(passage: passage, onSaved: {}, onClose: { router.pop() })
         case .goTo(let bookCode, let chapter):
@@ -26,13 +24,9 @@ struct DestinationView: View {
             WorksLibraryView(onOpenCollection: { router.push(.workCollection($0)) },
                              onOpenWork: { workID, section in router.push(.workReader(workID: workID, section: section)) })
         case .daily(let value):
-            if value.contains(":") {
-                ReaderDestination(reference: value)
-            } else {
-                CalendarReadingsView(sunday: false, initialDateKey: value,
-                                     timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
-                                     onNavigate: navigate)
-            }
+            CalendarReadingsView(sunday: false, initialDateKey: value,
+                                 timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
+                                 onNavigate: navigate)
         case .sunday:
             CalendarReadingsView(sunday: true, timeZone: runtime.featureTimeZone,
                                  clock: { runtime.featureNow() }, onNavigate: navigate)
@@ -182,78 +176,6 @@ private struct RosaryMediaDestination: View {
             catalog = try RosaryCatalogAdapter.decode(source.rosary)
         } catch {
             failed = true
-        }
-    }
-}
-
-struct ReaderDestination: View {
-    @Environment(JohnRuntime.self) private var runtime
-    let reference: String
-    @Environment(AppRouter.self) private var router
-    @Environment(SharedPreferencesModel.self) private var preferences
-    @State private var passage: PassageSelection?
-
-    init(passage: PassageSelection) {
-        reference = "\(passage.bookName) \(passage.chapter):\(passage.startVerse.rawValue)"
-        _passage = State(initialValue: passage)
-    }
-
-    init(reference: String) {
-        self.reference = reference
-    }
-
-    var body: some View {
-        CompanionPage(title: passage.map { "\($0.bookName) \($0.chapter)" } ?? "Reader", eyebrow: passage?.translationID.rawValue.uppercased(), subtitle: reference) {
-            if let passage {
-                SurfaceCard {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(passage.verses, id: \.index) { verse in
-                            Text("\(verse.verse.rawValue)  \(verse.text)")
-                                .font(readerFont)
-                                .lineSpacing(readerLineSpacing)
-                                .accessibilityIdentifier("reader-verse-\(verse.verse.rawValue)")
-                        }
-                        Button("Aa  Reader appearance") { router.sheet = .readerAppearance }
-                            .accessibilityIdentifier("reader-appearance-button")
-                    }
-                }
-            } else {
-                ProgressView().task { passage = await runtime.passage(reference: reference, translation: preferences.translation) }
-            }
-        }
-        .sheet(isPresented: Binding(get: { router.sheet == .readerAppearance }, set: { if !$0 { router.sheet = nil } })) {
-            NavigationStack {
-                SettingsControls()
-                    .padding()
-                    .navigationTitle("Reader appearance")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") { router.sheet = nil }
-                                .accessibilityIdentifier("reader-appearance-close")
-                        }
-                    }
-            }
-            .presentationDetents([.medium])
-        }
-    }
-
-    private var readerFont: Font {
-        let size: CGFloat
-        switch preferences.reading.textSize {
-        case .small: size = 18
-        case .medium: size = 21
-        case .large: size = 25
-        case .extraLarge: size = 29
-        }
-        return preferences.reading.typeface == .serif ? JohnTypography.serif(size) : JohnTypography.sans(size)
-    }
-
-    private var readerLineSpacing: CGFloat {
-        switch preferences.reading.lineSpacing {
-        case .compact: 3
-        case .comfortable: 7
-        case .relaxed: 11
         }
     }
 }

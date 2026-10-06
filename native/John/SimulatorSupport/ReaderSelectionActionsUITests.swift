@@ -64,6 +64,7 @@ final class ReaderSelectionActionsUITests: XCTestCase {
     }
 
     private func openSeededJohnOne(in app: XCUIApplication) {
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         let read = app.buttons["tab-read"]
         XCTAssertTrue(read.waitForExistence(timeout: 10))
