@@ -101,6 +101,79 @@ final class SearchNoteUITests: XCTestCase {
         NSLog("SEARCH_ROUTE_RESULT reference=John3:16 openedVerse=16 repeatedResult=John3:16 cancel=Reader; rapidReplacement=final-visible-query-state")
     }
 
+    func testCreateVulgateNoteRetainsOriginalEditionAfterChangeAndRestart() throws {
+        let app = XCUIApplication()
+        app.launch()
+        selectEdition("vulgate", in: app)
+        selectVerseByVerseLayout(in: app)
+        openSearch(in: app)
+        enter("John 3:16", in: app.textFields["search-query-input"])
+        assertResult("IOHANNEM 3:16", in: app)
+        app.buttons["search-result-1"].tap()
+
+        let verse = app.buttons["reader-verse-16"]
+        XCTAssertTrue(verse.waitForExistence(timeout: 12))
+        XCTAssertTrue(verse.label.contains("Sic enim Deus dilexit mundum"), verse.label)
+        verse.tap()
+        XCTAssertTrue(waitForLabel(app.staticTexts["reader-selection-reference"], equals: "IOHANNEM 3:16"))
+        let addNote = app.buttons["reader-selection-note"]
+        XCTAssertTrue(addNote.waitForExistence(timeout: 8))
+        XCTAssertTrue(addNote.isHittable)
+        addNote.tap()
+
+        let editor = app.textViews["saved-note-editor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 8))
+        waitUntilEnabled(app.buttons["saved-note-save"])
+        XCTAssertEqual(editor.value as? String, "")
+        let note = "Created from the Vulgate at John 3:16."
+        editor.tap()
+        editor.typeText(note)
+        app.buttons["saved-note-save"].tap()
+        waitForDisappearance(editor)
+
+        selectEdition("web-ce", in: app)
+        app.buttons["tab-saved"].tap()
+        let noteFilter = app.buttons["saved-filter-note"]
+        XCTAssertTrue(noteFilter.waitForExistence(timeout: 8))
+        noteFilter.tap()
+        let noteRowID = "saved-row-note:vulgate:JHN:3:16:16"
+        var row = app.buttons[noteRowID]
+        XCTAssertTrue(row.waitForExistence(timeout: 8))
+        XCTAssertTrue(row.label.contains("IOHANNEM 3:16"), row.label)
+        XCTAssertTrue(row.label.contains("Sic enim Deus dilexit mundum"), row.label)
+        row.tap()
+        var reopenedEditor = app.textViews["saved-note-editor"]
+        XCTAssertTrue(reopenedEditor.waitForExistence(timeout: 8))
+        waitUntilEnabled(app.buttons["saved-note-save"])
+        XCTAssertEqual(reopenedEditor.value as? String, note)
+        let latinPreview = app.staticTexts.matching(NSPredicate(
+            format: "label CONTAINS %@", "Sic enim Deus dilexit mundum"
+        )).firstMatch
+        XCTAssertTrue(latinPreview.waitForExistence(timeout: 5), "Saved text must use the captured Vulgate edition")
+        app.buttons["saved-note-cancel"].tap()
+        XCTAssertTrue(reopenedEditor.waitForNonExistence(timeout: 8))
+
+        app.terminate()
+        app.launch()
+        app.buttons["tab-saved"].tap()
+        let relaunchedFilter = app.buttons["saved-filter-note"]
+        XCTAssertTrue(relaunchedFilter.waitForExistence(timeout: 8))
+        relaunchedFilter.tap()
+        row = app.buttons[noteRowID]
+        XCTAssertTrue(row.waitForExistence(timeout: 8))
+        XCTAssertTrue(row.label.contains("IOHANNEM 3:16"), row.label)
+        XCTAssertTrue(row.label.contains("Sic enim Deus dilexit mundum"), row.label)
+        row.tap()
+        reopenedEditor = app.textViews["saved-note-editor"]
+        XCTAssertTrue(reopenedEditor.waitForExistence(timeout: 8))
+        waitUntilEnabled(app.buttons["saved-note-save"])
+        XCTAssertEqual(reopenedEditor.value as? String, note)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(
+            format: "label CONTAINS %@", "Sic enim Deus dilexit mundum"
+        )).firstMatch.exists)
+        NSLog("SEARCH_NOTE_RESTART rowID=note:vulgate:JHN:3:16:16 translationID=vulgate bookCode=JHN chapter=3 startVerse=16 endVerse=16 reference=IOHANNEM3:16 note=%@ currentEdition=web-ce restartCount=1 seedRequiresNoNoteForJHN3:16 and verse-by-verse layout", note)
+    }
+
     private func openSearch(in app: XCUIApplication) {
         let readTab = app.buttons["tab-read"]
         XCTAssertTrue(readTab.waitForExistence(timeout: 10))
@@ -125,6 +198,20 @@ final class SearchNoteUITests: XCTestCase {
         let readTab = app.buttons["tab-read"]
         XCTAssertTrue(readTab.waitForExistence(timeout: 8))
         readTab.tap()
+    }
+
+    private func selectVerseByVerseLayout(in app: XCUIApplication) {
+        app.buttons["tab-settings"].tap()
+        let layout = app.buttons["settings-layout-verse-by-verse"]
+        XCTAssertTrue(layout.waitForExistence(timeout: 8))
+        if layout.value as? String != "Selected" {
+            layout.tap()
+            let selected = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "value == %@", "Selected"), object: layout)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
+                           "Reader layout must be committed before verse selection")
+        }
+        app.buttons["tab-read"].tap()
     }
 
     private func enter(_ query: String, in field: XCUIElement) {
@@ -158,5 +245,23 @@ final class SearchNoteUITests: XCTestCase {
         let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
         XCTAssertEqual(result, .completed, "Expected label \(value), got \(element.label)", file: file, line: line)
         return result == .completed
+    }
+
+    private func waitForDisappearance(_ element: XCUIElement,
+                                     timeout: TimeInterval = 8,
+                                     file: StaticString = #filePath,
+                                     line: UInt = #line) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: timeout), .completed,
+                       "Editor did not close", file: file, line: line)
+    }
+
+    private func waitUntilEnabled(_ element: XCUIElement,
+                                  timeout: TimeInterval = 8,
+                                  file: StaticString = #filePath,
+                                  line: UInt = #line) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isEnabled == true"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: timeout), .completed,
+                       "Control did not become enabled", file: file, line: line)
     }
 }
