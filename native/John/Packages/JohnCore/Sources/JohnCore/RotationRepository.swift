@@ -1,10 +1,5 @@
 import Foundation
 
-public enum RotationResourceRoot: Sendable {
-    case app
-    case widget
-}
-
 public protocol RotationRepository: Sendable {
     func poolCount(translation: TranslationID, scope: RotationScope) async throws -> Int
     func verse(translation: TranslationID, scope: RotationScope, at index: Int) async throws -> RotatingVerse
@@ -21,13 +16,13 @@ public actor IndexedRotationRepository: RotationRepository {
         let counts: Values
     }
     private let roots: ResourceRoots
-    private let resourceRoot: RotationResourceRoot
     private var corpora: [TranslationID: Corpus] = [:]
     private let maximumRecordBytes = 64 * 1024
 
-    public init(roots: ResourceRoots, resourceRoot: RotationResourceRoot = .app) {
-        self.roots = roots
-        self.resourceRoot = resourceRoot
+    /// `rotationDirectory` is the one directory that holds the indexed rotation files for every edition.
+    /// The app and the widget extension both read it from the shared resources framework bundle.
+    public init(rotationDirectory: URL) {
+        self.roots = ResourceRoots(app: rotationDirectory)
     }
 
     public func poolCount(translation: TranslationID, scope: RotationScope) async throws -> Int {
@@ -115,10 +110,7 @@ public actor IndexedRotationRepository: RotationRepository {
     }
 
     private func resource(edition: String, suffix: String) throws -> URL {
-        switch resourceRoot {
-        case .app: return try roots.appResource("Rotation", edition + suffix)
-        case .widget: return try roots.widgetResource(edition + suffix)
-        }
+        try roots.appResource(edition + suffix)
     }
 
     private static func uint32Values(_ data: Data) throws -> [UInt32] {

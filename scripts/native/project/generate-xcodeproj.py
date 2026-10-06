@@ -28,10 +28,12 @@ app_target_id = oid("target-app")
 widget_target_id = oid("target-widget")
 ui_target_id = oid("target-ui-tests")
 adapter_target_id = oid("target-legacy-adapter")
+shared_target_id = oid("target-shared-resources")
 app_product_id = oid("product:John.app")
 widget_product_id = oid("product:JohnWidget.appex")
 ui_product_id = oid("product:JohnUITests.xctest")
 adapter_product_id = oid("product:libJohnLegacyAdapter.a")
+shared_product_id = oid("product:JohnSharedResources.framework")
 
 source_files = {
     "App": ["JohnApp.swift", "Runtime.swift"],
@@ -53,6 +55,7 @@ source_files = {
     "Platform/Media": ["RosaryCatalogModels.swift"],
     "Platform/Text": ["ScriptureTextView.swift"],
     "Widget": ["JohnWidget.swift"],
+    "SharedResources": ["JohnSharedResources.swift"],
     "SimulatorSupport": [
         "NativeSmokeUITests.swift",
         "ContentFlowUITests.swift",
@@ -115,6 +118,7 @@ plist_refs = {}
 for name, filetype in [
     ("App/Info.plist", "text.plist.xml"),
     ("Widget/Info.plist", "text.plist.xml"),
+    ("SharedResources/Info.plist", "text.plist.xml"),
     ("Config/John-App-Development.entitlements", "text.plist.entitlements"),
     ("Config/John-App-Update.entitlements", "text.plist.entitlements"),
     ("Config/John-Widget-Development.entitlements", "text.plist.entitlements"),
@@ -125,8 +129,16 @@ for name, filetype in [
     ref = add(f"file:{name}", f"{{ isa = PBXFileReference; lastKnownFileType = {filetype}; path = {q(Path(name).name)}; sourceTree = \"<group>\"; }}")
     plist_refs[name] = ref
 
-app_resources_id = add("resource:App", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/App"; sourceTree = SOURCE_ROOT; }')
-widget_resources_id = add("resource:Widget", '{ isa = PBXFileReference; lastKnownFileType = folder; path = "../../build/native-evidence/L03/staged/run-10/Widget"; sourceTree = SOURCE_ROOT; }')
+# The staged tree holds the rotation corpus twice: App/Rotation and Widget/<edition>.*. The corpus ships once, in
+# JohnSharedResources.framework. A folder reference copies whole, and EXCLUDED_SOURCE_FILE_NAMES does not filter it.
+# So the app copies each staged App subfolder except Rotation into App/<name>. The widget copies only its daily
+# readings files into Widget/. The result keeps every existing bundle path.
+staged_root = "../../build/native-evidence/L03/staged/run-10"
+app_staged_folders = ["Artwork", "Bible", "Calendar", "Catalogs", "Databases", "Fonts"]
+app_staged_refs = {name: add(f"resource:App/{name}", f'{{ isa = PBXFileReference; lastKnownFileType = folder; path = "{staged_root}/App/{name}"; sourceTree = SOURCE_ROOT; }}') for name in app_staged_folders}
+rotation_resources_id = add("resource:Rotation", f'{{ isa = PBXFileReference; lastKnownFileType = folder; path = "{staged_root}/App/Rotation"; sourceTree = SOURCE_ROOT; }}')
+widget_daily_years = range(2025, 2033)
+widget_staged_refs = {year: add(f"resource:Widget/daily-readings-{year}", f'{{ isa = PBXFileReference; lastKnownFileType = text.json; path = "{staged_root}/Widget/daily-readings-{year}.json"; sourceTree = SOURCE_ROOT; }}') for year in widget_daily_years}
 
 # Keep L28 app resources separate from the L03 Bible and Works corpus folders.
 l28_asset_catalog_ref = add("resource:L28-Assets", '{ isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; }')
@@ -151,6 +163,7 @@ library_comparison_build = add("build-source-app:L10L11FixtureComparison.swift",
 notice_snapshot_ref = add("file:source-fixtures/SystemNoticeSnapshot.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SystemNoticeSnapshot.swift; path = "../../scripts/native/source-fixtures/notifications/SystemNoticeSnapshot.swift"; sourceTree = SOURCE_ROOT; }')
 notice_snapshot_build = add("build-source-app:SystemNoticeSnapshot.swift", f"{{ isa = PBXBuildFile; fileRef = {notice_snapshot_ref}; }}")
 app_source_builds.extend([legacy_reader_build, scenario_runner_build, recovery_runner_build, repository_runner_build, search_comparison_build, library_comparison_build, notice_snapshot_build])
+shared_source_builds = [add(f"build-source-shared:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"SharedResources/{name}" for name in source_files["SharedResources"]]]
 widget_source_builds = [add(f"build-source-widget:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"Widget/{name}" for name in source_files["Widget"]]]
 ui_source_builds = [add(f"build-source-uitest:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"SimulatorSupport/{name}" for name in source_files["SimulatorSupport"]]]
 mmkv_no_arc = {"CodedInputDataCrypt.cpp", "MMKV_IO.cpp", "CodedOutputData.cpp", "MMKV.cpp", "MiniPBCoder.cpp", "MMBuffer.cpp", "CodedInputData.cpp"}
@@ -160,8 +173,9 @@ for path in adapter_source_paths:
     adapter_source_builds.append(add(f"build-source-adapter:{path}", f"{{ isa = PBXBuildFile; fileRef = {adapter_file_refs[path]};{settings} }}"))
 feather_build = add("build-resource-feather", f"{{ isa = PBXBuildFile; fileRef = {plist_refs['Resources/Feather.ttf']}; }}")
 feather_license_build = add("build-resource-feather-license", f"{{ isa = PBXBuildFile; fileRef = {plist_refs['Resources/Feather-LICENSE.txt']}; }}")
-app_resource_build = add("build-resource-app-folder", f"{{ isa = PBXBuildFile; fileRef = {app_resources_id}; }}")
-widget_resource_build = add("build-resource-widget-folder", f"{{ isa = PBXBuildFile; fileRef = {widget_resources_id}; }}")
+app_staged_builds = [add(f"build-copy-app-{name}", f"{{ isa = PBXBuildFile; fileRef = {ref}; }}") for name, ref in app_staged_refs.items()]
+rotation_resource_build = add("build-resource-shared-rotation-folder", f"{{ isa = PBXBuildFile; fileRef = {rotation_resources_id}; }}")
+widget_staged_builds = [add(f"build-copy-widget-daily-{year}", f"{{ isa = PBXBuildFile; fileRef = {ref}; }}") for year, ref in widget_staged_refs.items()]
 l28_asset_build = add("build-resource-L28-assets", f"{{ isa = PBXBuildFile; fileRef = {l28_asset_catalog_ref}; }}")
 l28_launch_build = add("build-resource-L28-launch", f"{{ isa = PBXBuildFile; fileRef = {l28_launch_storyboard_ref}; }}")
 l28_legal_build = add("build-resource-L28-legal", f"{{ isa = PBXBuildFile; fileRef = {l28_legal_folder_ref}; }}")
@@ -180,6 +194,9 @@ adapter_foundation_build = add("build-framework-adapter-foundation", f"{{ isa = 
 adapter_zlib_build = add("build-framework-adapter-zlib", f"{{ isa = PBXBuildFile; fileRef = {adapter_zlib_ref}; }}")
 app_zlib_build = add("build-framework-app-zlib", f"{{ isa = PBXBuildFile; fileRef = {adapter_zlib_ref}; }}")
 app_libcxx_build = add("build-framework-app-libcxx", f"{{ isa = PBXBuildFile; fileRef = {adapter_libcxx_ref}; }}")
+shared_link_app_build = add("build-link-shared-app", f"{{ isa = PBXBuildFile; fileRef = {shared_product_id}; }}")
+shared_link_widget_build = add("build-link-shared-widget", f"{{ isa = PBXBuildFile; fileRef = {shared_product_id}; }}")
+shared_embed_build = add("build-embed-shared", f"{{ isa = PBXBuildFile; fileRef = {shared_product_id}; settings = {{ ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }}; }}")
 widget_embed_build = add("build-embed-widget", f"{{ isa = PBXBuildFile; fileRef = {widget_product_id}; settings = {{ ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }}; }}")
 
 
@@ -193,19 +210,27 @@ app_sources_phase = phase("phase-app-sources", "PBXSourcesBuildPhase", app_sourc
 widget_sources_phase = phase("phase-widget-sources", "PBXSourcesBuildPhase", widget_source_builds)
 ui_sources_phase = phase("phase-ui-sources", "PBXSourcesBuildPhase", ui_source_builds)
 adapter_sources_phase = phase("phase-adapter-sources", "PBXSourcesBuildPhase", adapter_source_builds)
+shared_sources_phase = phase("phase-shared-sources", "PBXSourcesBuildPhase", shared_source_builds)
+shared_frameworks_phase = phase("phase-shared-frameworks", "PBXFrameworksBuildPhase", [])
+shared_resources_phase = phase("phase-shared-resources", "PBXResourcesBuildPhase", [rotation_resource_build])
 adapter_frameworks_phase = phase("phase-adapter-frameworks", "PBXFrameworksBuildPhase", [adapter_foundation_build, adapter_zlib_build])
-app_frameworks_phase = phase("phase-app-frameworks", "PBXFrameworksBuildPhase", [app_package_build, adapter_product_build, app_zlib_build, app_libcxx_build])
-widget_frameworks_phase = phase("phase-widget-frameworks", "PBXFrameworksBuildPhase", [widget_package_build])
+app_frameworks_phase = phase("phase-app-frameworks", "PBXFrameworksBuildPhase", [app_package_build, adapter_product_build, app_zlib_build, app_libcxx_build, shared_link_app_build])
+widget_frameworks_phase = phase("phase-widget-frameworks", "PBXFrameworksBuildPhase", [widget_package_build, shared_link_widget_build])
 ui_frameworks_phase = phase("phase-ui-frameworks", "PBXFrameworksBuildPhase", [])
-app_resources_phase = phase("phase-app-resources", "PBXResourcesBuildPhase", [app_resource_build, feather_build, feather_license_build, l28_asset_build, l28_launch_build, l28_legal_build, l28_app_privacy_build])
-widget_resources_phase = phase("phase-widget-resources", "PBXResourcesBuildPhase", [widget_resource_build, l28_widget_privacy_build])
+app_resources_phase = phase("phase-app-resources", "PBXResourcesBuildPhase", [feather_build, feather_license_build, l28_asset_build, l28_launch_build, l28_legal_build, l28_app_privacy_build])
+widget_resources_phase = phase("phase-widget-resources", "PBXResourcesBuildPhase", [l28_widget_privacy_build])
 ui_resources_phase = phase("phase-ui-resources", "PBXResourcesBuildPhase", [])
+app_staged_phase = phase("phase-app-staged-copy", "PBXCopyFilesBuildPhase", app_staged_builds, dstPath='"App"', dstSubfolderSpec="7", name='"Copy Staged App Resources"')
+widget_staged_phase = phase("phase-widget-staged-copy", "PBXCopyFilesBuildPhase", widget_staged_builds, dstPath='"Widget"', dstSubfolderSpec="7", name='"Copy Staged Widget Resources"')
 embed_phase = phase("phase-embed-widget", "PBXCopyFilesBuildPhase", [widget_embed_build], dstPath='""', dstSubfolderSpec="13", name='"Embed App Extensions"')
+# The only embedded copy of JohnSharedResources.framework. The widget links it and loads it from the app's Frameworks folder.
+embed_frameworks_phase = phase("phase-embed-frameworks", "PBXCopyFilesBuildPhase", [shared_embed_build], dstPath='""', dstSubfolderSpec="10", name='"Embed Frameworks"')
 
 app_config_ids = []
 widget_config_ids = []
 ui_config_ids = []
 adapter_config_ids = []
+shared_config_ids = []
 project_config_ids = []
 
 def build_config(name: str, settings: dict[str, str], config_id: str | None = None) -> str:
@@ -255,6 +280,25 @@ widget_config_ids.extend([
     build_config("Debug", {**widget_common, "APP_GROUP_IDENTIFIER": '"group.com.nrsv.verse.dev"', "CODE_SIGN_ENTITLEMENTS": '"Config/John-Widget-Development.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev.widget"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "widget"),
     build_config("Release", {**widget_common, "APP_GROUP_IDENTIFIER": '"group.com.nrsv.verse"', "CODE_SIGN_ENTITLEMENTS": '"Config/John-Widget-Update.entitlements"', "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.widget"'}, "widget"),
 ])
+shared_common = {
+    "APPLICATION_EXTENSION_API_ONLY": "YES",
+    "CODE_SIGN_STYLE": "Automatic",
+    "DEFINES_MODULE": "YES",
+    "DYLIB_INSTALL_NAME_BASE": '"@rpath"',
+    "GENERATE_INFOPLIST_FILE": "NO",
+    "INFOPLIST_FILE": '"SharedResources/Info.plist"',
+    "INSTALL_PATH": '"$(LOCAL_LIBRARY_DIR)/Frameworks"',
+    "LD_RUNPATH_SEARCH_PATHS": '"$(inherited) @executable_path/Frameworks @loader_path/Frameworks"',
+    "MACH_O_TYPE": "mh_dylib",
+    "PRODUCT_NAME": '"JohnSharedResources"',
+    "SKIP_INSTALL": "YES",
+    "SWIFT_EMIT_LOC_STRINGS": "NO",
+    "TARGETED_DEVICE_FAMILY": '"1,2"',
+}
+shared_config_ids.extend([
+    build_config("Debug", {**shared_common, "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev.sharedresources"', "SWIFT_ACTIVE_COMPILATION_CONDITIONS": '"DEBUG $(inherited)"'}, "shared"),
+    build_config("Release", {**shared_common, "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.sharedresources"'}, "shared"),
+])
 ui_common = {
     "GENERATE_INFOPLIST_FILE": "YES",
     "PRODUCT_BUNDLE_IDENTIFIER": '"com.nrsv.verse.dev.uitests"',
@@ -294,18 +338,21 @@ app_config_list = config_list("config-list-app", app_config_ids)
 widget_config_list = config_list("config-list-widget", widget_config_ids)
 ui_config_list = config_list("config-list-ui", ui_config_ids)
 adapter_config_list = config_list("config-list-adapter", adapter_config_ids)
+shared_config_list = config_list("config-list-shared", shared_config_ids)
 
-products_group = add("group-products", f"{{ isa = PBXGroup; children = ({app_product_id}, {widget_product_id}, {ui_product_id}, {adapter_product_id}, ); name = Products; sourceTree = \"<group>\"; }}")
+products_group = add("group-products", f"{{ isa = PBXGroup; children = ({app_product_id}, {widget_product_id}, {ui_product_id}, {adapter_product_id}, {shared_product_id}, ); name = Products; sourceTree = \"<group>\"; }}")
 app_product = add("product:John.app", '{ isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = John.app; sourceTree = BUILT_PRODUCTS_DIR; }')
 widget_product = add("product:JohnWidget.appex", '{ isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = JohnWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; }')
 ui_product = add("product:JohnUITests.xctest", '{ isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JohnUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }')
+shared_product = add("product:JohnSharedResources.framework", '{ isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JohnSharedResources.framework; sourceTree = BUILT_PRODUCTS_DIR; }')
 adapter_product = add("product:libJohnLegacyAdapter.a", '{ isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJohnLegacyAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; }')
 # Keep stable IDs for product references used by targets.
-if app_product != app_product_id or widget_product != widget_product_id or ui_product != ui_product_id or adapter_product != adapter_product_id:
+if app_product != app_product_id or widget_product != widget_product_id or ui_product != ui_product_id or adapter_product != adapter_product_id or shared_product != shared_product_id:
     raise ValueError("product ID generation changed")
 
 # Group paths are relative to SRCROOT, not the .xcodeproj directory.
 group_ids = {}
+group_files["SharedResources"] = group_files["SharedResources"] + [plist_refs["SharedResources/Info.plist"]]
 for group, children in group_files.items():
     group_ids[group] = add(f"group:{group}", f"{{ isa = PBXGroup; children = ({', '.join(children)}, ); path = {q(group)}; sourceTree = \"<group>\"; }}")
 config_group = add("group:Config", f"{{ isa = PBXGroup; children = ({', '.join(plist_refs[n] for n in plist_refs if n.startswith('Config/'))}, ); path = Config; sourceTree = \"<group>\"; }}")
@@ -315,34 +362,42 @@ app_children = group_files["App"] + [app_info_ref]
 app_group = add("group:AppPlist", f"{{ isa = PBXGroup; children = ({', '.join(app_children)}, ); path = App; sourceTree = \"<group>\"; }}")
 widget_group = add("group:WidgetInfo", f"{{ isa = PBXGroup; children = ({widget_info_ref}, ); path = Widget; sourceTree = \"<group>\"; }}")
 resources_group = add("group:Resources", f"{{ isa = PBXGroup; children = ({plist_refs['Resources/Feather.ttf']}, {plist_refs['Resources/Feather-LICENSE.txt']}, ); path = Resources; sourceTree = \"<group>\"; }}")
-staged_group = add("group:Staged", f"{{ isa = PBXGroup; children = ({app_resources_id}, {widget_resources_id}, ); name = \"Staged Resources\"; sourceTree = \"<group>\"; }}")
+staged_children = ", ".join([*app_staged_refs.values(), rotation_resources_id, *widget_staged_refs.values()])
+staged_group = add("group:Staged", f"{{ isa = PBXGroup; children = ({staged_children}, ); name = \"Staged Resources\"; sourceTree = \"<group>\"; }}")
 release_resources_group = add("group:ReleaseResources", f"{{ isa = PBXGroup; children = ({l28_asset_catalog_ref}, {l28_launch_storyboard_ref}, {l28_legal_folder_ref}, {l28_app_privacy_ref}, {l28_widget_privacy_ref}, ); name = \"L28 Release Resources\"; path = \"Resources/Release/Resources\"; sourceTree = \"<group>\"; }}")
 core_group = add("group:JohnCore", '{ isa = PBXGroup; children = (); name = JohnCore; path = Packages/JohnCore; sourceTree = SOURCE_ROOT; }')
 adapter_group = add("group:LegacyAdapter", f"{{ isa = PBXGroup; children = ({legacy_reader_ref}, {', '.join(adapter_children)}, {adapter_foundation_ref}, {adapter_zlib_ref}, {adapter_libcxx_ref}, ); name = LegacyAdapter; path = LegacyAdapter; sourceTree = \"<group>\"; }}")
 scenario_group = add("group:ScenarioRunner", f"{{ isa = PBXGroup; children = ({scenario_runner_ref}, {recovery_runner_ref}, {repository_runner_ref}, ); name = \"L04 simulator scenarios\"; sourceTree = \"<group>\"; }}")
-main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Features/Companion"], group_ids["Features/Prayers"], group_ids["Features/Calendar"], group_ids["Features/Guides"], group_ids["Features/Sharing"], group_ids["Features/Works"], group_ids["Features/Media"], group_ids["Features/Settings"], group_ids["Features/Notifications"], group_ids["Platform/Navigation"], group_ids["Platform/Notifications"], group_ids["Platform/Media"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, release_resources_group, core_group, adapter_group, scenario_group, products_group]
+main_children = [app_group, group_ids["DesignSystem"], group_ids["Features/Today"], group_ids["Features/Secondary"], group_ids["Features/Reader"], group_ids["Features/Companion"], group_ids["Features/Prayers"], group_ids["Features/Calendar"], group_ids["Features/Guides"], group_ids["Features/Sharing"], group_ids["Features/Works"], group_ids["Features/Media"], group_ids["Features/Settings"], group_ids["Features/Notifications"], group_ids["Platform/Navigation"], group_ids["Platform/Notifications"], group_ids["Platform/Media"], group_ids["Platform/Text"], widget_group, group_ids["Widget"], group_ids["SharedResources"], group_ids["SimulatorSupport"], config_group, resources_group, staged_group, release_resources_group, core_group, adapter_group, scenario_group, products_group]
 main_group = add("group-main", f"{{ isa = PBXGroup; children = ({', '.join(main_children)}, ); sourceTree = \"<group>\"; }}")
 
 container_proxy = add("proxy-app-embeds-widget", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {widget_target_id}; remoteInfo = JohnWidget; }}")
 widget_dependency = add("dependency-app-widget", f"{{ isa = PBXTargetDependency; target = {widget_target_id}; targetProxy = {container_proxy}; }}")
 adapter_proxy = add("proxy-app-adapter", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {adapter_target_id}; remoteInfo = JohnLegacyAdapter; }}")
 adapter_dependency = add("dependency-app-adapter", f"{{ isa = PBXTargetDependency; target = {adapter_target_id}; targetProxy = {adapter_proxy}; }}")
+shared_app_proxy = add("proxy-app-shared", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {shared_target_id}; remoteInfo = JohnSharedResources; }}")
+shared_app_dependency = add("dependency-app-shared", f"{{ isa = PBXTargetDependency; target = {shared_target_id}; targetProxy = {shared_app_proxy}; }}")
+shared_widget_proxy = add("proxy-widget-shared", f"{{ isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {shared_target_id}; remoteInfo = JohnSharedResources; }}")
+shared_widget_dependency = add("dependency-widget-shared", f"{{ isa = PBXTargetDependency; target = {shared_target_id}; targetProxy = {shared_widget_proxy}; }}")
 
-app_target = add("target-app", f"{{ isa = PBXNativeTarget; buildConfigurationList = {app_config_list}; buildPhases = ({app_sources_phase}, {app_frameworks_phase}, {app_resources_phase}, {embed_phase}, ); buildRules = (); dependencies = ({widget_dependency}, {adapter_dependency}, ); name = John; packageProductDependencies = ({app_package_dep}, ); productName = John; productReference = {app_product_id}; productType = \"com.apple.product-type.application\"; }}")
-widget_target = add("target-widget", f"{{ isa = PBXNativeTarget; buildConfigurationList = {widget_config_list}; buildPhases = ({widget_sources_phase}, {widget_frameworks_phase}, {widget_resources_phase}, ); buildRules = (); dependencies = (); name = JohnWidget; packageProductDependencies = ({widget_package_dep}, ); productName = JohnWidget; productReference = {widget_product_id}; productType = \"com.apple.product-type.app-extension\"; }}")
+app_target = add("target-app", f"{{ isa = PBXNativeTarget; buildConfigurationList = {app_config_list}; buildPhases = ({app_sources_phase}, {app_frameworks_phase}, {app_resources_phase}, {app_staged_phase}, {embed_phase}, {embed_frameworks_phase}, ); buildRules = (); dependencies = ({widget_dependency}, {adapter_dependency}, {shared_app_dependency}, ); name = John; packageProductDependencies = ({app_package_dep}, ); productName = John; productReference = {app_product_id}; productType = \"com.apple.product-type.application\"; }}")
+widget_target = add("target-widget", f"{{ isa = PBXNativeTarget; buildConfigurationList = {widget_config_list}; buildPhases = ({widget_sources_phase}, {widget_frameworks_phase}, {widget_resources_phase}, {widget_staged_phase}, ); buildRules = (); dependencies = ({shared_widget_dependency}, ); name = JohnWidget; packageProductDependencies = ({widget_package_dep}, ); productName = JohnWidget; productReference = {widget_product_id}; productType = \"com.apple.product-type.app-extension\"; }}")
 ui_target = add("target-ui-tests", f"{{ isa = PBXNativeTarget; buildConfigurationList = {ui_config_list}; buildPhases = ({ui_sources_phase}, {ui_frameworks_phase}, {ui_resources_phase}, ); buildRules = (); dependencies = (); name = JohnUITests; packageProductDependencies = (); productName = JohnUITests; productReference = {ui_product_id}; productType = \"com.apple.product-type.bundle.ui-testing\"; }}")
 adapter_target = add("target-legacy-adapter", f"{{ isa = PBXNativeTarget; buildConfigurationList = {adapter_config_list}; buildPhases = ({adapter_sources_phase}, {adapter_frameworks_phase}, ); buildRules = (); dependencies = (); name = JohnLegacyAdapter; packageProductDependencies = (); productName = JohnLegacyAdapter; productReference = {adapter_product_id}; productType = \"com.apple.product-type.library.static\"; }}")
+
+shared_target = add("target-shared-resources", f"{{ isa = PBXNativeTarget; buildConfigurationList = {shared_config_list}; buildPhases = ({shared_sources_phase}, {shared_frameworks_phase}, {shared_resources_phase}, ); buildRules = (); dependencies = (); name = JohnSharedResources; packageProductDependencies = (); productName = JohnSharedResources; productReference = {shared_product_id}; productType = \"com.apple.product-type.framework\"; }}")
 
 objects[app_product_id] = objects.pop(app_product)
 objects[widget_product_id] = objects.pop(widget_product)
 objects[ui_product_id] = objects.pop(ui_product)
 objects[adapter_product_id] = objects.pop(adapter_product)
+objects[shared_product_id] = objects.pop(shared_product)
 
 objects[app_package_ref] = '{ isa = XCLocalSwiftPackageReference; relativePath = Packages/JohnCore; }'
 objects[app_package_dep] = f'{{ isa = XCSwiftPackageProductDependency; package = {app_package_ref}; productName = JohnCore; }}'
 objects[widget_package_dep] = f'{{ isa = XCSwiftPackageProductDependency; package = {app_package_ref}; productName = JohnCore; }}'
 
-objects[project_id] = f'''{{ isa = PBXProject; attributes = {{ BuildIndependentTargetsInParallel = 1; LastUpgradeCheck = 2660; TargetAttributes = {{ {app_target} = {{ CreatedOnToolsVersion = 26.6; }}; {widget_target} = {{ CreatedOnToolsVersion = 26.6; }}; {ui_target} = {{ CreatedOnToolsVersion = 26.6; TestTargetID = {app_target}; }}; {adapter_target} = {{ CreatedOnToolsVersion = 26.6; }}; }}; }}; buildConfigurationList = {project_config_list}; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = {main_group}; packageReferences = ({app_package_ref}, ); productRefGroup = {products_group}; projectDirPath = ""; projectRoot = ""; targets = ({app_target}, {widget_target}, {ui_target}, {adapter_target}, ); }}'''
+objects[project_id] = f'''{{ isa = PBXProject; attributes = {{ BuildIndependentTargetsInParallel = 1; LastUpgradeCheck = 2660; TargetAttributes = {{ {app_target} = {{ CreatedOnToolsVersion = 26.6; }}; {widget_target} = {{ CreatedOnToolsVersion = 26.6; }}; {ui_target} = {{ CreatedOnToolsVersion = 26.6; TestTargetID = {app_target}; }}; {adapter_target} = {{ CreatedOnToolsVersion = 26.6; }}; {shared_target} = {{ CreatedOnToolsVersion = 26.6; }}; }}; }}; buildConfigurationList = {project_config_list}; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ); mainGroup = {main_group}; packageReferences = ({app_package_ref}, ); productRefGroup = {products_group}; projectDirPath = ""; projectRoot = ""; targets = ({app_target}, {widget_target}, {ui_target}, {adapter_target}, {shared_target}, ); }}'''
 
 header = "// !$*UTF8*$!\n{\n\tarchiveVersion = 1;\n\tclasses = {};\n\tobjectVersion = 60;\n\tobjects = {\n"
 body = "".join(f"\t\t{k} = {v};\n" for k, v in sorted(objects.items()))

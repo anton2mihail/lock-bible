@@ -53,6 +53,7 @@ public enum L04RepositoryRunner {
     /// `databaseURL` must point inside `outputRoot`; Core can write only this test-owned copy.
     public static func run(
         roots: ResourceRoots,
+        rotationDirectory: URL,
         databaseURL: URL,
         expectedClosedSourceSHA256: String,
         recoveryDirectory: URL,
@@ -182,7 +183,7 @@ public enum L04RepositoryRunner {
                        "backupSchema": backupSummary.schemaVersion, "backupNotes": backupSummary.noteCount,
                        "backupOriginalNoteMatched": true, "privateWorkspaceCleanup": true,
                        "backupFiles": backupFiles.sorted()])
-        checks.append(try await rotationChecks(roots: roots, fixtureURL: rotationFixtureURL))
+        checks.append(try await rotationChecks(rotationDirectory: rotationDirectory, fixtureURL: rotationFixtureURL))
         checks.append(contentsOf: try await repositoryChecks(roots: roots, fixtureURL: bibleFixtureURL))
         checks.append(contentsOf: try await syntheticWorksChecks(sourceRoots: roots, outputRoot: outputRoot))
 
@@ -233,11 +234,11 @@ public enum L04RepositoryRunner {
             .filter { $0.hasPrefix("JohnLibraryRead-") }.count
     }
 
-    private static func rotationChecks(roots: ResourceRoots, fixtureURL: URL) async throws -> [String: Any] {
+    private static func rotationChecks(rotationDirectory: URL, fixtureURL: URL) async throws -> [String: Any] {
         let fixture = try JSONDecoder().decode(RotationFixture.self, from: Data(contentsOf: fixtureURL))
         guard fixture.outputs.count == 792 else { throw CoreError.invalidResource("rotation fixture must contain exactly 792 rows") }
-        let appRepository = IndexedRotationRepository(roots: roots, resourceRoot: .app)
-        let widgetRepository = IndexedRotationRepository(roots: roots, resourceRoot: .widget)
+        // The app and the widget read this one directory from JohnSharedResources.framework.
+        let repository = IndexedRotationRepository(rotationDirectory: rotationDirectory)
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         for row in fixture.outputs {
@@ -245,15 +246,14 @@ public enum L04RepositoryRunner {
                   let expectedBoundary = formatter.date(from: row.nextRotationInstant) else {
                 throw CoreError.invalidResource("rotation fixture row cannot be decoded")
             }
-            let actualCount = try await appRepository.poolCount(translation: edition, scope: row.scope)
+            let actualCount = try await repository.poolCount(translation: edition, scope: row.scope)
             guard actualCount == row.poolCount else { throw CoreError.invalidResource("rotation pool count mismatch") }
-            let appVerse = try await appRepository.verse(translation: edition, scope: row.scope, at: row.poolIndex)
-            let widgetVerse = try await widgetRepository.verse(translation: edition, scope: row.scope, at: row.poolIndex)
+            let appVerse = try await repository.verse(translation: edition, scope: row.scope, at: row.poolIndex)
             let offsetSeconds = -row.timezoneOffsetMinutes * 60
             let slot = try RotationMath.slot(at: instant, utcOffsetSeconds: offsetSeconds, intervalMinutes: row.cadenceMinutes)
             let index = try RotationMath.index(for: slot, count: row.poolCount)
             let boundary = try RotationMath.nextBoundary(after: instant, utcOffsetSeconds: offsetSeconds, intervalMinutes: row.cadenceMinutes)
-            guard appVerse == widgetVerse, appVerse.reference == row.verse.ref,
+            guard appVerse.reference == row.verse.ref,
                   appVerse.bookCode == row.verse.book, appVerse.chapter == row.verse.chapter,
                   appVerse.verseLabel == row.verse.verse, appVerse.text == row.verse.text,
                   slot == row.localSlot, index == row.poolIndex,
@@ -261,8 +261,8 @@ public enum L04RepositoryRunner {
                 throw CoreError.invalidResource("rotation source parity failed for \(row.editionId)/\(row.scope.rawValue)/\(row.cadenceMinutes)/\(row.timezone)")
             }
         }
-        return ["name": "rotationAppWidgetAndMath", "passed": true,
-                "rows": fixture.outputs.count, "editions": 3, "scopes": 3, "appWidgetRecordsMatch": true]
+        return ["name": "rotationSharedCorpusAndMath", "passed": true,
+                "rows": fixture.outputs.count, "editions": 3, "scopes": 3, "singleSharedCorpus": true]
     }
 
     private static func repositoryChecks(roots: ResourceRoots, fixtureURL: URL) async throws -> [[String: Any]] {

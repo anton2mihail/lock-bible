@@ -39,7 +39,7 @@ FAULTS = {
     "reading-reference-invalid": "A daily reading row opens 'This reference could not be opened.' (CitationContextView.swift:99). Needs --date.",
     "search-db-missing": "Search shows 'Search could not be completed. Try a different phrase.' (SearchView.swift:199). Verify on the first run.",
     "widget-daily-year-missing": "Daily Reading widget falls back to its placeholder text for that year. Needs --year.",
-    "widget-corpus-missing": "Verse widgets fall back to 'Open John 1:1 to begin.'. Needs --edition.",
+    "widget-corpus-missing": "Verse widgets fall back to 'Open John 1:1 to begin.'. Needs --edition. The corpus is shared: the app Today verse also fails for that edition.",
 }
 
 
@@ -108,7 +108,7 @@ def plan(fault, app, args):
     if fault == "widget-corpus-missing":
         if not args.edition:
             fail("widget-corpus-missing needs --edition")
-        return [("PlugIns/JohnWidget.appex/Widget/%s.dat" % args.edition, "move", None)]
+        return [("Frameworks/JohnSharedResources.framework/Rotation/%s.dat" % args.edition, "move", None)]
     fail("unknown fault")
 
 

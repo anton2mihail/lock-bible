@@ -3,6 +3,7 @@ import Observation
 import SwiftUI
 import WidgetKit
 import JohnCore
+import JohnSharedResources
 #if DEBUG
 import CryptoKit
 #endif
@@ -83,7 +84,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         if let root {
             let roots = ResourceRoots(app: root)
             let bibleRepository = BundledBibleRepository(roots: roots)
-            let rotationRepository = IndexedRotationRepository(roots: roots)
+            let rotationRepository = SharedResources.rotationDirectory.map { IndexedRotationRepository(rotationDirectory: $0) }
             bible = bibleRepository
             rotation = rotationRepository
             works = SQLiteWorksRepository(roots: roots)
@@ -465,8 +466,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     private func runRepositoryRunnerFromLaunchArguments(_ arguments: [String]) async {
         guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
               let resourceRoot = appResourceRoot,
-              let widgetExtension = Bundle.main.builtInPlugInsURL?.appendingPathComponent("JohnWidget.appex", isDirectory: true),
-              let widgetRoot = Bundle(url: widgetExtension)?.resourceURL?.appendingPathComponent("Widget", isDirectory: true),
+              let rotationDirectory = SharedResources.rotationDirectory,
               let closedIndex = arguments.firstIndex(of: "-L04RepoClosedDatabaseRelativePath"),
               arguments.indices.contains(closedIndex + 1),
               let recoveryIndex = arguments.firstIndex(of: "-L04RepoRecoveryRelativePath"),
@@ -496,7 +496,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
               Bundle.main.bundleIdentifier ?? "unknown", NSHomeDirectory(), documents.path, support?.path ?? "unavailable")
         do {
             try await L04RepositoryRunner.run(
-                roots: ResourceRoots(app: resourceRoot, widget: widgetRoot),
+                roots: ResourceRoots(app: resourceRoot),
+                rotationDirectory: rotationDirectory,
                 databaseURL: databaseURL,
                 expectedClosedSourceSHA256: "8d78ca482d4720783ecabfcd17f88e72d5d2393eabc358ef03c5398f2cd43ed9",
                 recoveryDirectory: recoveryURL,

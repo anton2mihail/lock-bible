@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import WidgetKit
 import JohnCore
+import JohnSharedResources
 
 private enum WidgetSharedState {
     static let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String ?? "group.com.nrsv.verse"
@@ -92,15 +93,16 @@ private struct DailyEntry: TimelineEntry, Sendable {
 }
 
 private enum WidgetData {
-    static func repositories() -> (ResourceRoots, IndexedRotationRepository)? {
-        guard let root = Bundle.main.resourceURL?.appendingPathComponent("Widget", isDirectory: true) else { return nil }
-        let roots = ResourceRoots(app: root, widget: root)
-        return (roots, IndexedRotationRepository(roots: roots, resourceRoot: .widget))
+    /// The rotation corpus lives only in JohnSharedResources.framework. The app embeds it. This extension
+    /// links it and loads it from the containing app's Frameworks folder.
+    static func rotationRepository() -> IndexedRotationRepository? {
+        guard let directory = SharedResources.rotationDirectory else { return nil }
+        return IndexedRotationRepository(rotationDirectory: directory)
     }
 
     static func verse(at date: Date) async -> VerseEntry {
         let state = WidgetSharedState.values()
-        guard let (_, repository) = repositories() else {
+        guard let repository = rotationRepository() else {
             return VerseEntry(date: date, verse: nil, abbreviation: state.abbreviation, attribution: state.attribution)
         }
         do {
@@ -117,7 +119,7 @@ private enum WidgetData {
 
     static func verseTimeline(from now: Date) async -> [VerseEntry] {
         let state = WidgetSharedState.values()
-        guard let (_, repository) = repositories(),
+        guard let repository = rotationRepository(),
               let count = try? await repository.poolCount(translation: state.translation, scope: state.scope), count > 0 else {
             return [await verse(at: now)]
         }
@@ -147,7 +149,7 @@ private enum WidgetData {
 
     static func timerTimeline(from now: Date) async -> [TimerEntry] {
         let state = WidgetSharedState.values()
-        guard let (_, repository) = repositories(),
+        guard let repository = rotationRepository(),
               let count = try? await repository.poolCount(translation: state.translation, scope: state.scope) else {
             return [TimerEntry(date: now, nextChange: now.addingTimeInterval(60), nextReference: "")]
         }
