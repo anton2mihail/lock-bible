@@ -146,9 +146,32 @@ public struct ReaderLocation: Codable, Hashable, Sendable {
     public let chapter: Int
     public let scrollY: Double
     public let updatedAt: Int64
-    public init(bookCode: BookCode, chapter: Int, scrollY: Double, updatedAt: Int64 = 0) throws {
-        guard chapter > 0, scrollY.isFinite else { throw CoreError.invalidIdentity("reader location") }
-        self.bookCode = bookCode; self.chapter = chapter; self.scrollY = max(0, scrollY); self.updatedAt = updatedAt
+    public let anchor: ReaderAnchor?
+
+    private enum CodingKeys: String, CodingKey { case bookCode, chapter, scrollY, updatedAt, anchor }
+
+    public init(bookCode: BookCode, chapter: Int, scrollY: Double, updatedAt: Int64 = 0,
+                anchor: ReaderAnchor? = nil) throws {
+        guard chapter > 0, scrollY.isFinite,
+              anchor.map({ $0.utf16Offset >= 0 && !$0.verseLabel.rawValue.isEmpty }) ?? true else {
+            throw CoreError.invalidIdentity("reader location")
+        }
+        self.bookCode = bookCode
+        self.chapter = chapter
+        self.scrollY = max(0, scrollY)
+        self.updatedAt = updatedAt
+        self.anchor = anchor
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(
+            bookCode: values.decode(BookCode.self, forKey: .bookCode),
+            chapter: values.decode(Int.self, forKey: .chapter),
+            scrollY: values.decode(Double.self, forKey: .scrollY),
+            updatedAt: values.decodeIfPresent(Int64.self, forKey: .updatedAt) ?? 0,
+            anchor: values.decodeIfPresent(ReaderAnchor.self, forKey: .anchor)
+        )
     }
 }
 
