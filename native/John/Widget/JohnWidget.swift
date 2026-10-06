@@ -28,6 +28,43 @@ private enum WidgetSharedState {
         case .vulgate: "VUL"
         }
     }
+
+    #if DEBUG
+    /// Step 7 probe. It records what the extension can reach: the group container, the shared defaults, and a file write.
+    /// It reads the group only from Info.plist. With no group it records `"appGroup": "missing"` in the log and writes nothing.
+    static func recordProbe(kind: String) {
+        let time = ISO8601DateFormatter().string(from: Date())
+        guard let group = Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String, !group.isEmpty else {
+            NSLog("John widget probe kind=%@ time=%@ appGroup=missing", kind, time)
+            return
+        }
+        let defaults = UserDefaults(suiteName: group)
+        let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group)
+        var record: [String: String] = [
+            "kind": kind, "time": time, "appGroup": group,
+            "defaultsAvailable": defaults == nil ? "false" : "true",
+            "containerPath": container?.path ?? "nil",
+            "translationId": defaults?.string(forKey: "translationId") ?? "nil",
+            "scope": defaults?.string(forKey: "scope") ?? "nil",
+            "intervalMinutes": String(defaults?.integer(forKey: "intervalMinutes") ?? -1),
+            "processID": String(ProcessInfo.processInfo.processIdentifier),
+            "fileWrite": "no container",
+        ]
+        if let container {
+            record["fileWrite"] = "ok"
+            do {
+                let data = try JSONSerialization.data(withJSONObject: record, options: [.sortedKeys])
+                try data.write(to: container.appendingPathComponent("l29-widget-probe.json"), options: .atomic)
+            } catch {
+                record["fileWrite"] = "failed: \(error)"
+            }
+        }
+        if let data = try? JSONSerialization.data(withJSONObject: record, options: [.sortedKeys]),
+           let text = String(data: data, encoding: .utf8) {
+            defaults?.set(text, forKey: "l29.widgetProbe")
+        }
+    }
+    #endif
 }
 
 private struct VerseEntry: TimelineEntry, Sendable {
@@ -169,9 +206,15 @@ private struct VerseProvider: TimelineProvider, Sendable {
         VerseEntry(date: .now, verse: nil, abbreviation: "WEB-CE", attribution: "")
     }
     func getSnapshot(in context: Context, completion: @escaping @Sendable (VerseEntry) -> Void) {
+        #if DEBUG
+        WidgetSharedState.recordProbe(kind: "verse.snapshot")
+        #endif
         Task { completion(await WidgetData.verse(at: .now)) }
     }
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<VerseEntry>) -> Void) {
+        #if DEBUG
+        WidgetSharedState.recordProbe(kind: "verse.timeline")
+        #endif
         Task { completion(Timeline(entries: await WidgetData.verseTimeline(from: .now), policy: .atEnd)) }
     }
 }
@@ -179,10 +222,16 @@ private struct VerseProvider: TimelineProvider, Sendable {
 private struct TimerProvider: TimelineProvider, Sendable {
     func placeholder(in context: Context) -> TimerEntry { TimerEntry(date: .now, nextChange: .now.addingTimeInterval(60), nextReference: "") }
     func getSnapshot(in context: Context, completion: @escaping @Sendable (TimerEntry) -> Void) {
+        #if DEBUG
+        WidgetSharedState.recordProbe(kind: "timer.snapshot")
+        #endif
         let fallback = placeholder(in: context)
         Task { completion((await WidgetData.timerTimeline(from: .now)).first ?? fallback) }
     }
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<TimerEntry>) -> Void) {
+        #if DEBUG
+        WidgetSharedState.recordProbe(kind: "timer.timeline")
+        #endif
         Task { completion(Timeline(entries: await WidgetData.timerTimeline(from: .now), policy: .atEnd)) }
     }
 }
@@ -192,9 +241,15 @@ private struct DailyProvider: TimelineProvider, Sendable {
         DailyEntry(date: .now, reading: DailyReading(title: "Today’s Gospel", reference: "John 1:1–18", excerpt: "In the beginning was the Word, and the Word was with God, and the Word was God."))
     }
     func getSnapshot(in context: Context, completion: @escaping @Sendable (DailyEntry) -> Void) {
+        #if DEBUG
+        WidgetSharedState.recordProbe(kind: "daily.snapshot")
+        #endif
         completion(WidgetData.dailyTimeline(from: .now).first ?? placeholder(in: context))
     }
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<DailyEntry>) -> Void) {
+        #if DEBUG
+        WidgetSharedState.recordProbe(kind: "daily.timeline")
+        #endif
         let entries = WidgetData.dailyTimeline(from: .now)
         completion(Timeline(entries: entries, policy: .atEnd))
     }

@@ -34,6 +34,12 @@ enum RosaryMediaPlaybackState: Equatable {
     #if DEBUG
     private static let testVideoURI = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     private static let testAudioURI = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    /// Step 7: -L29MediaFailureURI <uri> replaces every media URI so the failure state can be observed.
+    private static let failureURIOverride: String? = {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-L29MediaFailureURI"), arguments.indices.contains(index + 1) else { return nil }
+        return arguments[index + 1]
+    }()
     #endif
 
     init(episode: RosaryMediaEpisode) {
@@ -116,8 +122,8 @@ enum RosaryMediaPlaybackState: Equatable {
         guard playerAvailable else { state = .pending; return }
         let directURI = mode == .video ? episode.videoUri : episode.audioUri
         #if DEBUG
-        let uri: String? = directURI ?? (mode == .video ? Self.testVideoURI : Self.testAudioURI)
-        isTestSource = directURI == nil
+        let uri: String? = Self.failureURIOverride ?? directURI ?? (mode == .video ? Self.testVideoURI : Self.testAudioURI)
+        isTestSource = Self.failureURIOverride == nil && directURI == nil
         #else
         let uri = directURI
         isTestSource = false

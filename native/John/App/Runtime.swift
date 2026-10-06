@@ -187,6 +187,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         #endif
 #if DEBUG
         await captureSystemNoticeSnapshot(phase: "startup", outcome: "loaded")
+        exportSharedContainerProbe()
 #endif
         await refreshLocalNotifications()
     }
@@ -682,6 +683,43 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
             NSLog("John L04 recovery scenario %@ passed=%d output=%@", scenario.rawValue, result.passed ? 1 : 0, outputRoot.path)
         } catch {
             NSLog("John L04 recovery scenario %@ failed: %@", scenario.rawValue, String(describing: error))
+        }
+    }
+
+    /// Step 7: -L29SharedProbeRelativePath <path below Documents>. It writes one JSON file and never overwrites a file.
+    /// It reads the group only from Info.plist. With no group it records `"appGroup": "missing"` and touches no group data.
+    func exportSharedContainerProbe(arguments: [String] = ProcessInfo.processInfo.arguments) {
+        guard let index = arguments.firstIndex(of: "-L29SharedProbeRelativePath"),
+              arguments.indices.contains(index + 1),
+              let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let confined = debugScenarioURL(arguments[index + 1], under: documents) else { return }
+        let target = URL(fileURLWithPath: confined.path, isDirectory: false)
+        var record: [String: String] = ["appTime": ISO8601DateFormatter().string(from: Date())]
+        if let group = Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String, !group.isEmpty {
+            let defaults = UserDefaults(suiteName: group)
+            let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group)
+            var widgetFile = "nil"
+            if let container, let data = try? Data(contentsOf: container.appendingPathComponent("l29-widget-probe.json")) {
+                widgetFile = String(data: data, encoding: .utf8) ?? "unreadable"
+            }
+            record["appGroup"] = group
+            record["defaultsAvailable"] = defaults == nil ? "false" : "true"
+            record["containerPath"] = container?.path ?? "nil"
+            record["translationId"] = defaults?.string(forKey: "translationId") ?? "nil"
+            record["scope"] = defaults?.string(forKey: "scope") ?? "nil"
+            record["intervalMinutes"] = String(defaults?.integer(forKey: "intervalMinutes") ?? -1)
+            record["widgetProbeDefaults"] = defaults?.string(forKey: "l29.widgetProbe") ?? "nil"
+            record["widgetProbeFile"] = widgetFile
+        } else {
+            record["appGroup"] = "missing"
+        }
+        do {
+            try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+            let data = try JSONSerialization.data(withJSONObject: record, options: [.sortedKeys, .prettyPrinted])
+            // `.withoutOverwriting` makes the write fail when the file exists. The probe never replaces an earlier record.
+            try data.write(to: target, options: [.atomic, .withoutOverwriting])
+        } catch {
+            NSLog("John L29 shared probe not written: %@", String(describing: error))
         }
     }
 
