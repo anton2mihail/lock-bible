@@ -24,6 +24,7 @@ struct WorkReaderView: View {
     @State private var loading = true
     @State private var failed = false
     @State private var contentsPresented = false
+    @ScaledMetric(relativeTo: .body) private var contentsNumberWidth: CGFloat = 32
     @State private var loadGeneration = 0
     @State private var positionGeneration = 0
     @State private var saveNotice: String?
@@ -175,6 +176,7 @@ struct WorkReaderView: View {
                 } label: {
                     HStack(spacing: 12) {
                         Text("\(item.index + 1).").font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).monospacedDigit()
+                            .frame(minWidth: contentsNumberWidth, alignment: .trailing)
                         Text(item.title).font(JohnTypography.sans(16, weight: item.index == currentSectionIndex ? .semibold : .regular)).foregroundStyle(colors.text)
                         Spacer(minLength: 0)
                     }.frame(minHeight: 56, alignment: .leading)
@@ -182,6 +184,8 @@ struct WorkReaderView: View {
                 .id(item.index)
                 .listRowBackground(colors.background)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .onAppear { proxy.scrollTo(currentSectionIndex, anchor: .center) }
           }
             .navigationTitle(work?.title ?? "Contents")
