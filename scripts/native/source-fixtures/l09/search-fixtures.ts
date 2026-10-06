@@ -149,7 +149,10 @@ const parserProbes = {
   utf16EditDistance: [
     ["😀", "", 2], ["𐐀", "𐐁", 1], ["faith", "fiath", 2],
   ].map(([left, right]) => ({ left, right, expected: parser.editDistance(String(left), String(right)) })),
-  ftsQueries: ["faith, hope & love!", '"In the beginning"', '"fiath"', "   "].map((query) => ({
+  ftsQueries: [
+    "faith, hope & love!", '"In the beginning"', '"fiath"', "   ",
+    '"In\u2028the beginning"', '"In\u2029the beginning"',
+  ].map((query) => ({
     query, expected: buildFtsQuery(query),
   })),
 }
