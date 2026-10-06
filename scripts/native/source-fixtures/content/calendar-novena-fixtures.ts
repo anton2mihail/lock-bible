@@ -117,6 +117,7 @@ function normalized(value: unknown) {
 
 function sourceMappedCallbacks() {
   let progress = normalized({ ...emptyNovenaProgress, intention: "  Fixture intention  " })
+  const initialProgress = progress
   const steps: Array<Record<string, unknown>> = []
   const selectDay = (selectedDay: number) => {
     progress = normalized({ ...progress, selectedDay })
@@ -149,6 +150,7 @@ function sourceMappedCallbacks() {
   steps.push({ action: "startAgain", progress })
   return {
     mapping: "selectDay, completeDay, and startAgain mirror NovenaScreen.tsx callbacks; they are not exported source functions",
+    initialProgress,
     steps,
   }
 }
@@ -203,7 +205,10 @@ const result = {
     dayCount: NOVENA_DAY_COUNT,
     ids: novenas.map(({ id }) => id),
     transitions: transitionOutputs(),
-    malformedInput: normalized({ completedDays: "all", selectedDay: 20, intention: null }),
+    malformedInput: {
+      input: { completedDays: "all", selectedDay: 20, intention: null },
+      expected: normalized({ completedDays: "all", selectedDay: 20, intention: null }),
+    },
   },
   sourceHashes,
 }
