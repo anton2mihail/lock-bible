@@ -496,9 +496,17 @@ struct ReaderView: View {
                             )
                             .padding(.top, 12)
                             if let range = model.selectedRange, chapter.verses.indices.contains(range.lowerBound), chapter.verses.indices.contains(range.upperBound) {
-                                Text("Selected: verses \(chapter.verses[range.lowerBound].label)–\(chapter.verses[range.upperBound].label)")
+                                // Accessibility only (audit B4). The old app shows no such line, so the text is clear
+                                // and takes no layout height (1 pt frame, -1 pt padding). VoiceOver reads it after the
+                                // chapter text, and UI tests read the range from `reader-selection-summary`.
+                                let summary = "Selected: verses \(chapter.verses[range.lowerBound].label)–\(chapter.verses[range.upperBound].label)"
+                                Text(summary)
                                     .font(JohnTypography.sans(13, weight: .medium))
-                                    .foregroundStyle(colors.tint)
+                                    .foregroundStyle(.clear)
+                                    .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1, alignment: .topLeading)
+                                    .padding(.bottom, -1)
+                                    .allowsHitTesting(false)
+                                    .accessibilityLabel(summary)
                                     .accessibilityIdentifier("reader-selection-summary")
                             }
                             chapterCommentary(book: book, chapter: number)
