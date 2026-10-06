@@ -152,7 +152,7 @@ final class ContentFlowUITests: XCTestCase {
         app.buttons["tab-pray"].tap()
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         tapWhenReady(button(containing: "The Joyful Mysteries", in: app), in: app)
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Joyful Mysteries")).firstMatch.waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Joyful"].waitForExistence(timeout: 8))
         let progress = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Progress")).firstMatch
         XCTAssertEqual(progress.value as? String, "0 percent")
         NSLog("L17_ROSARY expectedSession=joyful totalActions=80 stepCount=33 initial=0%% back=0%% complete=100%% reset=0%% sourceFixtureSHA=8da3d86f5bb284a197188e69292ef1f3b5507b51229c5bc5dc6c9ca97bdb2dee")
