@@ -8,6 +8,8 @@ Status: ready for isolated implementation. Gate D acceptance remains open.
 
 Main owns `Runtime.swift`, the router, app lifecycle, notification delegate installation, project files, the design system, widgets, and all simulator operations. Source owns Works and its current content files. A third Luna worker can own new files under `Platform/Notifications/`, `Platform/Media/`, `Features/Notifications/`, `Features/Media/`, and `Features/Settings/`. It must not edit shared files or JohnCore. Send Main the file list, public interfaces, callback list, and stable hashes at a build boundary. Main adds target membership and integration.
 
+The third worker could not start. The two existing workers keep these scopes. Main owns L22 scheduling, lifecycle, delegate installation, and notification UI after widget and content integration. Source owns isolated L23 media and L24 complete Settings after Works. Main retains shared integration and simulator control. Source sends new file and callback lists at each stable boundary.
+
 Use ADRs 0001–0006 and the accepted state store. Do not create another preference store, calendar decoder, media catalog, or router. Use injected services and immutable values. Keep app platform frameworks outside JohnCore.
 
 ## L22: local notices
