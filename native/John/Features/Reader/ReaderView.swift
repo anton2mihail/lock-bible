@@ -8,7 +8,8 @@ struct ReaderView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-@ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
+    @ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
+    @Environment(\.displayScale) private var displayScale
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @State private var readerScrollPosition = ScrollPosition(idType: String.self)
     @State private var textGeometryProbe = ReaderTextGeometryProbe()
@@ -25,7 +26,7 @@ struct ReaderView: View {
     @State private var lastContextRequest: String?
     @State private var selectedBookmarkState: Bool?
     @State private var selectionFeedback: String?
-@State private var feedbackHaptic = ReaderFeedbackHaptic()
+    @State private var feedbackHaptic = ReaderFeedbackHaptic()
     @State private var isSelectionMutationRunning = false
     @State private var selectionIdentity = UUID()
     @State private var selectionSharePayload: ReaderSharePayload?
@@ -724,7 +725,9 @@ struct ReaderView: View {
                     .foregroundStyle(colors.text)
                     .accessibilityAddTraits(.isHeader)
                 VStack(spacing: 0) {
-                    ForEach(Array(entries.prefix(3)), id: \.self) { entry in
+                    ForEach(Array(entries.prefix(3).enumerated()), id: \.element) { offset, entry in
+                        let isLastShown = offset == min(entries.count, 3) - 1
+                        let showsSeparator = !isLastShown || entries.count > 3
                         Button {
                             router.push(.workReader(workID: entry.workID, section: entry.sectionIndex))
                         } label: {
@@ -742,8 +745,14 @@ struct ReaderView: View {
                                 Spacer(minLength: 0)
                                 FeatherIcon(name: "chevron-right", color: colors.tint)
                             }
+                            .padding(.vertical, 8)
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .contentShape(Rectangle())
+                            .overlay(alignment: .bottom) {
+                                if showsSeparator {
+                                    Rectangle().fill(colors.separator).frame(height: 1 / displayScale)
+                                }
+                            }
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(entry.sectionTitle), \(entry.workTitle)")
