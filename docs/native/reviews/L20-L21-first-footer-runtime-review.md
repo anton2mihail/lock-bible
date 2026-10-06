@@ -19,3 +19,13 @@ The Verse Moment route test passes in 13.423 seconds after the title-selector co
 The Works rerun starts from its saved section after the first test changed position. `WorksCollectionView` passes no explicit section. `WorkReaderView` then reads the committed section index. The hardcoded section 1 and 2 checks are invalid on this resumed fixture. Keep the earlier footer and Next-section pass. Do not change resume behavior to satisfy the test.
 
 The share rerun fails the Copy-action lookup. Separate URL and Boolean presentation state can permit a stale sheet payload. This is a source hypothesis until Main supplies the actual failure hierarchy and screenshot. A native share sheet need not appear under `app.sheets`. Keep the proven PNG export separate from presentation acceptance.
+
+## Runs 04 and 05
+
+Sol inspected the run 04 screenshot and accessibility export. They show a complete native share sheet. Copy is a remote activity-controller Cell with identifier `actionGroupCell`, label `Copy`, and process 90889. This evidence rejects the empty-sheet hypothesis for this run. No Sharing product change is required by that failed button query.
+
+The corrected run 05 passes in 18.885 seconds. It selects the observed Copy cell and returns to Scripture Card. Main records that the new temporary PNG is absent after dismissal. Three old failed-run files remain preserved. The report records app process 95342, test runner 95287, and matching product/installed executable and dylib hashes. The executable hash is `034d1f3ee8c4a04eb97e69c0cedbd7b9d54d3c303f37eaf82c30b510ceaa510c`. The dylib hash is `e4c2277b9fa327c6e54cae10c0604b16b28b602a25a0838d5b209421073a789e`. Evidence is `build/native-evidence/L22/verse-share-05-attachments/run.txt` and `verse-share-05.log`. This accepts the observed share action, return, and new-file cleanup. Both backgrounds, long-text height, preview agreement, repeat export, and cancellation remain open.
+
+Run 04 also checks the exact Verse Moment reference `2 Timothy 2:23`, Reader chapter `2 Timothy 2`, verse 23, and WEB-CE attribution. Its Reader image visibly highlights verse 23 near the center. This is stronger than the earlier generic route assertion. Main must retain the matching run 04 binary report with this bounded route evidence.
+
+The same Reader image draws text behind the status icons. The source Reader uses the top safe area. Main must preserve that boundary and clip the scroll drawing there. The partly visible Previous/Next row is not a failure from this image alone. Check its complete frames and hit targets at the end of the scroll before a lower-control verdict.

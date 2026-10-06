@@ -19,13 +19,13 @@ Batches can share one running app and synthetic fixture when actions do not inva
 
 ## Shared integration gaps
 
-`ReaderAnchor` exists in Core. `ReaderLocation` currently has only `scrollY`, and `ScriptureTextView` returns no visible-anchor value. Main must connect capture/restore for an unselected visible verse and within-verse UTF-16 offset, as ADR 0004 requires. Legacy raw offsets remain fallback values. Source can add the optional Core field and validation at an agreed build boundary. Do not change paragraph blank-space hit behavior for a test.
+`ReaderLocation.anchor` and app capture/restore are implemented. Older records still decode without an anchor. The source rejects invalid decoded anchors and negative scroll offsets. Capture uses chapter/request identity and suppresses writes during restoration. Actual unselected-anchor restoration after restart, typography change, and width change remains open. Legacy raw offsets remain fallback values. Do not change paragraph blank-space hit behavior for a test.
 
-Today and Calendar already accept clock/time-zone inputs. The shared destinations currently use default inputs. Main will provide a DEBUG-only feature-clock bridge for fixed-date checks. Notification delivery uses the actual OS clock. An injected app date proves planning only.
+Today and Calendar now use the shared feature clock and time zone. DEBUG arguments can supply a fixed date and zone. Today rotation receives those same inputs. The exact Verse Moment route passed with 2 Timothy 2:23 and WEB-CE. Date-boundary content checks remain open. Notification delivery uses the actual OS clock. An injected app date proves planning only.
 
 The corrected notification service must preserve an unchanged system trigger and the complete original request during rollback. Main's committed reader rejects absent or uncertain state. Main retains one active-hour refresh task, startup/foreground/significant-time/time-zone refresh, and validated response routing. See `L22-notification-service-source-review.md`.
 
-Debug entitlements use `group.com.nrsv.verse.dev`, but the current app/widget bridge code hardcodes `group.com.nrsv.verse`. Main must connect one build-configured group identifier in both targets before signed widget preference checks. Release keeps the original production group.
+The app and widget now read their build-configured `AppGroupIdentifier`. Both built Debug property lists resolve to `group.com.nrsv.verse.dev`. Release keeps the original production group. Effective signed container access and installed-widget continuity remain open.
 
 ## Final gates
 
