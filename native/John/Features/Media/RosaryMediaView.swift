@@ -122,8 +122,10 @@ struct RosaryMediaView: View {
                         .background(selected ? colors.tint : .clear, in: RoundedRectangle(cornerRadius: 10))
                 }
                 .buttonStyle(.plain)
-                .accessibilityElement().accessibilityLabel(mode.title)
+                .accessibilityLabel(mode.title)
+                .accessibilityValue(selected ? "Selected" : "Not selected")
                 .accessibilityAddTraits(selected ? .isSelected : [])
+                .accessibilityIdentifier("rosary-media-mode-\(mode.id)")
             }
         }
         .padding(4)

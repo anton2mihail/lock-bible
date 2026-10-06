@@ -63,19 +63,24 @@ struct FullSettingsView: View {
 
                 section("Translation") {
                     ForEach(Array(orderedTranslations.enumerated()), id: \.element) { index, id in
-                        SettingsListRow(title: metadata[id]?.fullName ?? id.rawValue,
-                                        selected: preferences.translation == id,
-                                        topSeparator: index > 0) { save(.setTranslationID(id.rawValue)) }
-                            .accessibilityIdentifier("translation-\(id.rawValue)")
+                    SettingsListRow(title: metadata[id]?.fullName ?? id.rawValue,
+                                    selected: preferences.translation == id,
+                                    topSeparator: index > 0,
+                                    accessibilityID: "translation-\(id.rawValue)") {
+                            save(.setTranslationID(id.rawValue))
+                        }
                     }
                     Text("\(orderedTranslations.count) complete Catholic editions are available offline. Your choice also controls the rotating verse and lock-screen widget.")
                         .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
                 }
 
                 section("Verse pool") {
-                    SettingsListRow(title: "Full Bible", selected: preferences.scope == .full) { save(.setVerseScope(.full)) }
-                    SettingsListRow(title: "Old Testament", selected: preferences.scope == .ot, topSeparator: true) { save(.setVerseScope(.ot)) }
-                    SettingsListRow(title: "New Testament", selected: preferences.scope == .nt, topSeparator: true) { save(.setVerseScope(.nt)) }
+                    SettingsListRow(title: "Full Bible", selected: preferences.scope == .full,
+                                    accessibilityID: "settings-scope-full") { save(.setVerseScope(.full)) }
+                    SettingsListRow(title: "Old Testament", selected: preferences.scope == .ot, topSeparator: true,
+                                    accessibilityID: "settings-scope-ot") { save(.setVerseScope(.ot)) }
+                    SettingsListRow(title: "New Testament", selected: preferences.scope == .nt, topSeparator: true,
+                                    accessibilityID: "settings-scope-nt") { save(.setVerseScope(.nt)) }
                     Text("Which part of Scripture the rotating verse is drawn from. Old Testament includes the deuterocanonical books.")
                         .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
                 }
@@ -83,7 +88,10 @@ struct FullSettingsView: View {
                 section("Verse rotation") {
                     ForEach(Array(intervalOptions.enumerated()), id: \.element.minutes) { index, option in
                         SettingsListRow(title: option.title, selected: preferences.intervalMinutes == option.minutes,
-                                        topSeparator: index > 0) { save(.setRotationInterval(option.minutes)) }
+                                        topSeparator: index > 0,
+                                        accessibilityID: "settings-interval-\(option.minutes)") {
+                            save(.setRotationInterval(option.minutes))
+                        }
                     }
                     Text("How often the Verse of the Moment and your lock screen widget change.")
                         .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
@@ -205,7 +213,8 @@ private struct SettingsChoiceGroup: View {
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(option.selected ? colors.tint : colors.border, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
-                    .accessibilityElement().accessibilityLabel("\(label), \(option.title)")
+                    .accessibilityLabel("\(label), \(option.title)")
+                    .accessibilityValue(option.selected ? "Selected" : "Not selected")
                     .accessibilityAddTraits(option.selected ? .isSelected : [])
                     .accessibilityIdentifier("settings-\(label.lowercased().replacingOccurrences(of: " ", with: "-"))-\(option.title.lowercased().replacingOccurrences(of: " ", with: "-"))")
                 }
@@ -265,6 +274,7 @@ private struct SettingsListRow: View {
     let title: String
     let selected: Bool
     var topSeparator = false
+    var accessibilityID: String? = nil
     let action: () -> Void
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
@@ -282,7 +292,9 @@ private struct SettingsListRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityElement().accessibilityLabel(title)
+        .accessibilityLabel(title)
+        .accessibilityValue(selected ? "Selected" : "Not selected")
         .accessibilityAddTraits(selected ? .isSelected : [])
+        .accessibilityIdentifier(accessibilityID ?? "settings-row-\(title.lowercased().replacingOccurrences(of: " ", with: "-"))")
     }
 }
