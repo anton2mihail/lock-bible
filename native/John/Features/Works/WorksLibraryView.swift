@@ -60,7 +60,13 @@ struct WorksLibraryView: View {
             }
 
             if loadingFailed {
-                ContentMutedText(text: "The library could not be opened on this device.")
+                ContentUnavailableView {
+                    Label("Library unavailable", systemImage: "books.vertical")
+                } description: {
+                    Text("The library could not be opened on this device.")
+                } actions: {
+                    Button("Try again") { Task { await loadCatalog() } }
+                }
             } else if let catalog {
                 LazyVStack(spacing: 0) {
                     ForEach(catalog.collections.sorted(by: { $0.order < $1.order }), id: \.id) { collection in

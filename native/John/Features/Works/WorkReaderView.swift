@@ -56,9 +56,8 @@ struct WorkReaderView: View {
     private var taskIdentity: String { "\(workID ?? "missing-work")|\(requestedSection.map(String.init) ?? "resume")" }
 
     private var missingView: some View {
-        VStack(spacing: 16) {
-            Text("That work isn’t available")
-                .font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
+        ContentUnavailableView {
+            Label("That work isn’t available", systemImage: "book.closed")
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(colors.background)

@@ -32,9 +32,9 @@ struct WorksChapterCommentaryView: View {
     var body: some View {
         WorksPage {
             if failed {
-                missing("No readings on this chapter")
+                missing("No readings on this chapter", canRetry: true)
             } else if let catalog, entries.isEmpty {
-                missing("No readings on this chapter")
+                missing("No readings on this chapter", canRetry: false)
             } else if catalog != nil {
                 VStack(alignment: .leading, spacing: 8) {
                     WorksEyebrow("THE FATHERS ON")
@@ -80,9 +80,11 @@ struct WorksChapterCommentaryView: View {
         .task(id: "\(bookCode ?? "")|\(chapter ?? 0)") { await loadCatalog() }
     }
 
-    @ViewBuilder private func missing(_ text: String) -> some View {
-        VStack(spacing: 16) {
-            Text(text).font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
+    @ViewBuilder private func missing(_ text: String, canRetry: Bool) -> some View {
+        ContentUnavailableView {
+            Label(text, systemImage: "text.book.closed")
+        } actions: {
+            if canRetry { Button("Try again") { Task { await loadCatalog() } } }
         }
         .frame(maxWidth: .infinity, minHeight: 240)
     }

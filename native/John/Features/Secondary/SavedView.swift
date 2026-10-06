@@ -40,13 +40,7 @@ struct SavedView: View {
                 ProgressView("Loading saved items…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if items.isEmpty {
-                Text(message ?? emptyText)
-                    .font(JohnTypography.sans(15))
-                    .foregroundStyle(colors.textDim)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(28)
-                    .accessibilityIdentifier("saved-empty-state")
+                emptyOrErrorState
             } else {
                 savedList
             }
@@ -131,6 +125,32 @@ struct SavedView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+    }
+
+    /// The empty list and the load failure. The description keeps the message text and the `saved-empty-state` identifier.
+    private var emptyOrErrorState: some View {
+        ContentUnavailableView {
+            if message == nil {
+                Label("Nothing saved", systemImage: emptyIcon)
+            } else {
+                Label("Could not load Saved", systemImage: "exclamationmark.triangle")
+            }
+        } description: {
+            Text(message ?? emptyText)
+                .accessibilityIdentifier("saved-empty-state")
+        } actions: {
+            if message != nil {
+                Button("Try again") { Task { await reload() } }
+            }
+        }
+    }
+
+    private var emptyIcon: String {
+        switch filter {
+        case .all, .bookmark: "bookmark"
+        case .highlight: "highlighter"
+        case .note: "note.text"
+        }
     }
 
     private var emptyText: String {

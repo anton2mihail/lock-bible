@@ -28,7 +28,7 @@ struct WorksCollectionView: View {
     var body: some View {
         WorksPage {
             if loadingFailed {
-                missing("That author isn’t available")
+                missing("That author isn’t available", canRetry: true)
             } else if catalog != nil, let collection {
                 VStack(alignment: .leading, spacing: 8) {
                     if let era = collection.era { WorksEyebrow(era.uppercased()) }
@@ -71,7 +71,7 @@ struct WorksCollectionView: View {
                 }
                 Text(collection.attribution).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
             } else if catalog != nil {
-                missing("That author isn’t available")
+                missing("That author isn’t available", canRetry: false)
             } else {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
             }
@@ -79,9 +79,11 @@ struct WorksCollectionView: View {
         .task(id: collectionID) { await loadCatalog() }
     }
 
-    @ViewBuilder private func missing(_ text: String) -> some View {
-        VStack(spacing: 16) {
-            Text(text).font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
+    @ViewBuilder private func missing(_ text: String, canRetry: Bool) -> some View {
+        ContentUnavailableView {
+            Label(text, systemImage: "person.crop.circle.badge.questionmark")
+        } actions: {
+            if canRetry { Button("Try again") { Task { await loadCatalog() } } }
         }
         .frame(maxWidth: .infinity, minHeight: 240)
     }

@@ -53,9 +53,11 @@ struct RosaryGuideView: View {
     private var emptyState: some View {
         RosaryGuidePage {
             if loadFailed {
-                Text("This Rosary guide is not available right now.")
-                    .font(JohnTypography.sans(16))
-                    .foregroundStyle(colors.textDim)
+                ContentUnavailableView {
+                    Label("Guide unavailable", systemImage: "circle.dotted")
+                } description: {
+                    Text("This Rosary guide is not available right now.")
+                }
             } else {
                 ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
             }

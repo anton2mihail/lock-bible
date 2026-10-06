@@ -26,9 +26,10 @@ struct RosaryMediaView: View {
     var body: some View {
         Group {
             if !catalog.isValid {
-                VStack(spacing: 16) {
-                    Text("Media is not available").font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
-                    Text("The Rosary media list could not be opened.").font(JohnTypography.sans(16)).foregroundStyle(colors.textDim)
+                ContentUnavailableView {
+                    Label("Media is not available", systemImage: "play.slash")
+                } description: {
+                    Text("The Rosary media list could not be opened.")
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(colors.background)
