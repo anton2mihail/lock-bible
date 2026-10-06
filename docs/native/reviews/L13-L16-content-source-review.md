@@ -36,3 +36,11 @@ Sol permits production promotion of `ContentModels.swift` at SHA-256 `5bfb8a6e59
 The repository includes a date-based prayer selector. It derives the local hour with the supplied time zone and calls the hour-based selector. The malformed-input result is now labeled `sourceFixture.malformedInputExpected`. It remains source fixture evidence. The latest saved report before the final relabel has 900 Today observations, including the new date-edge checks. Source must align the final report with the comparator.
 
 The Core and view implementation can proceed while the corrected Reader UI check runs. No content UI parity or simulator selector acceptance is claimed by this decision.
+
+## Production commit boundary
+
+Source committed the three Core files at `d1b045a2f926af16eb7aae137ba42b338bc318cc`. Sol accepts the promoted models and repository for implementation. Their hashes are `3d52aced1a9618bc55ca33671466954c5f9d48f7e21b3c35df903b4b7bb92804` and `fc12082addbfcdd0dc1757449e8b8da7fdf43e932ef1bbd4061fea27b438d689`.
+
+The citation helper at `4bf433cd35f6fc1afcbeed2c627a1c5583bd919519130ec92eb77e60a810e89b` remains provisional. The preparation copy has the corrected ASCII-digit pattern, but the committed copy still has `\d`. The eight-case host comparison calls the preparation module's helper. It does not yet check the committed helper. Source must fix that production pattern in a separate small commit and call the JohnCore symbol in the comparison.
+
+The current package can build for Reader, Search, and library checks. New content views can proceed. Do not hold these tasks for the narrow citation follow-up. Citation runtime and full content acceptance remain open.
