@@ -16,7 +16,7 @@ final class WorksSettingsUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
-        app.buttons["tab-settings"].tap()
+        tabButton(app, "tab-settings").tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 10))
 
         let groups: [(name: String, options: [String], changed: (String) -> String)] = [
@@ -135,7 +135,7 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(prose.waitForExistence(timeout: 12))
         waitForTextLabel(in: app, containing: sectionAnchor)
         let footerLabels = ["Previous section", "Contents, section 10 of 88", "Next section"]
-        let tab = app.buttons["tab-read"]
+        let tab = tabButton(app, "tab-read")
         XCTAssertTrue(tab.isHittable)
         for label in footerLabels {
             let control = app.buttons[label]
@@ -150,23 +150,23 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Page 1 of")).firstMatch.waitForExistence(timeout: 8))
         waitForTextLabel(in: app, containing: sectionAnchor)
 
-        app.buttons["tab-settings"].tap()
+        tabButton(app, "tab-settings").tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
         let textSizeOptions = ["settings-text-size-small", "settings-text-size-default", "settings-text-size-large", "settings-text-size-extra-large"]
         let originalSize = try selectedIdentifier(textSizeOptions, in: app)
         let originalSuffix = String(originalSize.dropFirst("settings-text-size-".count))
         let changedSuffix = originalSuffix == "large" ? "small" : "large"
         tapAndWaitForSelection("settings-text-size-\(changedSuffix)", in: app)
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Contents, section 10 of 88"].waitForExistence(timeout: 8))
         waitForTextLabel(in: app, containing: sectionAnchor)
         assertWorksFooter(footerLabels, above: tab, in: app)
 
         // The system glass back button replaced the reader's "Close the reader" and the page's "Back to the library".
-        tapWhenReady(systemBack(in: app), in: app) // work reader back to the author page
+        tapSystemBack(in: app) // work reader back to the author page
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForNonExistence(timeout: 8), "The reader must leave before the next back tap")
-        tapWhenReady(systemBack(in: app), in: app) // author page back to the library
+        tapSystemBack(in: app) // author page back to the library
         let continueReading = app.buttons["works-continue"]
         XCTAssertTrue(continueReading.waitForExistence(timeout: 10))
         XCTAssertTrue(continueReading.label.contains("section 10"))
@@ -186,10 +186,10 @@ final class WorksSettingsUITests: XCTestCase {
         let resumedPage = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Page 1 of")).firstMatch
         XCTAssertTrue(resumedPage.waitForExistence(timeout: 8), "Resume must show the saved page")
 
-        app.buttons["tab-settings"].tap()
+        tabButton(app, "tab-settings").tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
         tapAndWaitForSelection(originalSize, in: app)
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 10))
         waitForTextLabel(in: app, containing: sectionAnchor)
         NSLog("WORKS_RESUME_VISIBLE workID=%@ sectionIndex=9 page=1 sectionTextMarker=true", worksID)
@@ -287,7 +287,7 @@ final class WorksSettingsUITests: XCTestCase {
     }
 
     private func openReaderBookList(in app: XCUIApplication) {
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         for _ in 0..<3 where !app.staticTexts["reader-book-list-title"].exists {
             let back = app.buttons["reader-back"]
             guard back.exists else { break }
@@ -303,7 +303,43 @@ final class WorksSettingsUITests: XCTestCase {
 
     /// The iOS 26 system glass back button of a pushed screen.
     private func systemBack(in app: XCUIApplication) -> XCUIElement {
-        app.navigationBars.buttons.firstMatch
+        // `navigationBars.buttons.firstMatch` can return a trailing button or the button of another bar. Prefer the
+        // `BackButton` identifier (the front-most one when two bars are on screen during a push). Otherwise use the
+        // left-most hittable button of the front-most navigation bar.
+        let named = app.navigationBars.buttons.matching(identifier: "BackButton")
+        if named.count > 0 { return named.element(boundBy: named.count - 1) }
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }
+        if let bar = bars.last(where: { $0.isHittable }) ?? bars.last {
+            let buttons = bar.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+            if let leftmost = buttons.min(by: { $0.frame.minX < $1.frame.minX }) { return leftmost }
+        }
+        return app.navigationBars.buttons.firstMatch
+    }
+
+    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
+    private func screenSignature(_ app: XCUIApplication) -> String {
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
+        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
+            .filter { $0.exists }.map(\.label)
+        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
+            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
+    }
+
+    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
+    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+                               file: StaticString = #filePath, line: UInt = #line) {
+        let back = systemBack(in: app)
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
+        let before = screenSignature(app)
+        back.tap()
+        if let parent {
+            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
+            return
+        }
+        let deadline = Date().addingTimeInterval(10)
+        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,
@@ -355,10 +391,33 @@ final class WorksSettingsUITests: XCTestCase {
     /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
     private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
         let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        // Native evidence: a `tab-` identifier, or the exact label "Read" inside the tab bar (the identifier can be dropped).
+        // The old app has neither (its labels are ordinal, for example "Read, tab, 2 of 5"); its rules stay as they were.
+        guard nativeTabs.firstMatch.exists || app.tabBars.buttons["Read"].exists else { return nil }
         let bar = app.tabBars.firstMatch
         if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
-        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        let tops = (nativeTabs.allElementsBoundByIndex + app.tabBars.buttons.allElementsBoundByIndex)
+            .filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
         return tops.min().map { $0 - 12 }
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

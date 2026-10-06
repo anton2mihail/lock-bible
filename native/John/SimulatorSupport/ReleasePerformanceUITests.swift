@@ -184,7 +184,7 @@ final class ReleasePerformanceUITests: XCTestCase {
     }
 
     private func navigateToChapterList(_ code: String, in app: XCUIApplication) {
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         navigateToBookList(app)
         let book = app.buttons["reader-book-\(code)"]
         XCTAssertTrue(book.waitForExistence(timeout: timeout), "Book \(code) must be available from the Reader book list")
@@ -326,7 +326,7 @@ final class ReleasePerformanceUITests: XCTestCase {
     /// (that argument exists only in Debug). Before a tab tap after a Reader scroll, expand the bar (tap the minimized
     /// bar, then scroll up) and check that the target tab button is hittable (Liquid-glass-tabview-review.md fix 5).
     private func expandTabBar(in app: XCUIApplication, expecting tabID: String) {
-        let tab = app.buttons[tabID]
+        let tab = tabButton(app, tabID)
         for attempt in 0..<4 {
             if tab.exists && tab.isHittable { return }
             if attempt % 2 == 0 {
@@ -341,5 +341,25 @@ final class ReleasePerformanceUITests: XCTestCase {
             RunLoop.current.run(until: Date().addingTimeInterval(0.5))
         }
         XCTAssertTrue(tab.exists && tab.isHittable, "\(tabID) must be hittable after the tab bar expands")
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

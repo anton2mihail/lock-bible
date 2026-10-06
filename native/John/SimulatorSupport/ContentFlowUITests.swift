@@ -30,7 +30,7 @@ final class ContentFlowUITests: XCTestCase {
         let favoriteUpdated = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label == %@", "Remove from favorites"), object: favorite)
         XCTAssertEqual(XCTWaiter.wait(for: [favoriteUpdated], timeout: 8), .completed)
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
 
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
@@ -43,9 +43,9 @@ final class ContentFlowUITests: XCTestCase {
         enterText(after, afterReflection, in: app)
         tapWhenReady(app.buttons["Save reflection"], in: app)
         XCTAssertTrue(app.staticTexts["Reflection saved on this device."].waitForExistence(timeout: 8))
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
 
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         let novenaSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
         XCTAssertTrue(novenaSearch.waitForExistence(timeout: 8))
         enterText(novenaSearch, "Padre Pio", in: app)
@@ -67,14 +67,14 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(button(containing: "A morning offering", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Morning offering")
         XCTAssertEqual(app.buttons["prayer-favorite"].label, "Remove from favorites")
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
         XCTAssertEqual(textView(label: "Before Mass reflection", in: app).value as? String, beforeReflection)
         XCTAssertEqual(textView(label: "After Mass reflection", in: app).value as? String, afterReflection)
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
 
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         let reopenedSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
         enterText(reopenedSearch, "Padre Pio", in: app)
         tapWhenReady(button(containing: "St. Padre Pio Novena", in: app), in: app)
@@ -96,28 +96,28 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(sirach, in: app)
         XCTAssertEqual(waitForPageTitle(app), "Sirach 27")
         XCTAssertTrue(app.staticTexts["Reading reference: Sirach 27:30—28:7"].waitForExistence(timeout: 8))
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
 
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
         XCTAssertTrue(app.staticTexts["Sep 13, 2026"].exists)
         XCTAssertTrue(button(containing: "Sirach 27:30—28:7", in: app).exists)
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
 
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Explore the Catholic faith", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Faith, rooted in Scripture")
         tapWhenReady(button(containing: "The Eucharist", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "The Eucharist")
-        tapWhenReady(systemBack(in: app), in: app)
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
+        tapSystemBack(in: app)
 
     }
 
     func testL15PrayerHomeRosarySetsSevenSorrowsAndLectioTimer() throws {
         let app = launchWithFeatureClock()
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         let rosaryHome = button(containing: "Pray the Rosary", in: app)
         XCTAssertTrue(rosaryHome.waitForExistence(timeout: 8), "Start from PrayerHome")
         tapWhenReady(rosaryHome, in: app)
@@ -140,7 +140,7 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Seven Sorrows"].waitForExistence(timeout: 8))
         tapWhenReady(app.buttons["Close Rosary guide"], in: app)
 
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Pray with Scripture", in: app), in: app)
         XCTAssertTrue(app.staticTexts["Read slowly"].waitForExistence(timeout: 10))
         tapWhenReady(app.buttons["Continue"], in: app)
@@ -166,7 +166,7 @@ final class ContentFlowUITests: XCTestCase {
 
     func testL17RosaryGuideBackCompletionAndReset() throws {
         let app = launchWithFeatureClock()
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         tapWhenReady(button(containing: "The Joyful Mysteries", in: app), in: app)
         XCTAssertTrue(app.staticTexts["Joyful"].waitForExistence(timeout: 8))
@@ -209,9 +209,9 @@ final class ContentFlowUITests: XCTestCase {
 
         let routeExitNote = "L18 route exit note 9152."
         enterText(textView(label: "Temporary confession notes", in: app), routeExitNote, in: app)
-        app.buttons["tab-pray"].tap()
+        tabButton(app, "tab-pray").tap()
         XCTAssertTrue(button(containing: "Pray the Rosary", in: app).waitForExistence(timeout: 8))
-        app.buttons["tab-today"].tap()
+        tabButton(app, "tab-today").tap()
         if app.staticTexts["today-title"].exists {
             tapWhenReady(button(containing: "Prepare for Confession", in: app), in: app)
         }
@@ -280,16 +280,20 @@ final class ContentFlowUITests: XCTestCase {
         return nil
     }
 
+    /// Closes the system share panel. Each wait uses a fresh query (an `XCTNSPredicateExpectation` can be waited on only
+    /// once; reusing it threw NSInternalInconsistencyException in the tabbar-smoke verse-moment run). Order: Close or
+    /// Cancel if present, else a tap above the bottom sheet, then a swipe down on the panel, then a tap in the top-left
+    /// corner (iPad popover).
     private func step7DismissShareSheet(panel: XCUIElement, in app: XCUIApplication) {
+        guard panel.exists else { return }
         let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "Cancel")).firstMatch
         if close.exists && close.isHittable { close.tap() }
         else { app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1)).tap() }
-        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: panel)
-        if XCTWaiter.wait(for: [gone], timeout: 6) != .completed {
-            // An iPad share popover closes when the user taps outside it.
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
-        }
-        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without a share action")
+        if panel.waitForNonExistence(timeout: 6) { return }
+        if panel.exists { panel.swipeDown() }
+        if panel.waitForNonExistence(timeout: 4) { return }
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
+        XCTAssertTrue(panel.waitForNonExistence(timeout: 8), "The share panel must close without a share action")
     }
 
     // MARK: URL and Verse Moment verse context (Step 7)
@@ -397,7 +401,7 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(card.waitForExistence(timeout: 8), "The card must keep the displayed verse reference")
         }
         step7Attach("step7-verse-moment-card", app: app)
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
 
         tapWhenReady(app.buttons["verse-moment-read-context"], in: app)
         let title = app.buttons["reader-title"]
@@ -434,7 +438,7 @@ final class ContentFlowUITests: XCTestCase {
         let todayLabel = "Sep 13, 2026"
 
         func backToToday() {
-            app.buttons["tab-today"].tap()
+            tabButton(app, "tab-today").tap()
             for _ in 0..<3 where !app.staticTexts["today-title"].isHittable {
                 let back = systemBack(in: app)
                 if back.exists && back.isHittable { back.tap() } else { break }
@@ -476,7 +480,7 @@ final class ContentFlowUITests: XCTestCase {
         // at 9d3753c (the verse request was lost when `loadBooks` took over). Check: the request ID changes, the verse is
         // hittable, and no selection summary exists.
         func contextCase(_ text: String, label: String) {
-            app.buttons["tab-today"].tap()
+            tabButton(app, "tab-today").tap()
             XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 8))
             XCTAssertTrue(app.staticTexts["today-title"].isHittable, "\(label): the Read tab must not be visible when the URL arrives")
             app.open(URL(string: text)!)
@@ -505,7 +509,7 @@ final class ContentFlowUITests: XCTestCase {
         }
 
         // 6. Only an unknown or missing book selects the Read tab and keeps the Reader state (ReaderScreen.tsx:289).
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         _ = app.staticTexts["reader-book-list-title"].waitForExistence(timeout: 8)
         let before = readerState()
         backToToday()
@@ -547,7 +551,7 @@ final class ContentFlowUITests: XCTestCase {
         let reference = env["STEP7_SAVED_ROW_REFERENCE"] ?? "John 1:1"
         let message = "This passage could not be opened."
         let app = step7Launch()
-        tapWhenReady(app.buttons["tab-saved"], in: app)
+        tapWhenReady(tabButton(app, "tab-saved"), in: app)
         XCTAssertTrue(app.buttons["saved-filter-bookmark"].waitForExistence(timeout: 10), "The Saved tab must open")
 
         func status() -> XCUIElement {
@@ -597,7 +601,7 @@ final class ContentFlowUITests: XCTestCase {
         case "chapter-missing":
             let book = env["STEP7_FAULT_BOOK"] ?? "JHN"
             let chapter = env["STEP7_FAULT_CHAPTER"] ?? "1"
-            app.buttons["tab-read"].tap()
+            tabButton(app, "tab-read").tap()
             let bookList = app.staticTexts["reader-book-list-title"]
             for _ in 0..<3 where !bookList.exists {
                 let back = app.buttons["reader-back"]
@@ -624,16 +628,16 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertNotNil(sharePanel, "The words must still share on a plain background")
             if let sharePanel { step7DismissShareSheet(panel: sharePanel, in: app) }
         case "rosary-catalog-invalid":
-            app.buttons["tab-pray"].tap()
+            tabButton(app, "tab-pray").tap()
             tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
             XCTAssertTrue(app.staticTexts["The Rosary catalog is not available right now."].waitForExistence(timeout: 10))
             step7Attach("step7-fault-rosary-catalog", app: app)
         case "prayer-catalog-invalid":
-            app.buttons["tab-pray"].tap()
+            tabButton(app, "tab-pray").tap()
             XCTAssertTrue(app.staticTexts["The prayer library is not available."].waitForExistence(timeout: 10))
             step7Attach("step7-fault-prayer-catalog", app: app)
         case "works-catalog-missing":
-            app.buttons["tab-read"].tap()
+            tabButton(app, "tab-read").tap()
             let bookList = app.staticTexts["reader-book-list-title"]
             for _ in 0..<3 where !bookList.exists {
                 let back = app.buttons["reader-back"]
@@ -644,7 +648,7 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["The library could not be opened on this device."].waitForExistence(timeout: 10))
             step7Attach("step7-fault-works-catalog", app: app)
         case "search-db-missing":
-            tapWhenReady(app.buttons["tab-read"], in: app)
+            tapWhenReady(tabButton(app, "tab-read"), in: app)
             let search = app.buttons["reader-search-button"]
             if !search.exists {
                 let bookList = app.staticTexts["reader-book-list-title"]
@@ -712,7 +716,43 @@ final class ContentFlowUITests: XCTestCase {
 
     /// The iOS 26 system glass back button of a pushed screen. It replaced the in-page `content-back` row.
     private func systemBack(in app: XCUIApplication) -> XCUIElement {
-        app.navigationBars.buttons.firstMatch
+        // `navigationBars.buttons.firstMatch` can return a trailing button or the button of another bar. Prefer the
+        // `BackButton` identifier (the front-most one when two bars are on screen during a push). Otherwise use the
+        // left-most hittable button of the front-most navigation bar.
+        let named = app.navigationBars.buttons.matching(identifier: "BackButton")
+        if named.count > 0 { return named.element(boundBy: named.count - 1) }
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }
+        if let bar = bars.last(where: { $0.isHittable }) ?? bars.last {
+            let buttons = bar.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+            if let leftmost = buttons.min(by: { $0.frame.minX < $1.frame.minX }) { return leftmost }
+        }
+        return app.navigationBars.buttons.firstMatch
+    }
+
+    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
+    private func screenSignature(_ app: XCUIApplication) -> String {
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
+        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
+            .filter { $0.exists }.map(\.label)
+        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
+            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
+    }
+
+    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
+    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+                               file: StaticString = #filePath, line: UInt = #line) {
+        let back = systemBack(in: app)
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
+        let before = screenSignature(app)
+        back.tap()
+        if let parent {
+            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
+            return
+        }
+        let deadline = Date().addingTimeInterval(10)
+        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,
@@ -780,10 +820,33 @@ final class ContentFlowUITests: XCTestCase {
     /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
     private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
         let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        // Native evidence: a `tab-` identifier, or the exact label "Read" inside the tab bar (the identifier can be dropped).
+        // The old app has neither (its labels are ordinal, for example "Read, tab, 2 of 5"); its rules stay as they were.
+        guard nativeTabs.firstMatch.exists || app.tabBars.buttons["Read"].exists else { return nil }
         let bar = app.tabBars.firstMatch
         if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
-        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        let tops = (nativeTabs.allElementsBoundByIndex + app.tabBars.buttons.allElementsBoundByIndex)
+            .filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
         return tops.min().map { $0 - 12 }
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

@@ -28,14 +28,14 @@ final class PositiveNoticeUITests: XCTestCase {
         }
         XCTAssertTrue(app.staticTexts["Calendar notifications are on."].waitForExistence(timeout: timeout))
         stage("calendar-on-0915")
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
 
         openCalendarSettings(in: app)
         XCTAssertTrue(calendarEnabled.exists)
         XCTAssertTrue(calendarEnabled.value as? String == "1", "Calendar must remain enabled after re-entry")
         tap(app.buttons["calendar-notifications-delivery-time"])
         assertTime(hour: 9, minute: 15, in: app)
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
 
         openRosaryReminder(in: app)
         let rosaryEnabled = app.switches["rosary-reminder-enabled"]
@@ -48,7 +48,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertTrue(monday830.waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE rosary-weekly-monday-0830 observed=%@ rawWeekday=2", monday830.label)
         stage("rosary-weekly-monday-0830")
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
 
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
@@ -57,7 +57,7 @@ final class PositiveNoticeUITests: XCTestCase {
         openCompactPicker(compactPicker(in: app))
         assertTime(hour: 8, minute: 30, in: app)
         dismissCompactPicker(in: app)
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
 
         openRosaryReminder(in: app)
         tap(app.buttons["rosary-reminder-frequency-daily"])
@@ -67,7 +67,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertTrue(daily835.waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE rosary-daily-0835 observed=%@", daily835.label)
         stage("rosary-daily-0835")
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
 
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
@@ -79,7 +79,7 @@ final class PositiveNoticeUITests: XCTestCase {
         tap(app.buttons["rosary-reminder-save"])
         XCTAssertTrue(app.staticTexts["Reminder turned off"].waitForExistence(timeout: timeout))
         stage("rosary-off")
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
 
         openCalendarSettings(in: app)
         setSwitch(calendarEnabled, on: false)
@@ -113,7 +113,7 @@ final class PositiveNoticeUITests: XCTestCase {
         ].waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE calendar-denied-visible-feedback")
         stage("calendar-denied-visible-feedback")
-        tap(systemBack(in: app))
+        tapSystemBack(in: app)
         openCalendarSettings(in: app)
         XCTAssertEqual(enabled.value as? String, "0", "Denied permission must leave committed Calendar notifications disabled")
         NSLog("NOTICE_UI_ONLY journey=notDetermined-deny seed=%@ bundle=%@; Main must verify zero durable and pending-request changes",
@@ -142,7 +142,7 @@ final class PositiveNoticeUITests: XCTestCase {
         activeBundleID = bundleID
         app.launchArguments += ["-L22NoticeSnapshotRelativePath", snapshotRelativePath]
         app.launch()
-        XCTAssertTrue(app.buttons["tab-today"].waitForExistence(timeout: timeout), "The task-only app must reach its root")
+        XCTAssertTrue(tabButton(app, "tab-today").waitForExistence(timeout: timeout), "The task-only app must reach its root")
         let seedID = configuration == "authorized"
             ? try requiredEnvironment("L22_NOTICE_SEED_ID")
             : try requiredEnvironment("L22_NOTICE_DENY_SEED_ID")
@@ -152,7 +152,7 @@ final class PositiveNoticeUITests: XCTestCase {
     }
 
     private func openCalendarSettings(in app: XCUIApplication) {
-        tap(app.buttons["tab-settings"])
+        tap(tabButton(app, "tab-settings"))
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: timeout))
         tap(app.buttons["settings-calendar-notifications"])
         XCTAssertTrue(app.staticTexts["content-page-title"].waitForExistence(timeout: timeout))
@@ -163,7 +163,7 @@ final class PositiveNoticeUITests: XCTestCase {
         let reminderRow = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Rosary reminder.")).firstMatch
         let rosaryHomeVisible = app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch.exists
         if !reminderRow.exists || !rosaryHomeVisible {
-            tap(app.buttons["tab-pray"])
+            tap(tabButton(app, "tab-pray"))
             if !rosaryHomeVisible {
                 tap(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Pray the Rosary")).firstMatch)
                 XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch.waitForExistence(timeout: timeout))
@@ -341,7 +341,43 @@ final class PositiveNoticeUITests: XCTestCase {
 
     /// The iOS 26 system glass back button of a pushed screen. It replaced `content-back` and `rosary-reminder-back`.
     private func systemBack(in app: XCUIApplication) -> XCUIElement {
-        app.navigationBars.buttons.firstMatch
+        // `navigationBars.buttons.firstMatch` can return a trailing button or the button of another bar. Prefer the
+        // `BackButton` identifier (the front-most one when two bars are on screen during a push). Otherwise use the
+        // left-most hittable button of the front-most navigation bar.
+        let named = app.navigationBars.buttons.matching(identifier: "BackButton")
+        if named.count > 0 { return named.element(boundBy: named.count - 1) }
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }
+        if let bar = bars.last(where: { $0.isHittable }) ?? bars.last {
+            let buttons = bar.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+            if let leftmost = buttons.min(by: { $0.frame.minX < $1.frame.minX }) { return leftmost }
+        }
+        return app.navigationBars.buttons.firstMatch
+    }
+
+    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
+    private func screenSignature(_ app: XCUIApplication) -> String {
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
+        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
+            .filter { $0.exists }.map(\.label)
+        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
+            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
+    }
+
+    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
+    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+                               file: StaticString = #filePath, line: UInt = #line) {
+        let back = systemBack(in: app)
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
+        let before = screenSignature(app)
+        back.tap()
+        if let parent {
+            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
+            return
+        }
+        let deadline = Date().addingTimeInterval(10)
+        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
     }
 
     private func tap(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
@@ -416,10 +452,33 @@ final class PositiveNoticeUITests: XCTestCase {
     /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
     private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
         let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        // Native evidence: a `tab-` identifier, or the exact label "Read" inside the tab bar (the identifier can be dropped).
+        // The old app has neither (its labels are ordinal, for example "Read, tab, 2 of 5"); its rules stay as they were.
+        guard nativeTabs.firstMatch.exists || app.tabBars.buttons["Read"].exists else { return nil }
         let bar = app.tabBars.firstMatch
         if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
-        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        let tops = (nativeTabs.allElementsBoundByIndex + app.tabBars.buttons.allElementsBoundByIndex)
+            .filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
         return tops.min().map { $0 - 12 }
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

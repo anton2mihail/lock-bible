@@ -33,7 +33,7 @@ final class MediaNotificationUITests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 8))
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
         XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
         NSLog("MEDIA_DEBUG mode=audio episodeID=why-pray episodeTitle=Why Pray the Rosary? afterActivation=true routeReturn=true")
     }
@@ -54,7 +54,43 @@ final class MediaNotificationUITests: XCTestCase {
 
     /// The iOS 26 system glass back button of a pushed screen. It replaced the in-page "Back to Rosary" link and `content-back`.
     private func systemBack(in app: XCUIApplication) -> XCUIElement {
-        app.navigationBars.buttons.firstMatch
+        // `navigationBars.buttons.firstMatch` can return a trailing button or the button of another bar. Prefer the
+        // `BackButton` identifier (the front-most one when two bars are on screen during a push). Otherwise use the
+        // left-most hittable button of the front-most navigation bar.
+        let named = app.navigationBars.buttons.matching(identifier: "BackButton")
+        if named.count > 0 { return named.element(boundBy: named.count - 1) }
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }
+        if let bar = bars.last(where: { $0.isHittable }) ?? bars.last {
+            let buttons = bar.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+            if let leftmost = buttons.min(by: { $0.frame.minX < $1.frame.minX }) { return leftmost }
+        }
+        return app.navigationBars.buttons.firstMatch
+    }
+
+    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
+    private func screenSignature(_ app: XCUIApplication) -> String {
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
+        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
+            .filter { $0.exists }.map(\.label)
+        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
+            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
+    }
+
+    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
+    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+                               file: StaticString = #filePath, line: UInt = #line) {
+        let back = systemBack(in: app)
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
+        let before = screenSignature(app)
+        back.tap()
+        if let parent {
+            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
+            return
+        }
+        let deadline = Date().addingTimeInterval(10)
+        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
     }
 
     /// Leaves the media page and checks that the Rosary home appears (Step 7 media-lifecycle).
@@ -66,7 +102,7 @@ final class MediaNotificationUITests: XCTestCase {
     /// edge gesture of the Simulator tool). Each step is logged.
     private func leaveMediaPageToRosaryHome(in app: XCUIApplication) {
         let rosaryHome = app.staticTexts["The Rosary with Bishop Barron"]
-        let navBack = app.buttons["BackButton"].exists ? app.buttons["BackButton"] : systemBack(in: app)
+        let navBack = systemBack(in: app)
         if navBack.exists && navBack.isHittable {
             navBack.tap()
             if rosaryHome.waitForExistence(timeout: 5) { NSLog("STEP7_MEDIA_EXIT method=navigation-back"); return }
@@ -133,7 +169,7 @@ final class MediaNotificationUITests: XCTestCase {
         attachment.name = "step7-media-failure"
         attachment.lifetime = .keepAlways
         add(attachment)
-        tapWhenReady(systemBack(in: app), in: app)
+        tapSystemBack(in: app)
         XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
         NSLog("STEP7_MEDIA_FAILURE audioUnavailable=true")
     }
@@ -163,7 +199,7 @@ final class MediaNotificationUITests: XCTestCase {
     func testNotificationScreensShowDisabledSaveFeedback() throws {
         let app = XCUIApplication()
         app.launch()
-        app.buttons["tab-settings"].tap()
+        tabButton(app, "tab-settings").tap()
         tapWhenReady(app.buttons["settings-calendar-notifications"], in: app)
         XCTAssertTrue(app.staticTexts["A day in the Church"].waitForExistence(timeout: 10))
 
@@ -173,8 +209,8 @@ final class MediaNotificationUITests: XCTestCase {
         tapWhenReady(app.buttons["calendar-notifications-save"], in: app)
         XCTAssertTrue(app.staticTexts["Calendar notifications are off."].waitForExistence(timeout: 8))
 
-        tapWhenReady(systemBack(in: app), in: app)
-        app.buttons["tab-pray"].tap()
+        tapSystemBack(in: app)
+        tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         tapWhenReady(button(containing: "Rosary reminder", in: app), in: app)
         XCTAssertTrue(app.staticTexts["Rosary reminder"].waitForExistence(timeout: 8))
@@ -204,8 +240,8 @@ final class MediaNotificationUITests: XCTestCase {
 
     private func openRosaryHome(in app: XCUIApplication) {
         app.launch()
-        XCTAssertTrue(app.buttons["tab-pray"].waitForExistence(timeout: 12))
-        app.buttons["tab-pray"].tap()
+        XCTAssertTrue(tabButton(app, "tab-pray").waitForExistence(timeout: 12))
+        tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         XCTAssertTrue(button(containing: "Rosary reminder", in: app).waitForExistence(timeout: 8))
     }
@@ -227,5 +263,25 @@ final class MediaNotificationUITests: XCTestCase {
         }
         XCTAssertTrue(element.isHittable, "Control is not hittable", file: file, line: line)
         element.tap()
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

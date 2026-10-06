@@ -66,7 +66,7 @@ final class ReaderSelectionActionsUITests: XCTestCase {
     private func openSeededJohnOne(in app: XCUIApplication) {
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
-        let read = app.buttons["tab-read"]
+        let read = tabButton(app, "tab-read")
         XCTAssertTrue(read.waitForExistence(timeout: 10))
         read.tap()
 
@@ -118,5 +118,25 @@ final class ReaderSelectionActionsUITests: XCTestCase {
             predicate: NSPredicate(format: "value == %@", value), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 8), .completed,
                        "Expected committed accessibility value: \(value)", file: file, line: line)
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

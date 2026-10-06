@@ -246,7 +246,7 @@ final class ReaderParityUITests: XCTestCase {
 
     private func applyProfile(edition: Edition, layout: String, textSize: String = "Default",
                               in app: XCUIApplication) -> String {
-        app.buttons["tab-settings"].tap()
+        tabButton(app, "tab-settings").tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
         for (identifier, selectedValue) in [
             ("settings-text-size-\(textSize.lowercased().replacingOccurrences(of: " ", with: "-"))", "Text size, \(textSize)"),
@@ -268,7 +268,7 @@ final class ReaderParityUITests: XCTestCase {
         XCTAssertNotEqual(observedAppearance, "unresolved", "The Settings screen must expose the current appearance")
         NSLog("READER_PARITY_PROFILE size=%@ spacing=Comfortable typeface=Serif layout=%@ edition=%@ appearancePreference=%@",
               textSizeName(textSize), layout, edition.id, observedAppearance)
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         return observedAppearance
     }
 
@@ -365,7 +365,7 @@ final class ReaderParityUITests: XCTestCase {
 
     private func openBookList(in app: XCUIApplication) {
         if app.staticTexts["reader-book-list-title"].exists { return }
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
         for _ in 0..<3 where !app.staticTexts["reader-book-list-title"].exists {
             let back = app.buttons["reader-back"]
             XCTAssertTrue(back.waitForExistence(timeout: 8), "Reader must expose visible Back controls")
@@ -773,10 +773,33 @@ final class ReaderParityUITests: XCTestCase {
     /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
     private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
         let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        // Native evidence: a `tab-` identifier, or the exact label "Read" inside the tab bar (the identifier can be dropped).
+        // The old app has neither (its labels are ordinal, for example "Read, tab, 2 of 5"); its rules stay as they were.
+        guard nativeTabs.firstMatch.exists || app.tabBars.buttons["Read"].exists else { return nil }
         let bar = app.tabBars.firstMatch
         if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
-        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        let tops = (nativeTabs.allElementsBoundByIndex + app.tabBars.buttons.allElementsBoundByIndex)
+            .filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
         return tops.min().map { $0 - 12 }
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }

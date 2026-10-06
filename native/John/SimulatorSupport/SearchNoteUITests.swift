@@ -52,7 +52,7 @@ final class SearchNoteUITests: XCTestCase {
         assertResult("John 3:16", in: app)
         app.buttons["search-scope-all"].tap()
 
-        systemBack(in: app).tap()
+        tapSystemBack(in: app)
         selectEdition("vulgate", in: app)
         openSearch(in: app)
 
@@ -98,7 +98,7 @@ final class SearchNoteUITests: XCTestCase {
 
         app.buttons["reader-search-button"].tap()
         XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 8))
-        systemBack(in: app).tap()
+        tapSystemBack(in: app)
         XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["reader-verse-16"].exists)
         NSLog("SEARCH_ROUTE_RESULT reference=John3:16 openedVerse=16 repeatedResult=John3:16 cancel=Reader; rapidReplacement=final-visible-query-state")
@@ -136,7 +136,7 @@ final class SearchNoteUITests: XCTestCase {
         waitForDisappearance(editor)
 
         selectEdition("web-ce", in: app)
-        app.buttons["tab-saved"].tap()
+        tabButton(app, "tab-saved").tap()
         let noteFilter = app.buttons["saved-filter-note"]
         XCTAssertTrue(noteFilter.waitForExistence(timeout: 8))
         noteFilter.tap()
@@ -160,7 +160,7 @@ final class SearchNoteUITests: XCTestCase {
         app.terminate()
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
-        app.buttons["tab-saved"].tap()
+        tabButton(app, "tab-saved").tap()
         let relaunchedFilter = app.buttons["saved-filter-note"]
         XCTAssertTrue(relaunchedFilter.waitForExistence(timeout: 8))
         relaunchedFilter.tap()
@@ -181,11 +181,47 @@ final class SearchNoteUITests: XCTestCase {
 
     /// The iOS 26 system glass back button of a pushed screen. It replaced the Search `search-cancel-button`.
     private func systemBack(in app: XCUIApplication) -> XCUIElement {
-        app.navigationBars.buttons.firstMatch
+        // `navigationBars.buttons.firstMatch` can return a trailing button or the button of another bar. Prefer the
+        // `BackButton` identifier (the front-most one when two bars are on screen during a push). Otherwise use the
+        // left-most hittable button of the front-most navigation bar.
+        let named = app.navigationBars.buttons.matching(identifier: "BackButton")
+        if named.count > 0 { return named.element(boundBy: named.count - 1) }
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }
+        if let bar = bars.last(where: { $0.isHittable }) ?? bars.last {
+            let buttons = bar.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+            if let leftmost = buttons.min(by: { $0.frame.minX < $1.frame.minX }) { return leftmost }
+        }
+        return app.navigationBars.buttons.firstMatch
+    }
+
+    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
+    private func screenSignature(_ app: XCUIApplication) -> String {
+        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
+        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
+            .filter { $0.exists }.map(\.label)
+        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
+            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
+    }
+
+    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
+    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+                               file: StaticString = #filePath, line: UInt = #line) {
+        let back = systemBack(in: app)
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
+        let before = screenSignature(app)
+        back.tap()
+        if let parent {
+            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
+            return
+        }
+        let deadline = Date().addingTimeInterval(10)
+        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
     }
 
     private func openSearch(in app: XCUIApplication) {
-        let readTab = app.buttons["tab-read"]
+        let readTab = tabButton(app, "tab-read")
         XCTAssertTrue(readTab.waitForExistence(timeout: 10))
         readTab.tap()
         let searchButton = app.buttons["reader-search-button"]
@@ -195,7 +231,7 @@ final class SearchNoteUITests: XCTestCase {
     }
 
     private func selectEdition(_ editionID: String, in app: XCUIApplication) {
-        let settingsTab = app.buttons["tab-settings"]
+        let settingsTab = tabButton(app, "tab-settings")
         XCTAssertTrue(settingsTab.waitForExistence(timeout: 8))
         settingsTab.tap()
         let edition = app.buttons["translation-\(editionID)"]
@@ -205,13 +241,13 @@ final class SearchNoteUITests: XCTestCase {
             predicate: NSPredicate(format: "value == %@", "Selected"), object: edition)
         XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
                        "Settings must commit the requested edition before the next route")
-        let readTab = app.buttons["tab-read"]
+        let readTab = tabButton(app, "tab-read")
         XCTAssertTrue(readTab.waitForExistence(timeout: 8))
         readTab.tap()
     }
 
     private func selectVerseByVerseLayout(in app: XCUIApplication) {
-        app.buttons["tab-settings"].tap()
+        tabButton(app, "tab-settings").tap()
         let layout = app.buttons["settings-layout-verse-by-verse"]
         XCTAssertTrue(layout.waitForExistence(timeout: 8))
         if layout.value as? String != "Selected" {
@@ -221,7 +257,7 @@ final class SearchNoteUITests: XCTestCase {
             XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
                            "Reader layout must be committed before verse selection")
         }
-        app.buttons["tab-read"].tap()
+        tabButton(app, "tab-read").tap()
     }
 
     private func enter(_ query: String, in field: XCUIElement) {
@@ -273,5 +309,25 @@ final class SearchNoteUITests: XCTestCase {
         let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isEnabled == true"), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: timeout), .completed,
                        "Control did not become enabled", file: file, line: line)
+    }
+
+    /// Tab bar button that survives a missing `tab-*` identifier (the system TabView sometimes drops it; the labels
+    /// Today, Read, Saved, Pray, Settings are always present). Order: `tabBars.buttons[identifier]`,
+    /// `tabBars.buttons[label]` (exact), `buttons[identifier]`. If none exists and the bar is minimized (one bubble),
+    /// tap the bar to expand it and look again. If the bar does not exist yet, the returned query waits on the label.
+    private func tabButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let name = identifier.hasPrefix("tab-") ? String(identifier.dropFirst(4)) : identifier
+        let label = name.prefix(1).uppercased() + name.dropFirst()
+        let bar = app.tabBars.firstMatch
+        func find() -> XCUIElement? {
+            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+        }
+        if let found = find() { return found }
+        if bar.exists, bar.isHittable {
+            bar.tap()
+            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            if let found = find() { return found }
+        }
+        return bar.buttons[label]
     }
 }
