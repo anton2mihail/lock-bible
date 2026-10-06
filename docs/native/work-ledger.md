@@ -31,6 +31,8 @@ Latest checkpoint: Gate A is accepted at Main integration `df8cc9b`. Gate B is a
 
 The second Search/Saved run reached query results, Reader, and Saved. Filter assertions failed because a container identifier replaced all filter button identifiers. Exact result coordinates, filters, note actions, and UI parity remain open. Apply the identity fixes in the next coherent feature build. Do not repeat accepted Gate A checks or the long Reader range setup.
 
+The coherent content/widget build passes at `L06/content-widget-build-05.log`. This accepts target compilation only. Works files are present but have concrete compile and first-layout corrections before inclusion. Full content, widget, Verse Moment, Works, and source-matched route runtime remain open.
+
 ## L00 checks
 
 - [x] Build and launch the existing app on a dedicated iOS 26 simulator.

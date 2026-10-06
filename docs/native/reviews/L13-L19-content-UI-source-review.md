@@ -86,3 +86,9 @@ The installed SwiftUI SDK has no public `accessibilityLiveRegion` modifier. Sour
 The frozen source now uses `UIAccessibility.post(notification: .announcement, argument:)` for message changes. Today has the corrected leaf identifier. Scripture card has variable height, native sharing, and temporary-file cleanup. Its `frame(width:minHeight:)` call still mixes two SwiftUI frame overloads. Split those modifiers. Capture the actual preview width and export the same composition at scale `1080 / previewWidth`; a fixed logical width of 360 can change line breaks relative to the preview.
 
 Citation context still uses Lora and a separate verse-label column. The source has Georgia serif or the shared sans font, with an inline label. Apply the exact Reader typography and source unavailable title/copy. Recheck request generation after each suspended load, including attribution and failed-load branches. These are focused source fixes. The complete content batch can compile while the fixes enter at stable file boundaries. Full content runtime remains open.
+
+## Coherent target compile
+
+`L06/content-widget-build-05.log` reports TEST BUILD SUCCEEDED for the app and widget batch. The duplicate `verseMoment` route and mutable PreferenceKey default were corrected. Scripture card now uses a constant default, the measured preview width, scale `1080 / previewWidth`, variable height, and native PNG sharing. The mixed frame call is split. The announcement helper uses the supported UIKit API. This accepts target compilation only.
+
+Citation now has inline text and the unavailable copy. Its actual serif font still calls the Lora helper, while its spacing measures Georgia. Its label is 12 points instead of source xs 14. Correct those values and put valid-chapter warnings inside the valid branch. Full source-matched rendering and runtime remain open. Works was not included in this compile evidence.
