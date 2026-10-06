@@ -232,20 +232,21 @@ struct ReaderView: View {
     }
 
     /// Shows the chapter text down from the top safe area. Above that line (under the status bar) the text fades out
-    /// over the lower part of the safe area instead of a hard cut through the glyphs (audit B5). The upper part of
-    /// the safe area stays clear, so no text shows behind the status bar glyphs. At the bottom the mask goes into the
-    /// safe area, so the text scrolls under the floating glass tab bar and the selection panel.
+    /// in one fixed band at the bottom of the safe area instead of a hard cut through the glyphs (audit B5). The band
+    /// is at most 12 pt and leaves at least 12 pt fully clear at the top, so no text shows behind the status bar
+    /// glyphs on a short safe area either. iPhone 17 Pro (62 pt): clear 0–50 pt, fade 50–62 pt.
+    /// iPhone SE 3 (20 pt): clear 0–12 pt, fade 12–20 pt. At the bottom the mask goes into the safe area, so the text
+    /// scrolls under the floating glass tab bar and the selection panel.
     /// The anchor math does not use this mask: `ReaderTextGeometryProbe` measures the visible viewport from the
     /// window safe area. With Reduce Transparency on, the mask keeps the former hard cut at the safe area line.
     private var readerTopSafeAreaMask: some View {
         GeometryReader { proxy in
+            let top = max(0, proxy.safeAreaInsets.top)
+            let fadeBand = reduceTransparency ? 0 : min(12, max(0, top - 12))
             VStack(spacing: 0) {
-                LinearGradient(stops: [
-                    .init(color: .clear, location: 0),
-                    .init(color: .clear, location: reduceTransparency ? 1 : 0.45),
-                    .init(color: reduceTransparency ? .clear : .black, location: 1),
-                ], startPoint: .top, endPoint: .bottom)
-                .frame(height: proxy.safeAreaInsets.top)
+                Color.clear.frame(height: top - fadeBand)
+                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                    .frame(height: fadeBand)
                 Rectangle().fill(Color.black)
             }
             .ignoresSafeArea()
