@@ -6,6 +6,7 @@ struct SavedView: View {
     @Environment(AppRouter.self) private var router
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var filter: SavedFilter = .all
     @State private var items: [SavedItem] = []
     @State private var loading = false
@@ -77,8 +78,10 @@ struct SavedView: View {
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(colors.border, lineWidth: 1))
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .animation(reduceMotion ? nil : .snappy, value: undoItem?.id)
         .background(colors.background.ignoresSafeArea())
         .task(id: filter.rawValue) { await reload() }
         .onChange(of: router.selectedTab) { _, tab in
