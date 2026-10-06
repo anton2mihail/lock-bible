@@ -13,6 +13,7 @@ final class SearchNoteUITests: XCTestCase {
     func testSearchReferencePhraseCorrectionAndNoResults() throws {
         let app = XCUIApplication()
         app.launch()
+        selectEdition("web-ce", in: app)
         openSearch(in: app)
 
         let field = app.textFields["search-query-input"]
@@ -37,6 +38,7 @@ final class SearchNoteUITests: XCTestCase {
     func testSearchScopesEditionAndLatinText() throws {
         let app = XCUIApplication()
         app.launch()
+        selectEdition("web-ce", in: app)
         openSearch(in: app)
         let field = app.textFields["search-query-input"]
         enter("John 3:16", in: field)
@@ -46,15 +48,10 @@ final class SearchNoteUITests: XCTestCase {
         XCTAssertTrue(waitForLabel(app.staticTexts["search-status"], equals: "No passages found. Try fewer words or check the reference."))
         app.buttons["search-scope-nt"].tap()
         assertResult("John 3:16", in: app)
+        app.buttons["search-scope-all"].tap()
 
         app.buttons["search-cancel-button"].tap()
-        let settingsTab = app.buttons["tab-settings"]
-        XCTAssertTrue(settingsTab.waitForExistence(timeout: 8))
-        settingsTab.tap()
-        let vulgate = app.buttons["translation-vulgate"]
-        XCTAssertTrue(vulgate.waitForExistence(timeout: 8))
-        vulgate.tap()
-        app.buttons["tab-read"].tap()
+        selectEdition("vulgate", in: app)
         openSearch(in: app)
 
         enter("John 3:16", in: app.textFields["search-query-input"])
@@ -70,6 +67,7 @@ final class SearchNoteUITests: XCTestCase {
     func testRapidSearchReplacementCloseAndRepeatResult() throws {
         let app = XCUIApplication()
         app.launch()
+        selectEdition("web-ce", in: app)
         openSearch(in: app)
         let field = app.textFields["search-query-input"]
         field.tap()
@@ -79,7 +77,6 @@ final class SearchNoteUITests: XCTestCase {
         clear.tap()
         field.typeText("John 3:16")
         assertResult("John 3:16", in: app)
-        Thread.sleep(forTimeInterval: 0.5)
         XCTAssertFalse(app.buttons["search-result-1"].label.contains("John 1:2"))
         app.buttons["search-result-1"].tap()
 
@@ -92,10 +89,16 @@ final class SearchNoteUITests: XCTestCase {
         XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 8))
         replaceQuery(with: "John 3:16", in: app)
         assertResult("John 3:16", in: app)
+        app.buttons["search-result-1"].tap()
+        XCTAssertTrue(app.buttons["reader-verse-16"].waitForExistence(timeout: 12))
+        XCTAssertTrue(app.buttons["reader-title"].label.contains("John 3"))
+
+        app.buttons["reader-search-button"].tap()
+        XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 8))
         app.buttons["search-cancel-button"].tap()
         XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["reader-verse-16"].exists)
-        NSLog("SEARCH_ROUTE_RESULT reference=John3:16 openedVerse=16 repeat=John3:16 close=Reader")
+        NSLog("SEARCH_ROUTE_RESULT reference=John3:16 openedVerse=16 repeatedResult=John3:16 cancel=Reader; rapidReplacement=final-visible-query-state")
     }
 
     private func openSearch(in app: XCUIApplication) {
@@ -106,6 +109,22 @@ final class SearchNoteUITests: XCTestCase {
         XCTAssertTrue(searchButton.waitForExistence(timeout: 8))
         searchButton.tap()
         XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 8))
+    }
+
+    private func selectEdition(_ editionID: String, in app: XCUIApplication) {
+        let settingsTab = app.buttons["tab-settings"]
+        XCTAssertTrue(settingsTab.waitForExistence(timeout: 8))
+        settingsTab.tap()
+        let edition = app.buttons["translation-\(editionID)"]
+        XCTAssertTrue(edition.waitForExistence(timeout: 8))
+        edition.tap()
+        let selected = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", "Selected"), object: edition)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
+                       "Settings must commit the requested edition before the next route")
+        let readTab = app.buttons["tab-read"]
+        XCTAssertTrue(readTab.waitForExistence(timeout: 8))
+        readTab.tap()
     }
 
     private func enter(_ query: String, in field: XCUIElement) {
