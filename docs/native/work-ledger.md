@@ -5,6 +5,8 @@ Updated: 5 October 2026
 Current batch: `L06/works-content-build-03.log` passes target compilation with complete content, Works, media, and Settings membership. Main prepares valid-library actions and route runtime. Source corrects the concrete media lifecycle, Settings layout, Works appearance, and announcement findings in `reviews/L20-L24-complete-batch-source-review.md`. Notifications remain Main's next implementation scope. The deferred Reader proof uses owned visible ink in this coherent batch. No new product parity acceptance is claimed.
 
 Valid-library UI run 01 observes all four filter counts, existing note edit/save/delete, and bookmark deletion. The preserved database agrees with those actions. Undo lookup fails because a parent identifier replaces its leaf identifier. Main's source correction is present. Matching binary provenance and the fresh-seed Undo rerun remain required. See `reviews/L10-L11-valid-library-UI-review.md`. Note creation and non-WEB saved identity remain open.
+
+The common root layout now places NavigationStack and FlatTabBar as siblings. `saved-undo-root-layout-01.log` passes with Undo above the bar, hittable, and exact John 3:16 bookmark restoration. This bounded layout/restore scope is accepted. The complete seeded Saved journey and Reader/Works lower controls remain the next runtime checks. The notification views at `a7b2649` are source-reviewed for target inclusion; scheduling and notification runtime remain open.
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 

@@ -33,3 +33,9 @@ The source now places the banner after the list or empty state in the normal Sav
 Geometry 02 shows that the VStack move alone does not reserve the root tab height. Undo remains at y797–815 while the tab starts at y791. The root currently applies the tab bar as a bottom safe-area inset on NavigationStack. Saved and Works both use non-scroll VStack footers inside that stack. A per-feature offset does not solve common space ownership.
 
 The required common correction places NavigationStack and FlatTabBar as siblings in the ready branch's VStack. The stack uses the remaining content height. The tab bar keeps its existing 49-point content height and bottom background fill. Remove the NavigationStack bottom inset and the temporary Saved 60-point padding. Keep the accepted top status banner. The next short probe checks Undo geometry and exact restoration. It also checks a Works footer and the normal Reader lower viewport in the same binary. Runtime remains open.
+
+## Common layout runtime acceptance
+
+`saved-undo-root-layout-01.log` passes one test in 12.429 seconds with zero failures. The root now uses the sibling layout above. Undo is at y748–766, above the tab top at y791, and is hittable. Its tap restores the exact `saved-row-bookmark:web-ce:JHN:3:16:16` control and two total bookmark rows. Accept the overlap correction and this bounded restore action. Do not repeat the geometry probe.
+
+Main reports runner PID 70996 and data container `A1C330FE-EF19-4568-B3DD-8138E12B72EE`. Reported product/installed hashes match: executable `b25926b74e0085f65d681681815e77b1da31f9112c97856451dcf01a167f3557`; dylib `292410597ecb2f925ad66a93aa3dc565dbe26c67f50e25e70dd47deb47cfc92f`. Save these values with actual app PID and source hashes in the run report before the scoped integration commit. The full fresh-seed Saved journey, Reader lower viewport, and Works footer observation remain open.
