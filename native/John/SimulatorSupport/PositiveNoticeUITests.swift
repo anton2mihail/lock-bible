@@ -54,7 +54,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
         XCTAssertTrue(app.buttons["rosary-reminder-frequency-weekly"].isSelected)
         XCTAssertTrue(app.buttons["rosary-reminder-weekday-2"].isSelected)
-        tap(compactPicker(in: app))
+        openCompactPicker(compactPicker(in: app))
         assertTime(hour: 8, minute: 30, in: app)
         dismissCompactPicker(in: app)
         tap(app.buttons["rosary-reminder-back"])
@@ -72,7 +72,7 @@ final class PositiveNoticeUITests: XCTestCase {
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
         XCTAssertTrue(app.buttons["rosary-reminder-frequency-daily"].isSelected)
-        tap(compactPicker(in: app))
+        openCompactPicker(compactPicker(in: app))
         assertTime(hour: 8, minute: 35, in: app)
         dismissCompactPicker(in: app)
         setSwitch(rosaryEnabled, on: false)
@@ -188,7 +188,10 @@ final class PositiveNoticeUITests: XCTestCase {
         if let compactPickerID {
             let compactPicker = app.descendants(matching: .any)
                 .matching(identifier: compactPickerID).firstMatch
-            tap(compactPicker)
+            openCompactPicker(compactPicker)
+            // The compact picker presents its wheels after an animation. Wait before scoping the wheels.
+            XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout: 10),
+                          "The compact picker popup must expose PickerWheels")
         }
         let wheels = timeWheels(in: app, preferredPickerID: compactPickerID ?? "calendar-notifications-time-picker")
         let hourWheel = wheels.hour
@@ -234,6 +237,16 @@ final class PositiveNoticeUITests: XCTestCase {
         }
     }
 
+    /// The observed DatePicker frame is wider than its time pill. The pill sits at the trailing edge, and
+    /// the element center misses it by a few points. Tap the trailing part of the frame.
+    private func openCompactPicker(_ picker: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertTrue(picker.waitForExistence(timeout: timeout), "Missing compact picker", file: file, line: line)
+        XCTAssertTrue(picker.isHittable, "Compact picker is not hittable", file: file, line: line)
+        NSLog("NOTICE_PICKER compactFrame=%@ value=%@", NSCoder.string(for: picker.frame),
+              String(describing: picker.value))
+        picker.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)).tap()
+    }
+
     private func compactPicker(in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any).matching(identifier: "rosary-reminder-time").firstMatch
     }
@@ -256,7 +269,8 @@ final class PositiveNoticeUITests: XCTestCase {
         let allow = alert.buttons.matching(NSPredicate(format: "label == %@", "Allow")).firstMatch
         XCTAssertTrue(allow.waitForExistence(timeout: 5), "The actual notification alert must expose Allow")
         allow.tap()
-        XCTAssertFalse(alert.waitForExistence(timeout: 2), "The system permission alert must close after Allow")
+        let closed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: alert)
+        XCTAssertEqual(XCTWaiter.wait(for: [closed], timeout: 10), .completed, "The system permission alert must close after Allow")
     }
 
     private func timeWheels(in app: XCUIApplication, preferredPickerID: String) -> TimeWheels {
@@ -272,8 +286,15 @@ final class PositiveNoticeUITests: XCTestCase {
             picker = preferred
         } else if let visiblePicker = visiblePickers.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }) {
             picker = visiblePicker
+        } else if app.pickerWheels.count > 0 {
+            // A compact picker popup can place its wheels outside the DatePicker element. Record the tree.
+            NSLog("NOTICE_PICKER_POPUP_OUTSIDE_DATEPICKER appWheels=%d values=%@ tree=%@", app.pickerWheels.count,
+                  app.pickerWheels.allElementsBoundByIndex.map { String(describing: $0.value) }.joined(separator: "|"),
+                  app.debugDescription)
+            picker = app
         } else {
             XCTFail("No visible native DatePicker was found for the requested time")
+            NSLog("NOTICE_PICKER_NOT_FOUND tree=%@", app.debugDescription)
             picker = app
         }
         let wheels = picker.descendants(matching: .pickerWheel)
@@ -299,7 +320,8 @@ final class PositiveNoticeUITests: XCTestCase {
         }
         let width = current[range].count
         let target = String(format: "%0*d", width, number)
-        return current.replacingCharacters(in: range, with: target)
+        // The accessibility value reads "8 o’clock", but adjust only accepts the wheel data values ("8", "09").
+        return target
     }
 
     private func waitWheel(_ wheel: XCUIElement, equalsNumber expected: Int, timeout: TimeInterval) -> Bool {
@@ -331,7 +353,8 @@ final class PositiveNoticeUITests: XCTestCase {
             guard viewport.height > 100 else { break }
             let frame = element.exists ? element.frame : .zero
             let movingUp = !element.exists || frame.midY >= viewport.midY
-            let x = viewport.midX
+            // Drag in the left gutter. A centered drag lands on the inline Calendar spinner and changes the time.
+            let x = viewport.minX + 14
             let startY = viewport.minY + viewport.height * (movingUp ? 0.75 : 0.25)
             let endY = viewport.minY + viewport.height * (movingUp ? 0.25 : 0.75)
             app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: startY / app.frame.height))

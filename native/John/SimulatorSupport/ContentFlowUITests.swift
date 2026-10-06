@@ -237,6 +237,363 @@ final class ContentFlowUITests: XCTestCase {
                        "Re-entry after Finish must not restore temporary notes")
     }
 
+    // MARK: Step 7 checks
+    // Each test runs only when STEP7_CASES lists its case name. Default runs skip them.
+    // See docs/native/reviews/Step7-remaining-feature-checks-plan.md.
+
+    private func requireStep7(_ name: String) throws {
+        let listed = (ProcessInfo.processInfo.environment["STEP7_CASES"] ?? "")
+            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        guard listed.contains(name) else { throw XCTSkip("Set STEP7_CASES=\(name) to run this Step 7 check.") }
+    }
+
+    /// Fixed feature clock by default (same as the L14 and L15 tests). STEP7_REAL_CLOCK=1 uses the device clock.
+    private func step7Launch() -> XCUIApplication {
+        guard ProcessInfo.processInfo.environment["STEP7_REAL_CLOCK"] == "1" else { return launchWithFeatureClock() }
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
+        return app
+    }
+
+    private func step7DismissShareSheet(copy: XCUIElement, in app: XCUIApplication) {
+        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "Cancel")).firstMatch
+        if close.exists && close.isHittable { close.tap() } else { copy.swipeDown() }
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: copy)
+        if XCTWaiter.wait(for: [gone], timeout: 6) != .completed {
+            // An iPad share popover closes when the user taps outside it.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without Copy")
+    }
+
+    private func step7Attach(_ name: String, app: XCUIApplication) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    /// Verse Moment: countdown text, widget guide steps and durable dismissal, Share, Scripture card, Read in context.
+    /// Expected values (optional): STEP7_VERSE_REFERENCE, STEP7_VERSE_TEXT_PREFIX, STEP7_VERSE_ABBREVIATION,
+    /// STEP7_VERSE_READER_TITLE. Source: DestinationView.swift VerseMomentDestination; src/screens/VerseOfDayScreen.tsx.
+    func testStep7VerseMomentControlsGuideShareCardAndContext() throws {
+        try requireStep7("verse-moment")
+        let env = ProcessInfo.processInfo.environment
+        let app = step7Launch()
+        tapWhenReady(app.buttons["today-verse-card"], in: app)
+        XCTAssertEqual(waitForPageTitle(app), "Verse of the moment")
+        let countdown = app.staticTexts.matching(NSPredicate(
+            format: "label MATCHES %@", "^New verse in ([0-9]+ min|[0-9]+h|[0-9]+h [0-9]+m)$")).firstMatch
+        XCTAssertTrue(countdown.waitForExistence(timeout: 8), "The countdown must use the source wording")
+        if let reference = env["STEP7_VERSE_REFERENCE"] {
+            XCTAssertTrue(app.staticTexts[reference].waitForExistence(timeout: 8), "Expected verse reference \(reference)")
+        }
+        if let prefix = env["STEP7_VERSE_TEXT_PREFIX"] {
+            let text = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "“" + prefix)).firstMatch
+            XCTAssertTrue(text.waitForExistence(timeout: 8), "Expected verse text prefix \(prefix)")
+        }
+        if let abbreviation = env["STEP7_VERSE_ABBREVIATION"] {
+            XCTAssertTrue(app.staticTexts[abbreviation].exists, "Expected edition label \(abbreviation)")
+        }
+
+        let dismiss = app.buttons["verse-widget-guide-dismiss"]
+        let guideShown = dismiss.waitForExistence(timeout: 3)
+        if guideShown {
+            XCTAssertTrue(app.staticTexts["Put Scripture on your lock screen"].exists)
+            let steps = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "1. Touch and hold your lock screen")).firstMatch
+            XCTAssertFalse(steps.exists, "Steps must start collapsed")
+            tapWhenReady(app.buttons["How to add it"], in: app)
+            XCTAssertTrue(steps.waitForExistence(timeout: 5), "How to add it must show the four steps")
+            XCTAssertTrue(steps.label.contains("4. Use the rectangular size when you want the full verse text."))
+            tapWhenReady(app.buttons["Hide steps"], in: app)
+            XCTAssertTrue(steps.waitForNonExistence(timeout: 5), "Hide steps must collapse the steps")
+            tapWhenReady(dismiss, in: app)
+            XCTAssertTrue(app.staticTexts["Put Scripture on your lock screen"].waitForNonExistence(timeout: 8),
+                          "Got it must remove the guide")
+        }
+        NSLog("STEP7_VERSE_MOMENT guideShownAtStart=%d countdown=%@", guideShown ? 1 : 0, countdown.label)
+
+        tapWhenReady(app.buttons["verse-moment-share"], in: app)
+        let copy = app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch
+        XCTAssertTrue(copy.waitForExistence(timeout: 15), "The native share panel must open")
+        NSLog("STEP7_VERSE_MOMENT shareOpened popover=%d", app.popovers.firstMatch.exists ? 1 : 0)
+        step7Attach("step7-verse-moment-share", app: app)
+        step7DismissShareSheet(copy: copy, in: app)
+
+        tapWhenReady(app.buttons["verse-moment-scripture-card"], in: app)
+        XCTAssertEqual(waitForPageTitle(app), "A word worth sharing")
+        if let reference = env["STEP7_VERSE_REFERENCE"] {
+            let card = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", reference)).firstMatch
+            XCTAssertTrue(card.waitForExistence(timeout: 8), "The card must keep the displayed verse reference")
+        }
+        step7Attach("step7-verse-moment-card", app: app)
+        tapWhenReady(app.buttons["content-back"], in: app)
+
+        tapWhenReady(app.buttons["verse-moment-read-context"], in: app)
+        let title = app.buttons["reader-title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 12), "Read in context must open the Reader")
+        if let expectedTitle = env["STEP7_VERSE_READER_TITLE"] { XCTAssertEqual(title.label, expectedTitle) }
+        XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 10),
+                      "The displayed verse must be selected in the Reader")
+        step7Attach("step7-verse-moment-reader", app: app)
+
+        if guideShown {
+            app.terminate()
+            let relaunched = step7Launch()
+            tapWhenReady(relaunched.buttons["today-verse-card"], in: relaunched)
+            XCTAssertEqual(waitForPageTitle(relaunched), "Verse of the moment")
+            XCTAssertFalse(relaunched.buttons["verse-widget-guide-dismiss"].waitForExistence(timeout: 3),
+                           "The guide dismissal must survive a fresh process")
+            NSLog("STEP7_VERSE_MOMENT guideDismissalDurable=true")
+        }
+    }
+
+    /// External URL fallbacks match the old app (Expo Router), not a silent ignore. Source:
+    /// src/services/companion/calendar.ts:13-18 parseDate (bad or missing date gives today's readings);
+    /// src/screens/ReaderScreen.tsx:289 (unknown book leaves the Reader as it was), :302-307 (bad chapter shows the
+    /// book's chapter list); the old route reads only book, chapter, verse, endVerse (translation is ignored).
+    /// The fixed feature clock is 2026-09-13T16:00Z Toronto, so "today" is Sep 13, 2026.
+    func testStep7ExternalURLFallbacksMatchSource() throws {
+        try requireStep7("url-fallbacks")
+        let app = step7Launch()
+        let todayLabel = "Sep 13, 2026"
+
+        func backToToday() {
+            app.buttons["tab-today"].tap()
+            for _ in 0..<3 where !app.staticTexts["today-title"].isHittable {
+                let back = app.buttons["content-back"]
+                if back.exists && back.isHittable { back.tap() } else { break }
+            }
+            XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 8))
+        }
+        func readerState() -> String {
+            if app.staticTexts["reader-book-list-title"].exists { return "books" }
+            if app.buttons["reader-title"].exists { return "title:" + app.buttons["reader-title"].label }
+            if app.scrollViews["reader-chapter-grid-scroll"].exists { return "chapters" }
+            return "unknown"
+        }
+        func readTabContentVisible() -> Bool {
+            app.staticTexts["reader-book-list-title"].exists || app.buttons["reader-title"].exists
+                || app.scrollViews["reader-chapter-grid-scroll"].exists
+        }
+
+        // 1. Daily: a bad day, a bad format, and a missing date all open today's readings.
+        for text in ["nrsv://daily?date=2026-02-30", "nrsv://daily?date=2026-9-1", "nrsv://daily"] {
+            app.open(URL(string: text)!)
+            XCTAssertEqual(waitForPageTitle(app), "Today’s readings", "Daily fallback must open readings: \(text)")
+            XCTAssertTrue(app.staticTexts[todayLabel].waitForExistence(timeout: 8), "The fallback date must be today: \(text)")
+            NSLog("STEP7_URL_FALLBACK url=%@ result=daily-today", text)
+            backToToday()
+        }
+
+        // 2. Read without verse: the chapter opens at its top with no selection.
+        app.open(URL(string: "nrsv://read?book=JHN&chapter=3")!)
+        XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 15))
+        XCTAssertEqual(app.buttons["reader-title"].label, "John 3")
+        XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 3), "No verse means no selection")
+        NSLog("STEP7_URL_FALLBACK url=read-no-verse result=chapter-top-no-selection")
+        backToToday()
+
+        // 3. Empty endVerse is absent: one verse is selected.
+        app.open(URL(string: "nrsv://read?book=JHN&chapter=3&verse=16&endVerse=")!)
+        XCTAssertEqual(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 15) ? app.staticTexts["reader-selection-summary"].label : "none",
+                       "Selected: verses 16–16")
+        backToToday()
+
+        // 4. An unknown translation value is ignored. The current edition (WEB-CE) opens.
+        app.open(URL(string: "nrsv://read?book=JHN&chapter=3&verse=16&translation=unknown")!)
+        XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 15))
+        XCTAssertEqual(app.buttons["reader-title"].label, "John 3")
+        XCTAssertEqual(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 10) ? app.staticTexts["reader-selection-summary"].label : "none",
+                       "Selected: verses 16–16")
+        backToToday()
+
+        // 5. A known book with a chapter out of range, not a number, or missing opens the Read tab with that book's
+        // chapter list (src/screens/ReaderScreen.tsx:292-308: Number(NaN) is invalid, so the chapter list shows).
+        for text in ["nrsv://read?book=JHN&chapter=999&verse=1", "nrsv://read?book=JHN&chapter=0&verse=1",
+                     "nrsv://read?book=JHN&chapter=abc&verse=1", "nrsv://read?book=JHN&verse=1"] {
+            app.open(URL(string: text)!)
+            XCTAssertTrue(app.scrollViews["reader-chapter-grid-scroll"].waitForExistence(timeout: 15), "Chapter list expected: \(text)")
+            XCTAssertTrue(app.buttons["reader-chapter-1"].exists)
+            XCTAssertEqual(app.buttons["reader-back"].label, "Back to books")
+            XCTAssertFalse(app.staticTexts["today-title"].isHittable)
+            NSLog("STEP7_URL_FALLBACK url=%@ result=chapter-list", text)
+            backToToday()
+        }
+
+        // 6. Only an unknown or missing book selects the Read tab and keeps the Reader state (ReaderScreen.tsx:289).
+        app.buttons["tab-read"].tap()
+        _ = app.staticTexts["reader-book-list-title"].waitForExistence(timeout: 8)
+        let before = readerState()
+        backToToday()
+        for text in ["nrsv://read?book=ZZZ&chapter=1&verse=1"] {
+            app.open(URL(string: text)!)
+            let appeared = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in readTabContentVisible() }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [appeared], timeout: 15), .completed, "The Read tab must be selected: \(text)")
+            XCTAssertEqual(readerState(), before, "The Reader must keep its earlier state: \(text)")
+            XCTAssertFalse(app.staticTexts["today-title"].isHittable)
+            NSLog("STEP7_URL_FALLBACK url=%@ result=read-tab-only state=%@", text, before)
+            backToToday()
+        }
+
+        // 7. Another host is ignored. Today stays.
+        app.open(URL(string: "nrsv://unknown?x=1")!)
+        Thread.sleep(forTimeInterval: 2)
+        XCTAssertTrue(app.staticTexts["today-title"].isHittable, "An unknown host must be ignored")
+
+        // 8. A valid URL still opens the verse.
+        app.open(URL(string: "nrsv://read?book=JHN&chapter=1&verse=1")!)
+        XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 15), "A valid URL must still open the Reader")
+    }
+
+    /// The one-line message uses the existing Saved status line (app commit 090bf12).
+    private let savedOpenFailureMessageIdentifier = "saved-status"
+
+    /// F2 decided: a saved passage or note that cannot open stays on Saved and shows one line, "This passage could not be opened."
+    /// The line is the Saved status line (`saved-status`). A note row also checks that its passage loads before the editor opens.
+    /// Trigger (bundle fault, no app change): stop the dev app, then run
+    ///   inject_bundle_fault.py apply --fault chapter-missing --edition web-ce --book JHN ...
+    /// The L25 native fixture holds a WEB-CE John 1:1 bookmark and a note on the same passage (`web-ce:JHN:1:1:1`),
+    /// so both rows need the missing chapter file. Alternative: a damaged seed row (Step 7 plan, F2).
+    /// Fault-injected: bundle file removed; task-only dev build; not a natural failure. Restore after the run.
+    /// STEP7_SAVED_ROW_REFERENCE (default "John 1:1") selects the rows by label.
+    /// STEP7_SAVED_NOTE_CASE=0 skips the note row part.
+    func testStep7SavedOpenFailureStaysOnSavedWithMessage() throws {
+        try requireStep7("saved-open-failure")
+        let env = ProcessInfo.processInfo.environment
+        let reference = env["STEP7_SAVED_ROW_REFERENCE"] ?? "John 1:1"
+        let message = "This passage could not be opened."
+        let app = step7Launch()
+        tapWhenReady(app.buttons["tab-saved"], in: app)
+        XCTAssertTrue(app.buttons["saved-filter-bookmark"].waitForExistence(timeout: 10), "The Saved tab must open")
+
+        func status() -> XCUIElement {
+            app.descendants(matching: .any).matching(identifier: savedOpenFailureMessageIdentifier).firstMatch
+        }
+        func assertStayedOnSaved(_ kind: String) {
+            let line = status()
+            XCTAssertTrue(line.waitForExistence(timeout: 10), "The failed \(kind) open must show one line")
+            XCTAssertEqual(line.label, message)
+            XCTAssertEqual(app.staticTexts.matching(NSPredicate(format: "label == %@", message)).count, 1, "Show the message once")
+            // The Saved tab stays selected: the Saved controls stay and no Reader, editor, or Today screen appears.
+            XCTAssertTrue(app.buttons["saved-filter-bookmark"].isHittable, "The Saved tab must stay selected")
+            XCTAssertFalse(app.buttons["reader-title"].exists, "The Reader must not open")
+            XCTAssertFalse(app.staticTexts["reader-book-list-title"].exists, "The Reader must not open")
+            XCTAssertFalse(app.textViews["saved-note-editor"].exists, "The note editor must not open")
+            XCTAssertFalse(app.staticTexts["today-title"].isHittable)
+            step7Attach("step7-saved-open-failure-\(kind)", app: app)
+            NSLog("STEP7_SAVED_OPEN_FAILURE kind=%@ message=%@ stayedOnSaved=true", kind, message)
+        }
+
+        tapWhenReady(app.buttons["saved-filter-bookmark"], in: app)
+        let bookmarkRow = app.buttons.matching(NSPredicate(
+            format: "identifier BEGINSWITH %@ AND label CONTAINS %@", "saved-row-bookmark:", reference)).firstMatch
+        XCTAssertTrue(bookmarkRow.waitForExistence(timeout: 10), "No saved bookmark row for \(reference). Use the L25 native fixture.")
+        tapWhenReady(bookmarkRow, in: app)
+        assertStayedOnSaved("bookmark")
+
+        guard env["STEP7_SAVED_NOTE_CASE"] != "0" else { return }
+        let noteFilter = app.buttons["saved-filter-note"]
+        tapWhenReady(noteFilter, in: app)
+        let noteRow = app.buttons.matching(NSPredicate(
+            format: "identifier BEGINSWITH %@ AND label CONTAINS %@", "saved-row-note:", reference)).firstMatch
+        XCTAssertTrue(noteRow.waitForExistence(timeout: 10), "No saved note row for \(reference). Use the L25 native fixture.")
+        tapWhenReady(noteRow, in: app)
+        assertStayedOnSaved("note")
+    }
+
+    /// Error states through a changed task-only development bundle. Set STEP7_FAULT to the fault that
+    /// scripts/native/source-fixtures/step7/inject_bundle_fault.py applied. The test names the expected text.
+    /// STEP7_FAULT_BOOK and STEP7_FAULT_CHAPTER (default JHN and 1) apply to chapter-missing.
+    func testStep7BundleFaultMessage() throws {
+        try requireStep7("bundle-fault")
+        let env = ProcessInfo.processInfo.environment
+        guard let fault = env["STEP7_FAULT"] else { XCTFail("Set STEP7_FAULT"); return }
+        let app = step7Launch()
+        switch fault {
+        case "chapter-missing":
+            let book = env["STEP7_FAULT_BOOK"] ?? "JHN"
+            let chapter = env["STEP7_FAULT_CHAPTER"] ?? "1"
+            app.buttons["tab-read"].tap()
+            let bookList = app.staticTexts["reader-book-list-title"]
+            for _ in 0..<3 where !bookList.exists {
+                let back = app.buttons["reader-back"]
+                XCTAssertTrue(back.waitForExistence(timeout: 8))
+                back.tap()
+            }
+            tapWhenReady(app.buttons["reader-book-\(book)"], in: app)
+            tapWhenReady(app.buttons["reader-chapter-\(chapter)"], in: app)
+            XCTAssertTrue(app.staticTexts["Chapter unavailable"].waitForExistence(timeout: 12))
+            XCTAssertTrue(app.staticTexts["This chapter is not available."].exists)
+            XCTAssertTrue(app.buttons["reader-back"].exists, "The Reader must keep its Back control")
+            step7Attach("step7-fault-chapter-missing", app: app)
+        case "artwork-ivory-missing", "artwork-plum-missing":
+            tapWhenReady(app.buttons["today-verse-card"], in: app)
+            XCTAssertEqual(waitForPageTitle(app), "Verse of the moment")
+            tapWhenReady(app.buttons["verse-moment-scripture-card"], in: app)
+            XCTAssertEqual(waitForPageTitle(app), "A word worth sharing")
+            if fault == "artwork-plum-missing" { tapWhenReady(app.buttons["Evening plum"], in: app) }
+            XCTAssertTrue(app.staticTexts["Artwork could not load. You can still share the words on a plain background."]
+                .waitForExistence(timeout: 8))
+            step7Attach("step7-fault-\(fault)", app: app)
+            tapWhenReady(app.buttons["scripture-card-share-image"], in: app)
+            let copy = app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch
+            XCTAssertTrue(copy.waitForExistence(timeout: 15), "The words must still share on a plain background")
+            step7DismissShareSheet(copy: copy, in: app)
+        case "rosary-catalog-invalid":
+            app.buttons["tab-pray"].tap()
+            tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
+            XCTAssertTrue(app.staticTexts["The Rosary catalog is not available right now."].waitForExistence(timeout: 10))
+            step7Attach("step7-fault-rosary-catalog", app: app)
+        case "prayer-catalog-invalid":
+            app.buttons["tab-pray"].tap()
+            XCTAssertTrue(app.staticTexts["The prayer library is not available."].waitForExistence(timeout: 10))
+            step7Attach("step7-fault-prayer-catalog", app: app)
+        case "works-catalog-missing":
+            app.buttons["tab-read"].tap()
+            let bookList = app.staticTexts["reader-book-list-title"]
+            for _ in 0..<3 where !bookList.exists {
+                let back = app.buttons["reader-back"]
+                XCTAssertTrue(back.waitForExistence(timeout: 8))
+                back.tap()
+            }
+            tapWhenReady(app.buttons["reader-works-link"], in: app)
+            XCTAssertTrue(app.staticTexts["The library could not be opened on this device."].waitForExistence(timeout: 10))
+            step7Attach("step7-fault-works-catalog", app: app)
+        case "search-db-missing":
+            tapWhenReady(app.buttons["tab-read"], in: app)
+            let search = app.buttons["reader-search-button"]
+            if !search.exists {
+                let bookList = app.staticTexts["reader-book-list-title"]
+                for _ in 0..<3 where !bookList.exists {
+                    let back = app.buttons["reader-back"]
+                    XCTAssertTrue(back.waitForExistence(timeout: 8))
+                    back.tap()
+                }
+            }
+            tapWhenReady(app.buttons["reader-search-button"], in: app)
+            let field = app.textFields["search-query-input"]
+            XCTAssertTrue(field.waitForExistence(timeout: 10))
+            field.typeText("mercy")
+            XCTAssertTrue(app.staticTexts["Search could not be completed. Try a different phrase."].waitForExistence(timeout: 15))
+            step7Attach("step7-fault-search-db", app: app)
+        case "reading-reference-invalid":
+            tapWhenReady(app.buttons["today-readings-card"], in: app)
+            let row = button(containing: "Nonexistent 99:1", in: app)
+            tapWhenReady(row, in: app)
+            XCTAssertTrue(app.staticTexts["This reference could not be opened. You can find the passage using Bible search."]
+                .waitForExistence(timeout: 10))
+            step7Attach("step7-fault-reading-reference", app: app)
+            tapWhenReady(app.buttons["Search the Bible"], in: app)
+            XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 10), "Search the Bible must open Search")
+        default:
+            XCTFail("Unknown STEP7_FAULT: \(fault)")
+        }
+        NSLog("STEP7_FAULT fault=%@ observed=true", fault)
+    }
+
     private func launchWithFeatureClock() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-L14FeatureDate", featureDate,

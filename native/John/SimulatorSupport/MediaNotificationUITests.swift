@@ -51,6 +51,91 @@ final class MediaNotificationUITests: XCTestCase {
     }
     #endif
 
+
+    #if DEBUG
+    /// Step 7: inactive phase pauses, resume works, and leaving the route releases the player.
+    /// Needs network for the Debug sample audio. Run with STEP7_CASES=media-lifecycle and STEP7_MEDIA_NETWORK=1.
+    /// Source: RosaryMediaView.swift onChange(scenePhase) and onDisappear; RosaryMediaModel.swift pause, deactivate.
+    /// The test proves visible state only. It does not prove that the audio engine released its resources.
+    func testStep7DebugMediaInactiveAndRouteExitCleanup() throws {
+        try requireStep7("media-lifecycle")
+        guard ProcessInfo.processInfo.environment["STEP7_MEDIA_NETWORK"] == "1" else {
+            throw XCTSkip("This check plays a remote Debug sample. Set STEP7_MEDIA_NETWORK=1.")
+        }
+        let app = XCUIApplication()
+        openMedia(in: app)
+        tapWhenReady(app.buttons["rosary-media-mode-audio"], in: app)
+        let play = app.buttons["Play audio"]
+        XCTAssertTrue(play.waitForExistence(timeout: 40))
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isEnabled == true"), object: play)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 40), .completed, "The sample audio must load")
+        tapWhenReady(play, in: app)
+        XCTAssertTrue(app.buttons["Pause audio"].waitForExistence(timeout: 20), "Playback must start")
+
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Play audio"].waitForExistence(timeout: 10), "The inactive phase must pause playback")
+        XCTAssertFalse(app.buttons["Pause audio"].exists)
+        tapWhenReady(app.buttons["Play audio"], in: app)
+        XCTAssertTrue(app.buttons["Pause audio"].waitForExistence(timeout: 20), "Playback must resume after the user taps Play")
+
+        tapWhenReady(app.buttons["Back to Rosary"], in: app)
+        XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
+        tapWhenReady(button(containing: "Bishop Robert Barron · Word on Fire", in: app), in: app)
+        XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.buttons["rosary-media-mode-video"].value as? String, "Selected", "A new visit starts in video mode")
+        tapWhenReady(app.buttons["rosary-media-mode-audio"], in: app)
+        XCTAssertTrue(app.buttons["Play audio"].waitForExistence(timeout: 40), "A new visit must not keep the old playback")
+        XCTAssertFalse(app.buttons["Pause audio"].exists)
+        NSLog("STEP7_MEDIA_LIFECYCLE inactivePaused=true resumeWorks=true exitReleased=visible-state-only")
+    }
+
+    /// Step 7: the audio failure state. It needs the proposed DEBUG launch argument -L29MediaFailureURI (see the Step 7 plan).
+    /// Set STEP7_MEDIA_HOOK_PRESENT=1 only on a build that has the hook.
+    func testStep7DebugMediaFailureStateWithInjectedURI() throws {
+        try requireStep7("media-failure")
+        guard ProcessInfo.processInfo.environment["STEP7_MEDIA_HOOK_PRESENT"] == "1" else {
+            throw XCTSkip("This check needs the proposed -L29MediaFailureURI hook. Set STEP7_MEDIA_HOOK_PRESENT=1 on a build that has it.")
+        }
+        let app = XCUIApplication()
+        app.launchArguments += ["-L29MediaFailureURI", "https://invalid.invalid/step7-missing.mp3"]
+        openMedia(in: app)
+        tapWhenReady(app.buttons["rosary-media-mode-audio"], in: app)
+        let unavailable = app.buttons["Audio unavailable"]
+        XCTAssertTrue(unavailable.waitForExistence(timeout: 40), "A failed audio item must show Audio unavailable")
+        XCTAssertFalse(unavailable.isEnabled, "The failed player button must be disabled")
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "step7-media-failure"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        tapWhenReady(app.buttons["Back to Rosary"], in: app)
+        XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
+        NSLog("STEP7_MEDIA_FAILURE audioUnavailable=true")
+    }
+    #endif
+
+    #if !DEBUG
+    /// Step 7: Release shows exactly one external media action on Rosary home (the suggested set for the weekday).
+    /// STEP7_EXPECTED_EPISODE_TITLE (optional) names the expected episode. Never tap the action.
+    /// Source: RosaryHomeView.swift mediaSection; src/services/rosary/catalog.ts:233 DEFAULT_SET_BY_DAY.
+    func testStep7ReleaseHomeEpisodeIsExternalAndMatchesWeekday() throws {
+        try requireStep7("release-media-episode")
+        let app = XCUIApplication()
+        openRosaryHome(in: app)
+        let actions = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "opens on YouTube"))
+        XCTAssertTrue(actions.firstMatch.waitForExistence(timeout: 8))
+        XCTAssertEqual(actions.count, 1, "Release shows one episode on Rosary home")
+        let label = actions.firstMatch.label
+        if let title = ProcessInfo.processInfo.environment["STEP7_EXPECTED_EPISODE_TITLE"] {
+            XCTAssertTrue(label.contains(title), "Expected the suggested episode \(title). Observed: \(label)")
+        }
+        XCTAssertFalse(app.buttons["rosary-media-mode-video"].exists)
+        XCTAssertFalse(app.buttons["rosary-media-mode-audio"].exists)
+        NSLog("STEP7_RELEASE_MEDIA externalActionLabel=%@ tapped=false", label)
+    }
+    #endif
+
     func testNotificationScreensShowDisabledSaveFeedback() throws {
         let app = XCUIApplication()
         app.launch()
@@ -79,6 +164,12 @@ final class MediaNotificationUITests: XCTestCase {
         tapWhenReady(save, in: app)
         XCTAssertTrue(app.staticTexts["Reminder turned off"].waitForExistence(timeout: 8))
         NSLog("NOTIFICATION_UI calendarDisabledFeedback=true rosaryDisabledFeedback=true")
+    }
+
+    private func requireStep7(_ name: String) throws {
+        let listed = (ProcessInfo.processInfo.environment["STEP7_CASES"] ?? "")
+            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        guard listed.contains(name) else { throw XCTSkip("Set STEP7_CASES=\(name) to run this Step 7 check.") }
     }
 
     private func openMedia(in app: XCUIApplication) {

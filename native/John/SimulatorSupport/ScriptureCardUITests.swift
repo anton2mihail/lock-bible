@@ -39,10 +39,192 @@ final class ScriptureCardUITests: XCTestCase {
         guard UIDevice.current.userInterfaceIdiom == .pad else {
             throw XCTSkip("This test checks the iPad share presentation only.")
         }
-        throw XCTSkip("Psalms 2 owned-word points are verified only on iPhone 17 Pro. Capture iPad points before this journey.")
+        // Step 7: Main measures the points with testStep7MeasureOwnedWordPointsForCurrentDevice and passes them as
+        // STEP7_IPAD_WORD_POINTS="x1,y1;x12,y12" (offsets in points from each verse frame origin).
+        guard let raw = ProcessInfo.processInfo.environment["STEP7_IPAD_WORD_POINTS"] else {
+            throw XCTSkip("Psalms 2 owned-word points are verified only on iPhone 17 Pro. Capture iPad points before this journey.")
+        }
+        let pairs = raw.split(separator: ";").map { $0.split(separator: ",").compactMap { Double($0.trimmingCharacters(in: .whitespaces)) } }
+        guard pairs.count == 2, pairs.allSatisfy({ $0.count == 2 }) else {
+            XCTFail("STEP7_IPAD_WORD_POINTS must look like x1,y1;x12,y12")
+            return
+        }
+        let app = XCUIApplication()
+        openLongWebPassage(in: app,
+                           points: (CGPoint(x: pairs[0][0], y: pairs[0][1]), CGPoint(x: pairs[1][0], y: pairs[1][1])),
+                           verifiedPhone: false)
+        tapWhenReady(app.buttons["reader-selection-card"], in: app)
+        XCTAssertTrue(app.buttons["Warm ivory"].waitForExistence(timeout: 8))
+        assertCardPreview(in: app)
+        attachScreenshot("card-ipad-ivory-preview", app: app)
+        exportAndCancel(label: "ipad-ivory", in: app)
+        NSLog("STEP7_CARD_IPAD window=%@ points=%@ popoverSeenDuringExport=see CARD_PNG_HOLD",
+              NSCoder.string(for: app.frame), raw)
     }
 
-    private func openLongWebPassage(in app: XCUIApplication) {
+    // MARK: Step 7 checks
+    // Each test runs only when STEP7_CASES lists its case name. Default runs skip them.
+
+    private func requireStep7(_ name: String) throws {
+        let listed = (ProcessInfo.processInfo.environment["STEP7_CASES"] ?? "")
+            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        guard listed.contains(name) else { throw XCTSkip("Set STEP7_CASES=\(name) to run this Step 7 check.") }
+    }
+
+    /// Opens the Scripture card from Today, then Verse Moment. It needs no owned-word point, so it works on every device.
+    private func openCardFromVerseMoment(in app: XCUIApplication) {
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
+        tapWhenReady(app.buttons["today-verse-card"], in: app)
+        tapWhenReady(app.buttons["verse-moment-scripture-card"], in: app)
+        let title = app.staticTexts["content-page-title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 10))
+        XCTAssertEqual(title.label, "A word worth sharing")
+    }
+
+    private func step7DismissShareSurface(copy: XCUIElement, in app: XCUIApplication) {
+        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "Cancel")).firstMatch
+        if close.exists && close.isHittable { close.tap() } else { copy.swipeDown() }
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: copy)
+        if XCTWaiter.wait(for: [gone], timeout: 6) != .completed {
+            // An iPad share popover closes when the user taps outside it.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without Copy")
+    }
+
+    private func shareCopyCell(_ app: XCUIApplication) -> XCUIElement {
+        app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch
+    }
+
+    /// Text fallback: "Share text instead" opens the system share panel with the source text format
+    /// (ScriptureCardView.swift shareText; src/screens/companion/ShareCardScreen.tsx:43). The image share still works after it.
+    func testStep7CardShareTextFallbackAndImageStillWork() throws {
+        try requireStep7("card-text-fallback")
+        let app = XCUIApplication()
+        openCardFromVerseMoment(in: app)
+        let textShare = app.buttons.matching(NSPredicate(format: "label == %@", "Share text instead")).firstMatch
+        tapWhenReady(textShare, in: app)
+        let copy = shareCopyCell(app)
+        XCTAssertTrue(copy.waitForExistence(timeout: 15), "The native share panel must open for the text")
+        NSLog("STEP7_CARD_TEXT_SHARE opened idiom=%@ popover=%d window=%@",
+              UIDevice.current.userInterfaceIdiom == .pad ? "pad" : "phone", app.popovers.firstMatch.exists ? 1 : 0,
+              NSCoder.string(for: app.frame))
+        attachScreenshot("step7-card-text-share", app: app)
+        step7DismissShareSurface(copy: copy, in: app)
+
+        tapWhenReady(app.buttons["scripture-card-share-image"], in: app)
+        let imageCopy = shareCopyCell(app)
+        XCTAssertTrue(imageCopy.waitForExistence(timeout: 20), "The image share must still open after the text share")
+        XCTAssertFalse(app.staticTexts["scripture-card-share-error"].exists)
+        attachScreenshot("step7-card-image-share-after-text", app: app)
+        step7DismissShareSurface(copy: imageCopy, in: app)
+    }
+
+    /// PNG write failure. Main makes the app data container's tmp folder read-only while the app is stopped.
+    /// Expected (ScriptureCardView.swift prepareImageShare, after Sol's copy fix): the old app's exact message
+    /// (src/screens/companion/ShareCardScreen.tsx:63), no share panel, the button works again, and "Share text instead"
+    /// still opens the share panel. This is a fault-injected check: tmp is read-only; not a natural failure.
+    func testStep7CardPNGWriteFailureShowsMessageAndKeepsTextShare() throws {
+        try requireStep7("card-png-fault")
+        let app = XCUIApplication()
+        openCardFromVerseMoment(in: app)
+        let imageButton = app.buttons["scripture-card-share-image"]
+        tapWhenReady(imageButton, in: app)
+        let error = app.staticTexts["scripture-card-share-error"]
+        XCTAssertTrue(error.waitForExistence(timeout: 15), "A failed PNG write must show the share error")
+        XCTAssertEqual(error.label, "The card could not be shared. Please try again, or share the text.")
+        XCTAssertFalse(shareCopyCell(app).waitForExistence(timeout: 3), "No share panel may open after the failure")
+        XCTAssertFalse(app.otherElements["scripture-card-share-busy"].exists)
+        XCTAssertTrue(imageButton.isHittable && imageButton.isEnabled, "The image button must work again")
+        attachScreenshot("step7-card-png-failure", app: app)
+        tapWhenReady(app.buttons.matching(NSPredicate(format: "label == %@", "Share text instead")).firstMatch, in: app)
+        let copy = shareCopyCell(app)
+        XCTAssertTrue(copy.waitForExistence(timeout: 15), "The text share must still open")
+        step7DismissShareSurface(copy: copy, in: app)
+        NSLog("STEP7_CARD_FAULT pngWriteFailure=observed")
+    }
+
+    /// Measures owned-word offsets for the current device and text size. It taps a grid inside each verse and records
+    /// the points where a selection starts. Output: NSLog lines STEP7_WORD_POINT and one attachment.
+    /// Use the John 1:1 offset as L25_VERSE1_TAP_OFFSET. Use the Psalms 2:1 and 2:12 offsets as STEP7_IPAD_WORD_POINTS.
+    /// STEP7_TEXT_SIZE="Extra large" measures that text size. The default is Default.
+    func testStep7MeasureOwnedWordPointsForCurrentDevice() throws {
+        try requireStep7("measure-word-points")
+        let extraLarge = ProcessInfo.processInfo.environment["STEP7_TEXT_SIZE"] == "Extra large"
+        let app = XCUIApplication()
+        app.launch()
+        setReadingProfile(in: app,
+                          textSizeIdentifier: extraLarge ? "settings-text-size-extra-large" : "settings-text-size-default",
+                          textSizeName: extraLarge ? "Extra large" : "Default")
+        app.buttons["tab-read"].tap()
+        openReaderBookList(in: app)
+        var lines: [String] = []
+        tapWhenReady(app.buttons["reader-book-JHN"], in: app)
+        tapWhenReady(app.buttons["reader-chapter-1"], in: app)
+        lines.append(probeOwnedWordPoints(app.buttons["reader-verse-1"], label: "John 1:1", verseNumber: 1, app: app))
+        for _ in 0..<2 {
+            let back = app.buttons["reader-back"]
+            XCTAssertTrue(back.waitForExistence(timeout: 8))
+            back.tap()
+        }
+        tapWhenReady(app.buttons["reader-book-PSA"], in: app)
+        tapWhenReady(app.buttons["reader-chapter-2"], in: app)
+        lines.append(probeOwnedWordPoints(app.buttons["reader-verse-1"], label: "Psalms 2:1", verseNumber: 1, app: app))
+        lines.append(probeOwnedWordPoints(app.buttons["reader-verse-12"], label: "Psalms 2:12", verseNumber: 12, app: app))
+        let header = "device=\(UIDevice.current.userInterfaceIdiom == .pad ? "pad" : "phone") window=\(NSCoder.string(for: app.frame)) textSize=\(extraLarge ? "Extra large" : "Default")"
+        let report = ([header] + lines).joined(separator: "\n")
+        NSLog("STEP7_WORD_POINTS %@", report)
+        let attachment = XCTAttachment(string: report)
+        attachment.name = "step7-word-points"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    /// A point counts only when the selection reads "Selected: verses N–N" for the probed verse.
+    /// Any other selection is logged as wrong-verse and not counted.
+    private func probeOwnedWordPoints(_ verse: XCUIElement, label: String, verseNumber: Int, app: XCUIApplication) -> String {
+        XCTAssertTrue(verse.waitForExistence(timeout: 12), "Missing verse control: \(label)")
+        if !verse.isHittable { scrollToVisible(verse, in: app) }
+        let frame = verse.frame
+        var found: [CGPoint] = []
+        var wrongVerse: [String] = []
+        var attempts = 0
+        var y: CGFloat = 8
+        outer: while y < frame.height - 4 {
+            var x: CGFloat = 12
+            while x < frame.width - 8 {
+                attempts += 1
+                if attempts > 90 { break outer }
+                let point = CGPoint(x: frame.minX + x, y: frame.minY + y)
+                if visibleScrollViewport(in: app).contains(point) {
+                    app.coordinate(withNormalizedOffset: CGVector(dx: point.x / app.frame.width,
+                                                                   dy: point.y / app.frame.height)).tap()
+                    let summary = app.staticTexts["reader-selection-summary"]
+                    if summary.waitForExistence(timeout: 1.0) {
+                        if summary.label == "Selected: verses \(verseNumber)–\(verseNumber)" {
+                            found.append(CGPoint(x: x, y: y))
+                        } else {
+                            wrongVerse.append("\(summary.label) at (\(Int(x)),\(Int(y)))")
+                        }
+                        app.buttons["reader-selection-close"].tap()
+                        _ = summary.waitForNonExistence(timeout: 3)
+                        if found.count >= 3 { break outer }
+                    }
+                }
+                x += 28
+            }
+            y += 14
+        }
+        let text = found.map { String(format: "(%.0f,%.0f)", $0.x, $0.y) }.joined(separator: " ")
+        let line = "STEP7_WORD_POINT label=\(label) verseFrame=\(NSCoder.string(for: frame)) attempts=\(attempts) successOffsets=\(text.isEmpty ? "none" : text) wrong-verse=\(wrongVerse.isEmpty ? "none" : wrongVerse.joined(separator: "; "))"
+        NSLog("%@", line)
+        XCTAssertFalse(found.isEmpty, "No owned-word point found for \(label)")
+        return line
+    }
+
+    private func openLongWebPassage(in app: XCUIApplication, points: (CGPoint, CGPoint)? = nil,
+                                    verifiedPhone: Bool = true) {
         app.launch()
         setReadingProfile(in: app)
         app.buttons["tab-read"].tap()
@@ -53,13 +235,15 @@ final class ScriptureCardUITests: XCTestCase {
         let first = app.buttons["reader-verse-1"]
         XCTAssertTrue(first.waitForExistence(timeout: 12))
         if !first.isSelected {
-            tapOwnedWord(CGPoint(x: 88, y: 19), in: first, label: "Psalms 2:1", app: app)
+            tapOwnedWord(points?.0 ?? CGPoint(x: 88, y: 19), in: first, label: "Psalms 2:1", app: app,
+                         verifiedPhone: verifiedPhone)
         }
         XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 5))
         assertReference("Psalms 2:1", in: app)
 
         let last = app.buttons["reader-verse-12"]
-        tapOwnedWord(CGPoint(x: 96, y: 28), in: last, label: "Psalms 2:12", app: app)
+        tapOwnedWord(points?.1 ?? CGPoint(x: 96, y: 28), in: last, label: "Psalms 2:12", app: app,
+                     verifiedPhone: verifiedPhone)
         let summary = app.staticTexts["reader-selection-summary"]
         let range = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label == %@", "Selected: verses 1–12"), object: summary)
@@ -73,11 +257,12 @@ final class ScriptureCardUITests: XCTestCase {
         NSLog("CARD_SELECTED_RANGE reference=Psalms2:1-12 translation=web-ce canonicalRawUTF16=1043")
     }
 
-    private func setReadingProfile(in app: XCUIApplication) {
+    private func setReadingProfile(in app: XCUIApplication, textSizeIdentifier: String = "settings-text-size-default",
+                                   textSizeName: String = "Default") {
         app.buttons["tab-settings"].tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
         let choices = [
-            ("settings-text-size-default", "Default"),
+            (textSizeIdentifier, textSizeName),
             ("settings-line-spacing-comfortable", "Comfortable"),
             ("settings-scripture-typeface-serif", "Serif"),
             ("settings-layout-verse-by-verse", "Verse by verse"),
@@ -104,13 +289,15 @@ final class ScriptureCardUITests: XCTestCase {
     }
 
     private func tapOwnedWord(_ offset: CGPoint, in verse: XCUIElement, label: String,
-                              app: XCUIApplication,
+                              app: XCUIApplication, verifiedPhone: Bool = true,
                               file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(verse.waitForExistence(timeout: 10), "Missing verse control: \(label)", file: file, line: line)
-        XCTAssertEqual(UIDevice.current.userInterfaceIdiom, .phone,
-                       "Verified verse word points apply only to the iPhone 17 Pro profile", file: file, line: line)
-        XCTAssertEqual(app.frame.width, 402, accuracy: 1,
-                       "Verified verse word points require the observed iPhone 17 Pro width", file: file, line: line)
+        if verifiedPhone {
+            XCTAssertEqual(UIDevice.current.userInterfaceIdiom, .phone,
+                           "Verified verse word points apply only to the iPhone 17 Pro profile", file: file, line: line)
+            XCTAssertEqual(app.frame.width, 402, accuracy: 1,
+                           "Verified verse word points require the observed iPhone 17 Pro width", file: file, line: line)
+        }
         scrollToOwnedPoint(offset, in: verse, label: label, app: app, file: file, line: line)
         let point = CGPoint(x: verse.frame.minX + offset.x, y: verse.frame.minY + offset.y)
         let viewport = visibleScrollViewport(in: app)

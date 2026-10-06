@@ -25,7 +25,15 @@ After each successful on/change/off state, the test emits `NOTICE_STAGE_READY <n
 
 ## Picker preflight
 
-The observed Calendar `DatePicker` uses identifier `calendar-notifications-time-picker`. Its child `PickerWheel` values are `8 o’clock`, `00 minutes`, and `AM`. The hour wheel has no accessibility label. The helper scopes to a visible `DatePicker`, then identifies the hour, minute, and meridiem wheels from these semantic value forms. It preserves the observed suffix and zero-padding when it sets a target. It reads each value back before it saves. It does not select a wheel by index. Main must confirm the same value forms for the compact Rosary picker. If that picker exposes a different hierarchy, keep the captured failure and update the helper from that observed hierarchy. Do not infer a time from a button label alone.
+The observed Calendar `DatePicker` uses identifier `calendar-notifications-time-picker`. It expands inline. Its child `PickerWheel` values are `8 o’clock`, `00 minutes`, and `AM`. The hour wheel has no accessibility label. The helper uses the visible `DatePicker`. It finds the hour, minute, and meridiem wheels from these value forms. It does not select a wheel by index.
+
+The wheels accept only data values in `adjust(toPickerWheelValue:)`. For the hour, the data values are `1` to `12`. For the minute, the data values are the minute numbers, such as `15`. The helper does not send the full value, such as `9 o’clock`. The system rejects it. After the adjust, the helper reads back the full value, such as `9 o’clock` and `15 minutes`. It saves only after the readback matches.
+
+The Rosary time control is a compact `DatePicker` with identifier `rosary-reminder-time`. Its observed frame is `{183, 715, 179, 76}`. Its accessibility value is the time, for example `8:00 PM`. The center of this frame misses the time button. The helper taps at 80 percent of the frame width. It then waits for a `PickerWheel` to appear. The compact picker shows the same three wheel values as the Calendar picker. This hierarchy is now confirmed. The wheels can appear outside the `DatePicker` element. The helper logs the tree in that case.
+
+The helper scrolls the page with a drag in the left gutter, 14 points from the left edge of the scroll area. A drag from the center can start on the inline Calendar picker. That drag changes the time. Do not drag from the center of the screen.
+
+After the helper taps `Allow`, it waits until the alert has `exists == false`, for up to 10 seconds. The denial method taps `Don't Allow` and then waits for the visible permission error. A call to `waitForExistence` does not prove that the alert closed. That call can return true for an alert that is still on screen.
 
 The denial method requires a real system alert with a `Don't Allow` button. The authorized method requires a real `Allow` button only when the declared initial state is `notDetermined`. The test does not open system Settings or external links.
 
