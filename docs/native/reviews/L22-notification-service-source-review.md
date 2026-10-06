@@ -2,7 +2,7 @@
 
 Date: 6 October 2026.
 Reviewer: GPT-6.1 Sol.
-Status: five source corrections required. Native runtime remains open.
+Status: corrected source accepted for target build at `6e87cfa`. Native runtime remains open.
 
 ## Reviewed boundary
 
@@ -28,6 +28,19 @@ Runtime's committed-state callback rejects missing startup state and an uncertai
 5. During rollback, report a failed pending-request query. Remove the unused first query. Do not replace a query failure silently with an empty list. Continue best-effort restoration and include the query error in `rollbackFailures`.
 
 Source will send stable hashes after Swift 6 checks with and without DEBUG. Main's current target build started before these corrections. That product cannot accept notification runtime. Main will rebuild with the corrected hashes.
+
+## Corrected source decision
+
+All five fixes are present. The system center retains the complete immutable `UNNotificationRequest` and restores that snapshot. Rosary trigger comparison uses effective components, repeat state, and time zone. Planning captures the clock after permission/catalog awaits. Refresh attempts both branches and reports their failures. Rollback reports a failed pending query and continues restoration.
+
+One final source finding was corrected before acceptance. A weekly request with a specific day, month, or year cannot count as an unchanged weekly reminder. The comparison rejects these restrictions. Effective time zone uses the component zone, then its calendar zone, then the current zone.
+
+| Accepted file | SHA-256 |
+| --- | --- |
+| NoticeCenter.swift | `8e206090c86bc07f4357fb17b61dfa3b64778d2e711312c3fca0d22e9ecb5d7d` |
+| LocalNoticeService.swift | `185aea8d6348ad928f24438ed4fe0c4b16ae06159a3c8fbb93f4cde364500582` |
+
+Sol checked the final files and hashes. Source reports passing Swift 6 arm64 simulator SDK checks with and without DEBUG. Implementation commit `6e87cface8e96d886cd00b4fc24b6fc6f1ff5cd5` contains only these two files. This accepts source inclusion. The runtime batch below remains required.
 
 ## Fixture evidence
 

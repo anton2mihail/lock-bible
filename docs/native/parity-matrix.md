@@ -1,6 +1,6 @@
 # John 1:1 parity matrix
 
-Updated: 5 October 2026. Baseline JavaScript source version: **1.5.0 (18)**. The built app reports native bundle version **1.2.2 (15)**. These values differ.
+Updated: 6 October 2026. Baseline JavaScript source version: **1.5.0 (18)**. The old built app reports native bundle version **1.2.2 (15)**. These values differ.
 
 This matrix records the current Expo app as the baseline. `Source-only` means the route or behavior comes from source inspection. It does not mean that the simulator showed it. The simulator checks are in progress. Keep each unvisited state marked `Pending`.
 
@@ -62,8 +62,23 @@ This matrix records the current Expo app as the baseline. `Source-only` means th
 - Source-only routes and unvisited states: all other matrix rows and states remain unverified. Do not infer runtime behavior from the source inventory at `docs/native/inventory/`.
 - Screenshots and logs: `build/native-evidence/L00/`.
 
-## Native foundation checkpoint
+## Current native checkpoint
 
-The baseline rows above still describe the old app. Native L02 captures are separate evidence. Sol inspected Today, John 1:1, Aa, live Large text, and Settings in `build/native-evidence/L02/`. Main reports opening all five tab roots. These checks prove the shell and shared in-memory state. They do not accept any full feature route.
+The baseline rows above describe the old app only. They do not describe the current native implementation. Gate A is accepted at Main integration `df8cc9b`. The current native app has the continuous chapter renderer, Search, Saved, devotional routes, Works, media, and complete Settings. Target builds prove inclusion. Full route and visual acceptance remains open.
 
-The native Reader currently shows one verse in a card. The source Reader shows a continuous chapter with its own header. Reader parity remains open for L06–L08. Native Saved, Pray, Search, and Settings remain partial or placeholders. Gate A remains open for storage and startup integration. See `docs/native/reviews/L02-L05-runtime-checkpoint.md`.
+| Native scope | Accepted evidence | Remaining route acceptance |
+| --- | --- | --- |
+| Foundation | Gate A storage, recovery, same-ID small Release import, native-wins restart, startup URLs, and shared state | Complete release fixture, signed widget continuity, and final update remain later gates |
+| Reader / Go to / Aa | Production renderer builds; verse 10 and range 10–12 observed; valid-library Reader opens | Full range sequence, owned continuation taps, text anchors, matched John/Psalm/Song, all typography/edition controls, lower controls, and full visuals |
+| Search | Repository/parser comparisons pass. Search result opens Reader in the focused UI journey | Exact result identity, scopes/editions, phrase/correction/Latin UI, quick input, close/return, repeat result, full visuals |
+| Saved / existing note | All four filters, exact existing note edit/reopen/delete, bookmark delete/Undo, and exact restored row pass at `8f66582` | New note, all highlight colors, original non-WEB identity, timeout/failure behavior, full visuals |
+| Verse Moment / widgets | Rotation/repository comparisons pass. Three widget kinds and complete target source exist | Current view, sharing/context, supported families, actual timelines/reloads/links, installed update retention |
+| Daily / Sunday / passage / Today | Core source fixtures and target compilation pass | Native dated routes, mapping/fallback, 17:00 behavior, reflection restart, old/native comparisons |
+| Prayer / Novena / Teaching | Complete source and target membership exist; exact catalog/transition fixtures are available | Search/favorite/intention/completion/reset persistence, source text/links, return paths, visual pairs |
+| Rosary / Seven Sorrows / Lectio / Confession | Complete source and target membership exist | Distinct guide sequences, completion/back/reset, quiet timer, temporary-state clearing, announcements, visuals |
+| Scripture card | Complete native preview/export source and target membership exist | Actual complete PNG at 1080px width, both backgrounds, long text, system share/text fallback, cleanup, iPad |
+| Works / Collection / Commentary | Repository compatibility and target compilation pass | Catalog navigation, exact destination, pagination, anchor/reflow/restart, contents, lower controls, long/missing states, visuals |
+| Notification settings / schedules | Views are source-reviewed. Initial service needs five corrections | Corrected build, permission/pending/rollback/imported-ID checks, real delivery, cold/warm tap |
+| Media / complete Settings | Source review and coherent target compilation pass | Player lifecycle/failure, Release gate, every preference/credit/coverage control, source-matched images |
+
+No complete native route parity is claimed. The ordered remaining checks are in `reviews/Remaining-gate-runtime-order.md`. Preserve old-app and native images as separate evidence until their states match.
