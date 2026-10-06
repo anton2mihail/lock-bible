@@ -1,6 +1,8 @@
 # Native rebuild work ledger
 
-Updated: 5 October 2026
+Updated: 6 October 2026
+
+The first L22 service source review requires five bounded corrections: equivalent Rosary trigger comparison, complete original-request rollback, current time capture after awaits, independent feature refresh, and rollback query error reporting. See `reviews/L22-notification-service-source-review.md`. FIFO ordering and imported request ownership are sound. Main's target build started before these corrections. It cannot accept notification runtime. Source keeps the constructor stable; Main retains shared integration and simulator control.
 
 Current batch: `L06/works-content-build-03.log` passes target compilation with complete content, Works, media, and Settings membership. Main prepares valid-library actions and route runtime. Source corrects the concrete media lifecycle, Settings layout, Works appearance, and announcement findings in `reviews/L20-L24-complete-batch-source-review.md`. Notifications remain Main's next implementation scope. The deferred Reader proof uses owned visible ink in this coherent batch. No new product parity acceptance is claimed.
 
