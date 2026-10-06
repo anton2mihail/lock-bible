@@ -12,9 +12,9 @@ The following bounds now pass: Build19 Reader `50:85` anchor after Medium→Larg
 
 Use this next short sequence:
 
-1. On the current binary, capture the Reader chapter top and one small-scroll clipping observation. Keep the accepted anchor journey out of this check.
+1. The Build21 chapter-top and short-scroll images now accept removal of the duplicate mask inset. The full header/hint is visible and the status area is clear in both states. The frame-predicate test failure is recorded at review `b6b9469`. Exact Scripture ink at the clipping boundary remains a later visual check. Keep the accepted anchor journey out of this check.
 2. Build Source helper correction `fab9d0b`. Run only `testL15PrayerHomeRosarySetsSevenSorrowsAndLectioTimer`, `testL17RosaryGuideBackCompletionAndReset`, and both WorksSettings methods. Use fresh task-only default preferences and no saved position for the target Chrysostom work. The dated/teaching prefix and five accepted methods need no repeat.
-3. Check toolbar bookmark removal separately. Start with the existing WEB-CE JHN1:10 bookmark, remove it, and check exact SQL absence. Add only the remaining mixed-range/fill/Copy/Pray/Card observations. Do not repeat the four-color sequence.
+3. Run the isolated toolbar supplement with a fresh seed per method: WEB-CE JHN1:1 bookmark removal, mixed gold/sage JHN1:1–2 clearing, and JHN1:1 Copy feedback. Main must check exact SQL absence and the simulator pasteboard payload separately. The new seed differs from the earlier JHN1:10 save check. Add only remaining fill/Pray/Card observations. Do not repeat the four-color sequence.
 4. Run long Scripture Card ivory, plum, and plum repeat/cancel. At each `CARD_PNG_ARM` marker, start the matching read-only watcher during the eight-second hold. Require flushed `READY` before export. Preserve the new PNG while the system panel is open. Inspect all 12 verses, reference, edition, background, dimensions, and preview agreement. Check new temporary-file removal after each dismissal. Keep iPad separate.
 
 The full remaining scope below still applies. Its accepted subchecks must not cause repeated methods.
@@ -30,7 +30,7 @@ Batches can share one running app and synthetic fixture when actions do not inva
 
 ## Shared integration gaps
 
-`ReaderLocation.anchor` and app capture/restore are implemented. Older records still decode without an anchor. The source rejects invalid decoded anchors and negative scroll offsets. Capture uses chapter/request identity and suppresses writes during restoration. Actual unselected-anchor restoration after restart, typography change, and width change remains open. Legacy raw offsets remain fallback values. Do not change paragraph blank-space hit behavior for a test.
+`ReaderLocation.anchor` and app capture/restore are implemented. Older records still decode without an anchor. The source rejects invalid decoded anchors and negative scroll offsets. Capture uses chapter/request identity and suppresses writes during restoration. Build19 accepts unselected anchor50:85 after Medium→Large and a process restart. Other typography and width changes remain open. Legacy raw offsets remain fallback values. Do not change paragraph blank-space hit behavior for a test.
 
 Today and Calendar now use the shared feature clock and time zone. DEBUG arguments can supply a fixed date and zone. Today rotation receives those same inputs. The exact Verse Moment route passed with 2 Timothy 2:23 and WEB-CE. Date-boundary content checks remain open. Notification delivery uses the actual OS clock. An injected app date proves planning only.
 
