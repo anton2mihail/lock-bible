@@ -27,3 +27,9 @@ Main's actual pre-install export is the final authority for exact saved values a
 The actual export must record current bundle/version/build, source/binary hash, process, effective root, and App Group provenance. Record every present DB/WAL/SHM and MMKV/CRC file with size and hash. Make a consistent recovery backup. Export complete rows and raw known/unknown preference payloads. Record actual widget scalar types, notification request snapshots, and installed widget configuration when the simulator can expose it.
 
 Main must start from the old Release app, install the same-ID native Release app without uninstalling, and record the import marker last. Verify exact values, recent WAL rows, recovery backup, native-wins restart, repeat update, and required interruption boundaries. Keep signed group access, installed-widget continuity, supported older baseline, and limited physical evidence explicit. Do not infer them from source JSON.
+
+## Source acceptance
+
+Commit `f0b943c840e4d74e3074e4191adfeb3738aeb99f` satisfies this preparation scope. Fresh runs 02 and 03 have identical JSON and manifests. The output records 45 MMKV keys, all 27 novena keys, three editions, three favorites, two reflections, two Works positions, and schema-1 library rows: three bookmarks, eight highlights, and three notes. Four source highlight operations include overlap. The 18 absent or malformed cases are marked as reviewed native-normalizer reconstructions. Executed old-source functions are listed separately.
+
+The exporter checks the selected Homily 10 paragraph's UTF-16 length of 976 against offset 57. Loader, catalog, normalizer, inventory, and generator hashes establish the source boundary. Generator SHA-256 is `c62d787673d8723cc757b58f778a0b9eb477994d64e96be0595a208fdb011caf`. JSON SHA-256 is `276936992793f4c529e6d7d961f563230cb4706f28e2c04a3288763dd82db788`. This accepts source expectations only. Main's actual pre-install export remains the update authority.
