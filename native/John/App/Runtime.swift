@@ -3,6 +3,9 @@ import Observation
 import SwiftUI
 import WidgetKit
 import JohnCore
+#if DEBUG
+import CryptoKit
+#endif
 
 @MainActor @Observable final class SharedPreferencesModel {
     var reading = ReadingPreferences.sourceDefaults
@@ -60,6 +63,10 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     @ObservationIgnored private var isDrainingStartupURLs = false
     @ObservationIgnored private var mutationOutcomeSequence: UInt64 = 0
     @ObservationIgnored private var noticeService: LocalNoticeService?
+#if DEBUG
+    @ObservationIgnored private var noticeSnapshotSequence: UInt64 = 0
+    @ObservationIgnored private var noticeSnapshotTask: Task<Void, Never>?
+#endif
     @ObservationIgnored private var featureClock: () -> Date = Date.init
     @ObservationIgnored private var featureZone: TimeZone = .autoupdatingCurrent
     @ObservationIgnored private let appResourceRoot: URL?
@@ -178,6 +185,9 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         #if DEBUG
         NSLog("John startup committed envelope revision=%lld textSize=%@", envelope.revision, envelope.state.readingPreferences.textSize.rawValue)
         #endif
+#if DEBUG
+        await captureSystemNoticeSnapshot(phase: "startup", outcome: "loaded")
+#endif
         await refreshLocalNotifications()
     }
 
@@ -254,6 +264,107 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     }
 
     #if DEBUG
+    private struct SystemNoticeRuntimeStage: Codable {
+        let schemaVersion: Int
+        let bundleIdentifier: String
+        let processIdentifier: Int32
+        let sequence: UInt64
+        let phase: String
+        let outcome: String
+        let capturedAtUTC: String
+        let committedStateRevision: Int64?
+        let nativeEnvelopeBase64: String?
+        let nativeEnvelopeSHA256: String?
+        let nativeEnvelopeError: String?
+        let systemSnapshot: SystemNoticeSnapshot.Report?
+        let systemSnapshotError: String?
+    }
+
+    private func captureSystemNoticeSnapshot(phase: String, outcome: String) async {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-L22NoticeSnapshotRelativePath"),
+              arguments.indices.contains(index + 1),
+              let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let outputRoot = debugScenarioURL(arguments[index + 1], under: documents) else { return }
+
+        noticeSnapshotSequence &+= 1
+        let sequence = noticeSnapshotSequence
+        let previous = noticeSnapshotTask
+        let next = Task { @MainActor [weak self] in
+            await previous?.value
+            await self?.writeSystemNoticeSnapshot(
+                to: outputRoot,
+                sequence: sequence,
+                phase: phase,
+                outcome: outcome
+            )
+        }
+        noticeSnapshotTask = next
+        await next.value
+    }
+
+    private func writeSystemNoticeSnapshot(
+        to outputRoot: URL,
+        sequence: UInt64,
+        phase: String,
+        outcome: String
+    ) async {
+        let capturedAt = ISO8601DateFormatter().string(from: Date())
+        var snapshot: SystemNoticeSnapshot.Report?
+        var snapshotError: String?
+        do {
+            snapshot = try await SystemNoticeSnapshot.capture()
+        } catch {
+            snapshotError = error.localizedDescription
+        }
+
+        let applicationSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        let envelopeURL = applicationSupport?.appendingPathComponent("John/native-state-v1.json", isDirectory: false)
+        var envelopeBytes: Data?
+        var envelopeError: String?
+        do {
+            guard let envelopeURL else { throw CoreError.missingResource("native state envelope path") }
+            envelopeBytes = try Data(contentsOf: envelopeURL)
+        } catch {
+            envelopeError = error.localizedDescription
+        }
+
+        let stage = SystemNoticeRuntimeStage(
+            schemaVersion: 1,
+            bundleIdentifier: Bundle.main.bundleIdentifier ?? "unknown",
+            processIdentifier: getpid(),
+            sequence: sequence,
+            phase: phase,
+            outcome: outcome,
+            capturedAtUTC: capturedAt,
+            committedStateRevision: committedStateRevision,
+            nativeEnvelopeBase64: envelopeBytes?.base64EncodedString(),
+            nativeEnvelopeSHA256: envelopeBytes.map { SHA256.hash(data: $0).map { String(format: "%02x", $0) }.joined() },
+            nativeEnvelopeError: envelopeError,
+            systemSnapshot: snapshot,
+            systemSnapshotError: snapshotError
+        )
+        do {
+            try FileManager.default.createDirectory(at: outputRoot, withIntermediateDirectories: true)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+            let data = try encoder.encode(stage)
+            let safePhase = phase.replacingOccurrences(of: "/", with: "-")
+            let safeOutcome = outcome.replacingOccurrences(of: "/", with: "-")
+            let filename = String(format: "%03llu-%@-%@-p%d.json", sequence, safePhase, safeOutcome, getpid())
+            let outputURL = outputRoot.appendingPathComponent(filename, isDirectory: false)
+            guard !FileManager.default.fileExists(atPath: outputURL.path) else {
+                throw CocoaError(.fileWriteFileExists, userInfo: [NSFilePathErrorKey: outputURL.path])
+            }
+            try data.write(to: outputURL, options: .atomic)
+            NSLog("John L22 system notice snapshot phase=%@ outcome=%@ pid=%d revision=%lld output=%@",
+                  phase, outcome, getpid(), committedStateRevision ?? -1, outputURL.path)
+        } catch {
+            NSLog("John L22 system notice snapshot failed phase=%@ outcome=%@ error=%@",
+                  phase, outcome, error.localizedDescription)
+        }
+    }
+
     private func runScenarioFromLaunchArguments() async {
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-L22ServiceComparison") {
@@ -778,12 +889,34 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
 
     func saveCalendarNotifications(_ requested: CalendarNotificationSettings) async throws -> CalendarNotificationSettings {
         guard let noticeService else { throw CoreError.missingResource("notification service") }
-        return try await noticeService.saveCalendar(requested)
+        do {
+            let saved = try await noticeService.saveCalendar(requested)
+#if DEBUG
+            await captureSystemNoticeSnapshot(phase: "calendar-save", outcome: "success")
+#endif
+            return saved
+        } catch {
+#if DEBUG
+            await captureSystemNoticeSnapshot(phase: "calendar-save", outcome: "failure")
+#endif
+            throw error
+        }
     }
 
     func saveRosaryReminder(_ requested: RosaryReminderSettings) async throws -> RosaryReminderSettings {
         guard let noticeService else { throw CoreError.missingResource("notification service") }
-        return try await noticeService.saveRosary(requested)
+        do {
+            let saved = try await noticeService.saveRosary(requested)
+#if DEBUG
+            await captureSystemNoticeSnapshot(phase: "rosary-save", outcome: "success")
+#endif
+            return saved
+        } catch {
+#if DEBUG
+            await captureSystemNoticeSnapshot(phase: "rosary-save", outcome: "failure")
+#endif
+            throw error
+        }
     }
 
     func refreshLocalNotifications() async {

@@ -11,8 +11,9 @@ Main must pass these values to the test process:
 - `L22_NOTICE_SEED_ID`: the task-only authorized journey seed.
 - `L22_NOTICE_DENY_SEED_ID`: an independent task-only seed for the denial journey.
 - `L22_NOTICE_INITIAL_AUTHORIZATION`: `authorized` for the first journey, or `notDetermined` when the first save will show the real Allow alert. Use `notDetermined` for the denial journey.
+- `L22_NOTICE_SNAPSHOT_RELATIVE_PATH`: the relative output folder under the app Documents directory for the DEBUG system notice snapshots. Use a fresh path for each method. The test passes it to the app as the launch argument pair `-L22NoticeSnapshotRelativePath <value>`. See `scripts/native/source-fixtures/notifications/SystemNoticeSnapshot-README.md` for the file contract.
 
-Do not use the preserved production-ID update fixture. Do not assume the current simulator authorization state. Main must create and verify the declared task-only seed before each method. Main must verify a fresh `notDetermined` permission state before the denial method. Main may use the same task-only bundle after it resets or reinstalls the app, or it may pass the optional denial bundle override. The launched denial bundle must not be `com.nrsv.verse`. Missing setup values fail test preflight. They do not skip a test.
+Do not use the preserved production-ID update fixture. Do not assume the current simulator authorization state. Main must create and verify the declared task-only seed before each method. Main must verify a fresh `notDetermined` permission state before the denial method. Main may use the same task-only bundle after it resets or reinstalls the app, or it may pass the optional denial bundle override. The launched denial bundle must not be `com.nrsv.verse`. Missing setup values fail test preflight. They do not skip a test. This includes `L22_NOTICE_SNAPSHOT_RELATIVE_PATH`: the test does not launch the app without a snapshot path, so no run can lose its system notice evidence by mistake.
 
 ## Journeys
 

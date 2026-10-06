@@ -124,6 +124,7 @@ final class PositiveNoticeUITests: XCTestCase {
         let authorizedBundleID = try requiredEnvironment("L22_NOTICE_BUNDLE_ID")
         _ = try requiredEnvironment("L22_NOTICE_SEED_ID")
         let initialAuthorization = try requiredEnvironment("L22_NOTICE_INITIAL_AUTHORIZATION")
+        let snapshotRelativePath = try requiredEnvironment("L22_NOTICE_SNAPSHOT_RELATIVE_PATH")
         let bundleID: String
         if configuration == "authorized" {
             XCTAssertTrue(["authorized", "notDetermined"].contains(initialAuthorization))
@@ -139,13 +140,14 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertNotEqual(bundleID, "com.nrsv.verse", "Notice checks must use a task-only bundle, not the preserved production-ID fixture")
         activeApp = app
         activeBundleID = bundleID
+        app.launchArguments += ["-L22NoticeSnapshotRelativePath", snapshotRelativePath]
         app.launch()
         XCTAssertTrue(app.buttons["tab-today"].waitForExistence(timeout: timeout), "The task-only app must reach its root")
         let seedID = configuration == "authorized"
             ? try requiredEnvironment("L22_NOTICE_SEED_ID")
             : try requiredEnvironment("L22_NOTICE_DENY_SEED_ID")
-        NSLog("NOTICE_LAUNCH journey=%@ bundle=%@ seed=%@ declaredAuthorization=%@",
-              configuration, bundleID, seedID, initialAuthorization)
+        NSLog("NOTICE_LAUNCH journey=%@ bundle=%@ seed=%@ declaredAuthorization=%@ snapshotRelativePath=%@",
+              configuration, bundleID, seedID, initialAuthorization, snapshotRelativePath)
         return app
     }
 

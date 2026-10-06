@@ -146,7 +146,9 @@ search_comparison_ref = add("file:source-fixtures/L09FixtureComparison.swift", '
 search_comparison_build = add("build-source-app:L09FixtureComparison.swift", f"{{ isa = PBXBuildFile; fileRef = {search_comparison_ref}; }}")
 library_comparison_ref = add("file:source-fixtures/L10L11FixtureComparison.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = L10L11FixtureComparison.swift; path = "../../scripts/native/source-fixtures/library/L10L11FixtureComparison.swift"; sourceTree = SOURCE_ROOT; }')
 library_comparison_build = add("build-source-app:L10L11FixtureComparison.swift", f"{{ isa = PBXBuildFile; fileRef = {library_comparison_ref}; }}")
-app_source_builds.extend([legacy_reader_build, scenario_runner_build, recovery_runner_build, repository_runner_build, search_comparison_build, library_comparison_build])
+notice_snapshot_ref = add("file:source-fixtures/SystemNoticeSnapshot.swift", '{ isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SystemNoticeSnapshot.swift; path = "../../scripts/native/source-fixtures/notifications/SystemNoticeSnapshot.swift"; sourceTree = SOURCE_ROOT; }')
+notice_snapshot_build = add("build-source-app:SystemNoticeSnapshot.swift", f"{{ isa = PBXBuildFile; fileRef = {notice_snapshot_ref}; }}")
+app_source_builds.extend([legacy_reader_build, scenario_runner_build, recovery_runner_build, repository_runner_build, search_comparison_build, library_comparison_build, notice_snapshot_build])
 widget_source_builds = [add(f"build-source-widget:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"Widget/{name}" for name in source_files["Widget"]]]
 ui_source_builds = [add(f"build-source-uitest:{p}", f"{{ isa = PBXBuildFile; fileRef = {file_refs[p]}; }}") for p in [f"SimulatorSupport/{name}" for name in source_files["SimulatorSupport"]]]
 mmkv_no_arc = {"CodedInputDataCrypt.cpp", "MMKV_IO.cpp", "CodedOutputData.cpp", "MMKV.cpp", "MiniPBCoder.cpp", "MMBuffer.cpp", "CodedInputData.cpp"}
