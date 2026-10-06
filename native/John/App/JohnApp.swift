@@ -30,29 +30,13 @@ private struct JohnRootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        @Bindable var router = router
         VStack(spacing: 0) {
             if runtime.hasNativeState && (runtime.nativeStateCapability != nil || runtime.libraryCapability != nil) {
                 savedDataBanner
             }
             Group {
                 if runtime.startupComplete && runtime.hasNativeState {
-                    VStack(spacing: 0) {
-                        NavigationStack(path: Binding(
-                            get: { router.path(for: router.selectedTab) },
-                            set: { router.setPath($0, for: router.selectedTab) }
-                        )) {
-                            root(for: router.selectedTab)
-                                .toolbar(.hidden, for: .navigationBar)
-                                .navigationDestination(for: AppRoute.self) { route in
-                                    DestinationView(route: route)
-                                }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                        FlatTabBar(selection: $router.selectedTab, colors: preferences.colors(for: colorScheme))
-                    }
-                    .tint(preferences.colors(for: colorScheme).tint)
+                    tabShell
                 } else if runtime.startupComplete {
                     VStack(spacing: 14) {
                         Text("Saved data needs attention")
@@ -140,6 +124,80 @@ private struct JohnRootView: View {
         .accessibilityIdentifier("saved-data-status")
     }
 
+    /// The system tab bar (Liquid Glass on iOS 26). AppRouter owns the selection and each tab's push path.
+    private var tabShell: some View {
+        // A tap on the selected tab also calls `set` with the same value. The router then pops that tab to its root.
+        TabView(selection: Binding(get: { router.selectedTab }, set: { router.selectFromTabBar($0) })) {
+            tab(.today)
+            tab(.read)
+            tab(.saved)
+            tab(.pray)
+            tab(.settings)
+        }
+        // Keep the five-tab bar on iPad. The sidebar style would add a second navigation model.
+        .tabViewStyle(.tabBarOnly)
+        // Only the Reader is long continuous reading. Other tabs keep the full bar for direct tab changes.
+        .tabBarMinimizeBehavior(router.selectedTab == .read ? Self.readerMinimizeBehavior : .never)
+        .tint(preferences.colors(for: colorScheme).tint)
+    }
+
+    private func tab(_ tab: AppTab) -> some TabContent<AppTab> {
+        Tab(value: tab) {
+            NavigationStack(path: Binding(
+                get: { router.path(for: tab) },
+                set: { router.setPath($0, for: tab) }
+            )) {
+                tabRoot(tab)
+                    .toolbar(.hidden, for: .navigationBar)
+                    .navigationDestination(for: AppRoute.self) { route in
+                        DestinationView(route: route)
+                    }
+            }
+            // Scroll content goes under the floating bar with the default (automatic) bottom scroll edge effect.
+        } label: {
+            Label {
+                Text(tab.rawValue)
+            } icon: {
+                tabIcon(tab)
+            }
+        }
+        .accessibilityIdentifier(tab.identifier)
+    }
+
+    @ViewBuilder private func tabRoot(_ tab: AppTab) -> some View {
+        if tab == .read {
+            // A new Reader root on each Read-tab entry, as with the flat bar (see AppRouter.readEntryID).
+            root(for: tab).id(router.readEntryID)
+        } else {
+            root(for: tab)
+        }
+    }
+
+    @ViewBuilder private func tabIcon(_ tab: AppTab) -> some View {
+        if let image = Self.tabImages[tab] {
+            Image(uiImage: image).renderingMode(.template)
+        } else {
+            Image(systemName: tab.fallbackSystemImage)
+        }
+    }
+
+    /// The brand Feather glyphs, drawn once at the size of the old flat bar (25 pt).
+    private static let tabImages: [AppTab: UIImage] = AppTab.allCases.reduce(into: [:]) { images, tab in
+        images[tab] = FeatherIcon.templateImage(tab.featherIcon, size: 25)
+    }
+
+    private static let readerMinimizeBehavior: TabBarMinimizeBehavior = {
+        #if DEBUG
+        // UI tests can keep the full bar: `-JohnTabBarMinimize never`.
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: "-JohnTabBarMinimize"), arguments.indices.contains(index + 1),
+           arguments[index + 1] == "never" {
+            return .never
+        }
+        #endif
+        return .onScrollDown
+    }()
+
     @ViewBuilder private func root(for tab: AppTab) -> some View {
         switch tab {
         case .today:
@@ -154,6 +212,29 @@ private struct JohnRootView: View {
         case .saved: SecondaryRootView(tab: .saved)
         case .pray: SecondaryRootView(tab: .pray)
         case .settings: SecondaryRootView(tab: .settings)
+        }
+    }
+}
+
+private extension AppTab {
+    var featherIcon: String {
+        switch self {
+        case .today: "sun"
+        case .read: "book-open"
+        case .saved: "bookmark"
+        case .pray: "heart"
+        case .settings: "settings"
+        }
+    }
+
+    /// Used only if the Feather font cannot draw the glyph.
+    var fallbackSystemImage: String {
+        switch self {
+        case .today: "sun.max"
+        case .read: "book"
+        case .saved: "bookmark"
+        case .pray: "heart"
+        case .settings: "gearshape"
         }
     }
 }

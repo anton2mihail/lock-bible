@@ -69,12 +69,45 @@ enum AppSheet: String, Identifiable {
     var id: String { rawValue }
 }
 
+/// The five root tabs, in source order. The raw value is the exact visible label.
+enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
+    case today = "Today"
+    case read = "Read"
+    case saved = "Saved"
+    case pray = "Pray"
+    case settings = "Settings"
+
+    var id: String { rawValue }
+    /// The accessibility identifier of the tab bar button, for example `tab-read`. UI tests select tabs with it.
+    var identifier: String { "tab-\(rawValue.lowercased())" }
+}
+
 @MainActor @Observable final class AppRouter {
-    var selectedTab: AppTab = .today
+    private(set) var selectedTab: AppTab = .today
+    /// Changes each time the selection moves into the Read tab. The shell uses it as the identity of the Read root,
+    /// so each Read-tab entry creates a new `ReaderView`, as the flat-bar shell did. The `ReaderView` `.task` and
+    /// `ReaderScreenModel.receive` request handling (commit 9d3753c) were verified with that lifecycle.
+    private(set) var readEntryID = UUID()
     var sheet: AppSheet?
     private(set) var latestPassageRequest: PassageRequest?
     private(set) var latestChapterRequest: ReaderChapterRequest?
     private var paths: [AppTab: [AppRoute]] = [:]
+
+    /// The only way to change the selected tab. The system tab bar writes through this method.
+    func select(_ tab: AppTab) {
+        guard tab != selectedTab else { return }
+        selectedTab = tab
+        if tab == .read { readEntryID = UUID() }
+    }
+
+    /// A tab bar tap. A tap on the tab that is already selected pops that tab to its root, as iOS users expect.
+    func selectFromTabBar(_ tab: AppTab) {
+        if tab == selectedTab {
+            paths[tab] = []
+        } else {
+            select(tab)
+        }
+    }
 
     func path(for tab: AppTab) -> [AppRoute] { paths[tab, default: []] }
     func setPath(_ path: [AppRoute], for tab: AppTab) { paths[tab] = path }
@@ -84,7 +117,7 @@ enum AppSheet: String, Identifiable {
         paths[selectedTab]?.removeLast()
     }
     func openReader(passage: PassageSelection) {
-        selectedTab = .read
+        select(.read)
         paths[.read] = []
         latestPassageRequest = PassageRequest(passage: passage)
         #if DEBUG
@@ -92,7 +125,7 @@ enum AppSheet: String, Identifiable {
         #endif
     }
     func openReader(bookCode: String, chapter: Int, translation: TranslationID, verse: String? = nil, endVerse: String? = nil) {
-        selectedTab = .read
+        select(.read)
         paths[.read] = []
         latestChapterRequest = ReaderChapterRequest(bookCode: bookCode, chapter: chapter, translationID: translation,
                                                     verse: verse, endVerse: endVerse)
@@ -116,7 +149,7 @@ enum AppSheet: String, Identifiable {
     }
     /// Shows the chapter list of a book. `chapter` 0 is below the valid range, so the Reader model opens the list.
     func openReaderChapterList(bookCode: String, translation: TranslationID) {
-        selectedTab = .read
+        select(.read)
         paths[.read] = []
         latestChapterRequest = ReaderChapterRequest(bookCode: bookCode, chapter: 0, translationID: translation)
         #if DEBUG
@@ -129,10 +162,10 @@ enum AppSheet: String, Identifiable {
         case let .daily(date):
             // Old app: a missing or bad date shows today's readings (src/services/companion/calendar.ts:13-18).
             let key = date ?? CompanionCalendar.dateKey(runtime.featureNow(), timeZone: runtime.featureTimeZone)
-            selectedTab = .today
+            select(.today)
             paths[.today, default: []].append(.daily(key))
         case .rosary:
-            selectedTab = .pray
+            select(.pray)
             paths[.pray] = [.companion(.rosaryHome)]
         case let .read(bookCode, chapter, verse, endVerse, requestedTranslation):
             // Old app: the Read tab opens for every `read` URL. Then ReaderScreen.tsx:286-308 decides.
@@ -140,7 +173,7 @@ enum AppSheet: String, Identifiable {
             let books = await runtime.books(translation: translation)
             guard let bookCode, let book = books.first(where: { $0.code == bookCode }) else {
                 // Unknown or missing book: the old effect returns (ReaderScreen.tsx:287-289). Only the tab changes.
-                selectedTab = .read
+                select(.read)
                 return
             }
             guard let chapter, (1...book.chapterCount).contains(chapter) else {

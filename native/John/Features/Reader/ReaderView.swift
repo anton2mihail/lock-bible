@@ -226,8 +226,10 @@ struct ReaderView: View {
         #endif
     }
 
+    /// Clips the chapter text at the top safe area only. At the bottom the mask goes into the safe area,
+    /// so the text scrolls under the floating glass tab bar.
     private var readerTopSafeAreaMask: some View {
-        Rectangle().fill(Color.black)
+        Rectangle().fill(Color.black).ignoresSafeArea(edges: .bottom)
     }
 
     private var bookList: some View {

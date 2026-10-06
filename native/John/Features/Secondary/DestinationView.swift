@@ -131,7 +131,7 @@ struct DestinationView: View {
     private func navigate(_ route: CompanionRoute) { router.push(.companion(route)) }
 
     private func openBibleRoot() {
-        router.selectedTab = .read
+        router.select(.read)
         router.setPath([], for: .read)
     }
 
