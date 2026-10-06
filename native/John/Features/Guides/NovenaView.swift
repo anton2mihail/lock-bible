@@ -40,6 +40,7 @@ struct NovenaView: View {
                 .font(JohnTypography.sans(14))
                 .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 14, targetLineHeight: 21))
                 .foregroundStyle(colors.textDim)
+                .numericChange(progress.completedDays.count)
         }
     }
 

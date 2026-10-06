@@ -98,6 +98,7 @@ struct RosaryGuideView: View {
                 Text("\(progressValue)%")
                     .font(JohnTypography.sans(14, weight: .semibold))
                     .foregroundStyle(colors.tint)
+                    .numericChange(progressValue)
             }
             .frame(minHeight: 48)
 

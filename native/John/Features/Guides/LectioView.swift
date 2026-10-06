@@ -84,6 +84,7 @@ struct LectioView: View {
                         .font(JohnTypography.serif(24))
                         .lineSpacing(ContentTypography.additionalSpacing(fontName: "Lora-Regular", size: 24, targetLineHeight: 36))
                         .foregroundStyle(colors.text)
+                        .numericChange(seconds, countsDown: true)
                     ContentButton(title: deadline != nil ? "End the timer" : "Begin one quiet minute") {
                         if deadline != nil {
                             deadline = nil

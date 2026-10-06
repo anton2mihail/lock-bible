@@ -133,6 +133,7 @@ struct WorkReaderView: View {
             Text(pageCount > 0 ? "\(pageIndex + 1)/\(pageCount)" : "…")
                 .font(JohnTypography.sans(12, weight: .semibold).monospacedDigit())
                 .foregroundStyle(colors.tint)
+                .numericChange(pageIndex)
                 .accessibilityLabel(pageCount > 0 ? "Page \(pageIndex + 1) of \(pageCount)" : "Loading pages")
         }
         .frame(minHeight: 44)

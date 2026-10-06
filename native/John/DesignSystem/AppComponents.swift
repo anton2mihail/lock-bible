@@ -92,3 +92,24 @@ struct AdaptiveChipStack<Content: View>: View {
         }
     }
 }
+
+/// Rolls the digits of a changing counter and keeps them the same width.
+/// With Reduce Motion on, the number changes without any animation.
+private struct NumericChangeModifier<Value: Equatable>: ViewModifier {
+    let value: Value
+    let countsDown: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .monospacedDigit()
+            .contentTransition(reduceMotion ? .identity : .numericText(countsDown: countsDown))
+            .animation(reduceMotion ? nil : .default, value: value)
+    }
+}
+
+extension View {
+    func numericChange<Value: Equatable>(_ value: Value, countsDown: Bool = false) -> some View {
+        modifier(NumericChangeModifier(value: value, countsDown: countsDown))
+    }
+}

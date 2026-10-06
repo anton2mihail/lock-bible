@@ -150,6 +150,7 @@ struct SearchView: View {
                     .font(JohnTypography.sans(12, weight: .medium))
                     .textCase(nil)
                     .foregroundStyle(colors.textDim)
+                    .numericChange(response.results.count)
                     .accessibilityIdentifier("search-result-count")
             }
         }
