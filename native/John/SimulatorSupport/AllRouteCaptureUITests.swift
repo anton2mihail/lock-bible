@@ -18,6 +18,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         let sourceVersion: String
         let seedID: String
         let expectedAppearance: String
+        let effectiveDeviceAppearance: String
         let expectedEdition: String
         let expectedTextSize: String
         let expectedSpacing: String
@@ -28,6 +29,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         let suppliedTimeZone: String?
         var routeStatus = "captured"
         var resolvedIdentity = ""
+        var observedPreferences: [String: String] = [:]
         let seedStateDescription: String
         let seedManifestHash: String
         let nativeArtifact: String
@@ -35,7 +37,8 @@ final class AllRouteCaptureUITests: XCTestCase {
 
         init(app: XCUIApplication, variant: Variant, bundleID: String, appVersion: String,
              build: String, sourceVersion: String, seedID: String,
-             expectedAppearance: String, expectedEdition: String, expectedTextSize: String,
+             expectedAppearance: String, effectiveDeviceAppearance: String,
+             expectedEdition: String, expectedTextSize: String,
              expectedSpacing: String, expectedTypeface: String, expectedLayout: String,
              statusBarProfile: String, suppliedDate: String?, suppliedTimeZone: String?,
              seedStateDescription: String, seedManifestHash: String,
@@ -43,6 +46,7 @@ final class AllRouteCaptureUITests: XCTestCase {
             self.app = app; self.variant = variant; self.bundleID = bundleID
             self.appVersion = appVersion; self.build = build; self.sourceVersion = sourceVersion
             self.seedID = seedID; self.expectedAppearance = expectedAppearance
+            self.effectiveDeviceAppearance = effectiveDeviceAppearance
             self.expectedEdition = expectedEdition; self.expectedTextSize = expectedTextSize
             self.expectedSpacing = expectedSpacing; self.expectedTypeface = expectedTypeface
             self.expectedLayout = expectedLayout; self.statusBarProfile = statusBarProfile
@@ -60,7 +64,7 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route02Reader() throws { try capture("/read", identity: "WEB-CE JHN 1:1; reader root") { c in try openJohnOne(c) } }
     func testL25Route03Saved() throws { try capture("/saved", identity: "Saved all filter; seeded rows") { c in try openTab("saved", label: "Saved", context: c); try waitForAny(c.app, ["All", "All saved passages"]) } }
     func testL25Route04PrayerHome() throws { try capture("/pray", identity: "PrayerHome") { c in try openTab("pray", label: "Pray", context: c); try waitForAny(c.app, ["Pray the Rosary"]) } }
-    func testL25Route05Settings() throws { try capture("/settings", identity: "Settings; matched reader preferences") { c in try prepareSettings(c); XCTAssertTrue(button(c, nativeID: "settings-text-size-default", baselineLabel: "Text size, Default").exists) } }
+    func testL25Route05Settings() throws { try capture("/settings", identity: "Settings; matched reader preferences") { c in try prepareSettings(c); XCTAssertTrue(button(c, nativeID: textSizePreferenceID(c.expectedTextSize), baselineLabel: "Text size, \(c.expectedTextSize)").exists) } }
     func testL25Route06GoTo() throws { try capture("/go-to", identity: "GoTo; current JHN 1") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-title", baselineLabel: "John 1")); try waitForAny(c.app, ["Go to", "Go To", "Choose a book"]) } }
     func testL25Route07Search() throws { try capture("/search", identity: "Search Scripture") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-search-button", baselineLabel: "Search Scripture")); try waitForAny(c.app, ["Search Scripture", "Search by reference, keyword, or exact phrase."]) } }
     func testL25Route08NoteEditor() throws { try capture("/note", identity: "Selected WEB-CE JHN 1:1 note editor") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")); if c.variant == .native { XCTAssertTrue(c.app.textViews["saved-note-editor"].waitForExistence(timeout: 12)) } else { try waitForAny(c.app, ["Write a private note…"]) } } }
@@ -107,13 +111,15 @@ final class AllRouteCaptureUITests: XCTestCase {
 
     private func capture(_ route: String, identity: String, enter: (CaptureContext) throws -> Void) throws {
         let env = ProcessInfo.processInfo.environment
-        guard (env["L25_APPEARANCE"] ?? "light") == "light",
+        let appearance = normalizedAppearance(env["L25_APPEARANCE"] ?? "light")
+        let textSize = normalizedTextSize(env["L25_TEXT_SIZE"] ?? "Default")
+        let deviceAppearance = normalizedAppearance(env["L25_EFFECTIVE_DEVICE_APPEARANCE"] ?? "")
+        guard let appearance, let textSize, let deviceAppearance,
               (env["L25_EDITION"] ?? "WEB-CE") == "WEB-CE",
-              (env["L25_TEXT_SIZE"] ?? "Default") == "Default",
               (env["L25_SPACING"] ?? "Comfortable") == "Comfortable",
               (env["L25_TYPEFACE"] ?? "Serif") == "Serif",
               (env["L25_LAYOUT"] ?? "Verse by verse") == "Verse by verse" else {
-            throw XCTSkip("This capture file applies one matched profile: Light, WEB-CE, Default, Comfortable, Serif, Verse by verse.")
+            throw XCTSkip("Set a supported profile: Light or Dark, WEB-CE, Default or Extra large, Comfortable, Serif, Verse by verse, and effective device appearance.")
         }
         guard let variantRaw = env["L25_VARIANT"], let variant = Variant(rawValue: variantRaw),
               let bundleID = env["L25_APP_BUNDLE_ID"], !bundleID.isEmpty,
@@ -129,9 +135,10 @@ final class AllRouteCaptureUITests: XCTestCase {
         app.launch()
         let context = CaptureContext(app: app, variant: variant, bundleID: bundleID,
             appVersion: appVersion, build: build, sourceVersion: sourceVersion, seedID: seedID,
-            expectedAppearance: env["L25_APPEARANCE"] ?? "light",
+            expectedAppearance: appearance,
+            effectiveDeviceAppearance: deviceAppearance,
             expectedEdition: env["L25_EDITION"] ?? "WEB-CE",
-            expectedTextSize: env["L25_TEXT_SIZE"] ?? "Default",
+            expectedTextSize: textSize,
             expectedSpacing: env["L25_SPACING"] ?? "Comfortable",
             expectedTypeface: env["L25_TYPEFACE"] ?? "Serif",
             expectedLayout: env["L25_LAYOUT"] ?? "Verse by verse",
@@ -143,7 +150,14 @@ final class AllRouteCaptureUITests: XCTestCase {
 
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 15))
         if route != "/settings" { try prepareSettings(context) }
-        try enter(context)
+        let windowSize = app.windows.firstMatch.frame.size
+        if isSelectedPassageRoute(route) &&
+            (context.expectedTextSize == "Extra large" || abs(windowSize.width - 402) > 1) {
+            recordUnresolved(context, reason: "Selected-passage route entry has no reviewed owned-text tap point for this text size or window width.")
+            context.resolvedIdentity = "Selected passage route entry unresolved; no inherited Default/402pt tap point was used."
+        } else {
+            try enter(context)
+        }
         let png = app.screenshot().pngRepresentation
         let digest = SHA256.hash(data: png).map { String(format: "%02x", $0) }.joined()
         let attachmentName = "L25-\(routeSlug(route))-\(variant.rawValue).png"
@@ -167,8 +181,12 @@ final class AllRouteCaptureUITests: XCTestCase {
             "sourceVersion": sourceVersion, "nativeArtifact": context.nativeArtifact,
             "javascriptSourceVersion": context.javascriptSourceVersion,
             "seedID": seedID, "seedState": context.seedStateDescription,
-            "seedManifestSHA256": context.seedManifestHash, "appearance": context.expectedAppearance,
-            "appearanceOrigin": "requested through visible Settings controls; selection-state evidence is in routeStatus",
+            "seedManifestSHA256": context.seedManifestHash,
+            "appearancePreference": context.expectedAppearance,
+            "appearancePreferenceOrigin": "requested and checked through the visible app setting; selection evidence is in observedPreferences",
+            "effectiveDeviceAppearance": context.effectiveDeviceAppearance,
+            "effectiveDeviceAppearanceOrigin": "caller-supplied simulator appearance; not inferred from app preference",
+            "observedPreferences": context.observedPreferences,
             "preferenceProfileOrigin": "applied and checked through visible Settings controls; selection-state evidence is in routeStatus",
             "appIdentityOrigin": "caller-verified installed bundle, version, and build",
             "sourceIdentityOrigin": "caller-supplied source or archive identity",
@@ -180,6 +198,7 @@ final class AllRouteCaptureUITests: XCTestCase {
             "timeZone": tz.identifier, "timeZoneOrigin": "device-time-zone",
             "comparisonTimeZone": context.suppliedTimeZone as Any? ?? NSNull(),
             "device": UIDevice.current.name, "deviceClass": UIDevice.current.model,
+            "windowPoints": ["width": windowSize.width, "height": windowSize.height],
             "orientation": String(describing: XCUIDevice.shared.orientation),
             "systemVersion": UIDevice.current.systemVersion,
             "statusBarProfile": context.statusBarProfile, "attachment": attachmentName,
@@ -201,11 +220,11 @@ final class AllRouteCaptureUITests: XCTestCase {
     private func prepareSettings(_ c: CaptureContext) throws {
         try openTab("settings", label: "Settings", context: c)
         let selections: [(String, String, String)] = [
-            ("settings-text-size-default", "Text size, Default", "Default"),
+            (textSizePreferenceID(c.expectedTextSize), "Text size, \(c.expectedTextSize)", "Text size: \(c.expectedTextSize)"),
             ("settings-line-spacing-comfortable", "Line spacing, Comfortable", "Comfortable"),
             ("settings-scripture-typeface-serif", "Scripture typeface, Serif", "Serif"),
             ("settings-layout-verse-by-verse", "Layout, Verse by verse", "Verse by verse"),
-            ("settings-appearance-light", "Appearance, Light", "Light"),
+            ("settings-appearance-\(c.expectedAppearance.lowercased())", "Appearance, \(c.expectedAppearance)", "Appearance: \(c.expectedAppearance)"),
             ("translation-web-ce", "World English Bible — Catholic Edition", "WEB-CE")
         ]
         for (id, baselineLabel, logLabel) in selections {
@@ -221,16 +240,46 @@ final class AllRouteCaptureUITests: XCTestCase {
             if !isSelected(element) { try tap(element) }
             let selected = XCTNSPredicateExpectation(predicate: NSPredicate { object, _ in
                 guard let choice = object as? XCUIElement else { return false }
-                return self.selectionState(choice) != nil
+                return self.selectionState(choice) == true
             }, object: element)
-            let observed = XCTWaiter.wait(for: [selected], timeout: 8) == .completed
-            if observed, isSelected(element) { continue }
-            if c.variant == .baseline && !observed {
+            let observedSelected = XCTWaiter.wait(for: [selected], timeout: 8) == .completed
+            if observedSelected, isSelected(element) {
+                c.observedPreferences[logLabel] = "selected"
+                continue
+            }
+            if c.variant == .baseline && selectionState(element) == nil {
+                c.observedPreferences[logLabel] = "unresolved"
                 recordUnresolved(c, reason: "Baseline AX does not expose selected state for preference \(logLabel). Do not compare this profile as verified.")
                 continue
             }
-            XCTAssertTrue(observed && isSelected(element), "The common preference must be committed: \(logLabel)")
+            XCTAssertTrue(observedSelected && isSelected(element), "The common preference must be committed: \(logLabel)")
         }
+    }
+
+    private func normalizedAppearance(_ value: String) -> String? {
+        switch value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "light": "Light"
+        case "dark": "Dark"
+        default: nil
+        }
+    }
+
+    private func normalizedTextSize(_ value: String) -> String? {
+        let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased().replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
+        return switch normalized {
+        case "default": "Default"
+        case "extralarge": "Extra large"
+        default: nil
+        }
+    }
+
+    private func textSizePreferenceID(_ value: String) -> String {
+        "settings-text-size-\(value.lowercased().replacingOccurrences(of: " ", with: "-"))"
+    }
+
+    private func isSelectedPassageRoute(_ route: String) -> Bool {
+        ["/note", "/lectio", "/share-card"].contains(route)
     }
 
     private func waitForPageTitle(_ c: CaptureContext, nativeID: String, baselineTitle: String) throws {
@@ -421,7 +470,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         c.routeStatus = "unresolved: \(reason)"
         NSLog("L25_UNRESOLVED variant=%@ reason=%@", c.variant.rawValue, reason)
         let attachment = XCTAttachment(string: reason)
-        attachment.name = "L25-unresolved-rosary-media-\(c.variant.rawValue).txt"
+        attachment.name = "L25-unresolved-\(c.variant.rawValue).txt"
         attachment.lifetime = .keepAlways
         add(attachment)
     }
