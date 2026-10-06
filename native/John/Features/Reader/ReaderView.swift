@@ -197,19 +197,7 @@ struct ReaderView: View {
         }
         .onAppear { model.prepareVisibleLocationRestore(preferences.readerLocation) }
         .sheet(isPresented: Binding(get: { router.sheet == .readerAppearance }, set: { if !$0 { router.sheet = nil } })) {
-            NavigationStack {
-                SettingsControls()
-                    .padding()
-                    .navigationTitle("Reader appearance")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") { router.sheet = nil }
-                                .accessibilityIdentifier("reader-appearance-close")
-                        }
-                    }
-            }
-            .presentationDetents([.medium])
+            ReaderTextSettingsSheet { router.sheet = nil }
         }
     }
 
@@ -889,6 +877,63 @@ private struct ReaderHeader: View {
         } else {
             FeatherIcon(name: "chevron-left", color: colors.text)
                 .frame(width: 44, height: 44, alignment: .leading)
+        }
+    }
+}
+
+/// The Reader Aa sheet. It shows the same choice controls as Settings → Reading (`ReadingSettingsChoices`), as the old
+/// app's `TextSettingsSheet.tsx` does. It has no Bible edition control, because the old Aa sheet had none. The edition
+/// stays in Settings → Translation. At the medium detent the chapter stays visible and scrollable behind the sheet, so
+/// each choice shows in the text at once. The sheet keeps the system (Liquid Glass) sheet background. With Reduce
+/// Transparency on, the system makes that background solid.
+private struct ReaderTextSettingsSheet: View {
+    let onDone: () -> Void
+    @Environment(JohnRuntime.self) private var runtime
+    @Environment(SharedPreferencesModel.self) private var preferences
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var saveMessage: String?
+    @State private var saveGeneration = 0
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    if let saveMessage {
+                        Text(saveMessage)
+                            .font(JohnTypography.sans(14))
+                            .foregroundStyle(preferences.colors(for: colorScheme).textDim)
+                            .padding(.bottom, 8)
+                            .contentAnnouncement(saveMessage)
+                    }
+                    ReadingSettingsChoices(save: save)
+                }
+                .padding(.horizontal, 16)
+                .padding(.horizontal, 8)
+                .padding(.bottom, 16)
+                .frame(maxWidth: 600, alignment: .leading)
+                .frame(maxWidth: .infinity)
+            }
+            .navigationTitle("Text settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done", action: onDone)
+                        .accessibilityIdentifier("reader-appearance-close")
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationBackgroundInteraction(.enabled(upThrough: .medium))
+        .presentationContentInteraction(.scrolls)
+    }
+
+    private func save(_ mutation: NativeStateMutation) {
+        saveGeneration += 1
+        let generation = saveGeneration
+        Task {
+            let success = await runtime.applyWithResult(mutation)
+            guard generation == saveGeneration else { return }
+            saveMessage = success ? nil : "The setting could not be saved. Your previous choice is still active."
         }
     }
 }

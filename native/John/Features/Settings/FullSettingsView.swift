@@ -35,30 +35,7 @@ struct FullSettingsView: View {
                 }
 
                 section("Reading") {
-                    SettingsChoiceGroup(label: "Text size", options: [
-                        .init(title: "Small", selected: preferences.reading.textSize == .small) { save(.setReaderTextSize(.small)) },
-                        .init(title: "Default", selected: preferences.reading.textSize == .medium) { save(.setReaderTextSize(.medium)) },
-                        .init(title: "Large", selected: preferences.reading.textSize == .large) { save(.setReaderTextSize(.large)) },
-                        .init(title: "Extra large", selected: preferences.reading.textSize == .extraLarge) { save(.setReaderTextSize(.extraLarge)) },
-                    ])
-                    SettingsChoiceGroup(label: "Line spacing", topSeparator: true, options: [
-                        .init(title: "Compact", selected: preferences.reading.lineSpacing == .compact) { save(.setReaderLineSpacing(.compact)) },
-                        .init(title: "Comfortable", selected: preferences.reading.lineSpacing == .comfortable) { save(.setReaderLineSpacing(.comfortable)) },
-                        .init(title: "Relaxed", selected: preferences.reading.lineSpacing == .relaxed) { save(.setReaderLineSpacing(.relaxed)) },
-                    ])
-                    SettingsChoiceGroup(label: "Scripture typeface", topSeparator: true, options: [
-                        .init(title: "Serif", selected: preferences.reading.typeface == .serif) { save(.setReaderTypeface(.serif)) },
-                        .init(title: "Sans", selected: preferences.reading.typeface == .sans) { save(.setReaderTypeface(.sans)) },
-                    ])
-                    SettingsChoiceGroup(label: "Layout", topSeparator: true, hint: "With VoiceOver on, the reader always goes verse by verse.", options: [
-                        .init(title: "Paragraphs", selected: preferences.reading.layout == .paragraphs) { save(.setReaderLayout(.paragraphs)) },
-                        .init(title: "Verse by verse", selected: preferences.reading.layout == .verses) { save(.setReaderLayout(.verses)) },
-                    ])
-                    SettingsChoiceGroup(label: "Appearance", topSeparator: true, options: [
-                        .init(title: "System", selected: preferences.appearance == .system) { save(.setThemeScheme(nil)) },
-                        .init(title: "Light", selected: preferences.appearance == .light) { save(.setThemeScheme("light")) },
-                        .init(title: "Dark", selected: preferences.appearance == .dark) { save(.setThemeScheme("dark")) },
-                    ])
+                    ReadingSettingsChoices(save: save)
                 }
 
                 section("Translation") {
@@ -177,6 +154,40 @@ struct FullSettingsView: View {
         }
         coverage = await runtime.installedCalendarCoverage()
         loadFailed = coverage == nil || metadata.count != orderedTranslations.count
+    }
+}
+
+/// How Scripture looks. Settings (Reading) and the Reader Aa sheet show the same controls, as the old app's
+/// `ReadingSettings.tsx` does for its Settings screen and `TextSettingsSheet.tsx`. Each choice calls `save` with its mutation.
+struct ReadingSettingsChoices: View {
+    let save: (NativeStateMutation) -> Void
+    @Environment(SharedPreferencesModel.self) private var preferences
+
+    var body: some View {
+        SettingsChoiceGroup(label: "Text size", options: [
+            .init(title: "Small", selected: preferences.reading.textSize == .small) { save(.setReaderTextSize(.small)) },
+            .init(title: "Default", selected: preferences.reading.textSize == .medium) { save(.setReaderTextSize(.medium)) },
+            .init(title: "Large", selected: preferences.reading.textSize == .large) { save(.setReaderTextSize(.large)) },
+            .init(title: "Extra large", selected: preferences.reading.textSize == .extraLarge) { save(.setReaderTextSize(.extraLarge)) },
+        ])
+        SettingsChoiceGroup(label: "Line spacing", topSeparator: true, options: [
+            .init(title: "Compact", selected: preferences.reading.lineSpacing == .compact) { save(.setReaderLineSpacing(.compact)) },
+            .init(title: "Comfortable", selected: preferences.reading.lineSpacing == .comfortable) { save(.setReaderLineSpacing(.comfortable)) },
+            .init(title: "Relaxed", selected: preferences.reading.lineSpacing == .relaxed) { save(.setReaderLineSpacing(.relaxed)) },
+        ])
+        SettingsChoiceGroup(label: "Scripture typeface", topSeparator: true, options: [
+            .init(title: "Serif", selected: preferences.reading.typeface == .serif) { save(.setReaderTypeface(.serif)) },
+            .init(title: "Sans", selected: preferences.reading.typeface == .sans) { save(.setReaderTypeface(.sans)) },
+        ])
+        SettingsChoiceGroup(label: "Layout", topSeparator: true, hint: "With VoiceOver on, the reader always goes verse by verse.", options: [
+            .init(title: "Paragraphs", selected: preferences.reading.layout == .paragraphs) { save(.setReaderLayout(.paragraphs)) },
+            .init(title: "Verse by verse", selected: preferences.reading.layout == .verses) { save(.setReaderLayout(.verses)) },
+        ])
+        SettingsChoiceGroup(label: "Appearance", topSeparator: true, options: [
+            .init(title: "System", selected: preferences.appearance == .system) { save(.setThemeScheme(nil)) },
+            .init(title: "Light", selected: preferences.appearance == .light) { save(.setThemeScheme("light")) },
+            .init(title: "Dark", selected: preferences.appearance == .dark) { save(.setThemeScheme("dark")) },
+        ])
     }
 }
 

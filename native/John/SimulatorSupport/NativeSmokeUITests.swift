@@ -383,10 +383,12 @@ final class NativeSmokeUITests: XCTestCase {
         guard tapVerse(app.buttons["reader-verse-10"], in: app) else { return }
         XCTAssertTrue(app.buttons["reader-verse-10"].isSelected)
         app.buttons["reader-appearance-button"].tap()
-        let layout = app.buttons["settings-reading-layout"]
+        // The Aa sheet uses the Settings choice buttons (audit B2), not a menu picker.
+        let layout = app.buttons["settings-layout-verse-by-verse"]
         XCTAssertTrue(layout.waitForExistence(timeout: 5))
         layout.tap()
-        app.buttons["Verse by verse"].tap()
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", "Selected"), object: layout)], timeout: 6), .completed)
         app.buttons["reader-appearance-close"].tap()
         XCTAssertTrue(app.buttons["reader-verse-10"].isSelected, "Aa must retain the selected verse")
         attachScreenshot("L08-John-1-verse-layout-selected", app: app)
@@ -687,19 +689,21 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(appearance.waitForExistence(timeout: 8))
         appearance.tap()
 
+        // The Aa sheet shows the Settings choice buttons (audit B2). The committed choice reads "Selected".
+        // The sheet has no Bible edition control (the old Aa sheet had none). The edition stays in Settings.
         let expected = [
-            ("settings-text-size", "Medium"),
-            ("settings-line-spacing", "Comfortable"),
-            ("settings-scripture-typeface", "Serif"),
-            ("settings-reading-layout", expectedLayout),
-            ("settings-appearance", "System"),
-            ("settings-translation", "WEB"),
+            "settings-text-size-default",
+            "settings-line-spacing-comfortable",
+            "settings-scripture-typeface-serif",
+            selectedLayout ?? "settings-layout-paragraphs",
+            "settings-appearance-system",
         ]
-        for (identifier, value) in expected {
+        for identifier in expected {
             let control = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
             XCTAssertTrue(control.waitForExistence(timeout: 5), "Missing Reader appearance control: \(identifier)")
-            XCTAssertEqual(control.value as? String, value, "Wrong Reader appearance value: \(identifier)")
+            XCTAssertEqual(control.value as? String, "Selected", "Wrong Reader appearance value: \(identifier)")
         }
+        NSLog("READER_AA_EXPECTED layout=%@", expectedLayout)
         attachScreenshot("reader-appearance-accessibility-values", app: app)
     }
 
@@ -893,12 +897,12 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 5))
 
         app.buttons["reader-appearance-button"].tap()
-        let readerSize = app.buttons["settings-text-size"]
+        // The Aa sheet uses the Settings choice buttons (audit B2), not a menu picker.
+        let readerSize = app.buttons["settings-text-size-large"]
         XCTAssertTrue(readerSize.waitForExistence(timeout: 5))
         readerSize.tap()
-        app.buttons["Large"].tap()
-        XCTAssertTrue(app.buttons["settings-text-size"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.buttons["settings-text-size"].value as? String, "Large")
+        let largeCommitted = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Selected"), object: readerSize)
+        XCTAssertEqual(XCTWaiter.wait(for: [largeCommitted], timeout: 6), .completed)
         app.buttons["reader-appearance-close"].tap()
 
         app.buttons["tab-settings"].tap()

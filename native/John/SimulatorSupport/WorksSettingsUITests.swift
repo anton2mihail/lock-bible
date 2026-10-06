@@ -97,18 +97,13 @@ final class WorksSettingsUITests: XCTestCase {
         let appearance = app.buttons["reader-appearance-button"]
         XCTAssertTrue(appearance.waitForExistence(timeout: 10))
         tapWhenReady(appearance, in: app)
-        let readerValues = [
-            ("settings-text-size", readerTextSizeLabel(originalChoices["text-size"]!)),
-            ("settings-line-spacing", choiceLabel(originalChoices["line-spacing"]!)),
-            ("settings-scripture-typeface", choiceLabel(originalChoices["scripture-typeface"]!)),
-            ("settings-reading-layout", choiceLabel(originalChoices["layout"]!)),
-            ("settings-appearance", choiceLabel(originalChoices["appearance"]!)),
-            ("settings-translation", readerTranslationLabel(initialTranslation)),
-        ]
-        for (identifier, expected) in readerValues {
-            let picker = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
-            XCTAssertTrue(picker.waitForExistence(timeout: 5), "Missing Reader Aa control: \(identifier)")
-            XCTAssertEqual(picker.value as? String, expected, "Reader Aa does not match \(identifier)")
+        // The Aa sheet shows the same choice buttons as Settings (audit B2). The restored Settings choice must read
+        // "Selected" there too. The Aa sheet has no edition control (the old Aa sheet had none).
+        for group in groups {
+            let identifier = originalChoices[group.name]!
+            let choice = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+            XCTAssertTrue(choice.waitForExistence(timeout: 5), "Missing Reader Aa control: \(identifier)")
+            XCTAssertEqual(choice.value as? String, "Selected", "Reader Aa does not match \(identifier)")
         }
         tapWhenReady(app.buttons["reader-appearance-close"], in: app)
     }
@@ -272,44 +267,6 @@ final class WorksSettingsUITests: XCTestCase {
         case "settings-interval-1440": "Once a day"
         default: identifier
         }
-    }
-
-    private func choiceLabel(_ identifier: String) -> String {
-        let prefixes = ["settings-text-size-", "settings-line-spacing-", "settings-scripture-typeface-",
-                        "settings-layout-", "settings-appearance-"]
-        guard let prefix = prefixes.first(where: identifier.hasPrefix) else { return "" }
-        let suffix = String(identifier.dropFirst(prefix.count))
-        return switch suffix {
-        case "small": "Small"
-        case "default": "Default"
-        case "large": "Large"
-        case "extra-large": "Extra large"
-        case "compact": "Compact"
-        case "comfortable": "Comfortable"
-        case "relaxed": "Relaxed"
-        case "serif": "Serif"
-        case "sans": "Sans"
-        case "paragraphs": "Paragraphs"
-        case "verse-by-verse": "Verse by verse"
-        case "system": "System"
-        case "light": "Light"
-        case "dark": "Dark"
-        default: ""
-        }
-    }
-
-    private func readerTranslationLabel(_ identifier: String) -> String {
-        switch identifier {
-        case "translation-web-ce": "WEB"
-        case "translation-douay-rheims": "Douay-Rheims"
-        case "translation-vulgate": "Vulgate"
-        default: ""
-        }
-    }
-
-    private func readerTextSizeLabel(_ identifier: String) -> String {
-        let suffix = String(identifier.dropFirst("settings-text-size-".count))
-        return suffix == "default" ? "Medium" : choiceLabel(identifier)
     }
 
     private func waitForTextLabel(in app: XCUIApplication, containing text: String) {
