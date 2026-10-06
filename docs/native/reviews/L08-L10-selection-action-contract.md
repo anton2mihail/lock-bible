@@ -58,4 +58,16 @@ The corrected ContentFlow source is accepted at SHA-256 `2fbfdda90ed5d74eee49a54
 
 Main's exact-note lookup and delete boundary, successful-load readiness, duplicate-write guards, captured share payload and error callback, and separate bookmark-known state are accepted for source integration. Reviewed `SavedView.swift` hash: `d0541ade730eb4e84f9ff2e4d040cc07ec9e8393b8beb29b4981e286b42021c0`. Reviewed `ReaderView.swift` hash: `24108f01792ccb217655d197589bc1837129b4c19c25e2ee54361149d3b61826`. The new note and selection runtime checks remain open.
 
-Main corrected the pinned Feather codes and added the toolbar icons. Reviewed `FeatherIcon.swift` hash: `c5c6828683d5632ccefa66118e4d0596b824126f44ce6d6a2543cad362454b70`. The Reader commentary preview now has connected work and chapter-list actions. Visual parity remains open. Verse Moment async identity and content-clock injection still require their queued corrections.
+Main corrected the pinned Feather codes and added the toolbar icons. Reviewed `FeatherIcon.swift` hash: `c5c6828683d5632ccefa66118e4d0596b824126f44ce6d6a2543cad362454b70`. The Reader commentary preview now has connected work and chapter-list actions. Visual parity remains open. Verse Moment async identity and shared content-clock corrections pass source review. See `L13-L24-action-audit-20261006.md` for current hashes.
+
+## New-note runtime acceptance
+
+The first Vulgate run reached the Note callback, appended the exact route, and mounted its destination. Its editor remained invisible. Main removed the nested NavigationStack from the reusable editor. The Saved sheet now owns that stack. The pushed Reader editor uses the root stack. Reviewed SavedView hash: `62d1571c395f1e5257eed6a1d6e9f78d91ef68b90cfb3ccd166d1e31910b5e06`.
+
+`build/native-evidence/L22/reader-note-route-run-02/run.txt` records the passing rerun: 61.407 seconds, no failures. App PID 46148 terminates before PID 46423 launches. The test creates the note through Reader, changes the current edition to WEB-CE, reopens the exact Vulgate row, and repeats that check after one restart.
+
+The post-run row has passage key `vulgate:JHN:3:16:16`, translation `vulgate`, book `JHN`, chapter 3, and start/end verse 16. It retains the Latin source text and `Created from the Vulgate at John 3:16.` The database hash is `c1719b79b06e8c2a035e58b60b924a16b5894411c384ed58a31172b9472dbb71`. State revision 13 retains WEB-CE and verse layout. Product and installed executable hashes match at `ef91173466e0518f73fd0df4a2d546c6a3348dd565b5963f346ab7bf66d7814b`; debug library hashes match at `7d4fbc8826ab949108d77c283a236399a8895e7eb7e2b2ff106b55210ff11184`.
+
+This accepts new-note creation, original passage identity after an edition change, and persistence through restart. No screenshot attachment was available for this rerun. Full editor visuals, failed-save draft retention, copy/share payload, mixed-range clearing, selected verse fill, and large-text toolbar checks remain open.
+
+The separate Build17 test passes the JHN 1:10 bookmark and four highlight control sequence, then clear, in 32.864 seconds. Exact row and binary provenance for that earlier product remain separate. Do not repeat the flow only to reconstruct missing provenance.
