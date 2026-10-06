@@ -177,10 +177,10 @@ public enum L10L11FixtureComparison {
         let bookmark = try selection(15, 17)
         let add = try await repository.toggleBookmark(bookmark)
         try compare("bookmarkAdd", add)
-        try compare("afterBookmarkAdd", try savedResult(try await saved(.all)))
+        try compare("afterBookmarkAdd", try fixtureItems(try await saved(.all)))
         let remove = try await repository.toggleBookmark(bookmark)
         try compare("bookmarkRemove", remove)
-        try compare("afterBookmarkRemove", try savedResult(try await saved(.all)))
+        try compare("afterBookmarkRemove", try fixtureItems(try await saved(.all)))
         let restoreBookmark = try await repository.toggleBookmark(bookmark)
         try compare("bookmarkRestore", restoreBookmark)
 
@@ -210,9 +210,9 @@ public enum L10L11FixtureComparison {
             throw CoreError.invalidResource("L10 gold highlight group is missing")
         }
         try await repository.delete(deleteTarget)
-        try compare("afterDelete", try savedResult(try await saved(.all)))
+        try compare("afterDelete", try fixtureItems(try await saved(.all)))
         try await repository.restore(deleteTarget)
-        try compare("afterUndo", try savedResult(try await saved(.all)))
+        try compare("afterUndo", try fixtureItems(try await saved(.all)))
         try compare("restoredHighlightRows", rawHighlightRows(try await saved(.highlight)))
 
         try await repository.saveNote(try selection(30, 30), text: "\u{FEFF}")
