@@ -34,6 +34,15 @@ final class AllRouteCaptureUITests: XCTestCase {
         let seedManifestHash: String
         let nativeArtifact: String
         let javascriptSourceVersion: String
+        // Optional profile hooks. Missing environment values keep the earlier behavior.
+        var keyboardRequested = false
+        var axTreeRequested = false
+        var auditRequested = false
+        var selectedPassageProfileMeasured = false
+        var verse1TapOffset: CGPoint?
+        var selectedPassageTap = "not-applicable"
+        var callerFacts: [String: String] = [:]
+        var keyboardRecord: [String: Any] = ["requested": false, "status": "not-requested"]
 
         init(app: XCUIApplication, variant: Variant, bundleID: String, appVersion: String,
              build: String, sourceVersion: String, seedID: String,
@@ -120,17 +129,195 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
     }
 
+    // MARK: Native-only supplements
+    // These run only with L25_ENABLE_SUPPLEMENTS=1 and the native variant. Run one method at a time
+    // with -only-testing, after the matched initial route image exists. Main owns the seed and restore.
+
+    /// Natural 60 s Lectio expiry. Start after the matched route 13 images. It does not tap "End the timer".
+    func testL25Supplement01LectioNaturalExpiry() throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 15))
+        try prepareSettings(c)
+        guard selectedPassageEntryAllowed(c, windowWidth: c.app.windows.firstMatch.frame.size.width) else {
+            throw XCTSkip("Selected-passage entry has no reviewed tap point for this profile.")
+        }
+        try selectJHN11(c)
+        try tap(button(c, nativeID: "reader-selection-pray", baselineLabel: "Pray John 1:1"))
+        try waitForAny(c.app, ["Read slowly"])
+        for step in ["Stay with a word", "Speak to God", "Rest in his presence"] {
+            try tap(c.app.buttons["Continue"])
+            XCTAssertTrue(c.app.staticTexts[step].waitForExistence(timeout: 8), "Expected Lectio step: \(step)")
+        }
+        let countdown = c.app.staticTexts.matching(NSPredicate(
+            format: "label MATCHES %@", "^([1-9]|[1-5][0-9]|60)s of quiet$"
+        )).firstMatch
+        try tap(c.app.buttons["Begin one quiet minute"])
+        XCTAssertTrue(countdown.waitForExistence(timeout: 5), "The quiet countdown must start")
+        let started = Date()
+        let firstLabel = countdown.label
+        c.resolvedIdentity = "Lectio supplement: timer running"
+        try emitCapture(route: "/lectio#natural-expiry-running", slug: "lectio-natural-expiry-running",
+                        identity: "Lectio timer running", entryPath: "Read JHN 1:1; verse 1; Pray with this passage; Continue x3; Begin one quiet minute",
+                        context: c, extra: ["supplement": "lectio-natural-expiry", "timerFirstLabel": firstLabel],
+                        captureKind: "supplement")
+        let gone = countdown.waitForNonExistence(timeout: 90)
+        let elapsed = Date().timeIntervalSince(started)
+        XCTAssertTrue(gone, "The countdown must end by itself within 90 seconds")
+        let stillness = c.app.staticTexts["A moment of stillness"]
+        let stillnessVisible = stillness.waitForExistence(timeout: 5)
+        let buttons = c.app.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }.map(\.label)
+        c.resolvedIdentity = "Lectio supplement: after natural expiry"
+        try emitCapture(route: "/lectio#natural-expiry-end", slug: "lectio-natural-expiry-end",
+                        identity: "Lectio after natural expiry", entryPath: "Same journey; wait for the countdown to end",
+                        context: c,
+                        extra: ["supplement": "lectio-natural-expiry", "timerFirstLabel": firstLabel,
+                                "elapsedSecondsFromBeginTapToCountdownGone": elapsed,
+                                "elapsedNote": "Runner clock. Includes polling latency. Not a fixed content clock.",
+                                "stillnessTextVisible": stillnessVisible, "visibleButtonLabels": buttons],
+                        captureKind: "supplement")
+    }
+
+    /// Part A: open The Confessions and page to the middle. The test ends there so Main can copy the
+    /// stopped-app envelope (saved Works position) before part B.
+    func testL25Supplement02aWorksMiddlePage() throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 15))
+        try prepareSettings(c)
+        try openWorks(c)
+        try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine"))
+        try tap(button(c, nativeID: "work-augustine.the-confessions", baselineLabel: "The Confessions"))
+        try waitForAny(c.app, ["The Confessions"])
+        let prose = worksProse(c)
+        XCTAssertTrue(prose.waitForExistence(timeout: 15), "Work prose must appear")
+        let initial = try XCTUnwrap(worksPage(c), "Page label must appear")
+        c.resolvedIdentity = "Works supplement: initial page \(initial.label)"
+        try emitCapture(route: "/works/[id]#initial", slug: "works-supplement-initial-page",
+                        identity: "Works initial page", entryPath: "Works; Augustine; The Confessions",
+                        context: c, extra: worksExtra(c, label: initial.label), captureKind: "supplement")
+        XCTAssertGreaterThanOrEqual(initial.total, 3, "The section needs at least 3 pages for a middle page")
+        let target = (initial.total + 1) / 2
+        var current = initial.page
+        var swipes = 0
+        while current < target && swipes < initial.total + 2 {
+            prose.swipeLeft()
+            swipes += 1
+            XCTAssertTrue(c.app.staticTexts["Page \(current + 1) of \(initial.total)"].waitForExistence(timeout: 8),
+                          "Expected the next page label after the swipe")
+            current += 1
+        }
+        XCTAssertEqual(current, target, "The middle page was not reached")
+        let label = "Page \(current) of \(initial.total)"
+        c.resolvedIdentity = "Works supplement: middle page \(label)"
+        try emitCapture(route: "/works/[id]#middle-page", slug: "works-supplement-middle-page",
+                        identity: "Works middle page", entryPath: "Same journey; swipe to the middle page",
+                        context: c, extra: worksExtra(c, label: label), captureKind: "supplement")
+    }
+
+    /// Part B: relaunch, resume the saved Works position, rotate to landscape (width change), rotate back.
+    /// Start it after part A and after Main copied the envelope. Do not reseed between A and B.
+    func testL25Supplement02bWorksResumeAndWidthChange() throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 15))
+        try prepareSettings(c)
+        addTeardownBlock { XCUIDevice.shared.orientation = .portrait }
+        try openWorks(c)
+        let resume = c.app.buttons["works-continue"]
+        XCTAssertTrue(resume.waitForExistence(timeout: 10), "Run part A first. A saved Works position must exist.")
+        try tap(resume)
+        XCTAssertTrue(worksProse(c).waitForExistence(timeout: 15), "Resumed work prose must appear")
+        let resumed = try XCTUnwrap(worksPage(c), "Page label must appear after resume")
+        c.resolvedIdentity = "Works supplement: resumed \(resumed.label)"
+        try emitCapture(route: "/works/[id]#resumed-portrait", slug: "works-supplement-resumed-portrait",
+                        identity: "Works resumed", entryPath: "Works library; Continue reading",
+                        context: c, extra: worksExtra(c, label: resumed.label), captureKind: "supplement")
+
+        XCUIDevice.shared.orientation = .landscapeLeft
+        waitForOrientation(c, landscape: true)
+        let landscape = try XCTUnwrap(worksPage(c), "Page label must appear in landscape")
+        c.resolvedIdentity = "Works supplement: landscape \(landscape.label)"
+        try emitCapture(route: "/works/[id]#landscape", slug: "works-supplement-landscape",
+                        identity: "Works landscape", entryPath: "Same journey; rotate to landscape",
+                        context: c, extra: worksExtra(c, label: landscape.label), captureKind: "supplement")
+
+        XCUIDevice.shared.orientation = .portrait
+        waitForOrientation(c, landscape: false)
+        let restored = try XCTUnwrap(worksPage(c), "Page label must appear after rotating back")
+        c.resolvedIdentity = "Works supplement: restored portrait \(restored.label)"
+        var extra = worksExtra(c, label: restored.label)
+        extra["resumedPageLabel"] = resumed.label
+        extra["landscapePageLabel"] = landscape.label
+        extra["restoredLabelEqualsResumed"] = restored.label == resumed.label
+        try emitCapture(route: "/works/[id]#restored-portrait", slug: "works-supplement-restored-portrait",
+                        identity: "Works restored portrait", entryPath: "Same journey; rotate back to portrait",
+                        context: c, extra: extra, captureKind: "supplement")
+    }
+
+    private func worksProse(_ c: CaptureContext) -> XCUIElement {
+        c.app.descendants(matching: .any).matching(identifier: "works-prose").firstMatch
+    }
+
+    private func worksPage(_ c: CaptureContext) -> (label: String, page: Int, total: Int)? {
+        let element = c.app.staticTexts.matching(NSPredicate(format: "label MATCHES %@", "^Page [0-9]+ of [0-9]+$")).firstMatch
+        guard element.waitForExistence(timeout: 12) else { return nil }
+        let label = element.label
+        let numbers = label.split(separator: " ").compactMap { Int($0) }
+        guard numbers.count == 2 else { return nil }
+        return (label, numbers[0], numbers[1])
+    }
+
+    private func waitForOrientation(_ c: CaptureContext, landscape: Bool) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let size = c.app.windows.firstMatch.frame.size
+            return landscape ? size.width > size.height : size.height > size.width
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed,
+                       "The window did not reach the requested orientation")
+    }
+
+    private func worksExtra(_ c: CaptureContext, label: String) -> [String: Any] {
+        let prose = worksProse(c)
+        let body = prose.label + "|" + String(describing: prose.value ?? "")
+        let tab = c.app.buttons["tab-read"]
+        var controls: [String: Any] = [:]
+        for (name, prefix) in [("previous", "Previous"), ("contents", "Contents, section"), ("next", "Next")] {
+            let control = c.app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
+            controls[name] = ["exists": control.exists, "hittable": control.exists && control.isHittable,
+                              "label": control.exists ? control.label : "",
+                              "aboveTabs": control.exists && tab.exists ? control.frame.maxY <= tab.frame.minY : false] as [String: Any]
+        }
+        return [
+            "supplement": "works-middle-page-width-change", "pageLabel": label,
+            "bodyLabelPrefix": String(prose.label.prefix(160)),
+            "bodySHA256": SHA256.hash(data: Data(body.utf8)).map { String(format: "%02x", $0) }.joined(),
+            "bodyLength": body.count, "lowerControls": controls,
+            "savedAnchorNote": "The app has no export. Main copies the stopped-app envelope (worksPositions) between steps.",
+        ]
+    }
+
     private func capture(_ route: String, identity: String, enter: (CaptureContext) throws -> Void) throws {
+        let context = try makeContext()
+        XCTAssertTrue(context.app.wait(for: .runningForeground, timeout: 15))
+        if route != "/settings" { try prepareSettings(context) }
+        try enterRoute(route, context: context, enter: enter)
+        try emitCapture(route: route, slug: routeSlug(route), identity: identity, entryPath: entryPath(route), context: context)
+    }
+
+    /// Reads the caller environment, launches the app, and returns the capture context.
+    /// `nativeOnly` skips before launch when the variant is not native.
+    private func makeContext(nativeOnly: Bool = false) throws -> CaptureContext {
         let env = ProcessInfo.processInfo.environment
-        let appearance = normalizedAppearance(env["L25_APPEARANCE"] ?? "light")
+        let appearance = normalizedAppearance(env["L25_APPEARANCE"] ?? "light", allowSystem: true)
         let textSize = normalizedTextSize(env["L25_TEXT_SIZE"] ?? "Default")
-        let deviceAppearance = normalizedAppearance(env["L25_EFFECTIVE_DEVICE_APPEARANCE"] ?? "")
-        guard let appearance, let textSize, let deviceAppearance,
+        let layout = normalizedLayout(env["L25_LAYOUT"] ?? "Verse by verse")
+        let deviceAppearance = normalizedAppearance(env["L25_EFFECTIVE_DEVICE_APPEARANCE"] ?? "", allowSystem: false)
+        guard let appearance, let textSize, let layout, let deviceAppearance,
               (env["L25_EDITION"] ?? "WEB-CE") == "WEB-CE",
               (env["L25_SPACING"] ?? "Comfortable") == "Comfortable",
-              (env["L25_TYPEFACE"] ?? "Serif") == "Serif",
-              (env["L25_LAYOUT"] ?? "Verse by verse") == "Verse by verse" else {
-            throw XCTSkip("Set a supported profile: Light or Dark, WEB-CE, Default or Extra large, Comfortable, Serif, Verse by verse, and effective device appearance.")
+              (env["L25_TYPEFACE"] ?? "Serif") == "Serif" else {
+            throw XCTSkip("Set a supported profile: Light, Dark, or System appearance preference, WEB-CE, Default or Extra large, Comfortable, Serif, Verse by verse or Paragraphs, and effective device appearance (light or dark).")
         }
         guard let variantRaw = env["L25_VARIANT"], let variant = Variant(rawValue: variantRaw),
               let bundleID = env["L25_APP_BUNDLE_ID"], !bundleID.isEmpty,
@@ -138,6 +325,9 @@ final class AllRouteCaptureUITests: XCTestCase {
               let sourceVersion = env["L25_SOURCE_VERSION"], let seedID = env["L25_SEED_ID"],
               let seedState = env["L25_SEED_STATE"], let seedHash = env["L25_SEED_MANIFEST_SHA256"] else {
             throw XCTSkip("Set variant, installed app identity, source identity, and seed identity before capture.")
+        }
+        if nativeOnly && variant != .native {
+            throw XCTSkip("This supplement is native-only.")
         }
         let app = XCUIApplication(bundleIdentifier: bundleID)
         activeApp = app
@@ -152,30 +342,90 @@ final class AllRouteCaptureUITests: XCTestCase {
             expectedTextSize: textSize,
             expectedSpacing: env["L25_SPACING"] ?? "Comfortable",
             expectedTypeface: env["L25_TYPEFACE"] ?? "Serif",
-            expectedLayout: env["L25_LAYOUT"] ?? "Verse by verse",
+            expectedLayout: layout,
             statusBarProfile: env["L25_STATUS_BAR_PROFILE"] ?? "caller-supplied; not changed by this test",
             suppliedDate: env["L25_LOCAL_DATE"], suppliedTimeZone: env["L25_TIME_ZONE"],
             seedStateDescription: seedState, seedManifestHash: seedHash,
             nativeArtifact: env["L25_NATIVE_ARTIFACT"] ?? "caller-supplied installed artifact",
             javascriptSourceVersion: env["L25_JS_SOURCE_VERSION"] ?? sourceVersion)
+        context.keyboardRequested = env["L25_KEYBOARD"] == "1"
+        context.axTreeRequested = env["L25_AX_TREE"] == "1"
+        context.auditRequested = env["L25_A11Y_AUDIT"] == "1"
+        context.selectedPassageProfileMeasured = env["L25_SELECTED_PASSAGE_PROFILE_MEASURED"] == "1"
+        if let raw = env["L25_VERSE1_TAP_OFFSET"] {
+            let parts = raw.split(separator: ",").compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
+            if parts.count == 2, parts[0] >= 0, parts[1] >= 0 { context.verse1TapOffset = CGPoint(x: parts[0], y: parts[1]) }
+        }
+        for key in ["L25_CONTENT_SIZE", "L25_REDUCE_MOTION", "L25_INCREASE_CONTRAST", "L25_HARDWARE_KEYBOARD"] {
+            if let value = env[key], !value.isEmpty { context.callerFacts[key] = value }
+        }
+        return context
+    }
 
-        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 15))
-        if route != "/settings" { try prepareSettings(context) }
-        let windowSize = app.windows.firstMatch.frame.size
-        if isSelectedPassageRoute(route) &&
-            (context.expectedTextSize == "Extra large" || abs(windowSize.width - 402) > 1) {
-            recordUnresolved(context, reason: "Selected-passage route entry has no reviewed owned-text tap point for this text size or window width.")
+    private func requireSupplements() throws {
+        guard ProcessInfo.processInfo.environment["L25_ENABLE_SUPPLEMENTS"] == "1" else {
+            throw XCTSkip("Native-only supplements run only when L25_ENABLE_SUPPLEMENTS=1. Run one method at a time with -only-testing.")
+        }
+    }
+
+    private func enterRoute(_ route: String, context: CaptureContext, enter: (CaptureContext) throws -> Void) throws {
+        let windowSize = context.app.windows.firstMatch.frame.size
+        var entered = false
+        if isSelectedPassageRoute(route) && !selectedPassageEntryAllowed(context, windowWidth: windowSize.width) {
+            let reason = context.expectedLayout == "Paragraphs"
+                ? "Selected-passage route entry needs verse controls. Paragraph layout has no reviewed owned-text tap point."
+                : "Selected-passage route entry has no reviewed owned-text tap point for this text size or window width."
+            recordUnresolved(context, reason: reason)
             context.resolvedIdentity = "Selected passage route entry unresolved; no inherited Default/402pt tap point was used."
+            context.selectedPassageTap = "skipped"
         } else {
             try enter(context)
+            entered = true
         }
+        if context.keyboardRequested {
+            if entered { attemptKeyboard(route, context) }
+            else { context.keyboardRecord = ["requested": true, "status": "route-entry-unresolved"] }
+        }
+    }
+
+    /// Native default: the measured 402 pt, Default size, Verse by verse profile.
+    /// Main sets L25_SELECTED_PASSAGE_PROFILE_MEASURED=1 after it measures another profile.
+    private func selectedPassageEntryAllowed(_ c: CaptureContext, windowWidth: CGFloat) -> Bool {
+        if c.expectedLayout == "Paragraphs" { return false }
+        if c.selectedPassageProfileMeasured { return c.variant == .baseline || c.verse1TapOffset != nil }
+        return c.expectedTextSize != "Extra large" && abs(windowWidth - 402) <= 1
+    }
+
+    private func emitCapture(route: String, slug: String, identity: String, entryPath entry: String,
+                             context: CaptureContext, extra: [String: Any] = [:],
+                             captureKind: String = "route") throws {
+        let app = context.app
+        let variant = context.variant
+        let windowSize = app.windows.firstMatch.frame.size
         let png = app.screenshot().pngRepresentation
         let digest = SHA256.hash(data: png).map { String(format: "%02x", $0) }.joined()
-        let attachmentName = "L25-\(routeSlug(route))-\(variant.rawValue).png"
+        let attachmentName = "L25-\(slug)-\(variant.rawValue).png"
         let imageAttachment = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
         imageAttachment.name = attachmentName
         imageAttachment.lifetime = .keepAlways
         add(imageAttachment)
+
+        var axInfo: [String: Any] = ["attached": false, "origin": "not requested; set L25_AX_TREE=1"]
+        if context.axTreeRequested {
+            let tree = Data(app.debugDescription.utf8)
+            let treeAttachment = XCTAttachment(data: tree, uniformTypeIdentifier: "public.plain-text")
+            treeAttachment.name = "L25-\(slug)-\(variant.rawValue)-ax.txt"
+            treeAttachment.lifetime = .keepAlways
+            add(treeAttachment)
+            axInfo = ["attached": true, "attachment": treeAttachment.name ?? "",
+                      "sha256": SHA256.hash(data: tree).map { String(format: "%02x", $0) }.joined(),
+                      "byteCount": tree.count, "origin": "XCUIApplication.debugDescription at capture time"]
+        }
+        var auditInfo: [String: Any] = ["status": "not requested; set L25_A11Y_AUDIT=1"]
+        if context.auditRequested { auditInfo = runAccessibilityAudit(context, slug: slug) }
+
+        var keyboard = context.keyboardRecord
+        for (key, value) in keyboardSnapshot(app) { keyboard[key] = value }
 
         let captureDate = Date()
         let actualDate = ISO8601DateFormatter().string(from: captureDate)
@@ -185,13 +435,14 @@ final class AllRouteCaptureUITests: XCTestCase {
         localDateFormatter.timeZone = tz
         localDateFormatter.locale = Locale(identifier: "en_US_POSIX")
         localDateFormatter.dateFormat = "yyyy-MM-dd"
-        let manifest: [String: Any] = [
-            "schema": "l25-route-capture-v1", "routeKey": route, "resolvedIdentity": context.resolvedIdentity.isEmpty ? identity : context.resolvedIdentity,
-            "entryPath": entryPath(route), "routeStatus": context.routeStatus,
-            "variant": variant.rawValue, "bundleID": bundleID, "appVersion": appVersion, "build": build,
-            "sourceVersion": sourceVersion, "nativeArtifact": context.nativeArtifact,
+        var manifest: [String: Any] = [
+            "schema": "l25-route-capture-v1", "captureKind": captureKind,
+            "routeKey": route, "resolvedIdentity": context.resolvedIdentity.isEmpty ? identity : context.resolvedIdentity,
+            "entryPath": entry, "routeStatus": context.routeStatus,
+            "variant": variant.rawValue, "bundleID": context.bundleID, "appVersion": context.appVersion, "build": context.build,
+            "sourceVersion": context.sourceVersion, "nativeArtifact": context.nativeArtifact,
             "javascriptSourceVersion": context.javascriptSourceVersion,
-            "seedID": seedID, "seedState": context.seedStateDescription,
+            "seedID": context.seedID, "seedState": context.seedStateDescription,
             "seedManifestSHA256": context.seedManifestHash,
             "appearancePreference": context.expectedAppearance,
             "appearancePreferenceOrigin": "requested and checked through the visible app setting; selection evidence is in observedPreferences",
@@ -213,14 +464,110 @@ final class AllRouteCaptureUITests: XCTestCase {
             "orientation": String(describing: XCUIDevice.shared.orientation),
             "systemVersion": UIDevice.current.systemVersion,
             "statusBarProfile": context.statusBarProfile, "attachment": attachmentName,
-            "sha256": digest, "byteCount": png.count, "captureUTC": actualDate
+            "sha256": digest, "byteCount": png.count, "captureUTC": actualDate,
+            "callerFacts": context.callerFacts,
+            "callerFactsOrigin": "caller-supplied values; the test does not set or prove them",
+            "runnerReadback": [
+                "preferredContentSizeCategory": UITraitCollection.current.preferredContentSizeCategory.rawValue,
+                "reduceMotionEnabled": UIAccessibility.isReduceMotionEnabled,
+                "origin": "UI test runner process values; not proof of the app setting",
+            ] as [String: Any],
+            "selectedPassageTap": context.selectedPassageTap,
+            "keyboard": keyboard, "axTree": axInfo, "accessibilityAudit": auditInfo,
         ]
+        for (key, value) in extra { manifest[key] = value }
         let json = try JSONSerialization.data(withJSONObject: manifest, options: [.sortedKeys])
         let metadata = XCTAttachment(data: json, uniformTypeIdentifier: "public.json")
-        metadata.name = "L25-\(routeSlug(route))-\(variant.rawValue).json"
+        metadata.name = "L25-\(slug)-\(variant.rawValue).json"
         metadata.lifetime = .keepAlways
         add(metadata)
         NSLog("L25_CAPTURE_MANIFEST %@", String(data: json, encoding: .utf8) ?? "{}")
+    }
+
+    private func rectDictionary(_ rect: CGRect) -> [String: Double] {
+        ["x": rect.minX, "y": rect.minY, "width": rect.width, "height": rect.height]
+    }
+
+    /// Records the software keyboard frame and the text inputs that report `hasFocus`.
+    /// `hasFocus` is the iOS XCTest attribute. Main must confirm on the first run that it is true for a tapped field.
+    /// A connected hardware keyboard can hide the software keyboard. The record says what appeared.
+    private func keyboardSnapshot(_ app: XCUIApplication) -> [String: Any] {
+        let keyboard = app.keyboards.firstMatch
+        let visible = keyboard.exists
+        var focused: [String] = []
+        let inputs = app.textViews.allElementsBoundByIndex + app.textFields.allElementsBoundByIndex
+            + app.searchFields.allElementsBoundByIndex
+        for input in inputs where input.exists && input.hasFocus {
+            focused.append(input.identifier.isEmpty ? input.label : input.identifier)
+        }
+        return [
+            "softwareKeyboardVisible": visible,
+            "softwareKeyboardFrame": visible ? rectDictionary(keyboard.frame) as Any : NSNull(),
+            "focusedInputs": focused,
+            "keyboardNote": "No software keyboard frame can mean a connected hardware keyboard. The setting is host-wide and the test does not change it.",
+        ]
+    }
+
+    private func keyboardInputCandidates(_ route: String, _ c: CaptureContext) -> [(String, XCUIElement)] {
+        switch route {
+        case "/search":
+            return [("search-query-input", c.app.textFields["search-query-input"]),
+                    ("first search field", c.app.searchFields.firstMatch),
+                    ("first text field", c.app.textFields.firstMatch)]
+        case "/note":
+            return [("saved-note-editor", c.app.textViews["saved-note-editor"]),
+                    ("first text view", c.app.textViews.firstMatch),
+                    ("first text field", c.app.textFields.firstMatch)]
+        case "/confession", "/pray/[id]":
+            return [("first text view", c.app.textViews.firstMatch), ("first text field", c.app.textFields.firstMatch)]
+        default:
+            return []
+        }
+    }
+
+    /// Optional (L25_KEYBOARD=1). It never fails the test. It records what it did and what appeared.
+    private func attemptKeyboard(_ route: String, _ c: CaptureContext) {
+        let candidates = keyboardInputCandidates(route, c)
+        guard !candidates.isEmpty else {
+            c.keyboardRecord = ["requested": true, "status": "route-has-no-keyboard-input"]
+            return
+        }
+        let keyboard = c.app.keyboards.firstMatch
+        var chosen: (String, XCUIElement)?
+        for candidate in candidates where candidate.1.waitForExistence(timeout: 3) { chosen = candidate; break }
+        guard let (name, input) = chosen else {
+            c.keyboardRecord = ["requested": true, "status": "input-not-found", "inputsTried": candidates.map(\.0)]
+            return
+        }
+        var status = "input-already-focused-or-keyboard-visible"
+        if !keyboard.exists {
+            if input.isHittable {
+                input.tap()
+                status = "input-tapped"
+            } else {
+                status = "input-not-hittable"
+            }
+            _ = keyboard.waitForExistence(timeout: 4)
+        }
+        c.keyboardRecord = ["requested": true, "status": status, "input": name,
+                            "keyboardAppearedAfterAction": keyboard.exists]
+    }
+
+    private func runAccessibilityAudit(_ c: CaptureContext, slug: String) -> [String: Any] {
+        var issues: [String] = []
+        do {
+            try c.app.performAccessibilityAudit { issue in
+                issues.append("type=\(issue.auditType.rawValue) | \(issue.compactDescription) | element=\(issue.element?.label ?? "")")
+                return true
+            }
+        } catch {
+            return ["status": "error: \(error)"]
+        }
+        let attachment = XCTAttachment(string: issues.joined(separator: "\n"))
+        attachment.name = "L25-\(slug)-\(c.variant.rawValue)-audit.txt"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        return ["status": "completed", "issueCount": issues.count, "attachment": attachment.name ?? ""]
     }
 
     private func openTab(_ name: String, label: String, context c: CaptureContext) throws {
@@ -247,7 +594,8 @@ final class AllRouteCaptureUITests: XCTestCase {
             (textSizePreferenceID(c.expectedTextSize), "Text size, \(c.expectedTextSize)", "Text size: \(c.expectedTextSize)"),
             ("settings-line-spacing-comfortable", "Line spacing, Comfortable", "Comfortable"),
             ("settings-scripture-typeface-serif", "Scripture typeface, Serif", "Serif"),
-            ("settings-layout-verse-by-verse", "Layout, Verse by verse", "Verse by verse"),
+            ("settings-layout-\(c.expectedLayout.lowercased().replacingOccurrences(of: " ", with: "-"))",
+             "Layout, \(c.expectedLayout)", c.expectedLayout),
             ("settings-appearance-\(c.expectedAppearance.lowercased())", "Appearance, \(c.expectedAppearance)", "Appearance: \(c.expectedAppearance)"),
             ("translation-web-ce", "World English Bible — Catholic Edition", "WEB-CE")
         ]
@@ -283,10 +631,22 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
     }
 
-    private func normalizedAppearance(_ value: String) -> String? {
+    /// `allowSystem` is true only for the app appearance preference. The device appearance is Light or Dark.
+    private func normalizedAppearance(_ value: String, allowSystem: Bool) -> String? {
         switch value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
         case "light": "Light"
         case "dark": "Dark"
+        case "system": allowSystem ? "System" : nil
+        default: nil
+        }
+    }
+
+    private func normalizedLayout(_ value: String) -> String? {
+        let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased().replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
+        return switch normalized {
+        case "versebyverse": "Verse by verse"
+        case "paragraphs": "Paragraphs"
         default: nil
         }
     }
@@ -361,7 +721,19 @@ final class AllRouteCaptureUITests: XCTestCase {
     private func selectJHN11(_ c: CaptureContext) throws {
         try openJohnOne(c)
         let verse = button(c, nativeID: "reader-verse-1", baselineLabel: "Verse 1")
-        try tap(verse)
+        if c.variant == .native, let offset = c.verse1TapOffset {
+            // Main-measured owned-word point (L25_VERSE1_TAP_OFFSET), relative to the verse 1 frame origin.
+            XCTAssertTrue(verse.waitForExistence(timeout: 8), "Verse 1 must be present")
+            for _ in 0..<6 where !verse.isHittable { scrollToVisible(verse) }
+            XCTAssertTrue(verse.isHittable, "Verse 1 must be visible before the measured tap")
+            let size = verse.frame.size
+            XCTAssertTrue(offset.x < size.width && offset.y < size.height, "The measured tap point must stay inside the verse 1 frame")
+            verse.coordinate(withNormalizedOffset: CGVector(dx: offset.x / size.width, dy: offset.y / size.height)).tap()
+            c.selectedPassageTap = "offset \(offset.x),\(offset.y)"
+        } else {
+            try tap(verse)
+            c.selectedPassageTap = "center"
+        }
         let toolbar = button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")
         XCTAssertTrue(toolbar.waitForExistence(timeout: 8), "Select JHN 1:1 using the visible Reader control.")
     }
@@ -524,8 +896,9 @@ final class AllRouteCaptureUITests: XCTestCase {
     }
 
     private func routeSlug(_ route: String) -> String {
-        route.lowercased().unicodeScalars.map { CharacterSet.alphanumerics.contains($0) ? String($0) : "-" }
+        let slug = route.lowercased().unicodeScalars.map { CharacterSet.alphanumerics.contains($0) ? String($0) : "-" }
             .joined().split(separator: "-").joined(separator: "-")
+        return slug.isEmpty ? "today" : slug // Route "/" has an empty slug.
     }
 
     private func entryPath(_ route: String) -> String {

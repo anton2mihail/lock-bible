@@ -92,20 +92,35 @@ final class ReaderParityUITests: XCTestCase {
     func testBibleRepositoryCasesAcrossEditions() throws {
         let variant = CaptureVariant.current
         let allSamples = Edition.allCases.flatMap { samples(for: $0) }
-        let caseKey = CaptureMetadata.value("READER_PARITY_CASE")
+        // READER_PARITY_CASE accepts one exact key or a comma-separated list. The list order is the run order.
+        let caseValue = CaptureMetadata.value("READER_PARITY_CASE")
         let selectedSamples: [BibleCase]
-        if caseKey == "unprovided" {
+        if caseValue == "unprovided" {
             selectedSamples = allSamples
-        } else if let sample = allSamples.first(where: { $0.key == caseKey }) {
-            selectedSamples = [sample]
         } else {
-            XCTFail("Unknown Reader parity case: \(caseKey)")
+            var chosen: [BibleCase] = []
+            for rawKey in caseValue.split(separator: ",") {
+                let caseKey = rawKey.trimmingCharacters(in: .whitespaces)
+                guard let sample = allSamples.first(where: { $0.key == caseKey }) else {
+                    XCTFail("Unknown Reader parity case: \(caseKey)")
+                    return
+                }
+                if !chosen.contains(where: { $0.key == sample.key }) { chosen.append(sample) }
+            }
+            guard !chosen.isEmpty else {
+                XCTFail("READER_PARITY_CASE has no case key")
+                return
+            }
+            selectedSamples = chosen
+        }
+        guard let textSize = requestedTextSize() else {
+            XCTFail("Unsupported READER_PARITY_TEXT_SIZE: \(CaptureMetadata.value("READER_PARITY_TEXT_SIZE")). Use Default or Extra large.")
             return
         }
         let app = launch(variant: variant)
 
         for sample in selectedSamples {
-            let profile = applyCaptureProfile(edition: sample.edition, in: app, variant: variant)
+            let profile = applyCaptureProfile(edition: sample.edition, textSize: textSize, in: app, variant: variant)
             openCaptureBookList(in: app, variant: variant)
             let book = captureBookControl(sample, in: app, variant: variant)
             tapWhenReady(book, in: app)
@@ -122,16 +137,19 @@ final class ReaderParityUITests: XCTestCase {
             XCTAssertTrue(firstVerse.isHittable, "The chapter must open at its natural top: \(sample.key)")
             XCTAssertTrue(firstVerse.label.contains(sample.firstVerseText), "First verse differs from source: \(sample.key)")
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-top", app: app)
+            attachAXTreeIfRequested("reader-parity-\(variant.rawValue)-\(sample.key)-top", app: app)
 
             let lastVerse = captureVerseControl(sample.lastVerseNumber, text: sample.lastVerseText,
                                                 in: app, variant: variant)
             scrollToLastVerseTail(lastVerse, in: app, key: sample.key)
             XCTAssertTrue(lastVerse.label.contains(sample.lastVerseText), "Last verse differs from source: \(sample.key)")
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end-text", app: app)
+            attachAXTreeIfRequested("reader-parity-\(variant.rawValue)-\(sample.key)-end-text", app: app)
 
             scrollToAttribution(attribution, in: app, key: sample.key)
             waitForLabel(attribution, equals: sample.edition.attribution)
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end-footer", app: app)
+            attachAXTreeIfRequested("reader-parity-\(variant.rawValue)-\(sample.key)-end-footer", app: app)
             NSLog("READER_PARITY case=%@ variant=%@ edition=%@ book=%@ chapter=%d first=%d last=%d attribution=%@ requestedProfile=%@ verifiedProfile=%@ appearancePreference=%@ effectiveAppearance=%@ appVersion=%@ device=%@ seed=%@",
                   sample.key, variant.rawValue, sample.edition.id, sample.bookName, sample.chapter,
                   sample.firstVerseNumber, sample.lastVerseNumber, sample.edition.abbreviation,
@@ -224,11 +242,12 @@ final class ReaderParityUITests: XCTestCase {
         return app
     }
 
-    private func applyProfile(edition: Edition, layout: String, in app: XCUIApplication) -> String {
+    private func applyProfile(edition: Edition, layout: String, textSize: String = "Default",
+                              in app: XCUIApplication) -> String {
         app.buttons["tab-settings"].tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
         for (identifier, selectedValue) in [
-            ("settings-text-size-default", "Text size, Default"),
+            ("settings-text-size-\(textSize.lowercased().replacingOccurrences(of: " ", with: "-"))", "Text size, \(textSize)"),
             ("settings-line-spacing-comfortable", "Line spacing, Comfortable"),
             ("settings-scripture-typeface-serif", "Scripture typeface, Serif"),
             ("settings-layout-\(layout.lowercased().replacingOccurrences(of: " ", with: "-"))", "Layout, \(layout)"),
@@ -245,18 +264,19 @@ final class ReaderParityUITests: XCTestCase {
             (app.buttons["settings-appearance-\(name)"].value as? String) == "Selected"
         } ?? "unresolved"
         XCTAssertNotEqual(observedAppearance, "unresolved", "The Settings screen must expose the current appearance")
-        NSLog("READER_PARITY_PROFILE size=Medium spacing=Comfortable typeface=Serif layout=%@ edition=%@ appearancePreference=%@",
-              layout, edition.id, observedAppearance)
+        NSLog("READER_PARITY_PROFILE size=%@ spacing=Comfortable typeface=Serif layout=%@ edition=%@ appearancePreference=%@",
+              textSizeName(textSize), layout, edition.id, observedAppearance)
         app.buttons["tab-read"].tap()
         return observedAppearance
     }
 
-    private func applyCaptureProfile(edition: Edition, in app: XCUIApplication,
+    private func applyCaptureProfile(edition: Edition, textSize: String, in app: XCUIApplication,
                                      variant: CaptureVariant) -> CaptureProfileObservation {
+        let sizeName = textSizeName(textSize)
         if variant == .native {
-            let appearance = applyProfile(edition: edition, layout: "Paragraphs", in: app)
-            return CaptureProfileObservation(requested: "Medium/Comfortable/Serif/Paragraphs/\(edition.id)",
-                                             verified: "Medium/Comfortable/Serif/Paragraphs/\(edition.id)",
+            let appearance = applyProfile(edition: edition, layout: "Paragraphs", textSize: textSize, in: app)
+            return CaptureProfileObservation(requested: "\(sizeName)/Comfortable/Serif/Paragraphs/\(edition.id)",
+                                             verified: "\(sizeName)/Comfortable/Serif/Paragraphs/\(edition.id)",
                                              appearancePreference: appearance)
         }
 
@@ -265,7 +285,7 @@ final class ReaderParityUITests: XCTestCase {
         settingsTab.tap()
         XCTAssertTrue(app.staticTexts["Settings"].waitForExistence(timeout: 8))
         let requestedChoices = [
-            "Text size, Default", "Line spacing, Comfortable",
+            "Text size, \(textSize)", "Line spacing, Comfortable",
             "Scripture typeface, Serif", "Layout, Paragraphs", edition.fullName,
         ]
         var observedChoices: [String] = []
@@ -290,7 +310,7 @@ final class ReaderParityUITests: XCTestCase {
         let appearancePreference = selectedAppearance?.label.replacingOccurrences(of: "Appearance, ", with: "") ?? "unresolved"
         app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Read, tab")).firstMatch.tap()
         return CaptureProfileObservation(
-            requested: "Medium/Comfortable/Serif/Paragraphs/\(edition.id)",
+            requested: "\(sizeName)/Comfortable/Serif/Paragraphs/\(edition.id)",
             verified: observedChoices.joined(separator: ";"),
             appearancePreference: appearancePreference
         )
@@ -553,6 +573,30 @@ final class ReaderParityUITests: XCTestCase {
         guard element.elementType == .other, let value = element.value as? String,
               value == "radio button, checked" || value == "radio button, unchecked" else { return nil }
         return value
+    }
+
+    /// READER_PARITY_TEXT_SIZE: Default (unset) or Extra large. Other values return nil.
+    private func requestedTextSize() -> String? {
+        let raw = CaptureMetadata.value("READER_PARITY_TEXT_SIZE")
+        if raw == "unprovided" { return "Default" }
+        switch raw.trimmingCharacters(in: .whitespaces).lowercased()
+            .replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "") {
+        case "default": return "Default"
+        case "extralarge": return "Extra large"
+        default: return nil
+        }
+    }
+
+    /// The log name for the default size stays "Medium", as before.
+    private func textSizeName(_ textSize: String) -> String { textSize == "Default" ? "Medium" : textSize }
+
+    /// READER_PARITY_AX_TREE=1 attaches `XCUIApplication.debugDescription` next to each screenshot.
+    private func attachAXTreeIfRequested(_ name: String, app: XCUIApplication) {
+        guard CaptureMetadata.value("READER_PARITY_AX_TREE") == "1" else { return }
+        let attachment = XCTAttachment(string: app.debugDescription)
+        attachment.name = "\(name)-ax"
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     private func attachScreenshot(_ name: String, app: XCUIApplication) {
