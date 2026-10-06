@@ -64,6 +64,7 @@ final class ScriptureCardUITests: XCTestCase {
         setEdition("web-ce", in: app)
         setVerseLayout(in: app)
         app.buttons["tab-read"].tap()
+        openReaderBookList(in: app)
         tapWhenReady(app.buttons["reader-book-PSA"], in: app)
         tapWhenReady(app.buttons["reader-chapter-2"], in: app)
 
@@ -169,10 +170,10 @@ final class ScriptureCardUITests: XCTestCase {
             let viewport = visibleScrollViewport(in: app)
             XCTAssertGreaterThan(viewport.height, 80, "Reader scroll area is not visible")
             let prior = element.frame
-            let down = prior.midY < viewport.minY + 12
+            let down = prior.midY < viewport.minY
             let x = viewport.midX
-            let y1 = down ? viewport.minY + 28 : viewport.maxY - 28
-            let y2 = down ? viewport.maxY - 28 : viewport.minY + 28
+            let y1 = down ? viewport.minY + viewport.height * 0.25 : viewport.minY + viewport.height * 0.75
+            let y2 = down ? viewport.minY + viewport.height * 0.75 : viewport.minY + viewport.height * 0.25
             app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: y1 / app.frame.height))
                 .press(forDuration: 0.05, thenDragTo: app.coordinate(
                     withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: y2 / app.frame.height)))
@@ -210,8 +211,20 @@ final class ScriptureCardUITests: XCTestCase {
                               file: StaticString = #filePath,
                               line: UInt = #line) {
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing control", file: file, line: line)
+        if !element.isHittable { scrollToVisible(element, in: app) }
         XCTAssertTrue(element.isHittable, "Control is not hittable", file: file, line: line)
         element.tap()
+    }
+
+    private func openReaderBookList(in app: XCUIApplication) {
+        let book = app.buttons["reader-book-PSA"]
+        for _ in 0..<3 where !book.exists {
+            let back = app.buttons["reader-back"]
+            XCTAssertTrue(back.waitForExistence(timeout: 8), "Reader must expose its real back control")
+            tapWhenReady(back, in: app)
+        }
+        XCTAssertTrue(book.waitForExistence(timeout: 10),
+                      "The card capture seed must start at Reader books, or return through Reader back controls")
     }
 
     private func attachScreenshot(_ name: String, app: XCUIApplication) {

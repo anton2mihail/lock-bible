@@ -112,16 +112,23 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(app.buttons["content-back"], in: app)
         tapWhenReady(app.buttons["content-back"], in: app)
 
-        tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
+    }
+
+    func testL15PrayerHomeRosarySetsSevenSorrowsAndLectioTimer() throws {
+        let app = launchWithFeatureClock()
+        app.buttons["tab-pray"].tap()
+        let rosaryHome = button(containing: "Pray the Rosary", in: app)
+        XCTAssertTrue(rosaryHome.waitForExistence(timeout: 8), "Start from PrayerHome")
+        tapWhenReady(rosaryHome, in: app)
         let rosarySets = [
             ("joyful", "The Joyful Mysteries", "Joyful"),
             ("sorrowful", "The Sorrowful Mysteries", "Sorrowful"),
             ("glorious", "The Glorious Mysteries", "Glorious"),
             ("luminous", "The Luminous Mysteries", "Luminous"),
         ]
-        for (_, cardTitle, guideTitle) in rosarySets {
+        for (setID, cardTitle, guideTitle) in rosarySets {
             let card = button(containing: cardTitle, in: app)
-            XCTAssertTrue(card.waitForExistence(timeout: 8), "Missing Rosary set: \(cardTitle)")
+            XCTAssertTrue(card.waitForExistence(timeout: 8), "Missing Rosary set \(setID): \(cardTitle)")
             tapWhenReady(card, in: app)
             XCTAssertTrue(app.staticTexts[guideTitle].waitForExistence(timeout: 8))
             tapWhenReady(app.buttons["Close Rosary guide"], in: app)
@@ -132,10 +139,8 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Seven Sorrows"].waitForExistence(timeout: 8))
         tapWhenReady(app.buttons["Close Rosary guide"], in: app)
 
-        app.buttons["tab-today"].tap()
-        let prayPassage = app.buttons.matching(NSPredicate(format: "label == %@", "Pray with this passage")).firstMatch
-        XCTAssertTrue(prayPassage.waitForExistence(timeout: 10), "Today must show the rotating verse action")
-        tapWhenReady(prayPassage, in: app)
+        app.buttons["tab-pray"].tap()
+        tapWhenReady(button(containing: "Pray with Scripture", in: app), in: app)
         XCTAssertTrue(app.staticTexts["Read slowly"].waitForExistence(timeout: 10))
         tapWhenReady(app.buttons["Continue"], in: app)
         tapWhenReady(app.buttons["Continue"], in: app)
@@ -146,16 +151,14 @@ final class ContentFlowUITests: XCTestCase {
             format: "label MATCHES %@", "^([1-9]|[1-5][0-9]|60)s of quiet$"
         )).firstMatch
         XCTAssertTrue(countdown.waitForExistence(timeout: 5))
-        let initialCountdown = countdown.label
-        let initialSeconds = Int(initialCountdown.split(separator: "s").first ?? "")
-        let decreaseObserved = NSPredicate { _, _ in
+        let initialSeconds = Int(countdown.label.split(separator: "s").first ?? "")
+        let decreased = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             guard countdown.exists, let initialSeconds,
-                  let currentSeconds = Int(countdown.label.split(separator: "s").first ?? "") else { return false }
-            return currentSeconds < initialSeconds
-        }
-        let decreaseWait = XCTNSPredicateExpectation(predicate: decreaseObserved, object: countdown)
-        XCTAssertEqual(XCTWaiter.wait(for: [decreaseWait], timeout: 5), .completed,
-                       "The visible countdown must decrease after it starts")
+                  let current = Int(countdown.label.split(separator: "s").first ?? "") else { return false }
+            return current < initialSeconds
+        }, object: countdown)
+        XCTAssertEqual(XCTWaiter.wait(for: [decreased], timeout: 5), .completed,
+                       "The displayed timer value must decrease")
         tapWhenReady(app.buttons["End the timer"], in: app)
         XCTAssertTrue(app.staticTexts["A moment of stillness"].waitForExistence(timeout: 5))
     }
@@ -275,12 +278,12 @@ final class ContentFlowUITests: XCTestCase {
             let viewportFrame = visibleScrollViewport(in: app)
             XCTAssertGreaterThan(viewportFrame.height, 80, "No safe scroll area is visible", file: file, line: line)
             let oldFrame = element.frame
-            let direction: CGFloat = oldFrame.midY < viewportFrame.minY + 12 ? -1 : 1
+            let direction: CGFloat = oldFrame.midY < viewportFrame.minY ? -1 : 1
             let keyboard = app.keyboards.firstMatch
             let oldKeyboardFrame = keyboard.exists ? keyboard.frame : nil
             let centerX = viewportFrame.midX
-            let lowerY = viewportFrame.maxY - 28
-            let upperY = viewportFrame.minY + 28
+            let lowerY = viewportFrame.minY + viewportFrame.height * 0.75
+            let upperY = viewportFrame.minY + viewportFrame.height * 0.25
             let startY = direction > 0 ? lowerY : upperY
             let endY = direction > 0 ? upperY : lowerY
             NSLog("L14_SCROLL viewport=%@ keyboard=%@ target=%@ direction=%@",

@@ -72,7 +72,8 @@ final class WorksSettingsUITests: XCTestCase {
         }
         tapAndWaitForSelection(initialTranslation, in: app)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Offline reading references:")).firstMatch.exists)
-        XCTAssertTrue(app.staticTexts["Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved."].exists)
+        let metadata = "Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved."
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label == %@", metadata)).firstMatch.exists)
 
         for group in groups.reversed() {
             if let original = originalChoices[group.name] {
@@ -125,7 +126,12 @@ final class WorksSettingsUITests: XCTestCase {
         let initialContents = app.buttons.matching(NSPredicate(format: "label == %@", "Contents, section 1 of 88")).firstMatch
         XCTAssertTrue(initialContents.waitForExistence(timeout: 15), "Fresh work must open at section 1")
         tapWhenReady(initialContents, in: app)
-        tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Homily 10")).firstMatch, in: app)
+        let contentsList = app.collectionViews.firstMatch
+        XCTAssertTrue(contentsList.waitForExistence(timeout: 10), "The work Contents list must be visible")
+        let homilyTen = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Homily 10")).firstMatch
+        scrollContentsUntilHittable(homilyTen, list: contentsList, in: app)
+        XCTAssertTrue(homilyTen.isHittable)
+        homilyTen.tap()
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label == %@", "Contents, section 10 of 88")).firstMatch.waitForExistence(timeout: 12))
 
         let prose = app.descendants(matching: .any).matching(identifier: "works-prose-text").firstMatch
@@ -345,6 +351,37 @@ final class WorksSettingsUITests: XCTestCase {
         }
         XCTAssertTrue(element.isHittable, "Control is not hittable", file: file, line: line)
         element.tap()
+    }
+
+    private func scrollContentsUntilHittable(_ target: XCUIElement, list: XCUIElement,
+                                             in app: XCUIApplication,
+                                             file: StaticString = #filePath, line: UInt = #line) {
+        for attempt in 0..<14 where !target.exists || !target.isHittable {
+            var viewport = list.frame.intersection(app.frame)
+            let tabTop = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+                .allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }
+                .map(\.frame.minY).min()
+            if let tabTop { viewport.size.height = min(viewport.height, tabTop - viewport.minY) }
+            XCTAssertGreaterThan(viewport.height, 160, "Contents list has no safe visible area", file: file, line: line)
+            let wasPresent = target.exists
+            let oldTarget = wasPresent ? target.frame : .zero
+            let oldList = list.frame
+            let x = viewport.midX
+            let startY = viewport.minY + viewport.height * 0.75
+            let endY = viewport.minY + viewport.height * 0.25
+            NSLog("WORKS_CONTENTS_SCROLL attempt=%d viewport=%@ target=%@ direction=up",
+                  attempt + 1, NSCoder.string(for: viewport), NSCoder.string(for: oldTarget))
+            app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: startY / app.frame.height))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(
+                    withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: endY / app.frame.height)))
+            let moved = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                target.exists != wasPresent || (target.exists && target.frame != oldTarget) || list.frame != oldList
+            }, object: target)
+            XCTAssertEqual(XCTWaiter.wait(for: [moved], timeout: 2), .completed,
+                           "The Contents list or Homily 10 row must move after a bounded scroll", file: file, line: line)
+        }
+        XCTAssertTrue(target.exists, "Homily 10 must load in the actual Contents list", file: file, line: line)
+        XCTAssertTrue(target.isHittable, "Homily 10 must be visible in the actual Contents list", file: file, line: line)
     }
 
     private enum TestError: Error { case noSelection }
