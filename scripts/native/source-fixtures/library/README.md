@@ -23,3 +23,15 @@ Use the `request` selection fields as the inputs for the native repository scena
 The generator sets `Date.now` to `1800000000000`. Each source call to `Date.now` increments the value. Actions that do not read the clock do not increment it. Native checks must inject or otherwise control time to compare exact timestamps and batch IDs. Do not use this fixture as a request to add a test target.
 
 The screen contract is separate from the repository sequence. Saved deletion removes the row from the visible list only after the repository call succeeds. A failed delete keeps the item visible. The undo action remains available for 10 seconds. A failed restore keeps the deleted item and undo action visible. A successful note save or note delete returns to the prior screen. A failed note save keeps the draft in the editor. The source Saved note route omits the translation parameter. The fixture keeps `web-ce` passage identity. The native route must preserve the selected edition under the approved contract.
+
+## JavaScript trim probes
+
+The generator also records two source-only edge cases. JavaScript `String.trim()` removes U+FEFF, so a BOM-only value deletes the note. It does not remove U+0085, so a NEL-only value saves one note. Native note code must match the JavaScript result. Do not use Foundation trimming rules without checking these outputs.
+
+Run the follow-up into a new ignored output path:
+
+```sh
+bun scripts/native/source-fixtures/library/library-sequence.ts build/native-evidence/L10-L11/library-sequence-unicode-trim.json
+```
+
+Compare `snapshots.noteAfterBOMOnlySave` and `snapshots.noteAfterNELOnlySave`. The first value must be null. The second value must contain U+0085. The earlier action sequence remains in the same fixture output.

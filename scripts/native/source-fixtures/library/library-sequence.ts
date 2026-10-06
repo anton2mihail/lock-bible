@@ -131,6 +131,13 @@ try {
   snapshots.afterUndo = await all()
   snapshots.restoredHighlightRows = db.query("SELECT * FROM highlights ORDER BY verse_index").all()
 
+  const bomOnlyPassage = selection(30, 30)
+  await saveNote(adapter as never, bomOnlyPassage, "\uFEFF")
+  snapshots.noteAfterBOMOnlySave = db.query("SELECT * FROM notes WHERE start_index = ?").get(30) ?? null
+  const nextLineOnlyPassage = selection(31, 31)
+  await saveNote(adapter as never, nextLineOnlyPassage, "\u0085")
+  snapshots.noteAfterNELOnlySave = db.query("SELECT * FROM notes WHERE start_index = ?").get(31) ?? null
+
   const result = {
     formatVersion: 1,
     sourceGeneratedBy: "scripts/native/source-fixtures/library/library-sequence.ts",
@@ -157,6 +164,10 @@ try {
         startVerse: passage.startVerse, endVerse: passage.endVerse,
       })),
       noteInput: "  Keep this private note. \n ",
+      unicodeTrimProbes: [
+        { codePoint: "U+FEFF", input: "\uFEFF", expected: "empty note deletion" },
+        { codePoint: "U+0085", input: "\u0085", expected: "non-empty note save" },
+      ],
     },
     snapshots,
   }
