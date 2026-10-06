@@ -7,6 +7,8 @@ Current batch: `L06/works-content-build-03.log` passes target compilation with c
 Valid-library UI run 01 observes all four filter counts, existing note edit/save/delete, and bookmark deletion. The preserved database agrees with those actions. Undo lookup fails because a parent identifier replaces its leaf identifier. Main's source correction is present. Matching binary provenance and the fresh-seed Undo rerun remain required. See `reviews/L10-L11-valid-library-UI-review.md`. Note creation and non-WEB saved identity remain open.
 
 The common root layout now places NavigationStack and FlatTabBar as siblings. `saved-undo-root-layout-01.log` passes with Undo above the bar, hittable, and exact John 3:16 bookmark restoration. This bounded layout/restore scope is accepted. The complete seeded Saved journey and Reader/Works lower controls remain the next runtime checks. The notification views at `a7b2649` are source-reviewed for target inclusion; scheduling and notification runtime remain open.
+
+`valid-saved-crud-root-layout-01.log` passes the complete seeded Saved journey in 27.863 seconds. Four filters, existing note identity/edit/save/delete, bookmark deletion, and Undo are accepted. Product/installed hashes are independently checked. Final DB is schema1/integrityok with rows2/1/0. App PID is unrecorded. Note creation, non-WEB identity, expiry/failure behavior, and full visual parity remain open. Source now owns isolated L22 platform scheduling under `fe06276`; Main retains all shared app integration and simulator work. Reader spacing corrections and lower Reader/Works observations remain the next coherent checks.
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 
