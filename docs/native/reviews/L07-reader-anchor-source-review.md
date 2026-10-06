@@ -27,4 +27,10 @@ Keep blank-space hit behavior unchanged. Check an unselected anchor, Aa reflow, 
 
 ## Shared configuration
 
-At this review, app and widget code still use the literal `group.com.nrsv.verse`. The Debug entitlement uses the development group. Main must complete the shared configured App Group identifier before Debug widget continuity evidence. Release must keep the production group.
+At the initial review, app and widget code used the literal `group.com.nrsv.verse`. The Debug entitlement uses the development group. Main has now added `AppGroupIdentifier` to both Info plists. The project generator sets `APP_GROUP_IDENTIFIER` to `group.com.nrsv.verse.dev` in Debug and `group.com.nrsv.verse` in Release. Both code paths read the Info value. This closes the source configuration finding. Effective signed group access and widget preference agreement remain runtime evidence.
+
+## Follow-up source checkpoint
+
+Source committed the negative decoded-offset guard alone at `58e7c0b764a8d98b56e5445a39c912c639313b90`.
+
+Main has added chapter request identity to restore requests, same-chapter reflow guards, explicit programmatic restore state, stable candidate ordering, and width reflow capture in `sizeThatFits`. These changes address the original boundaries. The follow-up review found two final corrections: remove the old duplicate `best` declaration; and close the pending-anchor capture guards, no-target completion, and raw-offset task identity check across `Task.yield`. Main received these requests before the coherent Works/share build. They do not block independent feature evidence after the corrected target builds. Reader runtime acceptance remains open.
