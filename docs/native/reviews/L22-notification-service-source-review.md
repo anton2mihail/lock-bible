@@ -53,3 +53,11 @@ The new Toronto cases cover 02:30 during the spring transition and 01:30 during 
 Main will check enable, denial, time change, and disable for each feature. It will record actual pending request fields, unchanged-request preservation, imported Rosary ID behavior, unrelated request preservation, and concurrent refresh/save order. It will check partial scheduling failure and durable-save failure with rollback. It will also check one actual short DEBUG delivery and warm/cold response routing. Development delivery overrides must remain outside Release.
 
 Reader spacing, Verse Moment export, and lifecycle integration can proceed in the same target batch. No accepted Gate A check needs another run.
+
+## Simulator comparison source
+
+The DEBUG-only comparison helper is accepted at `3e909b15a1c2f715b15a8e35845f8f1d02c32a49`. Its SHA-256 is `d2bce2498efcd9a034157fd58bb4997925c709ca8f14fe479daaa538a7b03762`. The report requires exactly 25 passing observations. It compares 14 source calendar plans and 11 native service contracts.
+
+The corrected FIFO predicate checks ordered reads, the first pending-query completion before read 2, and each save commit before the next read. Partial-add failure checks exact initial pending/state preservation and zero commits. Denial checks two retained requests, nonempty committed state, and zero commits. This accepts helper source only. Main must run it inside the simulator with the exact fixture hash above. An injected center does not prove actual system permission, delivery, or full request round-trip preservation.
+
+Current Runtime integration uses the real clock and auto-updating zone. Its committed reader rejects uncertain state. Startup, foreground, active-hour, significant-time, and time-zone events request service refresh. The app delegate validates Daily and Rosary response routes and queues responses received before startup. These source boundaries are suitable for the next runtime batch. Their actual lifecycle and tap results remain open.
