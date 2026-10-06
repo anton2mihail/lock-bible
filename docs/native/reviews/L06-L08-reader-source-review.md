@@ -29,6 +29,7 @@ The current model now clears pending manifest IDs on Back and book selection. Ne
 | Trigger | Required result | Source and native file |
 | --- | --- | --- |
 | Reader opens a chapter | Use the source icon-only Back control. Keep its full accessibility label. The header must scroll with the chapter. | Source `ReaderHeader` in `src/screens/ReaderScreen.tsx`; native `ReaderView.swift` |
+| Reader or GoTo shows its heading | Use SpaceGrotesk-Bold at the source 36/44 base size. The native Lora title and 32-point chapter title differ. Keep companion Page titles on their separate source style. | `src/components/Text.tsx`, `src/theme/typography.ts`; native Reader and GoTo headings |
 | Previous or Next is shown | Include the target book and chapter. Include the edition attribution below navigation. | Source chapter navigation; native `ReaderView.swift` |
 | Chapter grid width changes | Wrap 52-point chips to available width. Use the source gaps and current marker. Do not force five columns. GoTo must not add visible chapter-count text absent from source. | `src/components/ChapterGrid.tsx`, `src/screens/GoToScreen.tsx`; native `ReaderView.swift`, `GoToView.swift` |
 | Back or GoTo opens from Psalm 149 | Retain the current chapter marker. Reveal that cell. Do not reveal the center of the whole grid. | Source currentChapter/ref/layout callbacks; native `ReaderScreenModel.swift`, `GoToView.swift` |
