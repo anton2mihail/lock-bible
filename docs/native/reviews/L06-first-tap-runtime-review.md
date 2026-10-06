@@ -24,3 +24,11 @@ UI04 places verse 10 inside the visible text area. The actual tap point is `(201
 The next verse 8 is above the viewport. The helper swipes up repeatedly and moves it to approximately `y = -3497`. It then attempts an infinite coordinate after a failed visible-rectangle assertion. This is a test setup fault. Main must scroll toward the target and return without tapping if the clipped rectangle is absent or nonfinite. Check the remaining verse 8 taps in a short probe before a full setup replay.
 
 UI03 also ended on Saved. It used `(201, 834.7)` because its Reader frame included the flat tab bar. The current helper clips above that bar. This correction produced the two successful UI04 text taps. No full Reader acceptance follows from this partial run.
+
+## First image review
+
+Sol viewed `reader-ui-04-attachments/006530A8-EEEB-4BDD-AFA4-4CF3E36FE5D9.png` against `L00/08-reader-john-1.png`. Both use light appearance and normal system text size. The current image includes the intentional missing-library status. It cannot establish the normal chapter's vertical spacing.
+
+The first John paragraphs have the same visible body font and line breaks. The header still needs source corrections. Its horizontal 20-point padding is nested inside the outer 24-point padding. Remove that duplicate inset so the chapter title aligns with the text at 24 points. Back and the title chevron use the source text color. Aa and Search use the accent color. Use the staged `App/Artwork/icons/caretLeft` source PNG variants at 24 points for Back.
+
+Show the exact selection hint when the committed `selectionHintDismissed` flag is false. Check its dismissal behavior with the full verse actions. Obtain a matched valid-library capture before normal visual acceptance. These changes do not block the short remaining range probe.
