@@ -2,9 +2,9 @@
 
 Date: 6 October 2026.
 Author: Source.
-Status: plan only. Source ran nothing on a phone. No result in this file is accepted. Sol reviews the evidence after the session.
+Status: plan only. Sol accepted it with seven fixes (`S02-physical-device-checklist-review.md`); this version applies them. Source ran nothing on a phone. No result in this file is accepted. Sol reviews the evidence after the session.
 
-This file is handoff step 11 and the S02 row of `Remaining-gate-runtime-order.md`. It collects every item that a review marked as needing a physical device. It groups them into one session for one iPhone. The core session takes about 100 minutes. Optional blocks add about 40 minutes.
+This file is handoff step 11 and the S02 row of `Remaining-gate-runtime-order.md`. It collects every item that a review marked as needing a physical device. It groups them into one session for one iPhone. The core session takes about 110 minutes of active work. Optional blocks add about 40 minutes. Book one 3-hour window for the core, the optional blocks, the passive waits, and the restore steps. Upload the TestFlight build the day before.
 
 Do not claim any item below from simulator images. Do not submit, upload, or publish anything in this session. Uploading a build to TestFlight is a separate user step (U4 in `L28-gate-e-checklist.md`).
 
@@ -33,14 +33,23 @@ No tool in this workspace can touch the phone. Claude has simulator tools (Simul
 ## 3. Before the session (not counted in the time)
 
 1. **Phone.** One iPhone on iOS 26.0 or later. Record the model, iOS version and build (Settings, General, About), and the time zone. Developer Mode on. Trusted by the Mac. Charged above 50 percent. Do Not Disturb and Focus modes off for the session.
-2. **Backup.** Make an encrypted Finder backup of the phone. The same-ID update (D03) cannot be undone. A TestFlight build cannot be replaced by an older build, and the Expo 1.5.0 app cannot be put back. If a spare phone with the live app and real data is available, use it. The user decides.
+2. **Spare phone or backup (safety).** Treat D03 as one-way. A return to the App Store build keeps the data container, but that path is not tested. The native-only state (`Application Support/John`) stays in the container. Rulings from Sol:
+   - **Preferred:** a spare iPhone with the live 1.5.0 (18) app, signed in to the same Apple account, with copied real-looking data.
+   - **If only the user's own phone exists:** an encrypted Finder backup is required before D03. It is not optional. Write the backup date in the session record. The user confirms in writing that he accepts the risk.
+   - **Build D** (`com.nrsv.verse.dev`) can live next to the live app or Build R. It has its own bundle ID, its own data container, and its own group (`group.com.nrsv.verse.dev`). It needs Developer Mode and a device that is registered in the team's development profile (automatic signing registers it). It cannot change the `com.nrsv.verse` data. Never install a build signed for development with the ID `com.nrsv.verse`.
 3. **Live app.** The phone has the live App Store app 1.5.0 (18), `com.nrsv.verse`, with some real data: a few saved items, a reader position, a novena in progress, and at least one old widget on the home screen. The old app's notification permission can be on or off. Record which.
-4. **Build R (Release, signed, same ID).** `com.nrsv.verse`, widget `com.nrsv.verse.widget`, group `group.com.nrsv.verse`, team `QZ44N522NQ`. Preferred source: a TestFlight build from the signed archive (`L28-gate-e-checklist.md` section 6; the user owns U1, U2, and U4). TestFlight processing can take 30 to 60 minutes after upload, so upload it the day before. Alternative: a development-signed Release install from Xcode over the live app. Source did not verify that iOS keeps the data in that case. Test it on a spare phone first. Record which source was used.
+4. **Build R (Release, signed, same ID).** `com.nrsv.verse`, widget `com.nrsv.verse.widget`, group `group.com.nrsv.verse`, team `QZ44N522NQ`. Signing rules (Sol):
+   - **TestFlight is required for the D03 claims.** It uses the distribution signature and the App Store profile (no `get-task-allow`). That is the signature class of the release. It is also the documented way to install over an App Store build and keep the data. The user owns U1, U2, and U4 (`L28-gate-e-checklist.md` section 6). Upload the build the day before, because processing can take 30 to 60 minutes.
+   - An **Ad Hoc** build (distribution certificate, Ad Hoc profile that lists the phone) is acceptable if the user does not want to upload yet. Label every result "Ad Hoc distribution signature".
+   - A **development-signed** Release install is acceptable only for D04 to D11 and D14, and only on a spare phone. It must never be used to claim D03 (signed update and widget continuity). Label every result "development signature".
+   Record which source was used.
 5. **Build D (Debug, signed, dev ID).** `com.nrsv.verse.dev`, widget `com.nrsv.verse.dev.widget`, group `group.com.nrsv.verse.dev`. Build for `iphoneos` with `-allowProvisioningUpdates DEVELOPMENT_TEAM=QZ44N522NQ`. It installs next to the live app and keeps its data. It has the DEBUG hooks D1 (`-L29MediaFailureURI`) and D2 (`-L29SharedProbeRelativePath`) and the sample audio URLs. It is needed only for the optional blocks D12 and D13. Never install Build D over `com.nrsv.verse`.
 6. **Mac.** Xcode 26.6. The phone appears in `xcrun devicectl list devices`. Record its device identifier (no personal data in the report). Make the folder `build/native-evidence/S02/session-01/` with the sub folders `video`, `photos`, `logs`, `probe`, `notes`.
 7. **Expected values.** On the Mac, compute the expected widget text for the session instant with `TZ=<zone> bun scripts/native/source-fixtures/step7/widget-expected.ts <instant> <zone> <edition> <scope> <interval>`. Run it again at each widget check (D10), because the verse slot depends on the real clock.
 8. **Package check.** Run `l28_inspect_package.py --stage export` on the build that goes on the phone, if the IPA is available. It must show no FAIL (see `L28-gate-e-checklist.md` section 4).
 9. **Sound.** A quiet room. Headphones (wired or Bluetooth) for D13 only.
+10. **Expected notice text.** Compute the expected Calendar title and body for the session date and for the set times, from the old source plan: `calendarNotificationPlan` in `src/services/companion/calendarNotifications.ts:30-51` with `TZ` set to the phone's time zone and `now` set to the session instant. The Calendar title is `readings?.title ?? celebration.title`. The body is "Today’s Gospel: <reference>. Open your daily readings." when the day has a Gospel, and "Take a moment with today’s Catholic calendar and readings." otherwise. The URL is `/daily?date=<yyyy-MM-dd>`. The Rosary request has the title "A quiet moment for the Rosary" and the URL `/pray/rosary` (`src/services/rosary/reminders.ts:122-129`). Write the expected values in `notes/expected-notices.md`. A short script for this does not exist yet. The existing generator `scripts/native/source-fixtures/notifications/notice-fixtures.ts` has the stubs (storage, Expo notifications, clock). Source writes `notice-expected.ts` on request. Do not use the L22 review values for another date.
+11. **Command test.** With the phone connected, run the exact `devicectl` commands of D12 once during the preparation (install, launch with arguments after `--`, copy). Fix any option change before the session day.
 
 ## 4. Evidence methods (common to all items)
 
@@ -49,7 +58,8 @@ No tool in this workspace can touch the phone. Claude has simulator tools (Simul
 | Screen recording | Control Center, Screen Recording. Long press the button and turn the microphone on when the item needs sound. Stop with the red status bar. Send the video to the Mac with AirDrop. File it in `video/`. |
 | Screenshot | Side button and volume up together. Send to the Mac with AirDrop. File in `photos/`. Name each file `D<item>-<step>.png`. |
 | Time stamp | Show the status-bar clock in every recording. Say or write the time at each event in `notes/session-log.md`. |
-| Live log (Mac) | Open Console.app. Select the phone in the left bar. Press Start. Type `process:John` in the search field. Save the selection to `logs/` after each item. For the Debug build, use `xcrun devicectl device process launch --device <id> --terminate-existing --console com.nrsv.verse.dev` to stream the app output. Check `xcrun devicectl device process launch --help` for the exact options on your Xcode. |
+| Live log (Mac) | Open Console.app. Select the phone in the left bar. Press Start. Type `process:John` in the search field. Save the selection to `logs/` after each item. Do not use `--console` with `devicectl` for the Debug build. With `--console`, `devicectl` waits until the app ends. Use Console.app instead. |
+| Crash files (Mac) | `xcrun devicectl device copy from --device <id> --domain-type systemCrashLogs --source <file name> --destination build/native-evidence/S02/session-01/logs/`. The Analytics Data list on the phone shows files only when the phone shares analytics, so use the Mac path first. |
 | Notification log | In Console.app, search `usernoted` and `John`. Save the lines around each delivery. |
 | sysdiagnose (only after a crash or hang) | Press both volume buttons and the side button together for about 1.5 seconds. Wait 10 minutes. On the phone open Settings, Privacy & Security, Analytics & Improvements, Analytics Data. Share the newest `sysdiagnose_` file to the Mac. File in `logs/`. It is large. Do not collect it for a pass. |
 | App files (Debug build only) | `xcrun devicectl device copy from --device <id> --domain-type appDataContainer --domain-identifier com.nrsv.verse.dev --source <path> --destination build/native-evidence/S02/session-01/probe/`. This works only for a development-signed build. It does not work for the TestFlight build. |
@@ -71,15 +81,15 @@ The time counts only the active work. Waits for notices overlap with other block
 | 5 | Share text and image. Open the external Rosary link | D06, D11 | R | user | 11 |
 | 6 | Check that Confession notes clear | D07 | R | user | 5 |
 | 7 | Lock the phone. Watch the two banners. Tap one with the app in the background (warm tap) | D04 (deliver) | R | user | 6 |
-| 8 | Set a Rosary notice again, quit the app, wait, tap the banner (cold tap). Add widgets while you wait | D05, D10 | R | user | 14 |
+| 8 | Set a Rosary notice again, quit the app, wait, tap the banner (cold tap). Add widgets while you wait | D05, D10 | R | user | 18 |
 | 9 | Largest text sizes | D08 | R | user | 8 |
 | 10 | VoiceOver speech and Reduce Motion | D09 | R | user | 20 |
-| 11 | Wrap up: move the evidence, write the notes | D15 | none | user, Mac helper | 6 |
-| | **Core total** | | | | **100** |
+| 11 | Restore the settings. Move the evidence. Write the notes | D15 | none | user, Mac helper | 10 |
+| | **Core total** | | | | **108** |
 | 12 | Optional: App Group probe on the signed Debug build | D12 | D | user, Mac helper | 12 |
 | 13 | Optional: media lifecycle and audio routes | D13 | D | user | 18 |
 | 14 | Conditional: Airplane Mode offline proof, only if M1 failed | D14 | R | user | 10 |
-| | **With all optional blocks** | | | | **140** |
+| | **With all optional blocks** | | | | **148** |
 
 Order matters. D03 must come first. It changes the app and the data. D04 (set) must come before D06 to D07, so the delivery falls in the waiting time. D08 and D09 come last, because they change the system settings.
 
@@ -106,9 +116,10 @@ Reason: the update test needs a "before" record (L28 section 9.4; plan item 5).
 1. Open the live app 1.5.0 (18). Photograph Today, Read (note the saved chapter), Saved (list the rows), Pray (note any novena in progress), and Settings (edition, text size).
 2. Home screen: screenshot every old widget instance (home and lock screen). Note the kind, size, and page. The old kinds are `VerseWidget`, `VerseTimerWidget`, and `DailyReadingWidget`. Record what text each one shows and the time.
 3. If the app has no saved items, add one bookmark and one note now with test words, so D03 can check them.
-4. Close the app from the app switcher.
+4. Notices: Settings, Calendar notifications: record on or off and the time. Pray, Rosary, Reminder: record on or off, daily or weekly, the weekday, and the time. Screenshot both screens. This is the "before" value for the imported Rosary reminder (`L22` open item 1) and the restore value for D15. Also record the Settings values that later steps change: text size, verse pool, and verse rotation.
+5. Close the app from the app switcher.
 
-Evidence: screenshots in `photos/D02-*.png`, and `notes/D02-before.md` with the saved rows, the reader position, and the widget list.
+Evidence: screenshots in `photos/D02-*.png`, and `notes/D02-before.md` with the saved rows, the reader position, the widget list, the Rosary reminder (day and time), the Calendar notice setting, and the Settings values.
 Pass: the record is complete. A missing old widget is a limit. Write it down. It means D03 cannot test continuity for that widget.
 
 ### D03. Same-ID signed update, imported data, and widget continuity (12 min, user, Mac helper)
@@ -123,7 +134,7 @@ Build: R, over the live app. Do not delete the live app.
 4. Go to the home screen and the lock screen. Check each old widget instance from D02. It must still be there. It must show text and not "unable to load". The text must equal the `widget-expected.ts` value for that instant, edition, scope, and interval. The Mac helper computes it.
 5. Tap each widget once. The Verse widget opens the Reader at the verse. The Daily Reading widget opens that day's readings. The Countdown widget has no link and opens the app.
 6. In the app, change Settings, Verse pool (scope) to Old Testament. Return to the home screen. Check that the widget changes to a verse from the Old Testament pool within about 2 minutes. Change it back. This shows that the app and the widget share the signed group `group.com.nrsv.verse` on the device. If the widget does not change within 5 minutes, remove it and add it again, and write what happened.
-7. Settings, Notifications: if the live app had a Rosary reminder, check that it is still on with the same time (this is the imported legacy ID, `L22` open item 1). Do not change it yet.
+7. Pray, Rosary, Reminder: if D02 recorded a Rosary reminder, record its state after the update. It must be on with the same frequency, weekday, and time. This is the imported legacy reminder (`L22` open item 1). Screenshot it. Do not change it yet. D04 replaces it, so its legacy request ID is gone after D04. See the delivery rule in D04.
 
 Evidence: screenshots of each step, a recording of steps 3 to 6 (about 3 minutes, no sound), the Mac helper's expected values, and a Console.app extract for the first launch.
 Pass: the data in step 3 equals the D02 record; each old widget instance survives and renders the expected text; the taps open the right destination; the scope change shows in the widget. Fail if any saved item is missing or duplicated, or a widget instance is gone.
@@ -135,6 +146,8 @@ Reason: `L22` open items 3, 4, and 9; plan item 5; Step 7 plan 2.5. The simulato
 
 Build: R. No DEBUG hook is needed. The delivery uses a time a few minutes ahead.
 
+Imported reminder (L22 open item 1): if the imported Rosary reminder from D02 and D03 has a next delivery inside the session window, do not change the Rosary reminder yet. Lock the phone, wait for that delivery, and record the banner, its time, and the tap result. This is device evidence for the imported request. If its next delivery is outside the window, write: "imported request: setting kept; delivery not observed". The ID match stays with L27 run B.
+
 Set (block 4):
 1. Settings in John 1:1, Calendar notifications. Turn on. If the permission prompt appears, allow it. Set the delivery time to the current time plus 10 minutes. Save. A saved message must show.
 2. Pray, Rosary, Reminder. Turn on. Choose Daily. Set the time to the current time plus 10 minutes. Save.
@@ -143,13 +156,13 @@ Set (block 4):
 
 Deliver (block 7):
 5. Two minutes before the set time, lock the phone. Leave it on the lock screen. Record the screen with the status clock visible.
-6. At the set time, check that two banners arrive on the lock screen. Check the title and body. The Calendar banner shows the day's celebration as the title and "Today's Gospel: <reference>. Open your daily readings." as the body when the day has a Gospel. The Rosary banner shows "A quiet moment for the Rosary".
+6. At the set time, check that two banners arrive on the lock screen. Check the title and body against `notes/expected-notices.md` (prerequisite 10). The expected Calendar title and body come from `calendarNotificationPlan` for the session date. The expected Rosary banner is "A quiet moment for the Rosary".
 7. Unlock with Face ID or the passcode through the Calendar banner (tap it). This is the warm tap, because the app was in the background. The app must open the daily readings for today's date.
 8. Press Home. Open the notification list. Find the Rosary banner. Tap it. The app must open the Rosary home.
 9. Settings, Notifications, John 1:1: screenshot the banner style and the sound setting.
 
 Evidence: recording of steps 5 to 8, screenshots, the Console.app extract with `usernoted` and `John` lines for the two minutes around the delivery.
-Pass: both banners arrive within 1 minute of the set time; the text equals the source (`reviews/L22-positive-notice-runtime-20261006.md`); each tap opens the stated destination; after the tap, Back returns to a normal tab. Fail if a banner is missing, late by more than 1 minute, or opens the wrong screen.
+Pass: both banners arrive within 1 minute of the set time; the title and body equal the values computed for the session date from `calendarNotificationPlan` (`notes/expected-notices.md`); each tap opens the stated destination; after the tap, Back returns to a normal tab. Fail if a banner is missing, late by more than 1 minute, or opens the wrong screen.
 Limit: this proves two deliveries and two warm taps. It does not prove all 30 calendar notices, the daily rhythm over days, or a real DST change.
 
 ### D05. Cold tap (6 min, user; overlaps D10)
@@ -158,13 +171,13 @@ Reason: `L22` open item 3. A cold tap launches the app from the notification.
 
 1. Set the Rosary reminder (daily) to the current time plus 8 minutes. Save. Screenshot.
 2. Open the app switcher and close John 1:1 by swiping it up. Check that it is gone from the switcher.
-3. Lock the phone. At the set time, check the banner arrives. Tap it.
+3. Lock the phone. At the set time, check the banner arrives and that its title and body equal `notes/expected-notices.md`. Tap it.
 4. The app must launch straight to the Rosary home. Count the seconds from the tap to the Rosary home.
 5. Back must return to Today or the Pray tab without a blank screen.
 
 Evidence: recording, screenshot, log extract.
-Pass: the banner arrives within 1 minute; the cold launch shows the Rosary home with no wrong screen between; Back works. The launch time is an observation. It is not a budget.
-Optional follow-up with no session time: the Calendar notice repeats the next morning at the set time. If the app is closed, tap it and record the result.
+Pass: the banner arrives within 1 minute with the expected text; the cold launch shows the Rosary home with no wrong screen between; Back works. The launch time is an observation. It is not a budget.
+Optional follow-up with no session time: the Calendar notice repeats the next morning at the set time. If the app is closed, tap it and record the result. Compute the expected text for that date first (`calendarNotificationPlan` for the next day, prerequisite 10).
 
 ### D06. Native sharing (8 min, user)
 
@@ -172,16 +185,16 @@ Reason: plan item 9; Step 7 plan section 4 item 4 and item 8. The simulator open
 
 Build: R.
 
-1. Reader, John 1:1, select verse 1, Create card. Choose the ivory background. Start a stopwatch when the preview shows. Share the image to Messages (send it to yourself) and to Save Image. Open the saved image in Photos. Check the pixel size (Photos, Info) is 1080 by 1440.
+1. Reader, John 1:1, select verse 1, Create card. Choose the ivory background. Start a stopwatch when the preview shows. Share the image to Messages (send it to yourself) and to Save Image. Open the saved image in Photos. Check the pixel size (Photos, Info) is 1080 by 1440. Also share it once by AirDrop to the Mac (a common real target) and check that it opens.
 2. Repeat with the plum background and the Share to Files target (Save to Files).
 3. Share text instead: share the text to Messages (to yourself). Check the text equals `<text>`, a blank line, `<reference> (<edition>)`, and `John 1:1 · Scripture & Prayer`.
-4. Long card: Psalm 2, select verses 1 to 12, create a card. Share the image to Save Image. The image must be 1080 by 4171 and contain all 12 verses and the right reference and edition. Note how long the preview takes. Watch for a slow screen, heat, or a crash.
+4. Long card: Psalm 2, select verses 1 to 12, create a card. Share the image to Save Image. The image width must be exactly 1080. It must contain all 12 verses and the right reference and edition. The height depends on the phone's width (`renderer.scale = 1080 / previewWidth`, `ScriptureCardView.swift:130`). The value 1080 by 4171 was measured on a 402-point iPhone 17 Pro. Record the phone's screen width in points (Display Zoom changes it). Compare the height with 4171 only on a 402-point phone. Note how long the preview takes. Watch for a slow screen, heat, or a crash.
 5. Verse Moment (Today, Verse & lock screen widget): Share. Check the text equals `“<text>”` then `— <reference> (<abbreviation>)`.
 6. Copy: tap Copy on a selection. Paste in Notes. Check the exact text.
 7. Check that no crash or "low memory" restart happened (Settings, Privacy & Security, Analytics & Improvements, Analytics Data: look for a new `JetsamEvent` or `John` crash file; screenshot the list).
 
 Evidence: recording, the saved images (AirDrop to the Mac, `photos/`), the pixel sizes, the Analytics Data screenshot.
-Pass: every share target receives the right content; the image sizes are exact; the long card completes without a crash or a restart; the pasted text is exact. The card renderer memory and heat are observations only. Report if the phone was warm or the preview took longer than 10 seconds.
+Pass: every share target receives the right content; the short card is exactly 1080 by 1440; the long card has width 1080, all 12 verses, and the right reference and edition (height 4171 only on a 402-point phone); the long card completes without a crash or a restart; the pasted text is exact. The card renderer memory and heat are observations only. Report if the phone was warm or the preview took longer than 10 seconds.
 
 ### D07. Lifecycle clearing: Confession notes (5 min, user)
 
@@ -241,21 +254,26 @@ Reduce Motion (3 min):
 Evidence: the recording with captions and sound; `notes/D09-voiceover.md` with a table of screen, spoken text, and defect.
 Pass: no control without a name or role; selected states are spoken; the Reader verse-by-verse behavior holds; no crash. Each defect goes to Sol with the recording time. The old app's speech is the reference. If the old app is gone from the phone, use the source labels in `src/`.
 
-### D10. Lock-screen and home-screen widgets, taps, and refresh (8 min, user, plus passive watching)
+### D10. Lock-screen and home-screen widgets, taps, and refresh (12 min, user, plus passive watching)
 
 Reason: Step 7 plan W1, W2, W3, W6; `L12-widget-source-review.md`. The simulator cannot edit the lock screen and cannot show the real refresh budget.
 
 Build: R. Do it while you wait in D05.
 
-1. Lock screen: press and hold, Customize, choose Lock Screen. Add these: Daily Verse (rectangular), Daily Reading (rectangular), Verse Countdown (circular), Daily Verse (inline). Screenshot the lock screen.
+1. Lock screen. Cover every accessory family that `JohnWidget.swift` declares: Daily Verse (rectangular, inline, circular), Verse Countdown (rectangular, inline, circular), and Daily Reading (rectangular, inline). A lock screen holds one inline widget and a few slots, so use several lock screens (press and hold, Customize, add a new lock screen) or several rounds:
+   - Lock screen A: Daily Verse inline, Daily Verse rectangular.
+   - Lock screen B: Daily Reading inline, Daily Reading rectangular.
+   - Lock screen C: Verse Countdown inline, Verse Countdown rectangular.
+   - Lock screen D: Daily Verse circular and Verse Countdown circular.
+   Screenshot each lock screen. Record each family as "rendered and tapped" or "not reachable", with the reason.
 2. Home screen: add Daily Verse small and medium, Daily Reading small and medium, Verse Countdown small. Screenshot the home screen.
 3. For each instance, compare the text with `widget-expected.ts` for the capture instant. Use the Mac helper.
 4. Tap each widget that has a link. The Verse widget opens the Reader at the verse (`nrsv://read?book=…&chapter=…&verse=…`). The Daily Reading widget opens `nrsv://daily?date=<today>`. The lock-screen tap needs an unlock. Record the result.
 5. Refresh budget: in the app set Settings, Verse rotation to every 10 minutes. Take a screenshot of the widget now. Take another at each 10-minute boundary for the next 30 minutes, whenever you pass the phone. Note the time of each change. WidgetKit decides the real reload time. This is an observation. It is not a pass limit.
-6. Set the rotation back to its previous value.
+6. Set the rotation back to the value recorded in D02. Switch back to the normal lock screen.
 
 Evidence: the screenshots with time stamps, the Mac helper's expected values, a recording of the taps.
-Pass: each instance renders the expected text for its capture instant; the taps open the stated destination; the widget changes to a new verse after a boundary at least once in 30 minutes. Fail if a widget shows "unable to load", or its text differs from the expected value without a time-slot explanation. Report any delay of more than 15 minutes after a boundary to Sol as an observation.
+Pass: every declared lock-screen family is rendered or has a written reason; each instance renders the expected text for its capture instant; the taps open the stated destination; the widget changes to a new verse after a boundary at least once in 30 minutes. Fail if a widget shows "unable to load", or its text differs from the expected value without a time-slot explanation. Report any delay of more than 15 minutes after a boundary to Sol as an observation.
 
 ### D11. External Rosary link (3 min, user)
 
@@ -278,9 +296,11 @@ Build: D (`com.nrsv.verse.dev`). It installs next to the live app. It needs the 
 
 1. On the Mac: `xcrun devicectl device install app --device <id> <path to Build D John.app>`.
 2. On the phone, add one dev Daily Verse widget to the home screen. Wait 2 minutes for it to render.
-3. On the Mac, run the first probe: `xcrun devicectl device process launch --device <id> --terminate-existing --console com.nrsv.verse.dev -L29SharedProbeRelativePath probe-1.json`. Wait for the app to start.
-4. Copy the record: `xcrun devicectl device copy from --device <id> --domain-type appDataContainer --domain-identifier com.nrsv.verse.dev --source Documents/probe-1.json --destination build/native-evidence/S02/session-01/probe/`.
-5. Wait 2 minutes. Change a dev setting (Verse pool) on the phone. Wait 1 minute. Run the probe again with `probe-2.json`. Copy it.
+3. On the Mac, run the first probe. Put the app arguments after `--`, so `devicectl` does not read them as its own options. Do not use `--console`:
+   `xcrun devicectl device process launch --device <id> --terminate-existing com.nrsv.verse.dev -- -L29SharedProbeRelativePath probe-1.json`
+   Wait 10 seconds.
+4. Copy the app record: `xcrun devicectl device copy from --device <id> --domain-type appDataContainer --domain-identifier com.nrsv.verse.dev --source Documents/probe-1.json --destination build/native-evidence/S02/session-01/probe/`. Copy the widget's own probe file from the group container: `xcrun devicectl device copy from --device <id> --domain-type appGroupDataContainer --domain-identifier group.com.nrsv.verse.dev --source l29-widget-probe.json --destination build/native-evidence/S02/session-01/probe/`. If a crash happens, copy the files with `--domain-type systemCrashLogs`.
+5. Wait 2 minutes. Change a dev setting (Verse pool) on the phone. Wait 1 minute. Run the probe again with `probe-2.json` (same command, new file name). Wait 10 seconds. Copy both files again (rename the widget file copy to `l29-widget-probe-2.json` first).
 6. Decode both files on the Mac. Hash them.
 
 Evidence: both JSON files, the command output, the hashes, and the screenshot of the dev widget.
@@ -319,13 +339,25 @@ Build: R.
 Evidence: recording with the Airplane Mode status icon visible.
 Pass: every core journey works with no network and no error about the network. Report timings as observations.
 
-### D15. Wrap up (6 min, user and Mac helper)
+### D15. Restore and wrap up (10 min, user and Mac helper)
 
-1. Send all media to the Mac. File it in `build/native-evidence/S02/session-01/`.
-2. Hash every file. Write `notes/hashes.txt`.
-3. Fill the session record (section 8).
-4. Do not delete anything from the phone until Sol has reviewed the evidence.
-5. Remove Build D from the phone if you installed it. Do not remove Build R.
+Restore first (the user does this on the phone before leaving):
+1. Restore the Calendar notice and the Rosary reminder to the values recorded in D02 (on or off, time, daily or weekly, weekday). D04 and D05 replaced them.
+2. Restore the app text size that D08 step 3 changed (Extra large) to the D02 value. Check that the system text size is the default.
+3. Restore the verse pool (D03) and the verse rotation (D10) to the D02 values, if a step failed before its own restore.
+4. Optional (user choice): remove the D02 test bookmark and note.
+5. Turn off VoiceOver, Reduce Motion, and Airplane Mode if they are on. Remove the extra lock screens and test widgets if you do not want them.
+6. Screenshot the restored Settings, Notifications, and Rosary reminder screens.
+
+Wrap up:
+7. Send all media to the Mac. File it in `build/native-evidence/S02/session-01/`.
+8. Hash every file. Write `notes/hashes.txt`.
+9. Fill the session record (section 8).
+10. Do not delete anything from the phone until Sol has reviewed the evidence.
+11. Remove Build D from the phone if you installed it. Do not remove Build R.
+
+Evidence: the restored-settings screenshots and `notes/hashes.txt`.
+Pass: the restored values equal the D02 record.
 
 ## 7. Items that stay outside this session
 
@@ -373,23 +405,24 @@ Statement: These results are from one phone with one iOS version and one network
 
 ## 9. Risks
 
-1. **The same-ID update cannot be undone.** After D03 the phone has the native app. Use a spare phone or a backup. This is the largest risk.
-2. **TestFlight timing.** Processing can take an hour. Upload the day before.
+1. **Same-ID update (largest risk).** A return to the App Store build keeps the container, but it is not tested. Treat D03 as one-way. A spare phone is preferred. If only the user's phone exists, an encrypted backup is required before D03, and the user accepts the risk in writing.
+2. **TestFlight timing and rules.** Processing can take an hour. Upload the day before. TestFlight is required for the D03 claims. Ad Hoc needs a label. A development signature is only for the other items, on a spare phone.
 3. **Notification permission.** If the live app already allowed notices, no prompt shows. The Allow prompt on the device then has no evidence. The simulator already proves it.
 4. **Real data.** Use test words only in new notes and intentions. Do not photograph personal data. Crop or blur before sharing the evidence.
 5. **Widget timing.** WidgetKit can delay a reload. A late widget is an observation, not a fail, unless it never changes.
 6. **Debug build.** Build D shows development controls. Do not use it for the Release checks. Do not use its results for Release behavior.
-7. **Dev-signed install over the live app.** Source did not verify that iOS keeps the data. Test it on a spare phone first, or use TestFlight.
-8. **Commands.** The `devicectl` options in this file come from Source's knowledge of Xcode 26. Source did not run them. Check `--help` before the session. The Mac helper fixes any change.
+7. **Development-signed install over the live app.** Do not use it for D03. Use it only for D04 to D11 and D14 on a spare phone, and label the results "development signature".
+8. **Commands.** Sol checked the `devicectl` syntax against the help pages of `devicectl` 518.33. Nobody has run the commands with a phone. Run them once during the preparation (prerequisite 11).
+9. **Personal data in evidence.** Do not record the phone name if it contains a person's name. Use the `devicectl` device identifier only.
 
 ## 10. Time estimate
 
 | Part | Minutes |
 | --- | --- |
-| Core session (D01 to D11 and D15) | 100 |
+| Core session (D01 to D11 and D15) | 108 |
 | Optional: App Group probe (D12) | 12 |
 | Optional: media lifecycle (D13) | 18 |
 | Conditional: Airplane Mode (D14) | 10 |
-| Total with all optional and conditional blocks | 140 |
+| Total with all optional and conditional blocks | 148 |
 
-The core time includes waits that overlap with other work. A first-time user needs about 20 percent more.
+The core time includes waits that overlap with other work. A first-time user needs about 20 percent more. The D10 refresh watch needs a 30-minute passive window. Book one 3-hour window for the core, the optional blocks, the passive waits, and the restore steps. Keep the TestFlight upload on the day before.
