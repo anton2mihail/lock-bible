@@ -123,13 +123,13 @@ final class ContentFlowUITests: XCTestCase {
             let card = button(containing: cardTitle, in: app)
             XCTAssertTrue(card.waitForExistence(timeout: 8), "Missing Rosary set: \(cardTitle)")
             tapWhenReady(card, in: app)
-            XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", guideTitle)).firstMatch.waitForExistence(timeout: 8))
+            XCTAssertTrue(app.staticTexts[guideTitle].waitForExistence(timeout: 8))
             tapWhenReady(app.buttons["Close Rosary guide"], in: app)
         }
         let sevenSorrows = button(containing: "The Seven Sorrows of Mary", in: app)
         XCTAssertTrue(sevenSorrows.waitForExistence(timeout: 8))
         tapWhenReady(sevenSorrows, in: app)
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Seven Sorrows")).firstMatch.waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Seven Sorrows"].waitForExistence(timeout: 8))
         tapWhenReady(app.buttons["Close Rosary guide"], in: app)
 
         app.buttons["tab-today"].tap()
