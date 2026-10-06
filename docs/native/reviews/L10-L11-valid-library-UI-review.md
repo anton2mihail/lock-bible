@@ -15,3 +15,11 @@ The Main source identifier audit found leaf control/status identifiers and named
 Before bounded runtime acceptance, record matching product and installed executable/dylib hashes and the relevant source hashes. The rerun must prove that Undo restores the deleted exact bookmark row. A count of two alone is insufficient. Keep note creation, failed action behavior, ten-second expiry, non-WEB edition identity, complete visual parity, and remaining Reader/Aa checks open. This run edits an existing note; it does not create a new note.
 
 Gate A remains accepted. Gate B remains open. No new migration run is required for this UI correction.
+
+## Run 02 diagnosis
+
+Reviewed on 6 October 2026. App PID is 63341. The leaf identifier is now exposed, but Undo produces hit point `{-1, -1}`. The later screen and hierarchy show Settings. Undo remains unaccepted.
+
+The note-delete screenshot at 22.36 seconds shows the sheet partway down during dismissal. The deletion tap starts at 21.61 seconds. The log then confirms Bookmarks selected and two rows at 23.04–23.17 seconds. It reaches the John 3:16 Delete action at 24.42 seconds. This evidence does not establish a sheet that stays open at the later Undo tap at 25.94 seconds.
+
+The Boolean sheet binding supplies `SavedNoteEditor`. Its success callbacks reload and call `dismiss()`. Add bounded waits for the editor to disappear and the next control to become hittable. These waits are not a proven fix for the Undo position. Before another full run, perform a short delete/Undo check. Record the actual Undo frame, hittability, tab-bar frames, and screenshot. Check the nested bottom safe-area insets in Saved and the root. If the banner overlaps the tab bar, reserve layout height above the bar. Do not tap a stale or invalid coordinate.

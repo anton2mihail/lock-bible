@@ -41,3 +41,9 @@ Use a valid schema-1 library for note create, edit, delete, and undo. Confirm ea
 Keep the short Reader proof in this batch. The previous verse-8 union frame partly overlapped the viewport, while its owned word was outside the visible text area. Scroll from an owned glyph or word rectangle. Require its center inside the viewport with a margin. Do not tap a fraction of the union frame. Do not change product blank-space hit behavior. The required sequence remains `10,12,8,8,8`. Normal valid-library John, Psalm, Song, and Aa comparisons remain open.
 
 Gate A stays accepted. Gates B, C, and D remain open. All 29 route comparisons remain required.
+
+## Source correction commit
+
+`8ddb2dc` contains 25 isolated content, Works, media, and Settings files. It excludes Main integration and Core. The lifecycle, native video controls, catalog validation, initial announcement, appearance reflow, and exit feedback changes are present. Source parse passes. The current correction commit still needs target compilation and simulator evidence.
+
+The remaining narrow findings are a validity guard before media foreground activation, first-episode fallback on invalid route changes, intrinsic wrapping Settings choices instead of equal-width grid cells, and removal of added media count/scaling styles. Main still needs to replace the old Settings root after its notification callback is available. Notifications remain open.
