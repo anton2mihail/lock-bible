@@ -169,3 +169,56 @@ Isolated reseed is required in these cases:
 3. Build one coherent target. Record source, app, test, and installed hashes.
 4. Follow the seeding preconditions in `L25-capture-fixture-review.md`, with the tool hash from this review, and the three rulings above.
 5. The first baseline route series is also a selector proof (G11). Treat a baseline selector failure as a helper fault. Do not count that pair.
+
+## Old-app fault fixes re-check (route series B1)
+
+Date: 6 October 2026. Sol read the diff of `AllRouteCaptureUITests.swift` (`8217aa641090c1f3e9c5503a910dd2ac83d19f03e1f1592ce5dae3bc3be2792d`) and `AllRouteCapture-README.md` (`ec748d7c1578b0c1e41272218c5872d18624f080336ae5f8fda892cd1d9f9f8c`) against HEAD `8938ec6`. The diff includes Main's earlier timeout increases. Sol ran no test.
+
+**Native selectors: unchanged.** The native branches keep their identifiers and queries. Native behavior changes in two ways only:
+
+- Longer waits (8–15 s to 30 s).
+- One Settings-tab retry when `settings-title` does not appear in 10 s. A second tap on the selected tab returns to the Settings root. It cannot change the captured screen. It is logged as `L25_RETRY`.
+
+Both are accepted.
+
+| Change | Result |
+| --- | --- |
+| Settings title wait and one retry | Accepted. Old title `Settings` (`SettingsScreen.tsx:72`); native `settings-title`. |
+| Route 4 `CONTAINS` (old app only) | Accepted. The visible title is part of a longer card label. |
+| Route 5 exact `radio button, checked` on the `Other` element | Accepted. Exact equality; the `unchecked` trap stays closed. |
+| Route 20 | Accepted. Old row title "Saints, feasts & daily readings" (`SettingsScreen.tsx:150–153`). Both apps show the destination title "A day in the Church": old `CalendarNotificationsScreen.tsx:43`, native `CalendarNotificationsView.swift:34` (`ContentPage(title: "A day in the Church", eyebrow: "Calendar notifications")`). |
+| Old-app 90 s tab-bar wait after launch | Accepted. It waits; it does not change state. |
+
+### Ruling (a): "Continue reading" as the old-app entry to John 1
+
+**Accepted, with required fix 1.** Ruling 1 requires the same ordered methods, the same environment, and the same method status. It does not require the same control path inside a method. Each adapter already uses its own selectors.
+
+The semantics differ in one way:
+
+- The old control calls `openPassage(book, chapter, { scrollY: savedLocation.scrollY })` (`ReaderScreen.tsx:354–357`). It restores the saved scroll offset.
+- The native series opens John 1 from the chapter grid at its natural top.
+
+With the fixture (John 1, `scrollY` 0), both open at the top. Later in a series, the old saved offset can change. The Go To and Search images (routes 6 and 7) show the Reader behind a sheet. Routes 8, 13, and 19 need verse 1 in view. So the pair is valid only when the old Reader opens at the natural top. Both paths write the Reader location in the same way, so the saved-location rule does not change.
+
+### Ruling (b): coordinate tap after "visible but not hittable"
+
+**Accepted for the old app only, with required fix 2.** The fallback is not limited to route 25. `baselineTap` uses it for every old-app tap.
+
+It is acceptable for three reasons:
+
+- The element must exist, be inside the scroll viewport, and stay not hittable for 5 s.
+- The tap goes to the center of the element's own frame.
+- Each route still asserts its exact destination after the tap, so a tap that lands elsewhere fails the route.
+
+It is evidence of the old app's visible control only. It is not evidence about the hit-testing of that control. It never applies to the native app.
+
+### Required fixes
+
+1. **`openJohnOne`, old-app "Continue reading" path.** After `John 1` appears, confirm the natural top: the first verse of John 1 (`Verse 1`, or the first paragraph text that starts with "1 In the beginning") must be hittable inside the top half of the scroll viewport. If it is not, go back to the book list and use the chapter-grid path. Log `L25_OPEN_JOHN1 baseline path=chapter-grid reason=not-at-top`. Record the path that was used (`continue-reading` or `chapter-grid`) in the route manifest, for example `extra["baselineOpenJohnPath"]`, not only in the log.
+
+2. **Coordinate fallback labeling.**
+   - Store each coordinate tap in the active capture context: element label, frame, and route.
+   - Write it to the manifest as `baselineCoordinateTaps` (an empty list when none).
+   - Set `routeStatus` to `passed-with-baseline-coordinate-tap` when the list is not empty.
+   - State in `AllRouteCapture-README.md` that the fallback applies to every old-app tap, not only route 25, and that it never applies to the native app.
+   - A pair whose old capture has a coordinate tap is valid only when its destination assertion passed. Sol reviews each such pair when it reviews the images.

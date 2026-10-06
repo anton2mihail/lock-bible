@@ -52,7 +52,7 @@ Each method name ends in the route number from `docs/native/inventory/route-stat
 | Test | Route | Entry path |
 |---|---|---|
 | `testL25Route01Today` | `/` | Today tab |
-| `testL25Route02Reader` | `/read` | Read tab; seed identifies JHN 1 |
+| `testL25Route02Reader` | `/read` | Read tab; seed identifies JHN 1. The old app opens John 1 with its visible `Continue reading John chapter 1` button |
 | `testL25Route03Saved` | `/saved` | Saved tab |
 | `testL25Route04PrayerHome` | `/pray` | Pray tab |
 | `testL25Route05Settings` | `/settings` | Settings tab; set and verify the common preference profile |
@@ -70,7 +70,7 @@ Each method name ends in the route number from `docs/native/inventory/route-stat
 | `testL25Route17TeachingDetail` | `/teaching?id=…` | Teaching library, then The Eucharist (`eucharist`) |
 | `testL25Route18Confession` | `/confession` | Today, then Prepare for Confession |
 | `testL25Route19ScriptureCard` | `/share-card` | Read JHN 1:1, select verse 1, then Share Scripture card |
-| `testL25Route20CalendarNotifications` | `/calendar-notifications` | Settings, then Calendar notifications |
+| `testL25Route20CalendarNotifications` | `/calendar-notifications` | Settings, then the Calendar notifications row (old app row title: `Saints, feasts & daily readings`) |
 | `testL25Route21NovenaDetail` | `/pray/[id]` | Pray, then St. Padre Pio Novena (`st-padre-pio`) |
 | `testL25Route22RosaryHome` | `/pray/rosary` | Pray, then Pray the Rosary |
 | `testL25Route23RosaryGuide` | `/pray/rosary-guide?set=…` | Rosary home, then the named Joyful set |
@@ -125,3 +125,26 @@ Three methods run after the matched initial images exist. Each one skips unless 
 
 The old app is portrait-only, so these supplements have no baseline pair. Native `Info.plist` allows landscape. The helper restores portrait in a teardown block.
 
+
+## Baseline selector rules (route series B1 fixes)
+
+The first old-app route series passed 14 of 29 routes. The 15 failures came from baseline selector and scroll faults. Each rule below cites the old source. The native selectors did not change.
+
+| Routes | Fault | Rule now |
+|---|---|---|
+| 2, 6, 7, 8, 13, 26, 28, 29 | `openJohnOne` could not scroll the virtualized Read book list to `John, 21 chapters`. | The old Read screen shows a `Continue reading` button with the label `Continue reading <book> chapter <n>` (`src/screens/ReaderScreen.tsx:607-620`). `continueReading` opens that chapter at the saved `scrollY` (`ReaderScreen.tsx:354-357`). The fixture saves John 1 with `scrollY` 0 (`L25-capture-fixture-alignment.md`). The helper taps the exact label `Continue reading John chapter 1` and checks that the Reader title button is `John 1`. It then checks the natural top: the first verse (button label `Verse 1. <text>`, `src/components/ChapterText.tsx:308`, or a paragraph that starts with `1 In the beginning`) must be hittable in the top half of the visible scroll area. If it is not, the helper goes back to the book list and uses the chapter grid with the scroll rule below. It logs `L25_OPEN_JOHN1 baseline path=chapter-grid reason=not-at-top`. If the Continue reading button is absent, it logs the same line with `reason=no-continue-reading-button`. The manifest field `baselineOpenJohnPath` records `continue-reading` or `chapter-grid` (`not-used` for routes that do not open John 1 through this path, and `already-open` if the Reader already showed John 1). Reseed both apps before a run, because a moved `scrollY` changes the opened position. |
+| 16, 19, 27 | The first Settings tab tap was lost and the Today screen stayed. | `openTab("settings")` now checks the Settings title (native `settings-title`, `FullSettingsView.swift:26`; old heading `Settings`, `SettingsScreen.tsx:72`). It waits 10 s, taps the tab once more if the title is missing (log line `L25_RETRY`), then waits up to 30 s. |
+| 4 | The old Pray card label is longer than the title. | For the baseline, the expected content is matched with `label CONTAINS "Pray the Rosary"`. Native keeps the exact `label IN` match. |
+| 5 | The old text size choices are `Other` elements, not buttons. | For the baseline, the helper finds `otherElements` with the label `Text size, <size>` (`src/components/PreferencePicker.tsx:36-41`). It requires the exact value `radio button, checked`. `selectionState` keeps exact equality, so `radio button, unchecked` never counts as checked. |
+| 20 | The old row title is `Saints, feasts & daily readings`. | The old row is an `ActionRow` under the `Calendar notifications` section header (`SettingsScreen.tsx:151-153`). Its label is `<title>. <subtitle>` (`src/components/companion/Companion.tsx:135`). The baseline matches the title. The old destination title is `A day in the Church` (`CalendarNotificationsScreen.tsx:43`). Native uses `settings-calendar-notifications`. |
+| 25 | The Pray card was visible, but `isHittable` was false. The helper then dragged at the top of the list, and the "must move" assertion failed. | The log shows the card frame inside the viewport (`L25_SCROLL ... target={{24, 236}, {354, 290}} direction=down`). For the baseline, a control that is visible but not hittable is polled for 5 s. If it stays not hittable, the helper taps the center of its visible frame and logs `L25_COORDINATE_TAP`. The native "must move" assertion is unchanged. Each coordinate tap is recorded (see below). |
+
+Baseline scroll rule: the old lists are virtualized React Native lists. The old-app `tap` drags up to 40 times with drags from 85 percent to 15 percent of the viewport. It compares a signature of the first visible buttons and texts before and after each drag. It stops after two drags that change nothing. If the target does not exist yet, it reverses the direction once. If the control is still missing, it fails with `Expected a route control`. The baseline launch wait (90 s for `Today, tab`) and the 30 s waits from the earlier fix stay.
+
+### Old-app coordinate taps
+
+The coordinate fallback applies to every old-app tap, not only route 25. It never applies to the native app. It runs only when the control exists, lies inside the scroll viewport, and stays not hittable for 5 s. The tap goes to the center of the control's own frame.
+
+The helper stores each coordinate tap in the capture context (label, frame, route). The manifest field `baselineCoordinateTaps` lists them (an empty list when there is none). When the list is not empty and the route is otherwise captured, `routeStatus` is `passed-with-baseline-coordinate-tap`. A route that is already `unresolved` keeps that status.
+
+A pair whose old capture has a coordinate tap counts only if its destination check passed. Sol reviews each such pair with the images. The tap is evidence of the old app's visible control only. It is not evidence about the hit-testing of that control.

@@ -7,6 +7,8 @@ import XCTest
 @MainActor
 final class AllRouteCaptureUITests: XCTestCase {
     private var activeApp: XCUIApplication?
+    private var activeVariant: Variant?
+    private var activeContext: CaptureContext?
     private enum Variant: String { case baseline, native }
 
     private final class CaptureContext {
@@ -28,6 +30,10 @@ final class AllRouteCaptureUITests: XCTestCase {
         let suppliedDate: String?
         let suppliedTimeZone: String?
         var routeStatus = "captured"
+        var route = "supplement-or-unset"
+        var baselineOpenJohnPath = "not-used"
+        /// Old-app coordinate taps (label, frame, route). Empty for native runs and for old-app runs without one.
+        var baselineCoordinateTaps: [[String: Any]] = []
         var resolvedIdentity = ""
         var observedPreferences: [String: String] = [:]
         let seedStateDescription: String
@@ -72,11 +78,11 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route01Today() throws { try capture("/", identity: "Today") { c in try openTab("today", label: "Today", context: c); try waitForPageTitle(c, nativeID: "today-title", baselineTitle: "A little closer to God.") } }
     func testL25Route02Reader() throws { try capture("/read", identity: "WEB-CE JHN 1:1; reader root") { c in try openJohnOne(c) } }
     func testL25Route03Saved() throws { try capture("/saved", identity: "Saved all filter; seeded rows") { c in try openTab("saved", label: "Saved", context: c); try waitForAny(c.app, ["All", "All saved passages"]) } }
-    func testL25Route04PrayerHome() throws { try capture("/pray", identity: "PrayerHome") { c in try openTab("pray", label: "Pray", context: c); try waitForAny(c.app, ["Pray the Rosary"]) } }
-    func testL25Route05Settings() throws { try capture("/settings", identity: "Settings; matched reader preferences") { c in try prepareSettings(c); XCTAssertTrue(button(c, nativeID: textSizePreferenceID(c.expectedTextSize), baselineLabel: "Text size, \(c.expectedTextSize)").exists) } }
+    func testL25Route04PrayerHome() throws { try capture("/pray", identity: "PrayerHome") { c in try openTab("pray", label: "Pray", context: c); try waitForAny(c.app, ["Pray the Rosary"], contains: c.variant == .baseline) } }
+    func testL25Route05Settings() throws { try capture("/settings", identity: "Settings; matched reader preferences") { c in try prepareSettings(c); try verifyTextSizeChoice(c) } }
     func testL25Route06GoTo() throws { try capture("/go-to", identity: "GoTo; current JHN 1") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-title", baselineLabel: "John 1")); try waitForAny(c.app, ["Go to", "Go To", "Choose a book"]) } }
     func testL25Route07Search() throws { try capture("/search", identity: "Search Scripture") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-search-button", baselineLabel: "Search Scripture")); try waitForAny(c.app, ["Search Scripture", "Search by reference, keyword, or exact phrase."]) } }
-    func testL25Route08NoteEditor() throws { try capture("/note", identity: "Selected WEB-CE JHN 1:1 note editor") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")); if c.variant == .native { XCTAssertTrue(c.app.textViews["saved-note-editor"].waitForExistence(timeout: 12)) } else { try waitForAny(c.app, ["Write a private note…"]) } } }
+    func testL25Route08NoteEditor() throws { try capture("/note", identity: "Selected WEB-CE JHN 1:1 note editor") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")); if c.variant == .native { XCTAssertTrue(c.app.textViews["saved-note-editor"].waitForExistence(timeout: 30)) } else { try waitForAny(c.app, ["Write a private note…"]) } } }
     func testL25Route09VerseMoment() throws { try capture("/verse", identity: "Verse of the moment") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-verse-card", baselineLabel: "Verse & lock screen widget")); try waitForAny(c.app, ["Verse of the moment", "No verse available."]) } }
     func testL25Route10DailyReadings() throws { try capture("/daily?date=…", identity: "Daily readings; caller date or current local date") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-readings-card", baselineLabel: "Today’s readings")); try waitForAny(c.app, ["Today’s readings"]) } }
     func testL25Route11SundayPreparation() throws { try capture("/sunday", identity: "Sunday preparation; caller date or upcoming Sunday") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-sunday", baselineLabel: "Come ready for Sunday")); try waitForAny(c.app, ["Come ready for Sunday"]) } }
@@ -88,7 +94,13 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route17TeachingDetail() throws { try capture("/teaching?id=…", identity: "Teaching id eucharist") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-learn", baselineLabel: "Explore the Catholic faith")); try tap(button(c, nativeID: "teaching-eucharist", baselineLabel: "The Eucharist")); try waitForAny(c.app, ["The Eucharist"]) } }
     func testL25Route18Confession() throws { try capture("/confession", identity: "Confession guide initial step") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-confession", baselineLabel: "Prepare for Confession")); try waitForAny(c.app, ["Prepare for Confession", "Prepare"]) } }
     func testL25Route19ScriptureCard() throws { try capture("/share-card", identity: "Selected WEB-CE JHN 1:1 card") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-card", baselineLabel: "Create card John 1:1")); try waitForAny(c.app, ["A word worth sharing"]) } }
-    func testL25Route20CalendarNotifications() throws { try capture("/calendar-notifications", identity: "Calendar notification settings") { c in try prepareSettings(c); try tap(button(c, nativeID: "settings-calendar-notifications", baselineLabel: "Calendar notifications")); try waitForAny(c.app, [c.variant == .native ? "A day in the Church" : "Calendar notifications"]) } }
+    func testL25Route20CalendarNotifications() throws { try capture("/calendar-notifications", identity: "Calendar notification settings") { c in try prepareSettings(c)
+        // Old row: ActionRow title "Saints, feasts & daily readings" under the "Calendar notifications" section header
+        // (src/screens/SettingsScreen.tsx:151-153). Its label is "<title>. <subtitle>" (src/components/companion/Companion.tsx:135).
+        // Old destination title: "A day in the Church" (src/screens/companion/CalendarNotificationsScreen.tsx:43).
+        try tap(button(c, nativeID: "settings-calendar-notifications",
+                       baselineLabel: c.variant == .native ? "Calendar notifications" : "Saints, feasts & daily readings"))
+        try waitForAny(c.app, ["A day in the Church"]) } }
     func testL25Route21NovenaDetail() throws { try capture("/pray/[id]", identity: "Novena id st-padre-pio") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "novena-st-padre-pio", baselineLabel: "St. Padre Pio Novena")); try waitForAny(c.app, ["St. Padre Pio Novena"]) } }
     func testL25Route22RosaryHome() throws { try capture("/pray/rosary", identity: "Rosary home") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "prayer-home-rosary", baselineLabel: "Pray the Rosary")); try waitForAny(c.app, ["Choose a mystery"]) } }
     func testL25Route23RosaryGuide() throws { try capture("/pray/rosary-guide?set=…", identity: "Named Joyful set") { c in try openRosary(c); try tap(button(c, nativeID: "rosary-set-joyful", baselineLabel: "The Joyful Mysteries")); try waitForAny(c.app, ["Joyful"]) } }
@@ -122,9 +134,9 @@ final class AllRouteCaptureUITests: XCTestCase {
             try tap(button(c, nativeID: "reader-commentary-all", baselineLabel: "All 30 readings on this chapter"))
             let chapterTitle = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
             let count = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "30 readings · 3 authors")).firstMatch
-            XCTAssertTrue(chapterTitle.waitForExistence(timeout: 12), "The chapter commentary destination must show John 1")
+            XCTAssertTrue(chapterTitle.waitForExistence(timeout: 30), "The chapter commentary destination must show John 1")
             XCTAssertEqual(chapterTitle.label, "John 1")
-            XCTAssertTrue(count.waitForExistence(timeout: 12), "The chapter commentary destination must show its exact source count")
+            XCTAssertTrue(count.waitForExistence(timeout: 30), "The chapter commentary destination must show its exact source count")
             c.resolvedIdentity = "Chapter commentary title=\(chapterTitle.label); count=\(count.label)"
         }
     }
@@ -137,7 +149,7 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Supplement01LectioNaturalExpiry() throws {
         try requireSupplements()
         let c = try makeContext(nativeOnly: true)
-        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 15))
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
         try prepareSettings(c)
         guard selectedPassageEntryAllowed(c, windowWidth: c.app.windows.firstMatch.frame.size.width) else {
             throw XCTSkip("Selected-passage entry has no reviewed tap point for this profile.")
@@ -147,7 +159,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         try waitForAny(c.app, ["Read slowly"])
         for step in ["Stay with a word", "Speak to God", "Rest in his presence"] {
             try tap(c.app.buttons["Continue"])
-            XCTAssertTrue(c.app.staticTexts[step].waitForExistence(timeout: 8), "Expected Lectio step: \(step)")
+            XCTAssertTrue(c.app.staticTexts[step].waitForExistence(timeout: 30), "Expected Lectio step: \(step)")
         }
         let countdown = c.app.staticTexts.matching(NSPredicate(
             format: "label MATCHES %@", "^([1-9]|[1-5][0-9]|60)s of quiet$"
@@ -183,14 +195,14 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Supplement02aWorksMiddlePage() throws {
         try requireSupplements()
         let c = try makeContext(nativeOnly: true)
-        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 15))
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
         try prepareSettings(c)
         try openWorks(c)
         try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine"))
         try tap(button(c, nativeID: "work-augustine.the-confessions", baselineLabel: "The Confessions"))
         try waitForAny(c.app, ["The Confessions"])
         let prose = worksProse(c)
-        XCTAssertTrue(prose.waitForExistence(timeout: 15), "Work prose must appear")
+        XCTAssertTrue(prose.waitForExistence(timeout: 30), "Work prose must appear")
         let initial = try XCTUnwrap(worksPage(c), "Page label must appear")
         c.resolvedIdentity = "Works supplement: initial page \(initial.label)"
         try emitCapture(route: "/works/[id]#initial", slug: "works-supplement-initial-page",
@@ -203,7 +215,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         while current < target && swipes < initial.total + 2 {
             prose.swipeLeft()
             swipes += 1
-            XCTAssertTrue(c.app.staticTexts["Page \(current + 1) of \(initial.total)"].waitForExistence(timeout: 8),
+            XCTAssertTrue(c.app.staticTexts["Page \(current + 1) of \(initial.total)"].waitForExistence(timeout: 30),
                           "Expected the next page label after the swipe")
             current += 1
         }
@@ -220,14 +232,14 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Supplement02bWorksResumeAndWidthChange() throws {
         try requireSupplements()
         let c = try makeContext(nativeOnly: true)
-        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 15))
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
         try prepareSettings(c)
         addTeardownBlock { XCUIDevice.shared.orientation = .portrait }
         try openWorks(c)
         let resume = c.app.buttons["works-continue"]
-        XCTAssertTrue(resume.waitForExistence(timeout: 10), "Run part A first. A saved Works position must exist.")
+        XCTAssertTrue(resume.waitForExistence(timeout: 30), "Run part A first. A saved Works position must exist.")
         try tap(resume)
-        XCTAssertTrue(worksProse(c).waitForExistence(timeout: 15), "Resumed work prose must appear")
+        XCTAssertTrue(worksProse(c).waitForExistence(timeout: 30), "Resumed work prose must appear")
         let resumed = try XCTUnwrap(worksPage(c), "Page label must appear after resume")
         c.resolvedIdentity = "Works supplement: resumed \(resumed.label)"
         try emitCapture(route: "/works/[id]#resumed-portrait", slug: "works-supplement-resumed-portrait",
@@ -261,7 +273,7 @@ final class AllRouteCaptureUITests: XCTestCase {
 
     private func worksPage(_ c: CaptureContext) -> (label: String, page: Int, total: Int)? {
         let element = c.app.staticTexts.matching(NSPredicate(format: "label MATCHES %@", "^Page [0-9]+ of [0-9]+$")).firstMatch
-        guard element.waitForExistence(timeout: 12) else { return nil }
+        guard element.waitForExistence(timeout: 30) else { return nil }
         let label = element.label
         let numbers = label.split(separator: " ").compactMap { Int($0) }
         guard numbers.count == 2 else { return nil }
@@ -273,7 +285,7 @@ final class AllRouteCaptureUITests: XCTestCase {
             let size = c.app.windows.firstMatch.frame.size
             return landscape ? size.width > size.height : size.height > size.width
         }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed,
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 30), .completed,
                        "The window did not reach the requested orientation")
     }
 
@@ -299,7 +311,8 @@ final class AllRouteCaptureUITests: XCTestCase {
 
     private func capture(_ route: String, identity: String, enter: (CaptureContext) throws -> Void) throws {
         let context = try makeContext()
-        XCTAssertTrue(context.app.wait(for: .runningForeground, timeout: 15))
+        context.route = route
+        XCTAssertTrue(context.app.wait(for: .runningForeground, timeout: 30))
         if route != "/settings" { try prepareSettings(context) }
         try enterRoute(route, context: context, enter: enter)
         try emitCapture(route: route, slug: routeSlug(route), identity: identity, entryPath: entryPath(route), context: context)
@@ -331,9 +344,15 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
         let app = XCUIApplication(bundleIdentifier: bundleID)
         activeApp = app
+        activeVariant = variant
         app.launchArguments += ["-L25CaptureMode", "1"]
         app.launchEnvironment["L25_VARIANT"] = variant.rawValue
         app.launch()
+        if variant == .baseline {
+            // The Expo app can show only its splash color for tens of seconds on a loaded host. Wait for its tab bar.
+            let todayTab = app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Today, tab")).firstMatch
+            XCTAssertTrue(todayTab.waitForExistence(timeout: 90), "Baseline must show its tab bar after launch")
+        }
         let context = CaptureContext(app: app, variant: variant, bundleID: bundleID,
             appVersion: appVersion, build: build, sourceVersion: sourceVersion, seedID: seedID,
             expectedAppearance: appearance,
@@ -348,6 +367,7 @@ final class AllRouteCaptureUITests: XCTestCase {
             seedStateDescription: seedState, seedManifestHash: seedHash,
             nativeArtifact: env["L25_NATIVE_ARTIFACT"] ?? "caller-supplied installed artifact",
             javascriptSourceVersion: env["L25_JS_SOURCE_VERSION"] ?? sourceVersion)
+        activeContext = context
         context.keyboardRequested = env["L25_KEYBOARD"] == "1"
         context.axTreeRequested = env["L25_AX_TREE"] == "1"
         context.auditRequested = env["L25_A11Y_AUDIT"] == "1"
@@ -401,6 +421,9 @@ final class AllRouteCaptureUITests: XCTestCase {
                              captureKind: String = "route") throws {
         let app = context.app
         let variant = context.variant
+        if !context.baselineCoordinateTaps.isEmpty && context.routeStatus == "captured" {
+            context.routeStatus = "passed-with-baseline-coordinate-tap"
+        }
         let windowSize = app.windows.firstMatch.frame.size
         let png = app.screenshot().pngRepresentation
         let digest = SHA256.hash(data: png).map { String(format: "%02x", $0) }.joined()
@@ -473,6 +496,9 @@ final class AllRouteCaptureUITests: XCTestCase {
                 "origin": "UI test runner process values; not proof of the app setting",
             ] as [String: Any],
             "selectedPassageTap": context.selectedPassageTap,
+            "baselineOpenJohnPath": context.baselineOpenJohnPath,
+            "baselineCoordinateTaps": context.baselineCoordinateTaps,
+            "baselineCoordinateTapsOrigin": "old-app taps at the center of a visible, not hittable control; empty for native and for runs without one",
             "keyboard": keyboard, "axTree": axInfo, "accessibilityAudit": auditInfo,
         ]
         for (key, value) in extra { manifest[key] = value }
@@ -578,6 +604,17 @@ final class AllRouteCaptureUITests: XCTestCase {
             element = button(c, nativeID: "tab-\(name)", baselineLabel: label)
         }
         try tap(element)
+        guard name == "settings" else { return }
+        // The first Settings tab tap can be lost while the app is still settling (route series B1: routes 16, 19, 27).
+        // Native title: settings-title (FullSettingsView.swift:26). Old title: heading "Settings" (SettingsScreen.tsx:72).
+        let title: XCUIElement = c.variant == .native
+            ? c.app.staticTexts["settings-title"]
+            : c.app.staticTexts.matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
+        if !title.waitForExistence(timeout: 10) {
+            NSLog("L25_RETRY settings tab tap; the Settings title did not appear in 10 s")
+            try tap(element)
+        }
+        XCTAssertTrue(title.waitForExistence(timeout: 30), "The Settings title must appear after tapping the Settings tab")
     }
 
     private let baselineTabLabels: [String: String] = [
@@ -606,7 +643,7 @@ final class AllRouteCaptureUITests: XCTestCase {
             } else {
                 element = c.app.otherElements.matching(NSPredicate(format: "label == %@", baselineLabel)).firstMatch
             }
-            XCTAssertTrue(element.waitForExistence(timeout: 8), "Missing common preference choice: \(logLabel)")
+            XCTAssertTrue(element.waitForExistence(timeout: 30), "Missing common preference choice: \(logLabel)")
             let currentSelection = selectionState(element)
             if c.variant == .baseline {
                 XCTAssertNotNil(currentSelection,
@@ -617,7 +654,7 @@ final class AllRouteCaptureUITests: XCTestCase {
                 guard let choice = object as? XCUIElement else { return false }
                 return self.selectionState(choice) == true
             }, object: element)
-            let observedSelected = XCTWaiter.wait(for: [selected], timeout: 8) == .completed
+            let observedSelected = XCTWaiter.wait(for: [selected], timeout: 30) == .completed
             if observedSelected, isSelected(element) {
                 c.observedPreferences[logLabel] = "selected"
                 continue
@@ -629,6 +666,23 @@ final class AllRouteCaptureUITests: XCTestCase {
             }
             XCTAssertTrue(observedSelected && isSelected(element), "The common preference must be committed: \(logLabel)")
         }
+    }
+
+    /// Route 5 check. Native keeps its existing control query. The old app exposes each choice as an `Other` element
+    /// with the exact label "Text size, Default" and the exact value `radio button, checked` or `radio button, unchecked`
+    /// (src/components/PreferencePicker.tsx:38-41; handoff AX facts). The exact equality in `selectionState` keeps the
+    /// `unchecked` trap closed.
+    private func verifyTextSizeChoice(_ c: CaptureContext) throws {
+        if c.variant == .native {
+            XCTAssertTrue(button(c, nativeID: textSizePreferenceID(c.expectedTextSize),
+                                 baselineLabel: "Text size, \(c.expectedTextSize)").exists)
+            return
+        }
+        let choice = c.app.otherElements.matching(NSPredicate(format: "label == %@", "Text size, \(c.expectedTextSize)")).firstMatch
+        XCTAssertTrue(choice.waitForExistence(timeout: 30), "The old Settings screen must expose the Text size choice")
+        XCTAssertEqual(choice.value as? String, "radio button, checked",
+                       "The requested Text size choice must be checked (exact value)")
+        XCTAssertEqual(selectionState(choice), true)
     }
 
     /// `allowSystem` is true only for the app appearance preference. The device appearance is Light or Dark.
@@ -676,7 +730,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         } else {
             title = c.app.staticTexts.matching(NSPredicate(format: "label == %@", baselineTitle)).firstMatch
         }
-        XCTAssertTrue(title.waitForExistence(timeout: 10), "Expected the visible page title: \(baselineTitle)")
+        XCTAssertTrue(title.waitForExistence(timeout: 30), "Expected the visible page title: \(baselineTitle)")
         XCTAssertEqual(title.label, baselineTitle)
     }
 
@@ -685,7 +739,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         let exactJohnOne = c.variant == .native
             ? c.app.buttons.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
             : c.app.buttons.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
-        if exactJohnOne.exists { return }
+        if exactJohnOne.exists { c.baselineOpenJohnPath = c.variant == .baseline ? "already-open" : "not-used"; return }
 
         let bookList = c.variant == .native
             ? c.app.staticTexts["reader-book-list-title"]
@@ -697,17 +751,43 @@ final class AllRouteCaptureUITests: XCTestCase {
             } else {
                 back = c.app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Back to ")).firstMatch
             }
-            XCTAssertTrue(back.waitForExistence(timeout: 8),
+            XCTAssertTrue(back.waitForExistence(timeout: 30),
                           "A restored Reader route must expose Back to chapters or Back to books")
             try tap(back)
         }
-        XCTAssertTrue(bookList.waitForExistence(timeout: 8), "Reader must reach the actual book list before selecting John")
+        XCTAssertTrue(bookList.waitForExistence(timeout: 30), "Reader must reach the actual book list before selecting John")
         if c.variant == .native {
             try tap(c.app.buttons["reader-book-JHN"])
             try tap(c.app.buttons["reader-chapter-1"])
             try waitForAny(c.app, ["John 1"])
             XCTAssertEqual(c.app.buttons["reader-title"].label, "John 1")
         } else {
+            // Old Read screen (src/screens/ReaderScreen.tsx:607-620): the saved location shows a "Continue reading" button
+            // labelled "Continue reading <book> chapter <n>". It restores the saved scrollY (ReaderScreen.tsx:354-357).
+            // The seed saves John 1 with scrollY 0, so it should open at the natural top. The helper checks that
+            // (Sol required fix 1) and otherwise goes back and uses the chapter grid.
+            let continueJohn = c.app.buttons.matching(NSPredicate(format: "label == %@", "Continue reading John chapter 1")).firstMatch
+            var notAtTopReason: String?
+            if continueJohn.waitForExistence(timeout: 10) {
+                try tap(continueJohn)
+                let openedTitle = c.app.buttons.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
+                try waitForAny(c.app, ["John 1"])
+                XCTAssertEqual(openedTitle.label, "John 1")
+                if oldReaderIsAtTop(c) {
+                    c.baselineOpenJohnPath = "continue-reading"
+                    NSLog("L25_OPEN_JOHN1 baseline path=continue-reading")
+                    return
+                }
+                notAtTopReason = "not-at-top"
+                for _ in 0..<2 {
+                    let back = c.app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Back to ")).firstMatch
+                    XCTAssertTrue(back.waitForExistence(timeout: 30), "A Back control must return to the book list")
+                    try tap(back)
+                }
+                XCTAssertTrue(bookList.waitForExistence(timeout: 30), "The book list must return before the chapter-grid path")
+            }
+            c.baselineOpenJohnPath = "chapter-grid"
+            NSLog("L25_OPEN_JOHN1 baseline path=chapter-grid reason=%@", notAtTopReason ?? "no-continue-reading-button")
             let john = c.app.buttons.matching(NSPredicate(format: "label == %@", "John, 21 chapters")).firstMatch
             try tap(john)
             let chapter = c.app.buttons.matching(NSPredicate(format: "label == %@", "John chapter 1")).firstMatch
@@ -718,12 +798,28 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
     }
 
+    /// Old Reader natural top (Sol required fix 1). The first verse of John 1 must be hittable in the top half of the
+    /// visible scroll area. Verse by verse: button label "Verse 1. <text>" (src/components/ChapterText.tsx:308).
+    /// Paragraphs: the first paragraph text starts with "1 In the beginning".
+    private func oldReaderIsAtTop(_ c: CaptureContext) -> Bool {
+        let first = c.app.descendants(matching: .any).matching(NSCompoundPredicate(orPredicateWithSubpredicates: [
+            NSPredicate(format: "label BEGINSWITH %@", "Verse 1. "),
+            NSPredicate(format: "label BEGINSWITH %@", "1 In the beginning"),
+        ])).firstMatch
+        guard first.waitForExistence(timeout: 15) else { return false }
+        let deadline = Date().addingTimeInterval(5)
+        while !first.isHittable && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.25)) }
+        guard first.isHittable else { return false }
+        let viewport = visibleScrollViewport()
+        return viewport.height > 160 && first.frame.midY <= viewport.midY
+    }
+
     private func selectJHN11(_ c: CaptureContext) throws {
         try openJohnOne(c)
         let verse = button(c, nativeID: "reader-verse-1", baselineLabel: "Verse 1")
         if c.variant == .native, let offset = c.verse1TapOffset {
             // Main-measured owned-word point (L25_VERSE1_TAP_OFFSET), relative to the verse 1 frame origin.
-            XCTAssertTrue(verse.waitForExistence(timeout: 8), "Verse 1 must be present")
+            XCTAssertTrue(verse.waitForExistence(timeout: 30), "Verse 1 must be present")
             for _ in 0..<6 where !verse.isHittable { scrollToVisible(verse) }
             XCTAssertTrue(verse.isHittable, "Verse 1 must be visible before the measured tap")
             let size = verse.frame.size
@@ -735,7 +831,7 @@ final class AllRouteCaptureUITests: XCTestCase {
             c.selectedPassageTap = "center"
         }
         let toolbar = button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")
-        XCTAssertTrue(toolbar.waitForExistence(timeout: 8), "Select JHN 1:1 using the visible Reader control.")
+        XCTAssertTrue(toolbar.waitForExistence(timeout: 30), "Select JHN 1:1 using the visible Reader control.")
     }
 
     private func openConfiguredReading(_ c: CaptureContext) throws {
@@ -750,7 +846,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         let subtitle = c.app.staticTexts.matching(NSPredicate(
             format: "label CONTAINS %@", "Reading reference: \(reference)"
         )).firstMatch
-        XCTAssertTrue(subtitle.waitForExistence(timeout: 10), "The destination must retain the selected reading identity")
+        XCTAssertTrue(subtitle.waitForExistence(timeout: 30), "The destination must retain the selected reading identity")
         guard let range = reference.range(of: #"^(.+?)\s+([0-9]+)(?::|$)"#, options: .regularExpression) else {
             c.resolvedIdentity = "Passage context reference=\(reference); chapter title not parsed"
             return
@@ -766,7 +862,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         } else {
             title = c.app.staticTexts.matching(NSPredicate(format: "label == %@", expectedTitle)).firstMatch
         }
-        XCTAssertTrue(title.waitForExistence(timeout: 10), "The citation route title must identify \(expectedTitle)")
+        XCTAssertTrue(title.waitForExistence(timeout: 30), "The citation route title must identify \(expectedTitle)")
         XCTAssertEqual(title.label, expectedTitle)
         c.resolvedIdentity = "Passage context title=\(title.label); reference=\(reference); edition=WEB-CE"
     }
@@ -809,6 +905,10 @@ final class AllRouteCaptureUITests: XCTestCase {
     private func isSelected(_ element: XCUIElement) -> Bool { selectionState(element) == true }
 
     private func tap(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) throws {
+        if activeVariant == .baseline {
+            try baselineTap(element, file: file, line: line)
+            return
+        }
         for _ in 0..<6 {
             if element.exists && element.isHittable { element.tap(); return }
             if element.exists { scrollToVisible(element) }
@@ -817,6 +917,83 @@ final class AllRouteCaptureUITests: XCTestCase {
         XCTAssertTrue(element.exists, "Expected a route control", file: file, line: line)
         XCTAssertTrue(element.isHittable, "Route control must be hittable", file: file, line: line)
         element.tap()
+    }
+
+    private enum BaselineReach { case hittable, visibleNotHittable, missing }
+
+    /// Old-app tap. The old lists are virtualized React Native lists with many rows (the Read book list, the Works
+    /// collection list), so six drags are not enough. This loop drags up to 40 times with large drags and stops after two
+    /// drags that change nothing. If the control is visible but reports not hittable (a transient state while the app
+    /// settles), it waits up to 5 s. As a last step it taps the center of the visible frame. The native path above is unchanged.
+    private func baselineTap(_ element: XCUIElement, file: StaticString, line: UInt) throws {
+        _ = element.waitForExistence(timeout: 5)
+        switch baselineReach(element) {
+        case .hittable:
+            element.tap()
+        case .visibleNotHittable:
+            let frame = element.frame
+            NSLog("L25_COORDINATE_TAP element visible but not hittable after 5 s: %@ frame=%@", element.label, NSCoder.string(for: frame))
+            activeContext?.baselineCoordinateTaps.append([
+                "label": element.label, "frame": rectDictionary(frame), "route": activeContext?.route ?? "unknown",
+            ])
+            element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        case .missing:
+            XCTAssertTrue(element.exists, "Expected a route control", file: file, line: line)
+            XCTAssertTrue(element.isHittable, "Route control must be hittable", file: file, line: line)
+        }
+    }
+
+    private func baselineReach(_ element: XCUIElement) -> BaselineReach {
+        guard let app = activeApp else { return .missing }
+        var stalled = 0
+        var reversed = false
+        for _ in 0..<40 {
+            if element.exists && element.isHittable { return .hittable }
+            let viewport = visibleScrollViewport()
+            if element.exists, viewport.height > 160, viewport.contains(CGPoint(x: element.frame.midX, y: element.frame.midY)) {
+                let deadline = Date().addingTimeInterval(5)
+                while Date() < deadline {
+                    if element.isHittable { return .hittable }
+                    RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+                }
+                return element.isHittable ? .hittable : .visibleNotHittable
+            }
+            guard viewport.height > 160 else { return .missing }
+            let before = scrollSignature(app, viewport)
+            let towardEnd = element.exists ? element.frame.midY >= viewport.midY : !reversed
+            let from = viewport.minY + viewport.height * (towardEnd ? 0.85 : 0.15)
+            let to = viewport.minY + viewport.height * (towardEnd ? 0.15 : 0.85)
+            let x = viewport.midX / app.frame.width
+            app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: from / app.frame.height))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: to / app.frame.height)))
+            RunLoop.current.run(until: Date().addingTimeInterval(0.6))
+            if scrollSignature(app, viewport) == before {
+                stalled += 1
+                if stalled >= 2 {
+                    if !element.exists && !reversed { reversed = true; stalled = 0 } else { break }
+                }
+            } else {
+                stalled = 0
+            }
+        }
+        if element.exists && element.isHittable { return .hittable }
+        return element.exists ? .visibleNotHittable : .missing
+    }
+
+    /// Labels and vertical positions of the first buttons and static texts in the viewport. A change means the list moved.
+    private func scrollSignature(_ app: XCUIApplication, _ viewport: CGRect) -> String {
+        var parts: [String] = []
+        for query in [app.buttons, app.staticTexts] {
+            var found = 0
+            for item in query.allElementsBoundByIndex.prefix(80) where item.exists {
+                let frame = item.frame
+                guard frame.intersects(viewport) else { continue }
+                parts.append("\(item.label.prefix(30))@\(Int(frame.minY))")
+                found += 1
+                if found >= 8 { break }
+            }
+        }
+        return parts.joined(separator: "|")
     }
 
     private func scrollForLazyRow(_ element: XCUIElement) {
@@ -880,10 +1057,16 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
     }
 
-    private func waitForAny(_ app: XCUIApplication, _ labels: [String]) throws {
-        let predicate = NSPredicate(format: "label IN %@", labels)
+    /// `contains` is used only for the old app, where a card label is longer than the visible title.
+    private func waitForAny(_ app: XCUIApplication, _ labels: [String], contains: Bool = false) throws {
+        let predicate: NSPredicate
+        if contains {
+            predicate = NSCompoundPredicate(orPredicateWithSubpredicates: labels.map { NSPredicate(format: "label CONTAINS %@", $0) })
+        } else {
+            predicate = NSPredicate(format: "label IN %@", labels)
+        }
         let visible = app.descendants(matching: .any).matching(predicate).firstMatch
-        XCTAssertTrue(visible.waitForExistence(timeout: 12), "Expected route content: \(labels.joined(separator: ", "))")
+        XCTAssertTrue(visible.waitForExistence(timeout: 30), "Expected route content: \(labels.joined(separator: ", "))")
     }
 
     private func recordUnresolved(_ c: CaptureContext, reason: String) {
@@ -907,7 +1090,8 @@ final class AllRouteCaptureUITests: XCTestCase {
         case "/read": "Read tab; seeded at JHN 1"
         case "/saved": "Saved tab"
         case "/pray": "Pray tab"
-        case "/settings", "/calendar-notifications": "Settings tab; then visible Calendar notifications row"
+        case "/settings": "Settings tab"
+        case "/calendar-notifications": "Settings tab; then the Calendar notifications row (old app row title: Saints, feasts & daily readings)"
         case "/go-to": "Read JHN 1; tap Reader chapter title"
         case "/search": "Read; tap Search Scripture"
         case "/note", "/lectio", "/share-card": "Read JHN 1:1; select verse 1; tap the named toolbar action"
