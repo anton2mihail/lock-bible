@@ -61,6 +61,74 @@ public enum L04ScenarioRunner {
 
     public typealias ReaderFactory = @Sendable (URL) -> any LegacyMMKVReading
 
+    private final class CheckpointRecorder: @unchecked Sendable {
+        private let lock = NSLock()
+        private var values: [String] = []
+        func append(_ checkpoint: NativeImportCheckpoint) {
+            lock.lock(); values.append(checkpoint.rawValue); lock.unlock()
+        }
+        func snapshot() -> [String] {
+            lock.lock(); defer { lock.unlock() }; return values
+        }
+    }
+
+    /// Run one bounded scenario and write a result for success or a thrown error.
+    /// A process crash cannot write a result; Main must record process status separately.
+    @discardableResult
+    public static func runRecording(
+        _ scenario: Scenario,
+        fixtureRoot: URL,
+        outputRoot: URL,
+        roots: ResourceRoots,
+        legacyReaderFactory: ReaderFactory,
+        checkpoint: (@Sendable (NativeImportCheckpoint) -> Void)? = nil,
+        failureInjector: (@Sendable (NativeStateFailurePoint) -> Bool)? = nil
+    ) async throws -> Result {
+        guard !FileManager.default.fileExists(atPath: outputRoot.path) else {
+            throw CoreError.invalidResource("scenario output path already exists")
+        }
+        let inputPath = fixtureRoot.standardizedFileURL.resolvingSymlinksInPath()
+        let outputPath = outputRoot.standardizedFileURL.resolvingSymlinksInPath()
+        guard !isWithin(outputPath, root: inputPath) && !isWithin(inputPath, root: outputPath) else {
+            throw CoreError.invalidResource("scenario output and fixture input paths must not overlap")
+        }
+        let recorder = CheckpointRecorder()
+        let recordingCheckpoint: @Sendable (NativeImportCheckpoint) -> Void = { checkpointValue in
+            recorder.append(checkpointValue)
+            checkpoint?(checkpointValue)
+        }
+        do {
+            let result = try await run(scenario, fixtureRoot: fixtureRoot, outputRoot: outputRoot,
+                                       roots: roots, legacyReaderFactory: legacyReaderFactory,
+                                       checkpoint: recordingCheckpoint, failureInjector: failureInjector)
+            var details = result.details
+            details["checkpoints"] = recorder.snapshot().joined(separator: ",")
+            let recorded = Result(scenario: result.scenario, passed: result.passed,
+                                  revision: result.revision, translationID: result.translationID,
+                                  themeScheme: result.themeScheme, textSize: result.textSize,
+                                  libraryCapability: result.libraryCapability,
+                                  nativeStateCapability: result.nativeStateCapability,
+                                  library: result.library, sourceHashes: result.sourceHashes, details: details)
+            try write(recorded, to: outputRoot)
+            return recorded
+        } catch {
+            try? FileManager.default.createDirectory(at: outputRoot, withIntermediateDirectories: true)
+            let manifest = fixtureRoot.appendingPathComponent("fixture-manifest.json")
+            let hashes = hashIfPresent(manifest).map { ["fixture-manifest.json": $0] } ?? [:]
+            let details = [
+                "stage": recorder.snapshot().last.map { "after checkpoint \($0)" } ?? "before first checkpoint",
+                "checkpoints": recorder.snapshot().joined(separator: ","),
+                "error": String(describing: error),
+            ]
+            let result = Result(scenario: scenario.rawValue, passed: false, revision: nil,
+                                translationID: nil, themeScheme: nil, textSize: nil,
+                                libraryCapability: nil, nativeStateCapability: String(describing: error),
+                                library: nil, sourceHashes: hashes, details: details)
+            _ = try? write(result, to: outputRoot)
+            return result
+        }
+    }
+
     /// Run one scenario. `outputRoot` must be a new directory. The input tree is read-only.
     public static func run(
         _ scenario: Scenario,
@@ -133,7 +201,8 @@ public enum L04ScenarioRunner {
                 ? "library-variants/unsupported-schema.db" : "library-variants/damaged-library.db")
             try FileManager.default.createDirectory(at: libraryURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             try FileManager.default.copyItem(at: source, to: libraryURL)
-            for suffix in ["-wal", "-shm"] where FileManager.default.fileExists(atPath: source.path + suffix) {
+            let sidecarSuffixes = scenario == .damagedLibrary ? ["-wal", "-shm"] : ["-wal"]
+            for suffix in sidecarSuffixes where FileManager.default.fileExists(atPath: source.path + suffix) {
                 try FileManager.default.copyItem(atPath: source.path + suffix, toPath: libraryURL.path + suffix)
             }
         }
@@ -234,7 +303,10 @@ public enum L04ScenarioRunner {
         }
 
         if scenario == .freshInstall {
-            let relaunched = await store.loadOrImport()
+            let restartedStore = NativeStateStore(applicationSupportURL: support, libraryURL: libraryURL,
+                                                  roots: roots, legacyReader: nil,
+                                                  checkpoint: checkpoint, failureInjector: failureInjector)
+            let relaunched = await restartedStore.loadOrImport()
             details["freshDatabaseExists"] = FileManager.default.fileExists(atPath: libraryURL.path) ? "true" : "false"
             details["relaunchRevision"] = String(relaunched.revision ?? -1)
             details["relaunchLibraryCapability"] = relaunched.libraryCapability ?? "none"
@@ -242,7 +314,16 @@ public enum L04ScenarioRunner {
 
         var librarySummary: LibrarySchemaSummary?
         if FileManager.default.fileExists(atPath: libraryURL.path) {
-            librarySummary = try? await SQLiteLibraryBoundary(databaseURL: libraryURL).inspect()
+            do {
+                librarySummary = try await SQLiteLibraryBoundary(databaseURL: libraryURL).inspect()
+                if let librarySummary {
+                    details["postRunLibraryInspect"] = "ok schema=\(librarySummary.schemaVersion) bookmarks=\(librarySummary.bookmarkCount) highlights=\(librarySummary.highlightCount) notes=\(librarySummary.noteCount)"
+                }
+            } catch {
+                details["postRunLibraryInspect"] = "failed: \(error)"
+            }
+        } else {
+            details["postRunLibraryInspect"] = "library path does not exist"
         }
         var libraryItems: [SavedItem] = []
         if scenario == .validLegacyImport {
@@ -310,7 +391,9 @@ public enum L04ScenarioRunner {
         case .missingLibraryWithState:
             passed = started.envelope != nil && started.libraryCapability != nil
                 && details["libraryRecreated"] == "false"
-        case .unsupportedLibrary, .damagedLibrary:
+        case .unsupportedLibrary:
+            passed = state != nil && started.libraryCapability?.contains("unsupportedSchema(77)") == true
+        case .damagedLibrary:
             passed = state != nil && started.libraryCapability != nil
         case .damagedMMKVData, .damagedMMKVCRC, .wrongMMKVCRC:
             passed = state == nil && started.nativeStateCapability != nil

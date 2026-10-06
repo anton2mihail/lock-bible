@@ -104,10 +104,10 @@ copyFileSync(`${libraryFixture}-wal`, `${unsupportedPath}-wal`)
 const unsupported = new Database(unsupportedPath)
 unsupported.exec("PRAGMA wal_autocheckpoint=0; PRAGMA user_version=77;")
 unsupported.close()
-for (const suffix of ["-wal", "-shm"]) {
-  const sidecar = `${unsupportedPath}${suffix}`
-  if (existsSync(sidecar) && readFileSync(sidecar).length === 0) unlinkSync(sidecar)
-}
+const unsupportedWal = `${unsupportedPath}-wal`
+if (existsSync(unsupportedWal) && readFileSync(unsupportedWal).length === 0) unlinkSync(unsupportedWal)
+const unsupportedShm = `${unsupportedPath}-shm`
+if (existsSync(unsupportedShm)) unlinkSync(unsupportedShm)
 
 const damagedPath = join(variantsRoot, "damaged-library.db")
 writeFileSync(damagedPath, Buffer.from("not a SQLite database: synthetic damaged fixture\n", "utf8"))

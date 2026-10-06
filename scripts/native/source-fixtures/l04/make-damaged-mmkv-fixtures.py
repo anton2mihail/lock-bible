@@ -17,8 +17,11 @@ if len(sys.argv) != 4:
     raise SystemExit("usage: make-damaged-mmkv-fixtures.py <fixture-root> <meta-size> <crc-offset>")
 meta_size = int(sys.argv[2])
 crc_offset = int(sys.argv[3])
-active_length = struct.unpack("<I", data_path.read_bytes()[:4])[0]
-if len(data_path.read_bytes()) < 4 or crc_offset < 0 or crc_offset + 4 > meta_size:
+data_bytes = data_path.read_bytes()
+if len(data_bytes) < 4 or len(crc_path.read_bytes()) < meta_size:
+    raise SystemExit("MMKV source files are truncated")
+active_length = struct.unpack("<I", data_bytes[:4])[0]
+if crc_offset < 0 or crc_offset + 4 > meta_size:
     raise SystemExit("MMKV source or metadata layout is invalid")
 specs = {
     "truncated-data": "data",
