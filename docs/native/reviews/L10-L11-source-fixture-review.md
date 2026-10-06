@@ -21,3 +21,11 @@ The earlier native `saveNote` used Foundation whitespace trimming. It kept U+FEF
 The host package build, arm64 iOS Simulator SDK build, and DEBUG comparator type-check pass. See `build/native-evidence/L10-L11/core-check/REPORT.md`. Core repository SHA-256 is `7bfca25948aba5bc491f685c04d2d579f46e00d966a60b5388b1078c873bba3e`. Comparator SHA-256 is `664d134f1dab71687f49b01557997ea0ffe0a0e7ee74254f9db47ff040a61e24`. The comparator requires 19 source snapshots and 19 native observations. These checks do not prove simulator results.
 
 Source supplies a DEBUG-only comparison of the complete action fixture with an injected clock. Main runs it on the simulator. Compare all original fields, timestamps, batches, grouping, filters, and delete/restore payloads. Include both Unicode trim probes. Keep UI save failure and undo behavior in the separate Main screen checks. Native L10/L11 acceptance remains open.
+
+## First simulator comparison
+
+Main ran the 19 observations in PID `520`. Matching installed/product hashes and current sandbox paths are recorded under `build/native-evidence/L10-L11/simulator-01/`. The result matches 15 observations. Four keys fail: `afterBookmarkAdd`, `afterBookmarkRemove`, `afterDelete`, and `afterUndo`.
+
+Sol confirmed a comparator shape error. These four source snapshots are arrays. The runner compares an object with `ids` and `items`. The named `saved-*` snapshots correctly use that object shape. The committed pre-run comparator hash is `a0adb0b00b92c0e39293c2ac7b2f493717070f6430b40eaf99b73b95c5eb8c89`. This supersedes the earlier preparation hash above.
+
+The narrow correction changes only four calls from `savedResult` to `fixtureItems`. Its hash is `585beb1d552fe6f1024de178fe04ee4cc98b95e294aac338a1cde35e01521527`. Sol accepts this source correction for the next build. Preserve full row fields and order. Main must use a new disjoint output for the focused rerun. No production library change is required by this shape error.
