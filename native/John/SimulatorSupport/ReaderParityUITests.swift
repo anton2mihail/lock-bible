@@ -126,7 +126,7 @@ final class ReaderParityUITests: XCTestCase {
         if variant == .native {
             XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         } else {
-            let readTab = app.buttons.matching(NSPredicate(format: "label == %@", "Read")).firstMatch
+            let readTab = app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Read, tab")).firstMatch
             XCTAssertTrue(readTab.waitForExistence(timeout: 12), "Baseline must expose its Read tab")
             readTab.tap()
             XCTAssertTrue(app.staticTexts["Read the Bible"].waitForExistence(timeout: 12),
@@ -171,7 +171,7 @@ final class ReaderParityUITests: XCTestCase {
                                              appearancePreference: appearance)
         }
 
-        let settingsTab = app.buttons.matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
+        let settingsTab = app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Settings, tab")).firstMatch
         XCTAssertTrue(settingsTab.waitForExistence(timeout: 8), "Baseline must expose Settings")
         settingsTab.tap()
         XCTAssertTrue(app.staticTexts["Settings"].waitForExistence(timeout: 8))
@@ -190,7 +190,7 @@ final class ReaderParityUITests: XCTestCase {
         let appearance = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label == %@", "Appearance, System")).firstMatch
         let appearancePreference = appearance.exists ? CaptureMetadata.selectionValue(appearance) : "unresolved"
-        app.buttons.matching(NSPredicate(format: "label == %@", "Read")).firstMatch.tap()
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Read, tab")).firstMatch.tap()
         return CaptureProfileObservation(
             requested: "Medium/Comfortable/Serif/Paragraphs/\(edition.id)",
             verified: observedChoices.joined(separator: ";"),

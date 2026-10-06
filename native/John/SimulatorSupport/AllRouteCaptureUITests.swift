@@ -107,7 +107,18 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route26WorksLibrary() throws { try capture("/works", identity: "Works library from Reader chapter and book controls") { c in try openWorks(c) } }
     func testL25Route27WorksCollection() throws { try capture("/works/author/[id]", identity: "Collection augustine") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine")); try waitForAny(c.app, ["Augustine"]) } }
     func testL25Route28WorkReader() throws { try capture("/works/[id]?section=…", identity: "Work augustine.the-confessions, section 0") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine")); try tap(button(c, nativeID: "work-augustine.the-confessions", baselineLabel: "The Confessions")); try waitForAny(c.app, ["The Confessions"]) } }
-    func testL25Route29ChapterCommentary() throws { try capture("/commentary/[book]/[chapter]", identity: "JHN 1; all 30 readings") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-commentary-all", baselineLabel: "All 30 readings on this chapter")); try waitForAny(c.app, ["Chapter Commentary", "All 30 readings"]) } }
+    func testL25Route29ChapterCommentary() throws {
+        try capture("/commentary/[book]/[chapter]", identity: "JHN 1; all 30 readings") { c in
+            try openJohnOne(c)
+            try tap(button(c, nativeID: "reader-commentary-all", baselineLabel: "All 30 readings on this chapter"))
+            let chapterTitle = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
+            let count = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "30 readings · 3 authors")).firstMatch
+            XCTAssertTrue(chapterTitle.waitForExistence(timeout: 12), "The chapter commentary destination must show John 1")
+            XCTAssertEqual(chapterTitle.label, "John 1")
+            XCTAssertTrue(count.waitForExistence(timeout: 12), "The chapter commentary destination must show its exact source count")
+            c.resolvedIdentity = "Chapter commentary title=\(chapterTitle.label); count=\(count.label)"
+        }
+    }
 
     private func capture(_ route: String, identity: String, enter: (CaptureContext) throws -> Void) throws {
         let env = ProcessInfo.processInfo.environment
@@ -213,9 +224,22 @@ final class AllRouteCaptureUITests: XCTestCase {
     }
 
     private func openTab(_ name: String, label: String, context c: CaptureContext) throws {
-        let element = button(c, nativeID: "tab-\(name)", baselineLabel: label)
+        let element: XCUIElement
+        if c.variant == .baseline, let baselineTabLabel = baselineTabLabels[name] {
+            element = c.app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", baselineTabLabel)).firstMatch
+        } else {
+            element = button(c, nativeID: "tab-\(name)", baselineLabel: label)
+        }
         try tap(element)
     }
+
+    private let baselineTabLabels: [String: String] = [
+        "today": "Today, tab",
+        "read": "Read, tab",
+        "saved": "Saved, tab",
+        "pray": "Pray, tab",
+        "settings": "Settings, tab",
+    ]
 
     private func prepareSettings(_ c: CaptureContext) throws {
         try openTab("settings", label: "Settings", context: c)
