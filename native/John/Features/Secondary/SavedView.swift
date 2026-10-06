@@ -13,6 +13,7 @@ struct SavedView: View {
     @State private var undoItem: SavedItem?
     @State private var noteItem: SavedItem?
     @State private var generation = 0
+    @State private var loadedFilter: SavedFilter?
     @State private var undoToken = UUID()
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
@@ -145,16 +146,22 @@ struct SavedView: View {
     @MainActor private func reload() async {
         generation += 1
         let current = generation
-        loading = true
+        let requestedFilter = filter
+        // Rows from another filter would be wrong, so drop them. Rows of the same filter stay
+        // visible during a refresh, so the list does not flash a spinner on each visit.
+        if loadedFilter != requestedFilter { items = [] }
+        loading = items.isEmpty
         defer { if current == generation { loading = false } }
         do {
-            let result = try await runtime.savedItems(filter: filter)
+            let result = try await runtime.savedItems(filter: requestedFilter)
             guard current == generation else { return }
             items = result
+            loadedFilter = requestedFilter
             message = nil
         } catch {
             guard current == generation else { return }
             items = []
+            loadedFilter = requestedFilter
             message = "Saved passages could not be loaded. Close and reopen this tab."
         }
     }
