@@ -108,6 +108,7 @@ final class StoreScreenshotUITests: XCTestCase {
     private func tapTab(_ name: String, in app: XCUIApplication) {
         let tab = app.buttons["tab-\(name)"]
         XCTAssertTrue(tab.waitForExistence(timeout: timeout), "Tab \(name) must exist")
+        expandTabBar(in: app, expecting: "tab-\(name)")
         tab.tap()
     }
 
@@ -268,5 +269,26 @@ final class StoreScreenshotUITests: XCTestCase {
         let description: String
         static func missing(_ key: String) -> Self { Self(description: "Missing required store screenshot configuration: \(key)") }
         static func invalid(_ text: String) -> Self { Self(description: text) }
+    }
+
+    /// The Liquid Glass tab bar minimizes while the Read tab scrolls. Release has no `-JohnTabBarMinimize never`
+    /// (that argument exists only in Debug). Before a tab tap after a Reader scroll, expand the bar (tap the minimized
+    /// bar, then scroll up) and check that the target tab button is hittable (Liquid-glass-tabview-review.md fix 5).
+    private func expandTabBar(in app: XCUIApplication, expecting tabID: String) {
+        let tab = app.buttons[tabID]
+        for attempt in 0..<4 {
+            if tab.exists && tab.isHittable { return }
+            if attempt % 2 == 0 {
+                let bar = app.tabBars.firstMatch
+                if bar.exists && bar.isHittable { bar.tap() }
+            } else {
+                let scroll = app.scrollViews.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+                    .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+                scroll?.swipeDown()
+            }
+            _ = tab.waitForExistence(timeout: 2)
+            RunLoop.current.run(until: Date().addingTimeInterval(0.5))
+        }
+        XCTAssertTrue(tab.exists && tab.isHittable, "\(tabID) must be hittable after the tab bar expands")
     }
 }

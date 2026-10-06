@@ -14,6 +14,7 @@ final class WorksSettingsUITests: XCTestCase {
 
     func testSettingsSaveEditionsRestoreAndReaderAppearanceAgree() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         app.buttons["tab-settings"].tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 10))
@@ -114,6 +115,7 @@ final class WorksSettingsUITests: XCTestCase {
 
     func testWorksContentsFooterStyleAnchorAndResume() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         NSLog("WORKS_EXPECTED workID=%@ collectionID=%@ title=%@ sectionIndex=9 sectionTitle=%@ pageIndex=0 anchor={sectionIndex:9,paragraphIndex:0,utf16Offset:0}",
               worksID, collectionID, worksTitle, sectionTitle)
@@ -143,7 +145,7 @@ final class WorksSettingsUITests: XCTestCase {
         for label in footerLabels {
             let control = app.buttons[label]
             XCTAssertTrue(control.isHittable, "Works footer control is not hittable: \(label)")
-            XCTAssertLessThanOrEqual(control.frame.maxY, tab.frame.minY,
+            XCTAssertLessThanOrEqual(control.frame.maxY, tabBarTopEdge(in: app, within: app.frame) ?? tab.frame.minY,
                                      "Works footer overlaps the shared tab bar: \(label)")
         }
 
@@ -173,6 +175,7 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(continueReading.label.contains("section 10"))
 
         app.terminate()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         openWorksLibrary(in: app)
         let resumed = app.buttons["works-continue"]
@@ -319,7 +322,7 @@ final class WorksSettingsUITests: XCTestCase {
         for label in labels {
             let control = app.buttons[label]
             XCTAssertTrue(control.isHittable, "Works footer control is not hittable: \(label)")
-            XCTAssertLessThanOrEqual(control.frame.maxY, tab.frame.minY,
+            XCTAssertLessThanOrEqual(control.frame.maxY, tabBarTopEdge(in: app, within: app.frame) ?? tab.frame.minY,
                                      "Works footer overlaps the shared tab bar: \(label)")
         }
     }
@@ -358,9 +361,7 @@ final class WorksSettingsUITests: XCTestCase {
                                              file: StaticString = #filePath, line: UInt = #line) {
         for attempt in 0..<14 where !target.exists || !target.isHittable {
             var viewport = list.frame.intersection(app.frame)
-            let tabTop = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-                .allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }
-                .map(\.frame.minY).min()
+            let tabTop = tabBarTopEdge(in: app, within: viewport)
             if let tabTop { viewport.size.height = min(viewport.height, tabTop - viewport.minY) }
             XCTAssertGreaterThan(viewport.height, 160, "Contents list has no safe visible area", file: file, line: line)
             let wasPresent = target.exists
@@ -385,4 +386,15 @@ final class WorksSettingsUITests: XCTestCase {
     }
 
     private enum TestError: Error { case noSelection }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
+    }
 }

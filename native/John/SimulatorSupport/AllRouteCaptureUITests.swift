@@ -82,7 +82,7 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route05Settings() throws { try capture("/settings", identity: "Settings; matched reader preferences") { c in try prepareSettings(c); try verifyTextSizeChoice(c) } }
     func testL25Route06GoTo() throws { try capture("/go-to", identity: "GoTo; current JHN 1") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-title", baselineLabel: "John 1")); try waitForAny(c.app, ["Go to", "Go To", "Choose a book"]) } }
     func testL25Route07Search() throws { try capture("/search", identity: "Search Scripture") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-search-button", baselineLabel: "Search Scripture")); try waitForAny(c.app, ["Search Scripture", "Search by reference, keyword, or exact phrase."]) } }
-    func testL25Route08NoteEditor() throws { try capture("/note", identity: "Selected WEB-CE JHN 1:1 note editor") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")); if c.variant == .native { XCTAssertTrue(c.app.textViews["saved-note-editor"].waitForExistence(timeout: 30)) } else { try waitForAny(c.app, ["Write a private note…"]) } } }
+    func testL25Route08NoteEditor() throws { try capture("/note", identity: "Selected WEB-CE JHN 1:1 note editor") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")); try verifyNoteEditor(c) } }
     func testL25Route09VerseMoment() throws { try capture("/verse", identity: "Verse of the moment") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-verse-card", baselineLabel: "Verse & lock screen widget")); try waitForAny(c.app, ["Verse of the moment", "No verse available."]) } }
     func testL25Route10DailyReadings() throws { try capture("/daily?date=…", identity: "Daily readings; caller date or current local date") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-readings-card", baselineLabel: "Today’s readings")); try waitForAny(c.app, ["Today’s readings"]) } }
     func testL25Route11SundayPreparation() throws { try capture("/sunday", identity: "Sunday preparation; caller date or upcoming Sunday") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-sunday", baselineLabel: "Come ready for Sunday")); try waitForAny(c.app, ["Come ready for Sunday"]) } }
@@ -126,12 +126,28 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
     } }
     func testL25Route26WorksLibrary() throws { try capture("/works", identity: "Works library from Reader chapter and book controls") { c in try openWorks(c) } }
-    func testL25Route27WorksCollection() throws { try capture("/works/author/[id]", identity: "Collection augustine") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine")); try waitForAny(c.app, ["Augustine"]) } }
+    func testL25Route27WorksCollection() throws { try capture("/works/author/[id]", identity: "Collection augustine") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine"))
+        // Old collection page: author heading "St Augustine of Hippo" (works-collection-screen.tsx, `collection.author`), which the
+        // library row also shows, so the destination is identified by its back control "Back to the library"
+        // (works-collection-screen.tsx accessibilityLabel). Native keeps its accepted "Augustine" title check.
+        try waitForAny(c.app, [c.variant == .native ? "Augustine" : "Back to the library"]) } }
     func testL25Route28WorkReader() throws { try capture("/works/[id]?section=…", identity: "Work augustine.the-confessions, section 0") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine")); try tap(button(c, nativeID: "work-augustine.the-confessions", baselineLabel: "The Confessions")); try waitForAny(c.app, ["The Confessions"]) } }
     func testL25Route29ChapterCommentary() throws {
         try capture("/commentary/[book]/[chapter]", identity: "JHN 1; all 30 readings") { c in
             try openJohnOne(c)
-            try tap(button(c, nativeID: "reader-commentary-all", baselineLabel: "All 30 readings on this chapter"))
+            let allReadings = button(c, nativeID: "reader-commentary-all", baselineLabel: "All 30 readings on this chapter")
+            try tap(allReadings)
+            if c.variant == .baseline {
+                // Old row: a ListItem with role button and the text "All 30 readings on this chapter" (ReaderScreen.tsx:766-777).
+                // Its onPress pushes /commentary/[book]/[chapter]. The destination back control is "Back to John 1"
+                // (chapter-commentary-screen.tsx:76). "John 1" alone is not enough: the Reader also shows that text.
+                let destination = c.app.buttons.matching(NSPredicate(format: "label == %@", "Back to John 1")).firstMatch
+                if !destination.waitForExistence(timeout: 6) {
+                    NSLog("L25_RETRY_TAP all-readings row: the destination did not appear after the first tap")
+                    try tap(allReadings)
+                }
+                XCTAssertTrue(destination.waitForExistence(timeout: 30), "The old chapter commentary screen must open (Back to John 1)")
+            }
             let chapterTitle = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
             let count = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "30 readings · 3 authors")).firstMatch
             XCTAssertTrue(chapterTitle.waitForExistence(timeout: 30), "The chapter commentary destination must show John 1")
@@ -293,15 +309,16 @@ final class AllRouteCaptureUITests: XCTestCase {
         let prose = worksProse(c)
         let body = prose.label + "|" + String(describing: prose.value ?? "")
         let tab = c.app.buttons["tab-read"]
+        let tabEdge = tabBarTopEdge(in: c.app, within: c.app.frame) // same edge as the viewport helpers
         var controls: [String: Any] = [:]
         for (name, prefix) in [("previous", "Previous"), ("contents", "Contents, section"), ("next", "Next")] {
             let control = c.app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
             controls[name] = ["exists": control.exists, "hittable": control.exists && control.isHittable,
                               "label": control.exists ? control.label : "",
-                              "aboveTabs": control.exists && tab.exists ? control.frame.maxY <= tab.frame.minY : false] as [String: Any]
+                              "aboveTabs": control.exists && tab.exists ? control.frame.maxY <= (tabEdge ?? tab.frame.minY) : false] as [String: Any]
         }
         return [
-            "supplement": "works-middle-page-width-change", "pageLabel": label,
+            "supplement": "works-middle-page-width-change", "pageLabel": label, "tabBar": tabBarRecord(c.app),
             "bodyLabelPrefix": String(prose.label.prefix(160)),
             "bodySHA256": SHA256.hash(data: Data(body.utf8)).map { String(format: "%02x", $0) }.joined(),
             "bodyLength": body.count, "lowerControls": controls,
@@ -347,6 +364,8 @@ final class AllRouteCaptureUITests: XCTestCase {
         activeVariant = variant
         app.launchArguments += ["-L25CaptureMode", "1"]
         app.launchEnvironment["L25_VARIANT"] = variant.rawValue
+        // Native only: keep the full tab bar (no Read-tab minimize). Never for the old app (Liquid-glass-tabview-review.md fix 2).
+        if variant == .native { app.launchArguments += ["-JohnTabBarMinimize", "never"] }
         app.launch()
         if variant == .baseline {
             // The Expo app can show only its splash color for tens of seconds on a loaded host. Wait for its tab bar.
@@ -496,6 +515,7 @@ final class AllRouteCaptureUITests: XCTestCase {
                 "origin": "UI test runner process values; not proof of the app setting",
             ] as [String: Any],
             "selectedPassageTap": context.selectedPassageTap,
+            "tabBar": tabBarRecord(app),
             "baselineOpenJohnPath": context.baselineOpenJohnPath,
             "baselineCoordinateTaps": context.baselineCoordinateTaps,
             "baselineCoordinateTapsOrigin": "old-app taps at the center of a visible, not hittable control; empty for native and for runs without one",
@@ -508,6 +528,22 @@ final class AllRouteCaptureUITests: XCTestCase {
         metadata.lifetime = .keepAlways
         add(metadata)
         NSLog("L25_CAPTURE_MANIFEST %@", String(data: json, encoding: .utf8) ?? "{}")
+    }
+
+    /// The tab bar frame and the edge that the viewport helpers use (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarRecord(_ app: XCUIApplication) -> [String: Any] {
+        let bar = app.tabBars.firstMatch
+        var record: [String: Any] = ["barElementExists": bar.exists,
+                                     "edgeRule": "tab bar element frame minY; else tab button tops minus 12 pt; none for the old app"]
+        if bar.exists { record["barFrame"] = rectDictionary(bar.frame) }
+        var buttons: [String: Any] = [:]
+        for name in ["tab-today", "tab-read", "tab-saved", "tab-pray", "tab-settings"] {
+            let button = app.buttons[name]
+            if button.exists { buttons[name] = rectDictionary(button.frame) }
+        }
+        record["buttonFrames"] = buttons
+        record["edgeUsed"] = tabBarTopEdge(in: app, within: app.frame).map { Double($0) } as Any? ?? NSNull()
+        return record
     }
 
     private func rectDictionary(_ rect: CGRect) -> [String: Double] {
@@ -666,6 +702,37 @@ final class AllRouteCaptureUITests: XCTestCase {
             }
             XCTAssertTrue(observedSelected && isSelected(element), "The common preference must be committed: \(logLabel)")
         }
+    }
+
+    /// Route 8 check. The seeded John 1:1 note ("L00 synthetic migration fixture note.") exists in both apps, so the
+    /// editor opens with that text and the placeholder is absent. The editor is accepted by its stable controls and,
+    /// when present, the seeded note text.
+    /// Old editor (src/screens/NoteEditorScreen.tsx:121-167): buttons "Cancel" and "Save" (or "Saving…"), the reference
+    /// "John 1:1", the passage text, the multiline field (label "Note for John 1:1"), and "Delete note" when the note is not empty.
+    /// Native editor (SavedView.swift:360-402): `saved-note-cancel`, `saved-note-save`, `saved-note-editor`, `saved-note-delete`.
+    private func verifyNoteEditor(_ c: CaptureContext) throws {
+        let seeded = "L00 synthetic migration fixture note."
+        let cancel: XCUIElement, save: XCUIElement, delete: XCUIElement, reference: XCUIElement
+        if c.variant == .native {
+            XCTAssertTrue(c.app.textViews["saved-note-editor"].waitForExistence(timeout: 30), "The native note editor must open")
+            cancel = c.app.buttons["saved-note-cancel"]
+            save = c.app.buttons["saved-note-save"]
+            delete = c.app.buttons["saved-note-delete"]
+        } else {
+            try waitForAny(c.app, ["Cancel"])
+            cancel = c.app.buttons.matching(NSPredicate(format: "label == %@", "Cancel")).firstMatch
+            save = c.app.buttons.matching(NSPredicate(format: "label == %@", "Save")).firstMatch
+            delete = c.app.buttons.matching(NSPredicate(format: "label == %@", "Delete note")).firstMatch
+        }
+        reference = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "John 1:1")).firstMatch
+        XCTAssertTrue(cancel.waitForExistence(timeout: 30), "The note editor must show Cancel")
+        XCTAssertTrue(save.waitForExistence(timeout: 10), "The note editor must show Save")
+        XCTAssertTrue(reference.waitForExistence(timeout: 10), "The note editor must show the reference John 1:1")
+        XCTAssertTrue(delete.waitForExistence(timeout: 10), "The seeded note makes Delete note appear")
+        let text = c.app.descendants(matching: .any).matching(NSPredicate(
+            format: "label CONTAINS %@ OR value CONTAINS %@", seeded, seeded)).firstMatch
+        let seededShown = text.waitForExistence(timeout: 5)
+        c.resolvedIdentity = "Note editor John 1:1; seeded note \(seededShown ? "shown" : "text not exposed"); controls Cancel, Save, Delete note"
     }
 
     /// Route 5 check. Native keeps its existing control query. The old app exposes each choice as an `Other` element
@@ -929,6 +996,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         _ = element.waitForExistence(timeout: 5)
         switch baselineReach(element) {
         case .hittable:
+            baselineWaitUntilStable(element) // a tap during scroll momentum can be ignored by the old app
             element.tap()
         case .visibleNotHittable:
             let frame = element.frame
@@ -940,6 +1008,19 @@ final class AllRouteCaptureUITests: XCTestCase {
         case .missing:
             XCTAssertTrue(element.exists, "Expected a route control", file: file, line: line)
             XCTAssertTrue(element.isHittable, "Route control must be hittable", file: file, line: line)
+        }
+    }
+
+    /// Waits until the element frame has not moved for 0.6 s (at most 3 s).
+    private func baselineWaitUntilStable(_ element: XCUIElement) {
+        var last = element.frame
+        var stableSince = Date()
+        let deadline = Date().addingTimeInterval(3)
+        while Date() < deadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+            let now = element.frame
+            if now != last { last = now; stableSince = Date() }
+            else if Date().timeIntervalSince(stableSince) >= 0.6 { return }
         }
     }
 
@@ -1019,9 +1100,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         var viewport = (scroll?.frame ?? app.frame).intersection(app.frame)
         let keyboard = app.keyboards.firstMatch
         if keyboard.exists { viewport.size.height = min(viewport.height, keyboard.frame.minY - viewport.minY) }
-        let tabTop = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-            .allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }
-            .map(\.frame.minY).min()
+        let tabTop = tabBarTopEdge(in: app, within: viewport)
         if let tabTop { viewport.size.height = min(viewport.height, tabTop - viewport.minY) }
         let navBottom = app.navigationBars.allElementsBoundByIndex
             .filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.maxY).max()
@@ -1108,5 +1187,16 @@ final class AllRouteCaptureUITests: XCTestCase {
         case "/commentary/[book]/[chapter]": "Read JHN 1; tap All 30 readings on this chapter"
         default: "Visible controls only"
         }
+    }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
     }
 }

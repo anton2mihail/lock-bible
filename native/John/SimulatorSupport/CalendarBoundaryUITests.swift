@@ -136,9 +136,7 @@ final class CalendarBoundaryUITests: XCTestCase {
         if app.keyboards.firstMatch.exists {
             viewport.size.height = min(viewport.height, app.keyboards.firstMatch.frame.minY - viewport.minY)
         }
-        let tabTop = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
-            .allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }
-            .map(\.frame.minY).min()
+        let tabTop = tabBarTopEdge(in: app, within: viewport)
         if let tabTop { viewport.size.height = min(viewport.height, tabTop - viewport.minY) }
         let navBottom = app.navigationBars.allElementsBoundByIndex
             .filter { $0.exists && $0.frame.intersects(viewport) }
@@ -148,5 +146,16 @@ final class CalendarBoundaryUITests: XCTestCase {
             viewport = CGRect(x: viewport.minX, y: top, width: viewport.width, height: max(0, viewport.maxY - top))
         }
         return viewport
+    }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
     }
 }

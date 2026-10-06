@@ -60,6 +60,7 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertTrue(selectedDayTwo.isSelected)
 
         app.terminate()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
 
@@ -251,6 +252,7 @@ final class ContentFlowUITests: XCTestCase {
     private func step7Launch() -> XCUIApplication {
         guard ProcessInfo.processInfo.environment["STEP7_REAL_CLOCK"] == "1" else { return launchWithFeatureClock() }
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         return app
@@ -348,8 +350,11 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: app)
         XCTAssertEqual(waitForPageTitle(app), "Verse of the moment")
         let countdown = app.staticTexts.matching(NSPredicate(
-            format: "label MATCHES %@", "^New verse in ([0-9]+ min|[0-9]+h|[0-9]+h [0-9]+m)$")).firstMatch
-        XCTAssertTrue(countdown.waitForExistence(timeout: 8), "The countdown must use the source wording")
+            format: "label MATCHES[c] %@", "^New verse in ([0-9]+ min|[0-9]+h|[0-9]+h [0-9]+m)$")).firstMatch
+        // The source string is "New verse in ..." (src/screens/VerseOfDayScreen.tsx:21-29; DestinationView.swift:410-412). The page
+        // shows it as an uppercase eyebrow (`ContentPage.swift:38` uses `eyebrow.uppercased()`), so the label reads
+        // "NEW VERSE IN 12H". The match is case-insensitive.
+        XCTAssertTrue(countdown.waitForExistence(timeout: 8), "The countdown must use the source wording (case-insensitive)")
         if let reference = env["STEP7_VERSE_REFERENCE"] {
             XCTAssertTrue(app.staticTexts[reference].waitForExistence(timeout: 8), "Expected verse reference \(reference)")
         }
@@ -674,6 +679,7 @@ final class ContentFlowUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-L14FeatureDate", featureDate,
                                "-L14FeatureTimeZone", featureZone]
+        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         return app
@@ -744,9 +750,7 @@ final class ContentFlowUITests: XCTestCase {
         if app.keyboards.firstMatch.exists {
             viewport.size.height = min(viewport.height, app.keyboards.firstMatch.frame.minY - viewport.minY)
         }
-        let tab = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-")).allElementsBoundByIndex
-            .filter { $0.exists && $0.frame.intersects(viewport) }
-            .map(\.frame.minY).min()
+        let tab = tabBarTopEdge(in: app, within: viewport)
         if let tab { viewport.size.height = min(viewport.height, tab - viewport.minY) }
         let navigationBottom = app.navigationBars.allElementsBoundByIndex
             .filter { $0.exists && $0.frame.intersects(viewport) }
@@ -765,5 +769,16 @@ final class ContentFlowUITests: XCTestCase {
 
     private func frameDescription(_ frame: CGRect) -> String {
         "(\(frame.origin.x),\(frame.origin.y),\(frame.width),\(frame.height))"
+    }
+
+    /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
+    /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).
+    private func tabBarTopEdge(in app: XCUIApplication, within viewport: CGRect) -> CGFloat? {
+        let nativeTabs = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-"))
+        guard nativeTabs.firstMatch.exists else { return nil } // the old app has no `tab-` identifiers; its rules stay as they were
+        let bar = app.tabBars.firstMatch
+        if bar.exists, bar.frame.height > 0 { return bar.frame.minY }
+        let tops = nativeTabs.allElementsBoundByIndex.filter { $0.exists && $0.frame.intersects(viewport) }.map(\.frame.minY)
+        return tops.min().map { $0 - 12 }
     }
 }
