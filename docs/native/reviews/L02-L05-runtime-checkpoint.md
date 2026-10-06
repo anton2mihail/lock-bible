@@ -24,6 +24,10 @@ The top overlay covered Aa in the missing-library state. The first top safe-area
 
 Installed executable SHA-256 is `4bec6062ae345c98e816c4e8656d9f043cc2224314add7259bc2cbdb027b0b5a`. Installed debug library SHA-256 is `b850d312d810f2b25a638bdc1c0871e7632b33fa92800e372e294b1e3bea9f0c`. They match Main's build product record. Keep raw capability text under DEBUG. The same-process URL and typed same-ID import checks remain open. Full Reader and shell visual acceptance remains open.
 
+## Repeated ready URLs
+
+Run `gate-a-ready-urls-same-process-03.log` passes in 54.717 seconds. The test opens Settings before each identical URL. It requires an existing Reader title with a nonempty new request ID. John 1 and verse 1 appear after the second event. Request IDs change from `AC65F38F-6683-45A4-8DCD-EF194CD9D12C` to `FB4D945B-B582-4AC7-82F6-E4E1EE2FD8C1`. The four before/after PID records are all `43636`. This accepts repeated ready-state delivery in one process. The earlier run 01 is not accepted; a stale Reader query and teardown race weakened its result. The request UUID is a DEBUG diagnostic. Exclude it from Release accessibility values. Context positioning remains Reader ticket work.
+
 ## CI source review
 
 The corrected workflow stages the paths read by the project. It pins Xcode and finds the required simulator through `simctl` JSON. It does not use the local device ID. These source changes pass review. A hosted CI run remains unobserved.
