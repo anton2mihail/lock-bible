@@ -100,12 +100,19 @@ enum AppSheet: String, Identifiable {
         NSLog("John Reader request created id=%@ kind=chapter", latestChapterRequest!.id.uuidString)
         #endif
     }
-    func openSavedItem(_ item: SavedItem, using runtime: JohnRuntime) async {
-        guard let translation = TranslationID(rawValue: item.translationID),
-              let passage = await runtime.passage(translation: translation, bookCode: item.bookCode,
-                                                  chapter: item.chapter, startVerse: item.startVerse,
-                                                  endVerse: item.endVerse) else { return }
+    /// Loads the passage that a saved item names, with the item's own edition. Returns nil when it cannot load.
+    func savedItemPassage(_ item: SavedItem, using runtime: JohnRuntime) async -> PassageSelection? {
+        guard let translation = TranslationID(rawValue: item.translationID) else { return nil }
+        return await runtime.passage(translation: translation, bookCode: item.bookCode,
+                                     chapter: item.chapter, startVerse: item.startVerse,
+                                     endVerse: item.endVerse)
+    }
+    /// Opens a saved item in the Reader. Returns false, and changes nothing, when the passage cannot load.
+    @discardableResult
+    func openSavedItem(_ item: SavedItem, using runtime: JohnRuntime) async -> Bool {
+        guard let passage = await savedItemPassage(item, using: runtime) else { return false }
         openReader(passage: passage)
+        return true
     }
     /// Shows the chapter list of a book. `chapter` 0 is below the valid range, so the Reader model opens the list.
     func openReaderChapterList(bookCode: String, translation: TranslationID) {

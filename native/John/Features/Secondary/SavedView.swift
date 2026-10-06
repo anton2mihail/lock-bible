@@ -34,6 +34,7 @@ struct SavedView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 8)
                     .accessibilityIdentifier("saved-status")
+                    .contentAnnouncement(message)
             }
             if loading {
                 ProgressView("Loading saved items…")
@@ -124,7 +125,7 @@ struct SavedView: View {
         List {
             ForEach(items, id: \.id) { item in
                 SavedRow(item: item, colors: colors,
-                         open: { open(item) }, editNote: { noteItem = item }, delete: { Task { await delete(item) } })
+                         open: { open(item) }, editNote: { open(item) }, delete: { Task { await delete(item) } })
                     .listRowBackground(colors.background)
             }
         }
@@ -188,9 +189,20 @@ struct SavedView: View {
         }
     }
 
+    /// A saved item that cannot load keeps the user here and shows one line in `saved-status`.
+    /// Like the other status lines on this screen, it stays until the next open, delete, undo, or reload.
     private func open(_ item: SavedItem) {
-        if item.kind == .note { noteItem = item; return }
-        Task { await router.openSavedItem(item, using: runtime) }
+        Task {
+            message = nil
+            let opened: Bool
+            if item.kind == .note {
+                opened = await router.savedItemPassage(item, using: runtime) != nil
+                if opened { noteItem = item }
+            } else {
+                opened = await router.openSavedItem(item, using: runtime)
+            }
+            if !opened { message = "This passage could not be opened." }
+        }
     }
 }
 
