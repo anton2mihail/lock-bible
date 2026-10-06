@@ -18,3 +18,11 @@ The source Fathers export records 26 collections and 271 works. The visible row 
 | A comparison fixture is incomplete | Reject missing or empty required case sets. Report exact expected and observed counts. | `ContentFixtureComparison.swift` |
 
 Source may run a bounded host comparison to find draft fixture-shape errors. Label it preliminary source evidence. Main must run the stable code and exact fixtures in the simulator before runtime acceptance. A source build or host comparison does not close L13–L16 or Gate C.
+
+## Follow-up checkpoint
+
+The revised Toronto host report passes 13 checks with no mismatches. It reports 858 reading reference entries, 324 transition steps, seven callback steps, and 893 Today cases. The date parser now uses ASCII digits and matches the unusual source date probes. Source supplied explicit callback input and handled missing-reading values.
+
+The malformed-input check uses a comparator-only raw normalizer. It does not verify a production selector. Treat that result as source-shape evidence. The other 12 checks support the content contract. Do not add a second production raw normalizer for this check.
+
+Sol permits parallel content implementation under `Parallel-content-UI-contract.md`. Final production source hashes and SDK selection remain required. The draft simulator log has a MacOSX sysroot warning. Source must report or correct the SDK command before SDK acceptance. Feature runtime and visual parity remain open.
