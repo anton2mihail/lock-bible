@@ -1,6 +1,8 @@
 # Native rebuild work ledger
 
 Updated: 5 October 2026
+
+Current batch: `L06/works-content-build-03.log` passes target compilation with complete content, Works, media, and Settings membership. Main prepares valid-library actions and route runtime. Source corrects the concrete media lifecycle, Settings layout, Works appearance, and announcement findings in `reviews/L20-L24-complete-batch-source-review.md`. Notifications remain Main's next implementation scope. The deferred Reader proof uses owned visible ink in this coherent batch. No new product parity acceptance is claimed.
 Plan: [SwiftUI iOS 26 rebuild](../swiftui-ios26-rebuild-plan.md)
 Branch: `codex/swiftui-ios26-rebuild`
 
