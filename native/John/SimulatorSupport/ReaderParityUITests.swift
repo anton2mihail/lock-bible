@@ -545,6 +545,11 @@ final class ReaderParityUITests: XCTestCase {
         if let top = tabBarTopEdge(in: app, within: viewport) {
             viewport.size.height = min(viewport.height, top - viewport.minY)
         }
+        // Native: Scripture scrolls under the floating selection panel (audit B3). Keep taps above the panel.
+        let panel = app.descendants(matching: .any).matching(identifier: "reader-selection-panel").firstMatch
+        if panel.exists, panel.frame.height > 0, panel.frame.minY > viewport.minY {
+            viewport.size.height = min(viewport.height, panel.frame.minY - 8 - viewport.minY)
+        }
         let baselineTabs = ["Today", "Read", "Saved", "Pray", "Settings"]
             .map { baselineTab($0, in: app) }
             .filter { $0.exists && $0.frame.intersects(viewport) }

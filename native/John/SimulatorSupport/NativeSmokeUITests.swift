@@ -843,14 +843,14 @@ final class NativeSmokeUITests: XCTestCase {
         let reader = app.scrollViews["reader-chapter-scroll"]
         let tabBar = app.buttons["tab-saved"]
         for _ in 0..<12 {
-            let content = visibleReaderRect(reader, tabBar: tabBar)
+            let content = visibleReaderRect(reader, tabBar: tabBar, in: app)
             let frame = verse.frame
             if content.insetBy(dx: 0, dy: 12).contains(frame) { break }
             if frame.maxY <= content.minY + 12 { reader.swipeDown() }
             else if frame.minY >= content.maxY - 12 { reader.swipeUp() }
             else { break }
         }
-        let usableReader = visibleReaderRect(reader, tabBar: tabBar)
+        let usableReader = visibleReaderRect(reader, tabBar: tabBar, in: app)
         let visible = usableReader.intersection(verse.frame)
         guard visible.height >= 30, visible.width > 0, visible.midX.isFinite, visible.minY.isFinite else {
             XCTFail("Verse \(verse.identifier) has no finite visible text area. Frame: \(verse.frame). Reader: \(usableReader)")
@@ -870,9 +870,12 @@ final class NativeSmokeUITests: XCTestCase {
         return true
     }
 
-    private func visibleReaderRect(_ reader: XCUIElement, tabBar: XCUIElement) -> CGRect {
+    private func visibleReaderRect(_ reader: XCUIElement, tabBar: XCUIElement, in app: XCUIApplication) -> CGRect {
         let frame = reader.frame
-        let contentBottom = min(frame.maxY, tabBar.frame.minY - 12)
+        var contentBottom = min(frame.maxY, tabBar.frame.minY - 12)
+        // Scripture scrolls under the floating selection panel (audit B3). A verse tap must not land on the panel.
+        let panel = app.descendants(matching: .any).matching(identifier: "reader-selection-panel").firstMatch
+        if panel.exists, panel.frame.height > 0 { contentBottom = min(contentBottom, panel.frame.minY - 8) }
         return CGRect(x: frame.minX, y: frame.minY, width: frame.width,
                       height: max(0, contentBottom - frame.minY))
     }

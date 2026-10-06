@@ -494,6 +494,11 @@ final class ScriptureCardUITests: XCTestCase {
         if let top = tabBarTopEdge(in: app, within: visible) {
             visible.size.height = min(visible.height, top - visible.minY)
         }
+        // Scripture scrolls under the floating selection panel (audit B3). Keep word taps above the panel.
+        let panel = app.descendants(matching: .any).matching(identifier: "reader-selection-panel").firstMatch
+        if panel.exists, panel.frame.height > 0, panel.frame.minY > visible.minY {
+            visible.size.height = min(visible.height, panel.frame.minY - 8 - visible.minY)
+        }
         let navBottom = app.navigationBars.allElementsBoundByIndex
             .filter { $0.exists && $0.frame.intersects(visible) }
             .map(\.frame.maxY).max()

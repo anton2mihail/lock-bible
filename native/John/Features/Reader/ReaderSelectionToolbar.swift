@@ -91,12 +91,19 @@ struct ReaderSelectionToolbar: View {
         .padding(.horizontal, 12)
         .padding(.top, 4)
         .padding(.bottom, 8)
-        .background(colors.card)
-        .overlay(alignment: .top) { Rectangle().fill(colors.border).frame(height: 1 / displayScale) }
+        .modifier(SelectionPanelSurface(shape: panelShape, colors: colors,
+                                        hairline: 1 / displayScale, solid: reduceTransparency))
+        // The whole panel takes touches, also between its controls, so a tap on the panel never reaches the
+        // Scripture text that scrolls under it. Taps outside the panel still go to the owned-glyph hit test.
+        .contentShape(panelShape)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("reader-selection-panel")
         .sensoryFeedback(.selection, trigger: swatchTapCount)
     }
 
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    private var panelShape: RoundedRectangle { RoundedRectangle(cornerRadius: 24, style: .continuous) }
 
     private var bookmarkTitle: String {
         guard bookmarkStateKnown else { return "Unavailable" }
@@ -201,6 +208,29 @@ struct ReaderSelectionToolbar: View {
         case "note": FeatherIcon(name: "edit-3", size: 20, color: color)
         case "copy": FeatherIcon(name: "copy", size: 20, color: color)
         default: FeatherIcon(name: "image", size: 20, color: color)
+        }
+    }
+}
+
+/// The floating selection panel surface (audit B3): one Liquid Glass shape inside a `GlassEffectContainer`, so the
+/// swatches and actions share one glass surface. With Reduce Transparency on, a solid card fill with a hairline
+/// border replaces the glass, as the flat panel had.
+private struct SelectionPanelSurface: ViewModifier {
+    let shape: RoundedRectangle
+    let colors: JohnColors
+    let hairline: CGFloat
+    let solid: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if solid {
+            content
+                .background(colors.card, in: shape)
+                .overlay(shape.strokeBorder(colors.border, lineWidth: hairline))
+        } else {
+            GlassEffectContainer {
+                content.glassEffect(.regular, in: shape)
+            }
         }
     }
 }

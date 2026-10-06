@@ -395,7 +395,6 @@ struct ReaderView: View {
         Group {
             if let book = model.book, let number = model.chapterNumber {
                 if let chapter = model.chapter, let layout = model.layout {
-                    VStack(spacing: 0) {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 0) {
                             ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
@@ -614,6 +613,11 @@ struct ReaderView: View {
                         readerScrollPosition.scrollTo(y: y)
                     }
                     .accessibilityIdentifier("reader-chapter-scroll")
+                    // The selection panel floats over the chapter (audit B3). As a bottom safe-area inset it sits above
+                    // the tab bar (full or minimized), and the scroll view keeps its full height: Scripture scrolls under
+                    // the glass, and the content inset still lets the chapter end scroll clear of the panel. The panel
+                    // is outside the top mask, so the mask never clips it.
+                    .safeAreaInset(edge: .bottom, spacing: 0) {
                     if let passage = model.selectedPassage {
                         ReaderSelectionToolbar(
                             passage: passage,
@@ -637,6 +641,8 @@ struct ReaderView: View {
                             onCard: { router.push(.companion(.scriptureCard(passage))) }
                         )
                         .frame(maxWidth: readerColumnWidth)
+                        .padding(.horizontal, 8)
+                        .padding(.bottom, 8)
                         .frame(maxWidth: .infinity)
                         .sheet(item: $selectionSharePayload) { payload in
                             ReaderActivitySheet(text: payload.text) { error in
