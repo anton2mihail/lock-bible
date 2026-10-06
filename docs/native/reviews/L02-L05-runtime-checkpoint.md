@@ -18,6 +18,12 @@ Sol inspected the expanded UI test and its second-run log. One test passed with 
 
 Evidence: `docs/native/L02-runtime.md`, `build/native-evidence/L02/`, and `build/native-evidence/L00/08-reader-john-1.png`.
 
+## Failure-state controls
+
+The top overlay covered Aa in the missing-library state. The first top safe-area inset also left Aa behind the banner. The corrected root VStack gives the banner its own height above NavigationStack. Sol inspected `build/native-evidence/L04/gate-a-ui-safe-banner-04-reader.png`. Back, Aa, and Search are below the banner. The unchanged `testPrimaryTabsAndSharedReaderAppearance` passes in 31.610 seconds with zero failures. It selects a verse, opens Aa, changes to Large, and reads Large in Settings. This accepts the control obstruction fix.
+
+Installed executable SHA-256 is `4bec6062ae345c98e816c4e8656d9f043cc2224314add7259bc2cbdb027b0b5a`. Installed debug library SHA-256 is `b850d312d810f2b25a638bdc1c0871e7632b33fa92800e372e294b1e3bea9f0c`. They match Main's build product record. Keep raw capability text under DEBUG. The same-process URL and typed same-ID import checks remain open. Full Reader and shell visual acceptance remains open.
+
 ## CI source review
 
 The corrected workflow stages the paths read by the project. It pins Xcode and finds the required simulator through `simctl` JSON. It does not use the local device ID. These source changes pass review. A hosted CI run remains unobserved.
