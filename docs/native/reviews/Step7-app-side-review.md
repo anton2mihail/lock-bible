@@ -127,3 +127,21 @@ Correction to the list in `Step7-remaining-feature-checks-review.md` ruling 2: r
 1. Build one boundary that holds this branch (with fix 1) and the primary-checkout test fixes: `ContentFlowUITests`, `ScriptureCardUITests`, and `inject_bundle_fault.py` `5216b50c…`. Record every source hash. The test `testStep7ExternalURLFallbacksMatchSource` needs the app changes in this branch. The old `invalid-urls` expectation no longer applies.
 2. W5 uses the two-launch rule in `Step7-remaining-feature-checks-review.md`. Give each launch a new `STEP7_PROBE_RELATIVE_PATH`, because the probe refuses an existing file.
 3. Keep `PositiveNoticeUITests.swift` at the reviewed `89dd7bf0…` (`L22-positive-notice-runtime-20261006.md`).
+
+## Fix re-check (6 October 2026)
+
+**Required fix 1 (shared probe crash): accepted.** Commit `b5b2b14` is in HEAD. In `exportSharedContainerProbe`, it removes `[.atomic, .withoutOverwriting]`. It adds a guard that throws `CocoaError(.fileWriteFileExists, userInfo: [NSFilePathErrorKey: target.path])` when the file exists, then writes with `.atomic`. The existing `catch` logs the refusal. This is the exact change that this review required. It matches the L22 stage writer. The DEBUG launch with `-L29SharedProbeRelativePath` no longer stops the process.
+
+**Required fix 2 (Release exclusion record): accepted for the F3 boundary.** `build/native-evidence/F3/F3-build-record.txt` (SHA-256 `d7d4b441fe6fdcf9e090cec25ab25c36bb3f58081ad985a5e48911db346440c4`) is built from `0928fb4`, which contains `b5b2b14`. On the Release product, `l28_inspect_package.py` gives C13 PASS: no `-L29MediaFailureURI`, `-L29SharedProbeRelativePath`, `l29-widget-probe`, `l29.widgetProbe`, or sample URL in any file. C14 is also PASS. Record a Debug positive control for C13 beside this record.
+
+**F3 build facts (required fix 1 of `F3-shared-rotation-framework-review.md`): accepted.** The same record shows, for Release and Debug:
+
+- The framework `Rotation/` holds 15 files whose hashes equal the staged files.
+- No rotation file exists outside the framework.
+- The widget links `@rpath/JohnSharedResources.framework` with the `@executable_path/../../Frameworks` run path and has no `Frameworks` folder of its own.
+- The framework has minimum OS 26.0 (Info and Mach-O), ID `com.nrsv.verse.sharedresources`, version 1.5.0 (19), and no `Headers` or `.swiftmodule`.
+- L28: 16 PASS, 0 FAIL. C03 and C04 now include the framework.
+- C12: the Release widget has no file-timestamp symbol (only `NSUserDefaults`). **F2 therefore needs no widget manifest change.** Run C12 again on the signed archive.
+- C05 REVIEW is expected for a generic simulator product, because the binaries are x86_64 and arm64. The device archive must show arm64 only.
+
+The F3 repeat-check list (L04 runner, Today and Verse Moment verse, Step 7 W1–W5, L28 resource inventory, L26 size) stays open until Main runs it on this build.
