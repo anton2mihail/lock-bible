@@ -22,3 +22,11 @@ Source has added Works route, shared controls, library, collection, chapter comm
 | Select the most recent work with tied times | Preserve the source insertion-order tie result. Do not depend on unordered dictionary iteration. | `WorksLibraryView.swift` |
 
 Source sends stable files and hashes after these corrections. Main adds target membership and typed route callbacks. The required runtime cases remain the five bounded cases in `L20-L21-Works-handoff.md`. A source parse cannot establish Swift 6 cross-file compilation, complete pagination, durable anchors, or visual parity.
+
+## Corrected source handoff
+
+The import, empty-string initializer, independent viewport, complete-line fit, theme text color, reflow anchors, ordered position writes, Continue resume, one Back row, SpaceGrotesk headings, and autobiography noun fixes are present. Source has sent stable files and hashes to Main. Accept this source boundary for target inclusion. Main can replace the Works placeholders in its next coherent build. Runtime acceptance remains open.
+
+Key initial loading by work ID and requested section. Invalidate load and feedback generations on exit. Preserve a queued captured final position save when the view leaves. Source will apply these small guards at its next safe edit boundary.
+
+The corrected latest-read selection uses deterministic catalog order when timestamps tie. The old source uses position-object insertion order. This difference remains recorded for later parity review. It does not block target inclusion. Source starts isolated media and complete Settings files under the existing ownership contract.

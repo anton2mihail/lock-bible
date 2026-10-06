@@ -29,3 +29,9 @@ Remaining source guards include generation-owned loading cleanup and stale reloa
 `L06/search-saved-ui-02.log` records app PID 36575. The run entered a query, found results, tapped result 1, reached Reader verse 1, and entered Saved. This is bounded navigation evidence. The assertion does not establish the exact tapped result reference or Reader chapter. Both filter assertions failed. The accessibility tree gave All, Bookmarks, Highlights, and Notes the same `saved-screen` identifier. No filter action is accepted.
 
 The process was stopped after its failure summary. The result bundle is incomplete and remains preserved. Main applies the identifier correction in the next coherent content build. Put identifiers on actual controls and static status text. Remove broad identifiers from interactive lists and the Undo banner. The next short flow must record the result reference, matching Reader coordinates, and one actual Notes filter selection. Do not repeat the long Reader range setup.
+
+## Short corrected run
+
+`L06/content-widget-search-saved-01.log` reports TEST EXECUTE SUCCEEDED. One test passed with no failures in 21.048 seconds on the pinned simulator. It entered “in the beginning”, found results, opened Reader, entered Saved, tapped Notes, and checked its selected state. Accept this bounded navigation and Notes-filter behavior. The prior identifier failure is corrected.
+
+The current Reader assertion compares only the first reference word with the Reader title. Exact chapter and verse identity remain open. The Notes content check permits either an empty state or a row, so it does not prove the note record identity. All four filters, note save/delete, visible deletion, undo, failed writes, screenshots, and complete UI parity remain open. Main collects those observations in the current extended journey. No repeat of the accepted Notes path is needed.

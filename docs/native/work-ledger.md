@@ -33,6 +33,8 @@ The second Search/Saved run reached query results, Reader, and Saved. Filter ass
 
 The coherent content/widget build passes at `L06/content-widget-build-05.log`. This accepts target compilation only. Works files are present but have concrete compile and first-layout corrections before inclusion. Full content, widget, Verse Moment, Works, and source-matched route runtime remain open.
 
+The short corrected Search/Saved run passes one test in 21.048 seconds with no failures. Search navigation, Reader book agreement, and selected Notes filter are accepted. Exact passage identity, the other filters, note operations, undo, and visual parity remain open. Works source corrections are present and accepted for target inclusion. Its target compile and runtime remain open. Source begins isolated L23/L24 while Main owns the next coherent integration and L22.
+
 ## L00 checks
 
 - [x] Build and launch the existing app on a dedicated iOS 26 simulator.
