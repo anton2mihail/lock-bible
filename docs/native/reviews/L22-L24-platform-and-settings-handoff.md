@@ -10,6 +10,12 @@ Main owns `Runtime.swift`, the router, app lifecycle, notification delegate inst
 
 The third worker could not start. The two existing workers keep these scopes. Main owns L22 scheduling, lifecycle, delegate installation, and notification UI after widget and content integration. Source owns isolated L23 media and L24 complete Settings after Works. Main retains shared integration and simulator control. Source sends new file and callback lists at each stable boundary.
 
+On 6 October, split L22 at the view boundary. Source now owns only new `Features/Notifications/` files for `CalendarNotificationsView`, `RosaryReminderView`, and a feature-local native time picker. Main keeps the scheduler, permission requests, lifecycle, delegate, Runtime, router, target membership, and simulator. This work can proceed while Main checks the Saved Undo position.
+
+Each view receives `initialSettings` of the matching JohnCore settings type, `onClose: @MainActor () -> Void`, and `onSave: @MainActor (Settings) async throws -> Settings`. Here `Settings` means the corresponding concrete calendar or Rosary type. Main returns the committed setting only after schedule reconciliation and durable state success. Calendar also receives `onOpenSystemSettings: @MainActor () async throws -> Void`. Rosary receives `readCommittedSettings: @MainActor () -> RosaryReminderSettings`. Views do not call a permission API or the notification center.
+
+Calendar retains its draft after a failed save. Rosary resets its draft from the committed reader after a failed save, as the source does. Disable editing during save. Suppress route feedback after exit, but let a queued service operation finish. Calendar reveals its spinner from Delivery time. Rosary uses a compact native picker with a five-minute interval. Weekdays remain Sunday 1 through Saturday 7. Use leaf identifiers. Source sends complete file and callback lists at the stable target boundary.
+
 Use ADRs 0001–0006 and the accepted state store. Do not create another preference store, calendar decoder, media catalog, or router. Use injected services and immutable values. Keep app platform frameworks outside JohnCore.
 
 ## L22: local notices
