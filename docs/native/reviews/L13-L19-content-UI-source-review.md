@@ -54,3 +54,11 @@ The intention card uses radius 16 and padding 16. Its input uses radius 10. The 
 Use the actual source size aliases: sm is 16/24, md is 18/26, xs is 14/21, and xxs is 12/18. Local overrides still apply. Novena subtitle is 16/24. About text is 16/23. The earlier message with 17-point paragraphs and 14-point responses was corrected before implementation acceptance.
 
 The coherent simulator batch must check notes across Confession steps, inactive clearing, intention reset, and failed-save draft retention. Capture Novena selected/completed states at default and large text. Parse checks do not prove lifecycle or visual behavior.
+
+## Lectio and Rosary checkpoint
+
+Lectio now has a whole-file source implementation. Its footer must use the passage edition's attribution. A book name is not the attribution. Missing or failed passage resolution must offer “Open the Bible” through an `onOpenBible` callback to the existing Read root. Keep the actual-passage callback separate. Do not make a placeholder passage. Use source 17/28 prompt text, 11/18 normal uppercase step labels with tracking 2, and 16-point action and passage gaps. Reset scroll on each step. Preserve deadline-based timer behavior.
+
+The Rosary session transitions use the staged source session values. The first UI file shows artwork on prayer steps. The source shows artwork only when the step has no prayer and has a mystery index. Correct this condition. Use the guide's local source card, rail, header, completion, and action styles. Generic companion panels have different metrics. The source actions are vertical. Beads are 34 points. Bead numbers and the close glyph cap at 1.4 system scale. Prayer text uses 20/34; meditation uses 18/30. Completion centers within the viewport and uses a 36-point glyph inside its 96-point circle.
+
+Main must compile these new files together before the content runtime batch. Check all five Rosary sessions against the accepted exact steps. Observe repeat, back, completion, and reset. Check artwork and credits on a mystery step and their absence on prayer steps. Media opening remains outside this guide check.
