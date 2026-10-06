@@ -37,12 +37,25 @@ The source phrase regex rejects these line separators. Native `buildFTSQuery` cu
 
 After the Release build ends, Source must use the same phrase condition. Source must add exact FTS probes for both separators. The DEBUG comparison must require the final probe counts. Keep the search-case count at 41 and the parsed-reference count at 19.
 
+## Corrected source acceptance
+
+The phrase correction is accepted. Native now rejects U+2028 and U+2029 as phrase content. The source fixture includes both probes. Source reports passing host and arm64 simulator SDK builds. The DEBUG comparator type-check passes with Swift 6. Source did not run the simulator.
+
+| Item | Final SHA-256 |
+| --- | --- |
+| `ReferenceParser.swift` | `0236f9239a3d50a980b5880538447b49dfa80f95f11238cca6f36f9eaab1ec6c` |
+| `SearchRepository.swift` | `abcaadb8c88da954698f65f807d2beffeba9ade41c31fd5192a00d64d013f887` |
+| Source fixture JSON | `2b489648b2c454b624d5d43e5cdb431b0bee04fc30ef66b6a76ff23e8c5d2a6b` |
+| DEBUG comparator | `ce2527182b9ad9cd3236f80ee480dede983dda34562301ebf7c4a2247444a7cb` |
+
+Source must commit the two Core files and L09 scripts as one scoped source handoff. Runtime acceptance remains open.
+
 ## Runtime handoff
 
-The DEBUG comparison must check all 41 search responses and 57 edition-specific reference outputs. It must compare exact result fields, order, corrected query, reference status, and request ID. It must also check normalization, UTF-16 distance, and FTS probes. Release must exclude this helper.
+The DEBUG comparison must check all 41 search responses and 57 edition-specific reference outputs. It must compare exact result fields, order, corrected query, reference status, and request ID. It must also check four normalization probes, three UTF-16 distance probes, and six FTS probes. Release must exclude this helper.
 
 Main must record the current Core hashes, fixture hash, installed binary hashes, process ID, and process-derived paths with the simulator result. A passing host build or source fixture does not prove simulator Search parity.
 
 ## Open work
 
-The phrase correction, final build checks, simulator comparison, Search UI, highlighted result text, result navigation, and stale-response checks remain open. No complete L09 or Gate B acceptance is given by this source review.
+The simulator comparison, Search UI, highlighted result text, result navigation, and stale-response checks remain open. No complete L09 or Gate B acceptance is given by this source review.
