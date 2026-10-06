@@ -76,8 +76,20 @@ final class CalendarBoundaryUITests: XCTestCase {
 
     private func assertTodayDate(_ expected: String, in app: XCUIApplication,
                                  file: StaticString = #filePath, line: UInt = #line) {
-        let date = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", expected)).firstMatch
-        XCTAssertTrue(date.waitForExistence(timeout: 8), "Today must show its local date", file: file, line: line)
+        let date = app.staticTexts.matching(NSPredicate(format: "label CONTAINS[cd] %@", expected)).firstMatch
+        guard date.waitForExistence(timeout: 8) else {
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "calendar-boundary-date-missing"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "calendar-boundary-date-missing-ax"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            XCTFail("Today must show local date \(expected)", file: file, line: line)
+            return
+        }
+        NSLog("CALENDAR_BOUNDARY observedDateLabel=%@", date.label)
     }
 
     private func assertPageTitle(_ expected: String, in app: XCUIApplication,
