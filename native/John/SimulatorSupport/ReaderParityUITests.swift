@@ -7,6 +7,88 @@ final class ReaderParityUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testBaselineNavigationControlsReconnaissance() throws {
+        let bundleID = CaptureMetadata.value("READER_PARITY_BASELINE_BUNDLE_ID")
+        guard bundleID != "unprovided" else {
+            XCTFail("Reconnaissance requires an explicit baseline bundle ID")
+            return
+        }
+
+        let app = XCUIApplication(bundleIdentifier: bundleID)
+        app.launch()
+        baselineSnapshot("baseline-app-launch", app: app)
+        let initialReadTab = baselineTab("Read", in: app)
+        XCTAssertTrue(initialReadTab.waitForExistence(timeout: 10), "Baseline must expose its observed Read tab")
+        initialReadTab.tap()
+        let bookListTitle = app.staticTexts.matching(NSPredicate(format: "label == %@", "Read the Bible")).firstMatch
+        let chapterBack = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Back to ")).firstMatch
+        XCTAssertTrue(bookListTitle.waitForExistence(timeout: 8) || chapterBack.waitForExistence(timeout: 8),
+                      "Baseline Read must start at its book list or a chapter")
+        baselineSnapshot("baseline-reader-start", app: app)
+
+        let clearSelection = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS[c] %@", "Clear passage selection")
+        ).firstMatch
+        if clearSelection.exists {
+            XCTAssertTrue(clearSelection.isHittable, "Visible selection control must be hittable")
+            clearSelection.tap()
+            baselineSnapshot("baseline-reader-selection-closed", app: app)
+        } else {
+            NSLog("BASELINE_RECON selectionControl=absent; gold verse fill is not treated as active selection")
+        }
+
+        let settingsTab = baselineTab("Settings", in: app)
+        XCTAssertTrue(settingsTab.waitForExistence(timeout: 10), "Baseline must expose its observed Settings tab")
+        settingsTab.tap()
+        baselineSnapshot("baseline-settings-top", app: app)
+        logBaselineChoiceControls(app)
+
+        for index in 1...3 {
+            guard let viewport = largestVisibleScrollViewport(in: app) else {
+                NSLog("BASELINE_RECON settingsScroll=%d unavailable=no-visible-scroll-viewport", index)
+                break
+            }
+            let before = app.debugDescription
+            boundedScroll(in: viewport, direction: .up, app: app)
+            let after = app.debugDescription
+            baselineSnapshot("baseline-settings-scroll-\(index)", app: app)
+            logBaselineChoiceControls(app)
+            if before == after { break }
+        }
+
+        let readTab = baselineTab("Read", in: app)
+        XCTAssertTrue(readTab.waitForExistence(timeout: 10), "Baseline must expose its observed Read tab")
+        readTab.tap()
+        baselineSnapshot("baseline-return-read", app: app)
+
+        let clearAfterReturn = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS[c] %@", "Clear passage selection")
+        ).firstMatch
+        if clearAfterReturn.exists {
+            XCTAssertTrue(clearAfterReturn.isHittable)
+            clearAfterReturn.tap()
+            baselineSnapshot("baseline-return-read-selection-closed", app: app)
+        }
+
+        let bookList = app.staticTexts.matching(NSPredicate(format: "label == %@", "Read the Bible")).firstMatch
+        for index in 1...3 where !bookList.exists {
+            let back = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Back to ")).firstMatch
+            guard back.waitForExistence(timeout: 6), back.isHittable else {
+                NSLog("BASELINE_RECON back=%d unavailable=visible-back-control-not-found", index)
+                break
+            }
+            NSLog("BASELINE_RECON back=%d role=Button label=%@ value=%@ selected=%d",
+                  index, back.label, String(describing: back.value), back.isSelected ? 1 : 0)
+            back.tap()
+            baselineSnapshot("baseline-back-\(index)", app: app)
+        }
+        if bookList.exists {
+            baselineSnapshot("baseline-book-list", app: app)
+        } else {
+            NSLog("BASELINE_RECON bookList=unresolved afterAtMost3BackActions")
+        }
+    }
+
     func testBibleRepositoryCasesAcrossEditions() throws {
         let variant = CaptureVariant.current
         let allSamples = Edition.allCases.flatMap { samples(for: $0) }
@@ -34,13 +116,15 @@ final class ReaderParityUITests: XCTestCase {
             waitForLabel(title, equals: "\(sample.bookName) \(sample.chapter)")
 
             let attribution = captureAttributionControl(sample.edition, in: app, variant: variant)
-            let firstVerse = captureVerseControl(sample.firstVerseNumber, in: app, variant: variant)
+            let firstVerse = captureVerseControl(sample.firstVerseNumber, text: sample.firstVerseText,
+                                                 in: app, variant: variant)
             XCTAssertTrue(firstVerse.waitForExistence(timeout: 10), "Missing first verse: \(sample.key)")
             XCTAssertTrue(firstVerse.isHittable, "The chapter must open at its natural top: \(sample.key)")
             XCTAssertTrue(firstVerse.label.contains(sample.firstVerseText), "First verse differs from source: \(sample.key)")
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-top", app: app)
 
-            let lastVerse = captureVerseControl(sample.lastVerseNumber, in: app, variant: variant)
+            let lastVerse = captureVerseControl(sample.lastVerseNumber, text: sample.lastVerseText,
+                                                in: app, variant: variant)
             scrollToVisible(lastVerse, in: app)
             XCTAssertTrue(lastVerse.label.contains(sample.lastVerseText), "Last verse differs from source: \(sample.key)")
             waitForLabel(attribution, equals: sample.edition.attribution)
@@ -129,8 +213,10 @@ final class ReaderParityUITests: XCTestCase {
             let readTab = app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Read, tab")).firstMatch
             XCTAssertTrue(readTab.waitForExistence(timeout: 12), "Baseline must expose its Read tab")
             readTab.tap()
-            XCTAssertTrue(app.staticTexts["Read the Bible"].waitForExistence(timeout: 12),
-                          "Baseline Read screen must expose its source title")
+            let bookList = app.staticTexts.matching(NSPredicate(format: "label == %@", "Read the Bible")).firstMatch
+            let back = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Back to ")).firstMatch
+            XCTAssertTrue(bookList.waitForExistence(timeout: 8) || back.waitForExistence(timeout: 8),
+                          "Baseline Read must open at its book list or a restored chapter")
         }
         return app
     }
@@ -181,15 +267,24 @@ final class ReaderParityUITests: XCTestCase {
         ]
         var observedChoices: [String] = []
         for label in requestedChoices {
-            let choice = app.descendants(matching: .any)
-                .matching(NSPredicate(format: "label == %@", label)).firstMatch
+            let choice = app.otherElements.matching(NSPredicate(format: "label == %@", label)).firstMatch
             XCTAssertTrue(choice.waitForExistence(timeout: 8), "Baseline is missing source control: \(label)")
-            tapWhenReady(choice, in: app)
-            observedChoices.append("\(label)=\(CaptureMetadata.selectionValue(choice))")
+            let current = baselineRadioValue(choice)
+            XCTAssertNotNil(current, "Baseline control must report a radio checked state: \(label)")
+            if current == "radio button, unchecked" {
+                tapWhenReady(choice, in: app)
+                waitForValue(choice, equals: "radio button, checked")
+            }
+            XCTAssertEqual(baselineRadioValue(choice), "radio button, checked",
+                           "Baseline choice must be checked after selection: \(label)")
+            observedChoices.append("\(label)=radio button, checked")
         }
-        let appearance = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "label == %@", "Appearance, System")).firstMatch
-        let appearancePreference = appearance.exists ? CaptureMetadata.selectionValue(appearance) : "unresolved"
+        let appearanceOptions = ["System", "Light", "Dark"].map { mode in
+            app.otherElements.matching(NSPredicate(format: "label == %@", "Appearance, \(mode)")).firstMatch
+        }
+        let selectedAppearance = appearanceOptions.first { baselineRadioValue($0) == "radio button, checked" }
+        XCTAssertNotNil(selectedAppearance, "Baseline must expose one checked appearance choice")
+        let appearancePreference = selectedAppearance?.label.replacingOccurrences(of: "Appearance, ", with: "") ?? "unresolved"
         app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "Read, tab")).firstMatch.tap()
         return CaptureProfileObservation(
             requested: "Medium/Comfortable/Serif/Paragraphs/\(edition.id)",
@@ -231,10 +326,10 @@ final class ReaderParityUITests: XCTestCase {
         return app.buttons.matching(NSPredicate(format: "label == %@", "\(sample.bookName) \(sample.chapter)")).firstMatch
     }
 
-    private func captureVerseControl(_ number: Int, in app: XCUIApplication,
+    private func captureVerseControl(_ number: Int, text: String, in app: XCUIApplication,
                                      variant: CaptureVariant) -> XCUIElement {
         if variant == .native { return app.buttons["reader-verse-\(number)"] }
-        return app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Verse \(number). ")).firstMatch
+        return app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
     }
 
     private func captureAttributionControl(_ edition: Edition, in app: XCUIApplication,
@@ -390,11 +485,76 @@ final class ReaderParityUITests: XCTestCase {
                        file: file, line: line)
     }
 
+    private func baselineRadioValue(_ element: XCUIElement) -> String? {
+        guard element.elementType == .other, let value = element.value as? String,
+              value == "radio button, checked" || value == "radio button, unchecked" else { return nil }
+        return value
+    }
+
     private func attachScreenshot(_ name: String, app: XCUIApplication) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    private func baselineTab(_ name: String, in app: XCUIApplication) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH[c] %@", "\(name), tab")).firstMatch
+    }
+
+    private func baselineSnapshot(_ name: String, app: XCUIApplication) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "\(name)-screenshot"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+
+        let hierarchy = XCTAttachment(string: app.debugDescription)
+        hierarchy.name = "\(name)-accessibility"
+        hierarchy.lifetime = .keepAlways
+        add(hierarchy)
+        NSLog("BASELINE_RECON snapshot=%@ appFrame=%@", name, NSCoder.string(for: app.frame))
+    }
+
+    private func logBaselineChoiceControls(_ app: XCUIApplication) {
+        let choiceTerms = ["text size", "line spacing", "typeface", "layout", "appearance", "world english",
+                           "douay", "vulgate", "translation", "paragraph", "verse"]
+        for element in app.descendants(matching: .any).allElementsBoundByIndex {
+            let label = element.label
+            guard !label.isEmpty,
+                  choiceTerms.contains(where: { label.localizedCaseInsensitiveContains($0) }) else { continue }
+            NSLog("BASELINE_RECON choice role=%@ label=%@ value=%@ selected=%d hittable=%d",
+                  String(describing: element.elementType), label, String(describing: element.value),
+                  element.isSelected ? 1 : 0, element.isHittable ? 1 : 0)
+        }
+    }
+
+    private func largestVisibleScrollViewport(in app: XCUIApplication) -> CGRect? {
+        let frame = app.frame
+        let scrolls = app.scrollViews.allElementsBoundByIndex
+            .filter { $0.exists && $0.isHittable && $0.frame.width > 0 && $0.frame.height > 0 }
+        guard let scroll = scrolls.max(by: { $0.frame.height < $1.frame.height }) else { return nil }
+        var viewport = scroll.frame.intersection(frame)
+        let visibleTabs = ["Today", "Read", "Saved", "Pray", "Settings"]
+            .map { baselineTab($0, in: app) }
+            .filter { $0.exists && $0.frame.intersects(viewport) }
+        if let tabTop = visibleTabs.map(\.frame.minY).min() {
+            viewport.size.height = min(viewport.height, tabTop - viewport.minY)
+        }
+        guard viewport.width > 80, viewport.height > 120 else { return nil }
+        return viewport
+    }
+
+    private func boundedScroll(in viewport: CGRect, direction: ScrollDirection, app: XCUIApplication) {
+        let x = viewport.midX
+        let startY = direction == .up ? viewport.minY + viewport.height * 0.75 : viewport.minY + viewport.height * 0.25
+        let endY = direction == .up ? viewport.minY + viewport.height * 0.25 : viewport.minY + viewport.height * 0.75
+        app.coordinate(withNormalizedOffset: normalized(CGPoint(x: x, y: startY), in: app))
+            .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(CGPoint(x: x, y: endY), in: app)))
+    }
+
+    private enum ScrollDirection {
+        case up
+        case down
     }
 
     private func samples(for edition: Edition) -> [BibleCase] {
@@ -490,10 +650,5 @@ final class ReaderParityUITests: XCTestCase {
             ProcessInfo.processInfo.environment[key] ?? "unprovided"
         }
 
-        static func selectionValue(_ element: XCUIElement) -> String {
-            if element.isSelected { return "selected" }
-            if let value = element.value { return String(describing: value) }
-            return "unresolved"
-        }
     }
 }

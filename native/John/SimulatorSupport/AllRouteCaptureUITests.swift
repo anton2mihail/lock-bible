@@ -256,12 +256,15 @@ final class AllRouteCaptureUITests: XCTestCase {
             if c.variant == .native {
                 element = button(c, nativeID: id, baselineLabel: baselineLabel)
             } else {
-                element = c.app.descendants(matching: .any).matching(
-                    NSPredicate(format: "label == %@ OR label CONTAINS[c] %@", baselineLabel, baselineLabel)
-                ).firstMatch
+                element = c.app.otherElements.matching(NSPredicate(format: "label == %@", baselineLabel)).firstMatch
             }
             XCTAssertTrue(element.waitForExistence(timeout: 8), "Missing common preference choice: \(logLabel)")
-            if !isSelected(element) { try tap(element) }
+            let currentSelection = selectionState(element)
+            if c.variant == .baseline {
+                XCTAssertNotNil(currentSelection,
+                                "Baseline preference must expose an observed checked value: \(logLabel)")
+            }
+            if currentSelection != true { try tap(element) }
             let selected = XCTNSPredicateExpectation(predicate: NSPredicate { object, _ in
                 guard let choice = object as? XCUIElement else { return false }
                 return self.selectionState(choice) == true
@@ -319,19 +322,40 @@ final class AllRouteCaptureUITests: XCTestCase {
 
     private func openJohnOne(_ c: CaptureContext) throws {
         try openTab("read", label: "Read", context: c)
-        let currentTitle = c.variant == .native
-            ? c.app.buttons["reader-title"]
-            : c.app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "John 1")).firstMatch
-        if currentTitle.exists, currentTitle.label.localizedCaseInsensitiveContains("John 1") { return }
-        if currentTitle.exists,
-           currentTitle.label.range(of: #"^John [0-9]+$"#, options: .regularExpression) != nil {
-            try tap(button(c, nativeID: "reader-back", baselineLabel: "Back to John chapters"))
+        let exactJohnOne = c.variant == .native
+            ? c.app.buttons.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
+            : c.app.buttons.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
+        if exactJohnOne.exists { return }
+
+        let bookList = c.variant == .native
+            ? c.app.staticTexts["reader-book-list-title"]
+            : c.app.staticTexts.matching(NSPredicate(format: "label == %@", "Read the Bible")).firstMatch
+        for _ in 0..<3 where !bookList.exists {
+            let back: XCUIElement
+            if c.variant == .native {
+                back = c.app.buttons["reader-back"]
+            } else {
+                back = c.app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Back to ")).firstMatch
+            }
+            XCTAssertTrue(back.waitForExistence(timeout: 8),
+                          "A restored Reader route must expose Back to chapters or Back to books")
+            try tap(back)
         }
-        let book = button(c, nativeID: "reader-book-JHN", baselineLabel: "John")
-        if book.waitForExistence(timeout: 2) { try tap(book) }
-        let chapter = button(c, nativeID: "reader-chapter-1", baselineLabel: "John chapter 1")
-        if chapter.waitForExistence(timeout: 8) { try tap(chapter) }
-        try waitForAny(c.app, ["John 1", "JOHN 1"])
+        XCTAssertTrue(bookList.waitForExistence(timeout: 8), "Reader must reach the actual book list before selecting John")
+        if c.variant == .native {
+            try tap(c.app.buttons["reader-book-JHN"])
+            try tap(c.app.buttons["reader-chapter-1"])
+            try waitForAny(c.app, ["John 1"])
+            XCTAssertEqual(c.app.buttons["reader-title"].label, "John 1")
+        } else {
+            let john = c.app.buttons.matching(NSPredicate(format: "label == %@", "John, 21 chapters")).firstMatch
+            try tap(john)
+            let chapter = c.app.buttons.matching(NSPredicate(format: "label == %@", "John chapter 1")).firstMatch
+            try tap(chapter)
+            let chapterTitle = c.app.buttons.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
+            try waitForAny(c.app, ["John 1"])
+            XCTAssertEqual(chapterTitle.label, "John 1")
+        }
     }
 
     private func selectJHN11(_ c: CaptureContext) throws {
@@ -403,8 +427,8 @@ final class AllRouteCaptureUITests: XCTestCase {
     private func selectionState(_ element: XCUIElement) -> Bool? {
         if element.isSelected { return true }
         if let value = element.value as? String {
-            if value == "Selected" || value.lowercased() == "checked" { return true }
-            if value == "Not selected" || value.lowercased() == "unchecked" { return false }
+            if value == "Selected" || value == "radio button, checked" || value == "checked" { return true }
+            if value == "Not selected" || value == "radio button, unchecked" || value == "unchecked" { return false }
         }
         if let value = element.value as? NSNumber { return value.boolValue }
         return nil
