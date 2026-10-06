@@ -101,11 +101,14 @@ import JohnCore
     func receive(_ request: ReaderChapterRequest, using runtime: JohnRuntime) async {
         guard handledRequestID != request.id else { return }
         invalidatePendingChapterLoad()
-        handledRequestID = request.id
         manifestLoadID = request.id
         edition = request.translationID
         let loadedBooks = await runtime.books(translation: request.translationID)
-        guard manifestLoadID == request.id, handledRequestID == request.id else { return }
+        // Mark the request handled only after its manifest load wins. When the Read tab appears, ReaderView's
+        // `.task` runs `loadBooks`, which can take `manifestLoadID` from a request that `onChange` started.
+        // That request must stay unhandled, so the `receive` call after `loadBooks` in the same `.task` applies it.
+        guard manifestLoadID == request.id, handledRequestID != request.id else { return }
+        handledRequestID = request.id
         books = loadedBooks
         guard let requestedBook = books.first(where: { $0.code == request.bookCode }) else {
             message = "This passage is not available in this edition."
