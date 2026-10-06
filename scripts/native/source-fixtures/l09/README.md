@@ -16,7 +16,7 @@ The script creates the output directory. It opens the search database in read-on
 
 ## Fixture coverage
 
-The fixture contains exact source outputs for 39 search requests and 19 parsed-reference requests. It includes all three editions and all three search scopes. It includes reversed numeric verse ranges, suffix numeric casts, aliases, invalid chapters, default and requested limits, FTS ordering, quoted phrases, typo correction after zero original results, and no-match correction. Parser cases cover fuzzy-name lengths below 4, at 4, at 7, and at 8 characters. They also compare composed and decomposed accented forms through source normalization.
+The fixture contains exact source outputs for 41 search requests and 19 parsed-reference requests. It includes all three editions and all three search scopes. It includes reversed numeric verse ranges, suffix numeric casts, aliases, invalid chapters, default and requested limits, FTS ordering, quoted phrases, typo correction after zero original results, and no-match correction. Dotted text and phrase cases verify that punctuation splits search tokens. Parser cases cover fuzzy-name lengths below 4, at 4, at 7, and at 8 characters. They also compare composed and decomposed accented forms through source normalization.
 
 The `sourceRules` field records the source behavior used by the native comparison. Correction examines up to 300 same-first-letter vocabulary entries. It uses edit distance over UTF-16 code units. Quoted input skips correction. Search results use the source SQL order. The `sqlTrace` values show the prepared SQL text and bound arguments for each request.
 

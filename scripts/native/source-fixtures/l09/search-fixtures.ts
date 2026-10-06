@@ -88,6 +88,8 @@ const cases = [
   { id: "correction-respects-nt-scope", translationID: "web-ce", scope: "nt", query: "fiath" },
   { id: "no-correction-found", translationID: "web-ce", scope: "all", query: "qzxvqqq" },
   { id: "punctuation-tokenization", translationID: "web-ce", scope: "all", query: "faith, hope & love!" },
+  { id: "dotted-text-tokenization", translationID: "web-ce", scope: "all", query: "faith.hope" },
+  { id: "dotted-phrase-tokenization", translationID: "web-ce", scope: "all", query: '"In.the beginning"' },
   { id: "vulgate-reference", translationID: "vulgate", scope: "all", query: "John 3:16" },
   { id: "douay-reference", translationID: "douay-rheims", scope: "all", query: "John 3:16" },
   ...(["web-ce", "douay-rheims", "vulgate"] as const).flatMap((translationID) =>
