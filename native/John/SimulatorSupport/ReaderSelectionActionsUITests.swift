@@ -28,7 +28,7 @@ final class ReaderSelectionActionsUITests: XCTestCase {
         selectVerseOne(in: app)
         let second = app.buttons["reader-verse-2"]
         XCTAssertTrue(second.waitForExistence(timeout: 8))
-        second.tap()
+        tapObservedWord(second, offset: CGPoint(x: 20, y: 14), in: app)
 
         let reference = app.staticTexts["reader-selection-reference"]
         XCTAssertTrue(reference.waitForExistence(timeout: 5))
@@ -98,6 +98,17 @@ final class ReaderSelectionActionsUITests: XCTestCase {
             predicate: NSPredicate(format: "label == %@", "John 1:1"), object: reference)
         XCTAssertEqual(XCTWaiter.wait(for: [exact], timeout: 8), .completed,
                        "The visible selection must be exactly JHN 1:1")
+    }
+
+    private func tapObservedWord(_ verse: XCUIElement, offset: CGPoint, in app: XCUIApplication) {
+        XCTAssertTrue(verse.isHittable, "Verse must be visible before the owned-word tap")
+        let point = CGPoint(x: verse.frame.minX + offset.x, y: verse.frame.minY + offset.y)
+        XCTAssertTrue(verse.frame.contains(point), "Observed word point must stay inside the verse frame")
+        XCTAssertTrue(app.frame.contains(point), "Observed word point must stay inside the app viewport")
+        NSLog("READER_SELECTION_WORD_TAP id=%@ frame=%@ offset=%@ point=%@",
+              verse.identifier, NSCoder.string(for: verse.frame), NSCoder.string(for: offset), NSCoder.string(for: point))
+        verse.coordinate(withNormalizedOffset: CGVector(dx: offset.x / verse.frame.width,
+                                                          dy: offset.y / verse.frame.height)).tap()
     }
 
     private func waitForValue(_ element: XCUIElement, equals value: String,

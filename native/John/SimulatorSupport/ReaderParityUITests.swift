@@ -91,6 +91,7 @@ final class ReaderParityUITests: XCTestCase {
     func testVerseLayoutRangeTransitionsAndSameEndRules() throws {
         let app = launch(variant: .native)
         _ = applyProfile(edition: .web, layout: "Verse by verse", in: app)
+        XCTAssertEqual(app.frame.width, 402, "Observed word points apply only to the verified 402pt phone profile")
         openChapter("JHN", number: 1, in: app)
 
         selectVerse(10, expectedSummary: "Selected: verses 10–10", reference: "John 1:10", in: app)
@@ -277,9 +278,43 @@ final class ReaderParityUITests: XCTestCase {
 
     private func tapVerse(_ number: Int, in app: XCUIApplication) {
         let verse = app.buttons["reader-verse-\(number)"]
-        scrollToVisible(verse, in: app)
+        let offset: CGPoint
+        switch number {
+        case 2, 8: offset = CGPoint(x: 20, y: 14)
+        case 10, 11, 12: offset = CGPoint(x: 30, y: 14)
+        default:
+            XCTFail("No observed owned-word point is available for JHN 1:\(number)")
+            return
+        }
+        XCTAssertTrue(verse.waitForExistence(timeout: 10), "Verse \(number) must be present")
+        var viewport = visibleViewport(for: verse, in: app)
+        var point = CGPoint(x: verse.frame.minX + offset.x, y: verse.frame.minY + offset.y)
+        for _ in 0..<12 {
+            let safeViewport = viewport.insetBy(dx: 4, dy: 4)
+            if verse.isHittable, safeViewport.contains(point) { break }
+            XCTAssertGreaterThan(viewport.height, 120, "No safe Reader scroll area for verse \(number)")
+            let above = point.y < safeViewport.minY
+            let startFraction: CGFloat = above ? 0.25 : 0.75
+            let endFraction: CGFloat = above ? 0.75 : 0.25
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            NSLog("READER_PARITY_WORD_SCROLL verse=%d frame=%@ point=%@ viewport=%@ start=%@ end=%@",
+                  number, NSCoder.string(for: verse.frame), String(describing: point),
+                  NSCoder.string(for: viewport), String(describing: start), String(describing: end))
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            viewport = visibleViewport(for: verse, in: app)
+            point = CGPoint(x: verse.frame.minX + offset.x, y: verse.frame.minY + offset.y)
+        }
+        let safeViewport = viewport.insetBy(dx: 4, dy: 4)
         XCTAssertTrue(verse.isHittable, "Verse \(number) must be visible before selection")
-        verse.tap()
+        XCTAssertTrue(verse.frame.contains(point), "Owned-word point must remain inside the verse frame")
+        XCTAssertTrue(safeViewport.contains(point), "Owned-word point must remain inside the safe visible Reader viewport")
+        NSLog("READER_PARITY_WORD_TAP verse=%d frame=%@ offset=%@ point=%@ viewport=%@",
+              number, NSCoder.string(for: verse.frame), String(describing: offset),
+              String(describing: point), NSCoder.string(for: viewport))
+        verse.coordinate(withNormalizedOffset: CGVector(dx: offset.x / verse.frame.width,
+                                                          dy: offset.y / verse.frame.height)).tap()
     }
 
     private func assertSelection(summary: String, reference: String, in app: XCUIApplication) {
@@ -320,8 +355,12 @@ final class ReaderParityUITests: XCTestCase {
                 .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
         var viewport = (scroll?.frame ?? app.frame).intersection(app.frame)
         if chapterScroll.exists {
+            let safeTop = Double(chapterScroll.value as? String ?? "") ?? 0
+            viewport.origin.y = max(viewport.minY, safeTop + 8)
             let title = app.buttons["reader-title"]
-            if title.exists { viewport.origin.y = max(viewport.minY, title.frame.maxY + 8) }
+            if title.exists, title.frame.maxY > viewport.minY {
+                viewport.origin.y = max(viewport.minY, title.frame.maxY + 8)
+            }
         }
         let tabs = ["tab-today", "tab-read", "tab-pray", "tab-saved", "tab-settings"]
             .map { app.buttons[$0] }
