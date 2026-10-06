@@ -94,8 +94,8 @@ Use `--stage unsigned --platform simulator` for the Release simulator build. Use
 | --- | --- | --- |
 | C00 | One embedded widget extension | exactly one `.appex` in `PlugIns` |
 | C01, C02 | App and widget bundle IDs | `com.nrsv.verse` and `com.nrsv.verse.widget` |
-| C03 | Version and build | equal in app and widget, and equal to `--expect-version` and `--expect-build` if given |
-| C04 | Deployment floor | `MinimumOSVersion` 26.0 in both Info files, `LC_BUILD_VERSION` minos 26.0 in each Mach-O file, platform `IOS` (device) or `IOSSIMULATOR` |
+| C03 | Version and build | equal in app, widget, and every embedded framework (`JohnSharedResources.framework`), and equal to `--expect-version` and `--expect-build` if given |
+| C04 | Deployment floor | `MinimumOSVersion` 26.0 in the app, widget, and framework Info files, `LC_BUILD_VERSION` minos 26.0 in each Mach-O file (app, widget, and framework executables), platform `IOS` (device) or `IOSSIMULATOR` |
 | C05 | Architecture | arm64 |
 | C06 | URL scheme | only `nrsv` |
 | C07 | `AppGroupIdentifier` Info value | `group.com.nrsv.verse` in both |
@@ -275,7 +275,7 @@ These steps are for the person who owns the account. Main and Source do not run 
 
 ### 9.2 Version and build (USER, U2)
 
-The live app is 1.5.0 build 18 (App Store Connect status must be checked by the user; the earlier release notes record a submission and do not prove the current state). The native project has 1.5.0 build 19. App Store Connect accepts a higher build for a version that has not been approved. If 1.5.0 is approved, the new release needs a higher version string. The user decides the version and the build. Main then changes `CFBundleShortVersionString` and `CFBundleVersion` in both Info files (app and widget must match).
+The live app is 1.5.0 build 18 (App Store Connect status must be checked by the user; the earlier release notes record a submission and do not prove the current state). The native project has 1.5.0 build 19. App Store Connect accepts a higher build for a version that has not been approved. If 1.5.0 is approved, the new release needs a higher version string. The user decides the version and the build. Main then changes `CFBundleShortVersionString` and `CFBundleVersion` in three Info files: `native/John/App/Info.plist`, `native/John/Widget/Info.plist`, and `native/John/SharedResources/Info.plist` (the app, the widget, and `JohnSharedResources.framework` must match).
 
 ### 9.3 Build and verify (Main, then USER for signing)
 

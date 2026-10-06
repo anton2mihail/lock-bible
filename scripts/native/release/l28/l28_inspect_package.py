@@ -175,6 +175,11 @@ def main():
     widget = widgets[0] if widgets else None
     widget_info = read_plist(widget / "Info.plist") if widget else {}
     widget_info = widget_info or {}
+    # Embedded frameworks of the app (F3: JohnSharedResources.framework). Each one carries the same version and build.
+    frameworks = {}
+    for fw in sorted(app.glob("Frameworks/*.framework")):
+        fw_info = read_plist(fw / "Info.plist") or {}
+        frameworks[fw.name] = (fw, fw_info)
 
     # Identifiers
     record("C01", "PASS" if app_info.get("CFBundleIdentifier") == EXPECT["appId"] else "FAIL", "App bundle ID",
@@ -183,16 +188,22 @@ def main():
            f"observed {widget_info.get('CFBundleIdentifier')}, expected {EXPECT['widgetId']}")
     versions = {k: (app_info.get(k), widget_info.get(k)) for k in ("CFBundleShortVersionString", "CFBundleVersion")}
     same = all(a == b for a, b in versions.values())
-    detail = f"app/widget {versions}"
+    framework_versions = {name: {k: info.get(k) for k in ("CFBundleShortVersionString", "CFBundleVersion")}
+                          for name, (_, info) in frameworks.items()}
+    for values in framework_versions.values():
+        same = same and all(values[k] == app_info.get(k) for k in values)
+    detail = f"app/widget {versions}; embedded frameworks {framework_versions or 'none'}"
     ok = same
     if args.expect_version:
         ok = ok and app_info.get("CFBundleShortVersionString") == args.expect_version
     if args.expect_build:
         ok = ok and app_info.get("CFBundleVersion") == args.expect_build
-    record("C03", "PASS" if ok else "FAIL", "Version and build equal in app and widget (and expected values)", detail)
+    record("C03", "PASS" if ok else "FAIL", "Version and build equal in app, widget, and embedded frameworks (and expected values)", detail)
 
     # Deployment floor
     floors = {"appInfo": app_info.get("MinimumOSVersion"), "widgetInfo": widget_info.get("MinimumOSVersion")}
+    for name, (_, info) in frameworks.items():
+        floors[f"{name} Info"] = info.get("MinimumOSVersion")
     expected_platform = "IOS" if args.platform == "device" else "IOSSIMULATOR"
     machos = {}
     for label, bundle in (("app", app), ("widget", widget)):
@@ -203,6 +214,10 @@ def main():
             machos[label] = build_version(bundle / executable)
     for path in app.glob("*.dylib"):
         machos[path.name] = build_version(path)
+    for name, (fw, info) in frameworks.items():
+        fw_exec = info.get("CFBundleExecutable")
+        if fw_exec and (fw / fw_exec).is_file():
+            machos[name] = build_version(fw / fw_exec)
     floor_ok = all(v == EXPECT["minOS"] for v in floors.values()) and all(
         p == expected_platform and m == EXPECT["minOS"] for p, m in machos.values())
     record("C04", "PASS" if floor_ok and machos else "FAIL", "Deployment floor 26.0 (Info.plist and Mach-O) and platform",
@@ -213,6 +228,9 @@ def main():
             continue
         executable = (read_plist(bundle / "Info.plist") or {}).get("CFBundleExecutable")
         archs[label] = run(["lipo", "-archs", str(bundle / executable)]).stdout.strip() if executable else None
+    for name, (fw, info) in frameworks.items():
+        fw_exec = info.get("CFBundleExecutable")
+        archs[name] = run(["lipo", "-archs", str(fw / fw_exec)]).stdout.strip() if fw_exec else None
     record("C05", "PASS" if all(v == "arm64" for v in archs.values()) else "REVIEW", "Architectures", f"{archs}")
 
     # URL scheme

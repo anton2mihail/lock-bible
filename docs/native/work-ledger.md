@@ -114,6 +114,10 @@ No app source or target behavior changes are part of L00.
 - Sol accepted the corrected legacy-read mode for a copied-byte simulator proof. It read `bible.reader.textSize`, queried FTS5 for three editions, and decoded the requested Works section. The process returned exit 0. MMKV data/CRC and both input databases kept the same hashes. Output: `build/native-evidence/L01/storage-runtime/run-02.txt`. This does not prove same-ID app migration or compare the decoded preference value.
 - The proof ran in the pinned iOS 26.5 simulator using a separate `com.nrsv.storageproof` app bundle. Its final output line says “No simulator was opened,” although `simctl launch` started the app process in the simulator. SQLite and zlib version strings were not reported.
 
+## F3 shared rotation framework (6 October 2026)
+
+At `550298a` the rotation corpus moved out of the app and widget bundles into `JohnSharedResources.framework`. The app embeds it. The widget links it. See ADR 0005 and `reviews/F3-shared-rotation-framework-review.md`. The L04 repository-runner check `rotationAppWidgetAndMath` is now `rotationSharedCorpusAndMath`. The reason: the app and the widget now read one directory through one reader, so the check no longer compares an app copy with a widget copy. That equality is true by construction. The check still compares all 792 source rows (pool count, verse fields, slot, index, boundary). Its result field `appWidgetRecordsMatch` is now `singleSharedCorpus`. Gate A results that were recorded under the old name stay valid for the binaries that produced them. A rerun on the F3 build is on the repeat-check list and needs its own record.
+
 ## Earlier Gate A checkpoints
 
 The L02 images prove the native shell and live in-memory reading controls. They do not prove the full Reader, durable preferences, migration, or widget behavior. Gate A remains open. Main can prepare bounded Reader navigation and rendering after its foundation commit. Source continues storage corrections. Main remains the only simulator and project writer.
