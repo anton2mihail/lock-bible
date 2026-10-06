@@ -16,3 +16,11 @@ The Psalm 149 test must first scroll to and open chapter 149. It can then check 
 The range test must assert actual selected labels and indices. Logged constants alone do not prove the selected range. Retain the expected five-tap reducer sequence and the Aa selection-retention check.
 
 Run only the affected flow after the correction. Do not repeat accepted Gate A scenarios. Full verse-row geometry, matched chapter images, wrapped text, saved fills, anchors, and accessibility remain open.
+
+## Visible tap checkpoint
+
+UI04 places verse 10 inside the visible text area. The actual tap point is `(201, 169.7)`. Its observed selected labels are `[10]`. The next verse 12 tap at `(201, 289.7)` produces `[10, 11, 12]`. Sol accepts these two observed transitions as bounded evidence.
+
+The next verse 8 is above the viewport. The helper swipes up repeatedly and moves it to approximately `y = -3497`. It then attempts an infinite coordinate after a failed visible-rectangle assertion. This is a test setup fault. Main must scroll toward the target and return without tapping if the clipped rectangle is absent or nonfinite. Check the remaining verse 8 taps in a short probe before a full setup replay.
+
+UI03 also ended on Saved. It used `(201, 834.7)` because its Reader frame included the flat tab bar. The current helper clips above that bar. This correction produced the two successful UI04 text taps. No full Reader acceptance follows from this partial run.
