@@ -22,12 +22,14 @@ Latest checkpoint: Gate A is accepted at Main integration `df8cc9b`. Gate B is a
 | Gate B | GPT-6.1 Sol | L06–L12 | Active | N/A | Pending | Full Reader/Aa, exact Search, existing-user library, Saved/notes, Verse Moment/widgets, offline fresh/upgrade flows |
 | L13–L19 | Source Luna; Main owns integration/runtime | Plan dependencies | Core source accepted; new content UI active | Core `d1b045a`, `5fcd729`; source fixtures `1439075`, `67158cf`, `123ce62`, `32efc89`; contract `53290b3` | Native runtime pending | Host comparison and explicit SDK target build pass; shared state/navigation bridge belongs to Main; UI metrics and state fixes are queued |
 | Gate C | GPT-6.1 Sol | L13–L19 | Queued | N/A | Pending | Devotional routes, source content, persistent and temporary state |
-| L20–L24 | Source owns Works; Main owns shared integration/runtime | Plan dependencies | Works handoff ready; implementation follows content UI batch | Contract `3b7cfa1` | Pending | `L20-L21-Works-handoff.md`; notices, media, complete Settings and attribution remain queued |
+| L20–L24 | Source owns Works; Main owns shared integration/runtime; third Luna can own isolated L22–L24 files | Plan dependencies | Works implementation can proceed; platform and Settings handoff ready | Works contract `3b7cfa1`; `L22-L24-platform-and-settings-handoff.md` | Pending | Shared integration and simulator remain with Main; no platform or Settings runtime acceptance yet |
 | Gate D | GPT-6.1 Sol | L20–L24 | Queued | N/A | Pending | Works, notices, media gates, Settings |
 | L25–L27 | Luna | Gates C, D | Queued | Pending | Pending | All-route fidelity, performance, lifecycle, release update and interruption recovery |
 | Gate E | GPT-6.1 Sol | L25–L27 | Queued | N/A | Pending | Full integration and parity review |
 | L28 | Luna | Gate E | Queued | Pending | Pending | Archive, signing, privacy, screenshots, reproducible release evidence |
 | S02 | GPT-6.1 Sol | L28 | Queued | N/A | Pending | Final readiness review |
+
+The second Search/Saved run reached query results, Reader, and Saved. Filter assertions failed because a container identifier replaced all filter button identifiers. Exact result coordinates, filters, note actions, and UI parity remain open. Apply the identity fixes in the next coherent feature build. Do not repeat accepted Gate A checks or the long Reader range setup.
 
 ## L00 checks
 

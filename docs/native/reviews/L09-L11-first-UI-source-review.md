@@ -23,3 +23,9 @@ Run one coherent Search, Saved, and note simulator batch. Check debounce and sta
 The first focused UI run stopped before entering a query because the screen identifier replaced the field identifier. Main removes that screen-level identifier and preserves the failed run. This correction does not establish source parity. Only the new run that reaches the query, result, Reader, and filters can establish that limited runtime scope.
 
 Remaining source guards include generation-owned loading cleanup and stale reload invalidation after a mutation commits. Selected scope/filter text uses the theme card color, not white. Delete and error text use the source theme error color. Full note/delete/undo runtime and matched screen images remain open.
+
+## Second focused runtime
+
+`L06/search-saved-ui-02.log` records app PID 36575. The run entered a query, found results, tapped result 1, reached Reader verse 1, and entered Saved. This is bounded navigation evidence. The assertion does not establish the exact tapped result reference or Reader chapter. Both filter assertions failed. The accessibility tree gave All, Bookmarks, Highlights, and Notes the same `saved-screen` identifier. No filter action is accepted.
+
+The process was stopped after its failure summary. The result bundle is incomplete and remains preserved. Main applies the identifier correction in the next coherent content build. Put identifiers on actual controls and static status text. Remove broad identifiers from interactive lists and the Undo banner. The next short flow must record the result reference, matching Reader coordinates, and one actual Notes filter selection. Do not repeat the long Reader range setup.

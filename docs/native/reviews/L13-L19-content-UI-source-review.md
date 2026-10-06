@@ -74,3 +74,11 @@ Scripture card must export the rendered card as a 1080-pixel PNG and open the na
 Rosary home must use exactly the development-or-approved media gate. In development, its action opens the native media route. In release without approved media, it opens the official URL. Main owns the later L23 player. The official series footer remains an actual link. Reminder navigation has no permission or schedule side effect in this batch; L22 remains separate.
 
 Full target compilation, rendered-image inspection, native share-sheet cancellation, citation navigation, and both media gate branches remain simulator acceptance items. No content placeholder or text-only export is accepted as complete.
+
+## Final isolated source checks
+
+The access identifier audit found a panel identifier on Today with two child buttons. Source moved `today-verse-card` to the verse Text. Prayer search and favorite identifiers are on their actual controls. Keep new identifiers on leaf controls or static text. The Saved runtime shows that a container identifier can replace child identifiers.
+
+Scripture card now supplies a PNG and native activity sheet. Its current preview and export force a 480-point height. The source has a minimum height, and the plan requires full measured height at 1080-pixel width. Keep a 480-point minimum. Measure the complete composition at its real width and use that height for preview and export. A long passage must not lose text. Native image width alone does not complete L19.
+
+The installed SwiftUI SDK has no public `accessibilityLiveRegion` modifier. Source must replace those uses with real supported announcements. Do not add a no-op modifier. Full target compilation remains required. Source can continue isolated Works files while Main integrates the content batch.
