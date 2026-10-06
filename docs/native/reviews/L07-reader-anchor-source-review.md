@@ -54,3 +54,13 @@ Later traces show a scroll offset of about 5466 points while both SwiftUI global
 Use the actual `ReaderTextKitView` and its enclosing ancestor `UIScrollView` for coordinate conversion. Convert the visible scroll bounds into TextKit coordinates. Apply the window safe-area and clipping intersection once. Skip a capture when this viewport is absent or invalid. Do not replace it with local coordinate zero. Idle capture, pre-reflow capture, width reflow, context positioning, and anchor restoration must use this same boundary. Obtain the pre-reflow measurement before replacing the old layout. Keep existing chapter/request guards and programmatic-write suppression.
 
 Main owns this implementation. First prove one non-initial anchor from one actual scroll. Then collect the top clipping image and the reflow/restart result. The UIKit source boundary does not accept runtime anchor restoration or full Reader parity.
+
+## Run 09 result
+
+The UIKit change captures a non-initial anchor at `48:44`. The corrected Settings choice exposes its leaf identifier and `Selected` value. The test changes the current size and reaches both reflow and restart checks. Both visible-anchor checks fail.
+
+Sol inspected all three images in `build/native-evidence/L22/reader-anchor-safearea-09-attachments/`. `1B79D034-8FDE-418A-8F04-9E3409EB8C4E.png` shows both Previous and Next fully above the tabs. Scripture still draws behind the status icons. `EA934873-E2D0-4EF2-AA0E-B8AAB3959260.png` shows verses 15–22 after reflow. `0130B5A5-92A1-4119-8873-D1988B953622.png` shows the chapter header and verse 1 after restart. These images do not prove anchor restoration.
+
+The source consumes a restore request before it proves view attachment and layout. It also clears the pending anchor when coordinate measurement fails. Keep that request pending until current geometry permits the restore. Issue the target after the enclosing scroll content has its final extent. Verify the actual restored glyph against the measured viewport. The top overlay uses the SwiftUI parent coordinate space and does not protect the actual status area in these images. Main must correct the actual viewport boundary.
+
+The lower-control image is bounded geometry evidence. Keep matching installed/product/process records with it before final route acceptance. Do not repeat the accepted notification comparison while these Reader fixes proceed.
