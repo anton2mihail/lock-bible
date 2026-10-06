@@ -290,6 +290,19 @@ public struct WorkSection: Codable, Hashable, Sendable {
     }
 }
 
+public struct WorkSectionSummary: Codable, Hashable, Sendable {
+    public let index: Int
+    public let title: String
+    public let words: Int
+
+    public init(index: Int, title: String, words: Int) throws {
+        guard index >= 0, words >= 0 else { throw CoreError.invalidIdentity("work section summary") }
+        self.index = index
+        self.title = title
+        self.words = words
+    }
+}
+
 public enum RotationScope: String, Codable, CaseIterable, Sendable { case full, ot, nt }
 public enum SearchScope: String, Codable, CaseIterable, Sendable { case all, ot, nt }
 public struct RotatingVerse: Codable, Hashable, Sendable {

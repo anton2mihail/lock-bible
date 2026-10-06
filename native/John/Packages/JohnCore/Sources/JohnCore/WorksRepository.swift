@@ -3,6 +3,7 @@ import CSQLite
 
 public protocol WorksRepository: Sendable {
     func catalog() async throws -> WorkCatalog
+    func sectionSummaries(workID: String) async throws -> [WorkSectionSummary]
     func section(workID: String, index: Int) async throws -> WorkSection
 }
 
@@ -18,6 +19,25 @@ public actor SQLiteWorksRepository: WorksRepository {
         let url = try roots.appResource("Catalogs", "works-catalog.json")
         do { return try JSONDecoder().decode(WorkCatalog.self, from: Data(contentsOf: url)) }
         catch { throw CoreError.invalidResource("Works catalog: \(error)") }
+    }
+
+    /// Reads section labels and lengths. It does not read or decode paragraphs.
+    public func sectionSummaries(workID: String) async throws -> [WorkSectionSummary] {
+        guard !workID.isEmpty else { throw CoreError.invalidIdentity("Works summary request") }
+        let db = try connection()
+        let query = try db.prepare("SELECT idx, title, words FROM sections WHERE work_id = ? ORDER BY idx")
+        try query.bind(workID, at: 1)
+        var summaries: [WorkSectionSummary] = []
+        while try query.step() {
+            let indexValue = query.integer(0)
+            let wordsValue = query.integer(2)
+            guard indexValue >= 0, indexValue <= Int64(Int.max), wordsValue >= 0,
+                  wordsValue <= Int64(Int.max) else {
+                throw CoreError.invalidResource("Works section summary values are out of range")
+            }
+            summaries.append(try WorkSectionSummary(index: Int(indexValue), title: query.text(1), words: Int(wordsValue)))
+        }
+        return summaries
     }
 
     public func section(workID: String, index: Int) async throws -> WorkSection {
