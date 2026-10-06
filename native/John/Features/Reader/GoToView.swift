@@ -28,7 +28,6 @@ struct GoToView: View {
                         Button("Cancel") { router.pop() }
                             .font(JohnTypography.sans(15, weight: .medium))
                             .foregroundStyle(colors.tint)
-                            .accessibilityLabel("Close")
                             .accessibilityIdentifier("go-to-cancel")
                     }
 
