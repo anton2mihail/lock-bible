@@ -13,7 +13,7 @@ const HELP = `Usage:
   bun scripts/native/source-fixtures/l27/compare-update-evidence.ts \\
     --source-expectations FILE --before-export FILE --after-export FILE \\
     --native-envelope FILE --recovery-db FILE --recovery-inspect FILE \\
-    --output NEW_EMPTY_DIRECTORY [--expectation-mapping FILE]
+    --output NEW_EMPTY_DIRECTORY [--expectation-mapping FILE] [--shm-policy strict|volatile]
 
 All input files must be copied evidence. The output must be a new directory below
 build/native-evidence/L27. This tool does not access an app container or modify inputs.`
@@ -43,8 +43,13 @@ const requiredArgs = [
 ]
 for (const key of requiredArgs) if (!args.has(key)) throw new Error(`Required argument missing: ${key}\n${HELP}`)
 for (const key of args.keys()) {
-  if (![...requiredArgs, "--expectation-mapping"].includes(key)) throw new Error(`Unknown argument: ${key}`)
+  if (![...requiredArgs, "--expectation-mapping", "--shm-policy"].includes(key)) throw new Error(`Unknown argument: ${key}`)
 }
+// SQLite rebuilds the WAL index (user-library.db-shm) when a new process opens a library that has WAL frames.
+// `strict` (default) keeps the earlier rule: the SHM file must stay byte-for-byte unchanged.
+// `volatile` records the SHM change as an observation. It needs a recorded review. Main and Sol choose it.
+const shmPolicy = args.get("--shm-policy") ?? "strict"
+if (!["strict", "volatile"].includes(shmPolicy)) throw new Error("--shm-policy must be strict or volatile")
 
 const repositoryRoot = resolve(import.meta.dir, "../../../..")
 const evidenceRoot = resolve(repositoryRoot, "build/native-evidence/L27")
@@ -431,6 +436,11 @@ for (const name of protectedNames) {
   const left = before.protectedFiles?.[name]
   const right = after.protectedFiles?.[name]
   const unchanged = !!left && !!right && stable(left) === stable(right)
+  if (shmPolicy === "volatile" && name === "user-library.db-shm") {
+    addCheck(checks, `protectedFile.unchanged.${name}`, "observed",
+      unchanged ? "Volatile WAL index is unchanged" : `Volatile WAL index changed (policy volatile): before ${left?.exists ? left.sha256 : "absent"}; after ${right?.exists ? right.sha256 : "absent"}`, false)
+    continue
+  }
   addCheck(checks, `protectedFile.unchanged.${name}`, unchanged ? "passed" : "failed",
     unchanged ? `Existence, size, and SHA-256 are unchanged (${left.exists ? left.sha256 : "absent"})` : "Protected file metadata changed or is missing")
 }
@@ -664,6 +674,7 @@ const report = {
     before.provenance?.captureKind === "main-copied-old-app" ? "passed" : "helper-only",
   generatedAt: new Date().toISOString(),
   runtimeBehaviorObservedByThisTool: false,
+  shmPolicy,
   comparedMainSuppliedEvidence: before.provenance?.captureKind === "main-copied-old-app" &&
     after.provenance?.captureKind === "main-copied-old-app",
   evidenceOriginLabel: before.provenance?.captureKind === "helper-only-synthetic" ? "helper-only synthetic fixture" :

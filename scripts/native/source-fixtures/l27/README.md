@@ -32,3 +32,14 @@ Main must create a separate, test-owned old-app container. Main must preserve an
 Main must export exact DB rows, all MMKV key/value hashes, App Group scalar names and types, and pending notification request identifiers, triggers, and payloads. Main must record the app bundle ID, version, build, process ID, App Group entitlement, MMKV root, and recovery backup schema and row counts. Main must not overwrite any L04 or Gate A fixture. Main must keep its old-app export separate from this source-generated output.
 
 The source exporter cannot provide real container paths, signed entitlements, actual pending requests, old-app binary bytes, or an installed app version. Main must collect that evidence during the release update run.
+
+## Full old-app fixture (L27 rehearsal)
+
+`l27_fixture.py` builds the real old-app data: MMKV files, `user-library.db` with a committed WAL, and the App Group widget plist. `build-full-fixture-data.ts` writes the data with the executed old source functions. `host-importer/` runs the real `JohnCore` importer on macOS against copies. See `docs/native/reviews/L27-full-fixture-preparation.md`.
+
+```sh
+python3 scripts/native/source-fixtures/l27/l27_fixture.py prepare          # build/native-evidence/L27/full-fixture-01
+python3 scripts/native/source-fixtures/l27/l27_fixture.py host-run --out build/native-evidence/L27/full-fixture-01-host-check
+python3 scripts/native/source-fixtures/l27/l27_fixture.py seed --udid <UDID>    # dry run; add --apply ... to copy
+```
+

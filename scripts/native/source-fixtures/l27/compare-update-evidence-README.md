@@ -153,3 +153,9 @@ The comparator checks these results:
 8. Source-generated malformed/absent cases remain `unavailable`. They do not count as runtime checks.
 
 Pending request and signed entitlement observations are facts only unless an exact reviewed mapping supplies an expectation. A report with a missing required field or failed required check has `result: "failed"`. The output does not claim that the installed app version, signed entitlements, OS delivery, or notification taps are accepted.
+
+## SHM policy (optional)
+
+The default is `--shm-policy strict`. It keeps the earlier rule: `user-library.db-shm` must stay byte-for-byte unchanged.
+
+SQLite rebuilds the WAL index when a new process opens a library that has committed WAL frames. This happens even for a read-only open. The main file and the WAL stay unchanged. The SHM file does not. A host run of the real importer on the L27 fixture showed this (see `docs/native/reviews/L27-full-fixture-preparation.md`). With `--shm-policy volatile`, the report records the SHM change as an observation (`observed`, not required). The main database, the WAL, and the MMKV files stay protected. Use `volatile` only with a recorded review. The report has a `shmPolicy` field.
