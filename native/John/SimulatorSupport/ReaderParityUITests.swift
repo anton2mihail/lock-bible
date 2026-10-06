@@ -125,10 +125,13 @@ final class ReaderParityUITests: XCTestCase {
 
             let lastVerse = captureVerseControl(sample.lastVerseNumber, text: sample.lastVerseText,
                                                 in: app, variant: variant)
-            scrollToLastVerseAndAttribution(lastVerse, attribution, in: app, key: sample.key)
+            scrollToLastVerseTail(lastVerse, in: app, key: sample.key)
             XCTAssertTrue(lastVerse.label.contains(sample.lastVerseText), "Last verse differs from source: \(sample.key)")
+            attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end-text", app: app)
+
+            scrollToAttribution(attribution, in: app, key: sample.key)
             waitForLabel(attribution, equals: sample.edition.attribution)
-            attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end", app: app)
+            attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end-footer", app: app)
             NSLog("READER_PARITY case=%@ variant=%@ edition=%@ book=%@ chapter=%d first=%d last=%d attribution=%@ requestedProfile=%@ verifiedProfile=%@ appearancePreference=%@ effectiveAppearance=%@ appVersion=%@ device=%@ seed=%@",
                   sample.key, variant.rawValue, sample.edition.id, sample.bookName, sample.chapter,
                   sample.firstVerseNumber, sample.lastVerseNumber, sample.edition.abbreviation,
@@ -437,28 +440,23 @@ final class ReaderParityUITests: XCTestCase {
         XCTAssertTrue(element.isHittable, "Target must be visible and hittable", file: file, line: line)
     }
 
-    private func scrollToLastVerseAndAttribution(_ lastVerse: XCUIElement,
-                                                  _ attribution: XCUIElement,
-                                                  in app: XCUIApplication,
-                                                  key: String,
-                                                  file: StaticString = #filePath,
-                                                  line: UInt = #line) {
+    private func scrollToLastVerseTail(_ lastVerse: XCUIElement,
+                                       in app: XCUIApplication,
+                                       key: String,
+                                       file: StaticString = #filePath,
+                                       line: UInt = #line) {
         XCTAssertTrue(lastVerse.waitForExistence(timeout: 10), "Missing final verse: \(key)", file: file, line: line)
-        XCTAssertTrue(attribution.waitForExistence(timeout: 10), "Missing edition attribution: \(key)", file: file, line: line)
 
         for attempt in 0..<12 {
             let viewport = visibleViewport(for: lastVerse, in: app).insetBy(dx: 4, dy: 4)
             let verseFrame = lastVerse.frame
-            let attributionFrame = attribution.frame
             let verseTailVisible = verseFrame.intersects(viewport) && verseFrame.maxY <= viewport.maxY
-            let attributionVisible = viewport.contains(attributionFrame)
-            NSLog("READER_PARITY_END_VISIBILITY case=%@ attempt=%d viewport=%@ verse=%@ attribution=%@ verseTailVisible=%d attributionVisible=%d",
-                  key, attempt, NSCoder.string(for: viewport), NSCoder.string(for: verseFrame),
-                  NSCoder.string(for: attributionFrame), verseTailVisible ? 1 : 0, attributionVisible ? 1 : 0)
-            if verseTailVisible && attributionVisible { break }
+            NSLog("READER_PARITY_END_TEXT case=%@ attempt=%d viewport=%@ verse=%@ tailVisible=%d",
+                  key, attempt, NSCoder.string(for: viewport), NSCoder.string(for: verseFrame), verseTailVisible ? 1 : 0)
+            if verseTailVisible { break }
 
-            XCTAssertGreaterThan(viewport.height, 120, "No safe Reader viewport for final verse and attribution: \(key)", file: file, line: line)
-            let needsScrollDown = attributionFrame.minY < viewport.minY
+            XCTAssertGreaterThan(viewport.height, 120, "No safe Reader viewport for final verse tail: \(key)", file: file, line: line)
+            let needsScrollDown = verseFrame.maxY < viewport.minY
             let startFraction: CGFloat = needsScrollDown ? 0.25 : 0.75
             let endFraction: CGFloat = needsScrollDown ? 0.75 : 0.25
             let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
@@ -470,8 +468,35 @@ final class ReaderParityUITests: XCTestCase {
         let viewport = visibleViewport(for: lastVerse, in: app).insetBy(dx: 4, dy: 4)
         XCTAssertTrue(lastVerse.frame.intersects(viewport) && lastVerse.frame.maxY <= viewport.maxY,
                       "The final verse tail must be above the tab boundary before capture: \(key)", file: file, line: line)
+    }
+
+    private func scrollToAttribution(_ attribution: XCUIElement,
+                                    in app: XCUIApplication,
+                                    key: String,
+                                    file: StaticString = #filePath,
+                                    line: UInt = #line) {
+        XCTAssertTrue(attribution.waitForExistence(timeout: 10), "Missing edition attribution: \(key)", file: file, line: line)
+        for attempt in 0..<12 {
+            let viewport = visibleViewport(for: attribution, in: app).insetBy(dx: 4, dy: 4)
+            let frame = attribution.frame
+            let visible = viewport.contains(frame)
+            NSLog("READER_PARITY_END_FOOTER case=%@ attempt=%d viewport=%@ attribution=%@ visible=%d",
+                  key, attempt, NSCoder.string(for: viewport), NSCoder.string(for: frame), visible ? 1 : 0)
+            if visible { break }
+
+            XCTAssertGreaterThan(viewport.height, 120, "No safe Reader viewport for attribution: \(key)", file: file, line: line)
+            let needsScrollDown = frame.minY < viewport.minY
+            let startFraction: CGFloat = needsScrollDown ? 0.25 : 0.75
+            let endFraction: CGFloat = needsScrollDown ? 0.75 : 0.25
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+        }
+
+        let viewport = visibleViewport(for: attribution, in: app).insetBy(dx: 4, dy: 4)
         XCTAssertTrue(viewport.contains(attribution.frame),
-                      "Edition attribution must be visible before capture: \(key)", file: file, line: line)
+                      "Complete edition attribution must be visible before footer capture: \(key)", file: file, line: line)
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,
