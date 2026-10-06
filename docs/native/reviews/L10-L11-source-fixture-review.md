@@ -29,3 +29,9 @@ Main ran the 19 observations in PID `520`. Matching installed/product hashes and
 Sol confirmed a comparator shape error. These four source snapshots are arrays. The runner compares an object with `ids` and `items`. The named `saved-*` snapshots correctly use that object shape. The committed pre-run comparator hash is `a0adb0b00b92c0e39293c2ac7b2f493717070f6430b40eaf99b73b95c5eb8c89`. This supersedes the earlier preparation hash above.
 
 The narrow correction changes only four calls from `savedResult` to `fixtureItems`. Its hash is `585beb1d552fe6f1024de178fe04ee4cc98b95e294aac338a1cde35e01521527`. Sol accepts this source correction for the next build. Preserve full row fields and order. Main must use a new disjoint output for the focused rerun. No production library change is required by this shape error.
+
+## Bounded repository runtime acceptance
+
+The corrected run at `build/native-evidence/L10-L11/simulator-02/` matches all 19 observations with no mismatches. PID `12492` logs its current sandbox and new disjoint paths. The fixture hash remains `9a34df2dd4196d2c64ceee878d2dfd1050a1738901b95e288bfd4dccfc5975de`. The comparator hash matches the reviewed correction. Installed/product executable and dylib hashes match.
+
+Sol accepts the bounded repository sequence, including exact IDs, fields, times, highlight grouping, all filters, delete/restore payloads, and both Unicode trim probes. Source must commit the comparator-only correction. Complete L10/L11 UI, save-failure behavior, drafts, and 10-second undo remain open. Gate B remains open.

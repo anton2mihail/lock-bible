@@ -19,3 +19,9 @@ Use the pinned iPhone 17 Pro with iOS 26.5 for the first batch. Match the old ap
 9. Run the accepted L10/L11 comparator in a new test-owned library. Require 19 expected snapshots and 19 native observations. Compare all fields, timestamps, batches, filters, delete/restore values, and U+FEFF/U+0085 note probes. This comparison does not replace real Saved, note-editor, save-failure, and 10-second undo UI checks.
 
 Each acceptance applies only to the observed behavior and matching source hashes. Full Search UI, library actions, Saved/notes, widget families and links, offline fresh/upgrade journeys, all editions, dark mode, small phones, and the later all-route comparison remain in the approved queue.
+
+## Batch checkpoint
+
+The Search and 19-observation library repository comparisons now pass on the simulator. See their runtime reviews. Reader taps verify verse 10 and range 10–12. The remaining verse 8 probe is a failed scroll/coordinate setup and remains open. Preserve its evidence.
+
+Main proceeds with the missing Search, Saved/notes, Verse Moment, and widget UI. Do not repeat the whole Reader setup to solve one touch coordinate. Collect the remaining Reader visual, row geometry, anchor, stale-load, and accessibility observations with the next coherent feature batch. These deferred checks still apply before Gate B acceptance. Gate A remains accepted and does not need another run.
