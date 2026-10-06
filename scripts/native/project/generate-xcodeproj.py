@@ -67,6 +67,7 @@ source_files = {
         "CalendarBoundaryUITests.swift",
         "ReleasePerformanceUITests.swift",
         "PositiveNoticeUITests.swift",
+        "WidgetHomeScreenUITests.swift",
     ],
 }
 
