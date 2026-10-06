@@ -100,7 +100,7 @@ struct SavedView: View {
     }
 
     private var filterBar: some View {
-        HStack(spacing: 8) {
+        AdaptiveChipStack {
             ForEach(SavedFilterChoice.allCases) { choice in
                 Button {
                     filter = choice.filter

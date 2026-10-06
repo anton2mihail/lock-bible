@@ -79,7 +79,7 @@ struct SearchView: View {
     }
 
     private var scopePicker: some View {
-        HStack(spacing: 8) {
+        AdaptiveChipStack {
             ForEach(SearchScopeChoice.allCases) { choice in
                 Button {
                     scope = choice.scope

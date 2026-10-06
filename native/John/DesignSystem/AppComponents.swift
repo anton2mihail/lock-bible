@@ -79,3 +79,16 @@ struct SurfaceCard<Content: View>: View {
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(preferences.colors(for: colorScheme).separator, lineWidth: 0.5))
     }
 }
+
+/// Lays chips out in one equal-width row. When the labels no longer fit on one line
+/// (large Dynamic Type sizes), it stacks them in a column so no label breaks mid-word.
+struct AdaptiveChipStack<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) { content }
+            VStack(spacing: 8) { content }
+        }
+    }
+}
