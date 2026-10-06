@@ -82,43 +82,109 @@ final class ScriptureCardUITests: XCTestCase {
         XCTAssertEqual(title.label, "A word worth sharing")
     }
 
-    private func step7DismissShareSurface(copy: XCUIElement, in app: XCUIApplication) {
-        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "Cancel")).firstMatch
-        if close.exists && close.isHittable { close.tap() } else { copy.swipeDown() }
-        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: copy)
-        if XCTWaiter.wait(for: [gone], timeout: 6) != .completed {
-            // An iPad share popover closes when the user taps outside it.
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
-        }
-        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without Copy")
+    // MARK: Share panel observation (Step 7)
+    //
+    // On the iOS 26.5 simulator the text share panel shows Reminders, More, and Save to Files and has no `Copy` cell
+    // (step7-card-text-fallback-01/manual-text-share-panel.png). The helper therefore accepts the system share panel
+    // as opened when it appears. Observed elements: `ActivityListView`, `ShareSheet.RemoteContainerView`,
+    // `shareSheet.activity.contentView`, the collection view `activityCollectionView`, cells `shareCell` and
+    // `actionGroupCell`, and the dismiss region `PopoverDismissRegion`. `Copy` is optional. The helper never claims
+    // the payload: it records "share panel observed; payload not verified".
+
+    private struct SharePanelObservation {
+        let root: XCUIElement
+        let activityLabels: [String]
+        let hasCopy: Bool
     }
 
     private func shareCopyCell(_ app: XCUIApplication) -> XCUIElement {
         app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch
     }
 
-    /// Text fallback: "Share text instead" opens the system share panel with the source text format
-    /// (ScriptureCardView.swift shareText; src/screens/companion/ShareCardScreen.tsx:43). The image share still works after it.
+    private func sharePanelRoot(_ app: XCUIApplication) -> XCUIElement? {
+        [app.otherElements["ActivityListView"], app.collectionViews["activityCollectionView"],
+         app.otherElements["shareSheet.activity.contentView"], shareCopyCell(app)].first { $0.exists }
+    }
+
+    /// Waits for the system share panel. Returns the observation, or nil if no panel appeared within the timeout.
+    private func waitForSharePanel(_ app: XCUIApplication, timeout: TimeInterval) -> SharePanelObservation? {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if let root = sharePanelRoot(app) {
+                let cells = app.cells.matching(NSPredicate(format: "identifier IN %@", ["shareCell", "actionGroupCell"]))
+                _ = cells.firstMatch.waitForExistence(timeout: 4) // let the activity cells load
+                var labels = cells.allElementsBoundByIndex.filter(\.exists).map(\.label)
+                let copy = shareCopyCell(app)
+                if copy.exists, !labels.contains("Copy") { labels.append("Copy") }
+                return SharePanelObservation(root: root, activityLabels: labels, hasCopy: copy.exists)
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.3))
+        }
+        return nil
+    }
+
+    private func recordSharePanel(_ context: String, _ observation: SharePanelObservation, app: XCUIApplication) {
+        let payload = observation.hasCopy
+            ? "Copy cell present; this helper does not read the payload; payload not verified"
+            : "share panel observed; payload not verified"
+        NSLog("STEP7_CARD_SHARE_PANEL context=%@ activities=%@ copy=%d popover=%d payload=%@", context,
+              observation.activityLabels.joined(separator: "|"), observation.hasCopy ? 1 : 0,
+              app.popovers.firstMatch.exists ? 1 : 0, payload)
+        let record: [String: Any] = ["context": context, "panel": "observed", "activityLabels": observation.activityLabels,
+                                     "copyCellPresent": observation.hasCopy, "payload": payload]
+        if let data = try? JSONSerialization.data(withJSONObject: record, options: [.sortedKeys]) {
+            let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "public.json")
+            attachment.name = "step7-share-panel-\(context).json"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    private func step7DismissSharePanel(_ observation: SharePanelObservation, in app: XCUIApplication) {
+        let root = observation.root
+        let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "Cancel")).firstMatch
+        if close.exists && close.isHittable {
+            close.tap()
+        } else {
+            // A tap above a bottom sheet (outside it) closes it. The observed dismiss region covers the window.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1)).tap()
+        }
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: root)
+        if XCTWaiter.wait(for: [gone], timeout: 6) != .completed {
+            // An iPad share popover closes when the user taps outside it.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without a share action")
+    }
+
+    /// Text fallback: "Share text instead" opens the system share panel (ScriptureCardView.swift shareText).
+    /// The image share still works after it. The panel is accepted when it appears. Copy is optional.
+    /// This helper does not verify the shared text. The expected text format is
+    /// `<text>\n\n<ref> (<abbr>)\nJohn 1:1 · Scripture & Prayer` (`ShareCardScreen.tsx:43-46`).
     func testStep7CardShareTextFallbackAndImageStillWork() throws {
         try requireStep7("card-text-fallback")
         let app = XCUIApplication()
         openCardFromVerseMoment(in: app)
         let textShare = app.buttons.matching(NSPredicate(format: "label == %@", "Share text instead")).firstMatch
         tapWhenReady(textShare, in: app)
-        let copy = shareCopyCell(app)
-        XCTAssertTrue(copy.waitForExistence(timeout: 15), "The native share panel must open for the text")
+        let panel = waitForSharePanel(app, timeout: 15)
+        XCTAssertNotNil(panel, "The native share panel must open for the text")
+        guard let panel else { return }
         NSLog("STEP7_CARD_TEXT_SHARE opened idiom=%@ popover=%d window=%@",
               UIDevice.current.userInterfaceIdiom == .pad ? "pad" : "phone", app.popovers.firstMatch.exists ? 1 : 0,
               NSCoder.string(for: app.frame))
+        recordSharePanel("text", panel, app: app)
         attachScreenshot("step7-card-text-share", app: app)
-        step7DismissShareSurface(copy: copy, in: app)
+        step7DismissSharePanel(panel, in: app)
 
         tapWhenReady(app.buttons["scripture-card-share-image"], in: app)
-        let imageCopy = shareCopyCell(app)
-        XCTAssertTrue(imageCopy.waitForExistence(timeout: 20), "The image share must still open after the text share")
+        let imagePanel = waitForSharePanel(app, timeout: 20)
+        XCTAssertNotNil(imagePanel, "The image share must still open after the text share")
         XCTAssertFalse(app.staticTexts["scripture-card-share-error"].exists)
+        guard let imagePanel else { return }
+        recordSharePanel("image-after-text", imagePanel, app: app)
         attachScreenshot("step7-card-image-share-after-text", app: app)
-        step7DismissShareSurface(copy: imageCopy, in: app)
+        step7DismissSharePanel(imagePanel, in: app)
     }
 
     /// PNG write failure. Main makes the app data container's tmp folder read-only while the app is stopped.
@@ -134,14 +200,17 @@ final class ScriptureCardUITests: XCTestCase {
         let error = app.staticTexts["scripture-card-share-error"]
         XCTAssertTrue(error.waitForExistence(timeout: 15), "A failed PNG write must show the share error")
         XCTAssertEqual(error.label, "The card could not be shared. Please try again, or share the text.")
-        XCTAssertFalse(shareCopyCell(app).waitForExistence(timeout: 3), "No share panel may open after the failure")
+        XCTAssertNil(waitForSharePanel(app, timeout: 3), "No share panel may open after the failure")
         XCTAssertFalse(app.otherElements["scripture-card-share-busy"].exists)
         XCTAssertTrue(imageButton.isHittable && imageButton.isEnabled, "The image button must work again")
         attachScreenshot("step7-card-png-failure", app: app)
         tapWhenReady(app.buttons.matching(NSPredicate(format: "label == %@", "Share text instead")).firstMatch, in: app)
-        let copy = shareCopyCell(app)
-        XCTAssertTrue(copy.waitForExistence(timeout: 15), "The text share must still open")
-        step7DismissShareSurface(copy: copy, in: app)
+        let panel = waitForSharePanel(app, timeout: 15)
+        XCTAssertNotNil(panel, "The text share must still open")
+        if let panel {
+            recordSharePanel("text-after-png-fault", panel, app: app)
+            step7DismissSharePanel(panel, in: app)
+        }
         NSLog("STEP7_CARD_FAULT pngWriteFailure=observed")
     }
 

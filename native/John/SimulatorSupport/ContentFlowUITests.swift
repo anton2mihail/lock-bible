@@ -256,15 +256,38 @@ final class ContentFlowUITests: XCTestCase {
         return app
     }
 
-    private func step7DismissShareSheet(copy: XCUIElement, in app: XCUIApplication) {
+    /// The system share panel is accepted as opened when it appears (observed on the iOS 26.5 simulator: no `Copy` cell
+    /// for a text share). Copy is optional. This helper does not verify the payload: "share panel observed; payload not verified".
+    private func step7WaitForSharePanel(_ app: XCUIApplication, timeout: TimeInterval) -> XCUIElement? {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let candidates = [app.otherElements["ActivityListView"], app.collectionViews["activityCollectionView"],
+                              app.otherElements["shareSheet.activity.contentView"],
+                              app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch]
+            if let root = candidates.first(where: { $0.exists }) {
+                let cells = app.cells.matching(NSPredicate(format: "identifier IN %@", ["shareCell", "actionGroupCell"]))
+                _ = cells.firstMatch.waitForExistence(timeout: 4)
+                let labels = cells.allElementsBoundByIndex.filter(\.exists).map(\.label)
+                let hasCopy = candidates[3].exists
+                NSLog("STEP7_SHARE_PANEL activities=%@ copy=%d payload=%@", labels.joined(separator: "|"), hasCopy ? 1 : 0,
+                      hasCopy ? "Copy cell present; payload not read; payload not verified" : "share panel observed; payload not verified")
+                return root
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.3))
+        }
+        return nil
+    }
+
+    private func step7DismissShareSheet(panel: XCUIElement, in app: XCUIApplication) {
         let close = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Close", "Cancel")).firstMatch
-        if close.exists && close.isHittable { close.tap() } else { copy.swipeDown() }
-        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: copy)
+        if close.exists && close.isHittable { close.tap() }
+        else { app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1)).tap() }
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: panel)
         if XCTWaiter.wait(for: [gone], timeout: 6) != .completed {
             // An iPad share popover closes when the user taps outside it.
             app.coordinate(withNormalizedOffset: CGVector(dx: 0.02, dy: 0.02)).tap()
         }
-        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without Copy")
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without a share action")
     }
 
     private func step7Attach(_ name: String, app: XCUIApplication) {
@@ -315,11 +338,11 @@ final class ContentFlowUITests: XCTestCase {
         NSLog("STEP7_VERSE_MOMENT guideShownAtStart=%d countdown=%@", guideShown ? 1 : 0, countdown.label)
 
         tapWhenReady(app.buttons["verse-moment-share"], in: app)
-        let copy = app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch
-        XCTAssertTrue(copy.waitForExistence(timeout: 15), "The native share panel must open")
+        let sharePanel = step7WaitForSharePanel(app, timeout: 15)
+        XCTAssertNotNil(sharePanel, "The native share panel must open")
         NSLog("STEP7_VERSE_MOMENT shareOpened popover=%d", app.popovers.firstMatch.exists ? 1 : 0)
         step7Attach("step7-verse-moment-share", app: app)
-        step7DismissShareSheet(copy: copy, in: app)
+        if let sharePanel { step7DismissShareSheet(panel: sharePanel, in: app) }
 
         tapWhenReady(app.buttons["verse-moment-scripture-card"], in: app)
         XCTAssertEqual(waitForPageTitle(app), "A word worth sharing")
@@ -539,9 +562,9 @@ final class ContentFlowUITests: XCTestCase {
                 .waitForExistence(timeout: 8))
             step7Attach("step7-fault-\(fault)", app: app)
             tapWhenReady(app.buttons["scripture-card-share-image"], in: app)
-            let copy = app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch
-            XCTAssertTrue(copy.waitForExistence(timeout: 15), "The words must still share on a plain background")
-            step7DismissShareSheet(copy: copy, in: app)
+            let sharePanel = step7WaitForSharePanel(app, timeout: 15)
+            XCTAssertNotNil(sharePanel, "The words must still share on a plain background")
+            if let sharePanel { step7DismissShareSheet(panel: sharePanel, in: app) }
         case "rosary-catalog-invalid":
             app.buttons["tab-pray"].tap()
             tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)

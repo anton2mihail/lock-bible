@@ -52,6 +52,38 @@ final class MediaNotificationUITests: XCTestCase {
     #endif
 
 
+    /// Leaves the media page and checks that the Rosary home appears (Step 7 media-lifecycle).
+    /// Observed (step7-media-lifecycle-01 recording): the page is a ScrollView. The in-page link "Back to Rosary" is the
+    /// first item of the scroll content (`RosaryMediaView.swift:58-65`). After playback the page can sit a little scrolled,
+    /// so the link lies under the status area, and a round system back control floats at the top left.
+    /// Order: scroll the page to its top and tap the in-page link; if the Rosary home does not appear, use the navigation
+    /// back control by identifier `BackButton`; then the swipe-back gesture from 8 pt inside the left edge
+    /// (more than 4 pt, so it is not the system edge gesture of the Simulator tool). Each step is logged.
+    private func leaveMediaPageToRosaryHome(in app: XCUIApplication) {
+        let rosaryHome = app.staticTexts["The Rosary with Bishop Barron"]
+        let link = app.buttons["Back to Rosary"]
+        let page = app.scrollViews.allElementsBoundByIndex
+            .filter { $0.exists && $0.isHittable }
+            .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height } ?? app.scrollViews.firstMatch
+        let safeTop = app.statusBars.firstMatch.exists ? app.statusBars.firstMatch.frame.maxY + 8 : 70
+        for _ in 0..<6 where !(link.exists && link.isHittable && link.frame.minY >= safeTop) {
+            page.swipeDown()
+        }
+        if link.exists && link.isHittable {
+            link.tap()
+            if rosaryHome.waitForExistence(timeout: 5) { NSLog("STEP7_MEDIA_EXIT method=in-page-link"); return }
+        }
+        let navBack = app.buttons["BackButton"].exists ? app.buttons["BackButton"] : app.navigationBars.buttons.firstMatch
+        if navBack.exists && navBack.isHittable {
+            navBack.tap()
+            if rosaryHome.waitForExistence(timeout: 5) { NSLog("STEP7_MEDIA_EXIT method=navigation-back"); return }
+        }
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 8 / app.frame.width, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)))
+        NSLog("STEP7_MEDIA_EXIT method=swipe-back")
+        XCTAssertTrue(rosaryHome.waitForExistence(timeout: 8), "The Rosary home must appear after leaving the media page")
+    }
+
     #if DEBUG
     /// Step 7: inactive phase pauses, resume works, and leaving the route releases the player.
     /// Needs network for the Debug sample audio. Run with STEP7_CASES=media-lifecycle and STEP7_MEDIA_NETWORK=1.
@@ -80,8 +112,7 @@ final class MediaNotificationUITests: XCTestCase {
         tapWhenReady(app.buttons["Play audio"], in: app)
         XCTAssertTrue(app.buttons["Pause audio"].waitForExistence(timeout: 20), "Playback must resume after the user taps Play")
 
-        tapWhenReady(app.buttons["Back to Rosary"], in: app)
-        XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
+        leaveMediaPageToRosaryHome(in: app)
         tapWhenReady(button(containing: "Bishop Robert Barron · Word on Fire", in: app), in: app)
         XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.buttons["rosary-media-mode-video"].value as? String, "Selected", "A new visit starts in video mode")
