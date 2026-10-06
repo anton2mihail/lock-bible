@@ -323,6 +323,7 @@ struct SavedNoteEditor: View {
     let onSaved: () async -> Void
     let onClose: (() -> Void)?
     @State private var draft: String
+    @State private var originalText: String
     @State private var passage: PassageSelection?
     @State private var hasPersistedNote = false
     @State private var isLoading = true
@@ -336,6 +337,7 @@ struct SavedNoteEditor: View {
         self.onSaved = onSaved
         self.onClose = onClose
         _draft = State(initialValue: item.noteText ?? "")
+        _originalText = State(initialValue: item.noteText ?? "")
         _passage = State(initialValue: nil)
         _hasPersistedNote = State(initialValue: item.kind == .note)
     }
@@ -347,6 +349,7 @@ struct SavedNoteEditor: View {
         self.onSaved = onSaved
         self.onClose = onClose
         _draft = State(initialValue: "")
+        _originalText = State(initialValue: "")
         _passage = State(initialValue: passage)
         _hasPersistedNote = State(initialValue: false)
     }
@@ -437,6 +440,7 @@ struct SavedNoteEditor: View {
         .padding(20)
         .background(colors.background.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
+        .interactiveDismissDisabled(draft != originalText)
         .overlay {
             if isLoading { ProgressView("Loading note…") }
         }
@@ -448,6 +452,7 @@ struct SavedNoteEditor: View {
             passage = initialPassage
             do {
                 draft = try await runtime.note(for: initialPassage.id)
+                originalText = draft
                 hasPersistedNote = draftHasContent
                 isLoadReady = true
             } catch {
