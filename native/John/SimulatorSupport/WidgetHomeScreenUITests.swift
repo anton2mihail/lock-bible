@@ -81,9 +81,22 @@ final class WidgetHomeScreenUITests: XCTestCase {
             XCTAssertTrue(readerTitle.waitForExistence(timeout: 20), "The Reader must open")
             XCTAssertEqual(readerTitle.label, title)
             if let verse = env["STEP7_WIDGET_EXPECT_VERSE"] {
-                let summary = app.staticTexts["reader-selection-summary"]
-                XCTAssertTrue(summary.waitForExistence(timeout: 12), "The displayed verse must be selected")
-                XCTAssertEqual(summary.label, "Selected: verses \(verse)–\(verse)")
+                // The widget link sets a context verse (tint and scroll), not a selection (ReaderScreen.tsx:130-131, :188-198).
+                // Check: the `request=` value of `reader-title` is present, the verse is hittable, and no selection summary exists.
+                let request = (readerTitle.value as? String).flatMap { value -> String? in
+                    guard let range = value.range(of: "request=") else { return nil }
+                    return String(value[range.upperBound...].prefix { $0 != ";" })
+                }
+                XCTAssertNotNil(request, "The Debug reader-title value must carry a request ID")
+                XCTAssertNotEqual(request, "none", "The widget link must create a Reader request")
+                let control = app.buttons["reader-verse-\(verse)"]
+                XCTAssertTrue(control.waitForExistence(timeout: 12), "Verse \(verse) must exist")
+                let deadline = Date().addingTimeInterval(10)
+                while !control.isHittable && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+                XCTAssertTrue(control.isHittable, "Verse \(verse) must be hittable in the visible area")
+                XCTAssertFalse(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 3),
+                               "A widget link is a context verse, not a selection")
+                NSLog("STEP7_WIDGET_CONTEXT_VERSE verse=%@ request=%@ selectionSummary=absent", verse, request ?? "nil")
             }
         } else if let date = env["STEP7_WIDGET_EXPECT_DAILY_DATE"] {
             let page = app.staticTexts["content-page-title"]

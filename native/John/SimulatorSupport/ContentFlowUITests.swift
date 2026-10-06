@@ -290,6 +290,47 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 8), .completed, "The share panel must close without a share action")
     }
 
+    // MARK: URL and Verse Moment verse context (Step 7)
+    //
+    // A URL verse or "Read in context" sets a CONTEXT tint and a scroll (`contextRange`, `pendingContextIndex`). It does
+    // not make a selection, exactly like the old app (ReaderScreen.tsx:130-131, :188-198; the selection stays null).
+    // So `reader-selection-summary` must NOT exist. The Debug value of `reader-title` is `request=<id>;anchor=...`
+    // (`ReaderView.swift` readerAccessibilityValue). A new request ID shows that the request was handled.
+
+    private func step7ReaderRequest(_ title: XCUIElement) -> String? {
+        guard let value = title.value as? String, let range = value.range(of: "request=") else { return nil }
+        return String(value[range.upperBound...].prefix { $0 != ";" })
+    }
+
+    /// Asserts (a) the `request=` value of `reader-title` changed from `previousRequest`, (b) the verse control exists and
+    /// is hittable in the visible area, and (c) no selection summary exists. Returns the new request ID.
+    @discardableResult
+    private func step7AssertContextVerse(in app: XCUIApplication, verse: Int?, previousRequest: String?,
+                                         label: String, file: StaticString = #filePath, line: UInt = #line) -> String? {
+        let title = app.buttons["reader-title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 15), "\(label): the Reader must open", file: file, line: line)
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let request = self.step7ReaderRequest(title), request != "none", !request.isEmpty else { return false }
+            return request != previousRequest
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 15), .completed,
+                       "\(label): the Reader request must change from \(previousRequest ?? "nil"); now \(String(describing: title.value))",
+                       file: file, line: line)
+        let request = step7ReaderRequest(title)
+        if let verse {
+            let control = app.buttons["reader-verse-\(verse)"]
+            XCTAssertTrue(control.waitForExistence(timeout: 12), "\(label): verse \(verse) must exist", file: file, line: line)
+            let deadline = Date().addingTimeInterval(10)
+            while !control.isHittable && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
+            XCTAssertTrue(control.isHittable, "\(label): verse \(verse) must be hittable in the visible area", file: file, line: line)
+        }
+        XCTAssertFalse(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 3),
+                       "\(label): a URL or context verse is a context tint and a scroll, not a selection", file: file, line: line)
+        NSLog("STEP7_CONTEXT_VERSE label=%@ request=%@ previous=%@ verse=%@ selectionSummary=absent", label,
+              request ?? "nil", previousRequest ?? "nil", verse.map(String.init) ?? "n/a")
+        return request
+    }
+
     private func step7Attach(_ name: String, app: XCUIApplication) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
@@ -357,8 +398,12 @@ final class ContentFlowUITests: XCTestCase {
         let title = app.buttons["reader-title"]
         XCTAssertTrue(title.waitForExistence(timeout: 12), "Read in context must open the Reader")
         if let expectedTitle = env["STEP7_VERSE_READER_TITLE"] { XCTAssertEqual(title.label, expectedTitle) }
-        XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 10),
-                      "The displayed verse must be selected in the Reader")
+        // The displayed verse is a context verse (tint and scroll), not a selection (ReaderScreen.tsx:188-198).
+        let contextVerse = env["STEP7_VERSE_REFERENCE"].flatMap { reference -> Int? in
+            guard let colon = reference.lastIndex(of: ":") else { return nil }
+            return Int(reference[reference.index(after: colon)...].prefix { $0.isNumber })
+        }
+        step7AssertContextVerse(in: app, verse: contextVerse, previousRequest: nil, label: "verse-moment-read-in-context")
         step7Attach("step7-verse-moment-reader", app: app)
 
         if guideShown {
@@ -377,6 +422,7 @@ final class ContentFlowUITests: XCTestCase {
     /// src/screens/ReaderScreen.tsx:289 (unknown book leaves the Reader as it was), :302-307 (bad chapter shows the
     /// book's chapter list); the old route reads only book, chapter, verse, endVerse (translation is ignored).
     /// The fixed feature clock is 2026-09-13T16:00Z Toronto, so "today" is Sep 13, 2026.
+    /// URL verses are context verses (tint and scroll), not selections; each runs with the Today tab visible first.
     func testStep7ExternalURLFallbacksMatchSource() throws {
         try requireStep7("url-fallbacks")
         let app = step7Launch()
@@ -416,22 +462,29 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertEqual(app.buttons["reader-title"].label, "John 3")
         XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 3), "No verse means no selection")
-        NSLog("STEP7_URL_FALLBACK url=read-no-verse result=chapter-top-no-selection")
+        var previousRequest = step7ReaderRequest(app.buttons["reader-title"]) // read while the Reader is visible
+        NSLog("STEP7_URL_FALLBACK url=read-no-verse result=chapter-top-no-selection request=%@", previousRequest ?? "nil")
         backToToday()
 
-        // 3. Empty endVerse is absent: one verse is selected.
-        app.open(URL(string: "nrsv://read?book=JHN&chapter=3&verse=16&endVerse=")!)
-        XCTAssertEqual(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 15) ? app.staticTexts["reader-selection-summary"].label : "none",
-                       "Selected: verses 16–16")
-        backToToday()
-
+        // 3 to 4. A URL verse is a context verse, not a selection (ReaderScreen.tsx:130-131, :188-198). Each case starts
+        // with the Today tab visible, so the Read tab is not visible when the URL arrives. That is the race that was fixed
+        // at 9d3753c (the verse request was lost when `loadBooks` took over). Check: the request ID changes, the verse is
+        // hittable, and no selection summary exists.
+        func contextCase(_ text: String, label: String) {
+            app.buttons["tab-today"].tap()
+            XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 8))
+            XCTAssertTrue(app.staticTexts["today-title"].isHittable, "\(label): the Read tab must not be visible when the URL arrives")
+            app.open(URL(string: text)!)
+            XCTAssertEqual(app.buttons["reader-title"].waitForExistence(timeout: 15) ? app.buttons["reader-title"].label : "none", "John 3")
+            previousRequest = step7AssertContextVerse(in: app, verse: 16, previousRequest: previousRequest, label: label)
+            backToToday()
+        }
+        // 3a. Control: a verse with no endVerse at all.
+        contextCase("nrsv://read?book=JHN&chapter=3&verse=16", label: "url-verse-no-endverse")
+        // 3b. Empty endVerse is absent: one context verse.
+        contextCase("nrsv://read?book=JHN&chapter=3&verse=16&endVerse=", label: "url-verse-empty-endverse")
         // 4. An unknown translation value is ignored. The current edition (WEB-CE) opens.
-        app.open(URL(string: "nrsv://read?book=JHN&chapter=3&verse=16&translation=unknown")!)
-        XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 15))
-        XCTAssertEqual(app.buttons["reader-title"].label, "John 3")
-        XCTAssertEqual(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 10) ? app.staticTexts["reader-selection-summary"].label : "none",
-                       "Selected: verses 16–16")
-        backToToday()
+        contextCase("nrsv://read?book=JHN&chapter=3&verse=16&translation=unknown", label: "url-verse-unknown-translation")
 
         // 5. A known book with a chapter out of range, not a number, or missing opens the Read tab with that book's
         // chapter list (src/screens/ReaderScreen.tsx:292-308: Number(NaN) is invalid, so the chapter list shows).
