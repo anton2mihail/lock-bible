@@ -17,6 +17,7 @@ struct NovenaView: View {
     @State private var intentionRevision = 0
     @State private var routeGeneration = 0
     @State private var saveQueue = NovenaProgressSaveQueue()
+    @State private var confirmingReset = false
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var novena: NovenaCatalogItem? { catalog?.novenas.first { $0.id == id } }
@@ -222,10 +223,14 @@ struct NovenaView: View {
                     .contentAnnouncement(saveMessage)
             }
             if isComplete {
-                ContentButton(title: "Start the novena again") {
-                    enqueueProgressChange({ _ in NovenaProgressSelectors.reset() }, clearIntentionOnSuccess: true)
-                }
-                .accessibilityHint("Clears all nine completed days and your intention")
+                ContentButton(title: "Start the novena again") { confirmingReset = true }
+                    .accessibilityHint("Clears all nine completed days and your intention")
+                    .confirmationDialog("Reset this novena?", isPresented: $confirmingReset, titleVisibility: .visible) {
+                        Button("Reset", role: .destructive) {
+                            enqueueProgressChange({ _ in NovenaProgressSelectors.reset() }, clearIntentionOnSuccess: true)
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    }
             } else {
                 ContentButton(title: selectedIsComplete ? "Day \(progress.selectedDay) complete" : "Mark day \(progress.selectedDay) complete") {
                     enqueueProgressChange { NovenaProgressSelectors.completeSelectedDay($0) }
