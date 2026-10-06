@@ -142,7 +142,20 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(app.buttons["Continue"], in: app)
         XCTAssertTrue(app.staticTexts["Rest in his presence"].waitForExistence(timeout: 5))
         tapWhenReady(app.buttons["Begin one quiet minute"], in: app)
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "60s of quiet")).firstMatch.waitForExistence(timeout: 5))
+        let countdown = app.staticTexts.matching(NSPredicate(
+            format: "label MATCHES %@", "^([1-9]|[1-5][0-9]|60)s of quiet$"
+        )).firstMatch
+        XCTAssertTrue(countdown.waitForExistence(timeout: 5))
+        let initialCountdown = countdown.label
+        let initialSeconds = Int(initialCountdown.split(separator: "s").first ?? "")
+        let decreaseObserved = NSPredicate { _, _ in
+            guard countdown.exists, let initialSeconds,
+                  let currentSeconds = Int(countdown.label.split(separator: "s").first ?? "") else { return false }
+            return currentSeconds < initialSeconds
+        }
+        let decreaseWait = XCTNSPredicateExpectation(predicate: decreaseObserved, object: countdown)
+        XCTAssertEqual(XCTWaiter.wait(for: [decreaseWait], timeout: 5), .completed,
+                       "The visible countdown must decrease after it starts")
         tapWhenReady(app.buttons["End the timer"], in: app)
         XCTAssertTrue(app.staticTexts["A moment of stillness"].waitForExistence(timeout: 5))
     }
@@ -259,14 +272,62 @@ final class ContentFlowUITests: XCTestCase {
                               file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Control did not appear", file: file, line: line)
         for _ in 0..<8 where !element.isHittable {
-            let viewport = app.scrollViews.allElementsBoundByIndex
-                .filter { $0.exists && $0.isHittable }
-                .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
-            let viewportFrame = viewport?.frame ?? app.frame
-            if element.frame.maxY < viewportFrame.minY { app.swipeDown() }
-            else { app.swipeUp() }
+            let viewportFrame = visibleScrollViewport(in: app)
+            XCTAssertGreaterThan(viewportFrame.height, 80, "No safe scroll area is visible", file: file, line: line)
+            let oldFrame = element.frame
+            let direction: CGFloat = oldFrame.midY < viewportFrame.minY + 12 ? -1 : 1
+            let keyboard = app.keyboards.firstMatch
+            let oldKeyboardFrame = keyboard.exists ? keyboard.frame : nil
+            let centerX = viewportFrame.midX
+            let lowerY = viewportFrame.maxY - 28
+            let upperY = viewportFrame.minY + 28
+            let startY = direction > 0 ? lowerY : upperY
+            let endY = direction > 0 ? upperY : lowerY
+            NSLog("L14_SCROLL viewport=%@ keyboard=%@ target=%@ direction=%@",
+                  frameDescription(viewportFrame),
+                  app.keyboards.firstMatch.exists ? frameDescription(app.keyboards.firstMatch.frame) : "none",
+                  frameDescription(oldFrame), direction > 0 ? "up" : "down")
+            coordinate(in: app, x: centerX, y: startY)
+                .press(forDuration: 0.05, thenDragTo: coordinate(in: app, x: centerX, y: endY))
+            let moved = XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in
+                    element.frame != oldFrame || (keyboard.exists ? keyboard.frame : nil) != oldKeyboardFrame
+                }, object: element)
+            XCTAssertEqual(XCTWaiter.wait(for: [moved], timeout: 2), .completed,
+                           "Target and keyboard did not move after the gesture", file: file, line: line)
         }
         XCTAssertTrue(element.isHittable, "Control is not hittable", file: file, line: line)
         element.tap()
+    }
+
+    private func visibleScrollViewport(in app: XCUIApplication) -> CGRect {
+        let scroll = app.scrollViews.allElementsBoundByIndex
+            .filter { $0.exists && $0.isHittable }
+            .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+        var viewport = (scroll?.frame ?? app.frame).intersection(app.frame)
+        if app.keyboards.firstMatch.exists {
+            viewport.size.height = min(viewport.height, app.keyboards.firstMatch.frame.minY - viewport.minY)
+        }
+        let tab = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "tab-")).allElementsBoundByIndex
+            .filter { $0.exists && $0.frame.intersects(viewport) }
+            .map(\.frame.minY).min()
+        if let tab { viewport.size.height = min(viewport.height, tab - viewport.minY) }
+        let navigationBottom = app.navigationBars.allElementsBoundByIndex
+            .filter { $0.exists && $0.frame.intersects(viewport) }
+            .map(\.frame.maxY).max()
+        if let navigationBottom {
+            let clippedTop = max(viewport.minY, navigationBottom)
+            viewport = CGRect(x: viewport.minX, y: clippedTop,
+                              width: viewport.width, height: max(0, viewport.maxY - clippedTop))
+        }
+        return viewport
+    }
+
+    private func coordinate(in app: XCUIApplication, x: CGFloat, y: CGFloat) -> XCUICoordinate {
+        app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: y / app.frame.height))
+    }
+
+    private func frameDescription(_ frame: CGRect) -> String {
+        "(\(frame.origin.x),\(frame.origin.y),\(frame.width),\(frame.height))"
     }
 }
