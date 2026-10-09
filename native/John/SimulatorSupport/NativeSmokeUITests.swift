@@ -400,10 +400,15 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(psalmsBook.waitForExistence(timeout: 5))
         psalmsBook.tap()
         let psalm149 = app.buttons["reader-chapter-149"]
-        XCTAssertTrue(psalm149.waitForExistence(timeout: 5))
         let chapterScroll = app.scrollViews["reader-chapter-grid-scroll"]
-        for _ in 0..<16 where !chapterScroll.frame.contains(psalm149.frame) { chapterScroll.swipeUp() }
-        XCTAssertTrue(chapterScroll.frame.contains(psalm149.frame), "The chapter grid must show Psalm 149 before the first tap")
+        XCTAssertTrue(chapterScroll.waitForExistence(timeout: 5))
+        // The chapter grid is lazy. Psalm 149 does not exist until the grid scrolls near it.
+        let tabTop = tabButton(app, "tab-saved").frame.minY - 12
+        for _ in 0..<16 where !(psalm149.exists && psalm149.isHittable && psalm149.frame.maxY < tabTop) {
+            chapterScroll.swipeUp()
+        }
+        XCTAssertTrue(psalm149.exists && psalm149.isHittable && psalm149.frame.maxY < tabTop,
+                      "The chapter grid must show Psalm 149 before the first tap")
         psalm149.tap()
         XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["reader-title"].label.contains("149"))
@@ -428,7 +433,7 @@ final class NativeSmokeUITests: XCTestCase {
         app.buttons["reader-chapter-1"].tap()
         XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 10))
         attachScreenshot("L07-Song-1", app: app)
-        XCTAssertTrue(app.staticTexts.matching(identifier: "reader-heading-sp").firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "reader-heading-sp").firstMatch.waitForExistence(timeout: 5))
     }
 
     func testReaderRealVisibleVerseTapRange() throws {
@@ -469,7 +474,7 @@ final class NativeSmokeUITests: XCTestCase {
             return candidate.exists && candidate.isSelected ? String(value) : nil
         }
         XCTAssertTrue(selectedLabels.isEmpty, "The third tap on verse 8 must clear the range")
-        guard tapVerse(app.buttons["reader-verse-1"], in: app, lineFraction: 0.72) else { return }
+        guard tapVerse(app.buttons["reader-verse-1"], in: app, lineFraction: 0.72, horizontalFraction: 0.08) else { return }
         XCTAssertTrue(app.staticTexts["reader-selection-summary"].label.contains("1–1"),
                       "A tap on the wrapped continuation must select its verse")
     }
@@ -756,6 +761,10 @@ final class NativeSmokeUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-settings").tap()
+        // Earlier tests persist a Light choice. Reset to System so the expected value is deterministic.
+        let systemAppearance = app.buttons["settings-appearance-system"]
+        XCTAssertTrue(systemAppearance.waitForExistence(timeout: 5))
+        systemAppearance.tap()
         let layoutOptions = ["settings-layout-paragraphs", "settings-layout-verse-by-verse"]
         let selectedLayout = layoutOptions.first { app.buttons[$0].value as? String == "Selected" }
         XCTAssertNotNil(selectedLayout, "Full Settings must expose the committed layout choice")
@@ -1035,8 +1044,8 @@ final class NativeSmokeUITests: XCTestCase {
             let content = visibleReaderRect(reader, tabBar: tabBar, in: app)
             let frame = verse.frame
             if content.insetBy(dx: 0, dy: 12).contains(frame) { break }
-            if frame.maxY <= content.minY + 12 { reader.swipeDown() }
-            else if frame.minY >= content.maxY - 12 { reader.swipeUp() }
+            if frame.minY < content.minY + 12 { dragReader(reader, by: min(160, content.minY + 12 - frame.minY + 40)) }
+            else if frame.maxY > content.maxY - 12 { dragReader(reader, by: -min(160, frame.maxY - content.maxY + 52)) }
             else { break }
         }
         let usableReader = visibleReaderRect(reader, tabBar: tabBar, in: app)
@@ -1059,14 +1068,27 @@ final class NativeSmokeUITests: XCTestCase {
         return true
     }
 
+    /// Drags the Reader by `dy` points (positive moves content down). Slow drag keeps the move small and exact.
+    private func dragReader(_ reader: XCUIElement, by dy: CGFloat) {
+        let frame = reader.frame
+        let startY = frame.minY + frame.height * 0.45
+        let start = reader.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: frame.width / 2, dy: startY - frame.minY))
+        let end = start.withOffset(CGVector(dx: 0, dy: dy))
+        start.press(forDuration: 0.1, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.3)
+    }
+
     private func visibleReaderRect(_ reader: XCUIElement, tabBar: XCUIElement, in app: XCUIApplication) -> CGRect {
         let frame = reader.frame
         var contentBottom = min(frame.maxY, tabBar.frame.minY - 12)
         // Scripture scrolls under the floating selection panel (audit B3). A verse tap must not land on the panel.
         let panel = app.descendants(matching: .any).matching(identifier: "reader-selection-panel").firstMatch
         if panel.exists, panel.frame.height > 0 { contentBottom = min(contentBottom, panel.frame.minY - 8) }
-        return CGRect(x: frame.minX, y: frame.minY, width: frame.width,
-                      height: max(0, contentBottom - frame.minY))
+        // Text above the top safe area (62 pt on iPhone 17 Pro) is masked out and not visible. A verse tap must
+        // land on visible text, so the usable area starts below the status bar band.
+        let contentTop = frame.minY + 72
+        return CGRect(x: frame.minX, y: contentTop, width: frame.width,
+                      height: max(0, contentBottom - contentTop))
     }
 
     func testPrimaryTabsAndSharedReaderAppearance() throws {

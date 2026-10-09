@@ -56,8 +56,13 @@ final class TabViewRegressionUITests: XCTestCase {
 
     private func logTabState(_ state: [(id: String, element: XCUIElement)], phase: String) {
         for item in state {
-            NSLog("R17_TAB_STATE phase=%@ id=%@ exists=%d hittable=%d selected=%d frame=%@",
-                  phase, item.id, item.element.exists ? 1 : 0, item.element.isHittable ? 1 : 0,
+            // A minimized bar removes the other tabs. A missing element has no snapshot, so read it only when it exists.
+            guard item.element.exists else {
+                NSLog("R17_TAB_STATE phase=%@ id=%@ exists=0", phase, item.id)
+                continue
+            }
+            NSLog("R17_TAB_STATE phase=%@ id=%@ exists=1 hittable=%d selected=%d frame=%@",
+                  phase, item.id, item.element.isHittable ? 1 : 0,
                   item.element.isSelected ? 1 : 0, NSCoder.string(for: item.element.frame))
         }
     }
@@ -83,7 +88,9 @@ final class TabViewRegressionUITests: XCTestCase {
     private func ensureJohnOne(in app: XCUIApplication) {
         let verse = app.descendants(matching: .any).matching(identifier: "reader-verse-1").firstMatch
         let title = app.buttons["reader-title"]
-        if title.waitForExistence(timeout: 3), title.label == "John 1", verse.waitForExistence(timeout: 3) {
+        // A scrolled Reader may have verse 1 off screen. John 1 is open when its title and scroll view exist.
+        if title.waitForExistence(timeout: 3), title.label == "John 1",
+           app.scrollViews["reader-chapter-scroll"].exists {
             return
         }
 

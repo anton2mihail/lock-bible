@@ -15,6 +15,11 @@ final class ReaderSelectionActionsUITests: XCTestCase {
 
         let bookmark = app.buttons["reader-selection-bookmark"]
         XCTAssertTrue(bookmark.waitForExistence(timeout: 8))
+        // Seed through the visible control when the container has no bookmark yet.
+        // The test must not depend on state that a run outside the test creates.
+        if bookmark.value as? String != "Selected" {
+            bookmark.tap()
+        }
         waitForValue(bookmark, equals: "Selected")
         bookmark.tap()
         waitForValue(bookmark, equals: "Not selected")
@@ -28,7 +33,15 @@ final class ReaderSelectionActionsUITests: XCTestCase {
         selectVerseOne(in: app)
         let second = app.buttons["reader-verse-2"]
         XCTAssertTrue(second.waitForExistence(timeout: 8))
+        // Seed through the visible controls: gold on verse 1, sage on verse 2. A seed made outside the test
+        // is not required.
+        ensureHighlight("gold", in: app)
         tapObservedWord(second, offset: CGPoint(x: 20, y: 14), in: app)
+        XCTAssertTrue(app.staticTexts["reader-selection-reference"].label.contains("John 1:1–2"))
+        app.buttons["reader-selection-close"].tap()
+        tapObservedWord(second, offset: CGPoint(x: 20, y: 14), in: app)
+        ensureHighlight("sage", in: app)
+        tapObservedWord(app.buttons["reader-verse-1"], offset: CGPoint(x: 20, y: 14), in: app)
 
         let reference = app.staticTexts["reader-selection-reference"]
         XCTAssertTrue(reference.waitForExistence(timeout: 5))
@@ -99,6 +112,13 @@ final class ReaderSelectionActionsUITests: XCTestCase {
             predicate: NSPredicate(format: "label == %@", "John 1:1"), object: reference)
         XCTAssertEqual(XCTWaiter.wait(for: [exact], timeout: 8), .completed,
                        "The visible selection must be exactly JHN 1:1")
+    }
+
+    private func ensureHighlight(_ color: String, in app: XCUIApplication) {
+        let swatch = app.buttons["reader-highlight-\(color)"]
+        XCTAssertTrue(swatch.waitForExistence(timeout: 8))
+        if swatch.value as? String != "Selected" { swatch.tap() }
+        waitForValue(swatch, equals: "Selected")
     }
 
     private func tapObservedWord(_ verse: XCUIElement, offset: CGPoint, in app: XCUIApplication) {

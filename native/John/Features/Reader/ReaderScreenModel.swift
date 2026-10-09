@@ -85,10 +85,18 @@ import JohnCore
                 else if screen == .chapter {
                     let location = runtime.preferences.readerLocation
                     let matches = location?.bookCode.rawValue == updated.code && location?.chapter == chapterNumber
+                    // Showing the Read tab again reloads the open chapter. Keep the verse selection across that
+                    // reload. `openChapter` clears it, so restore it when the same chapter is open afterwards.
+                    let keptSelection = selectedRange
                     await openChapter(updated, number: chapterNumber,
                                       scrollY: matches ? location?.scrollY ?? 0 : 0,
                                       anchor: matches ? location?.anchor : nil,
                                       using: runtime)
+                    if let keptSelection, selectedRange == nil, screen == .chapter,
+                       self.book?.code == updated.code, self.chapterNumber == chapterNumber,
+                       let loaded = chapter, keptSelection.upperBound < loaded.verses.count {
+                        selectedRange = keptSelection
+                    }
                 }
             }
         } else if book != nil {

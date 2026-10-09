@@ -187,18 +187,46 @@ final class ReaderRegressionUITests: XCTestCase {
         app.launchArguments += ["-JohnTabBarMinimize", "never"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
+        // Seed through visible controls. A saved anchor made outside the test is not required.
+        // 1. Set Medium text size in Settings.
+        tapTab("tab-settings", in: app)
+        let mediumSeed = app.buttons["settings-text-size-default"]
+        XCTAssertTrue(mediumSeed.waitForExistence(timeout: 10))
+        mediumSeed.tap()
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", "Selected"), object: mediumSeed)], timeout: 8), .completed)
+        // 2. Open John 1 from the book list.
         tapTab("tab-read", in: app)
-
-        let continueReading = app.buttons["reader-continue-reading"]
-        XCTAssertTrue(continueReading.waitForExistence(timeout: 10),
-                      "The task fixture must set a saved John 1 location")
-        continueReading.tap()
+        let bookListTitle = app.staticTexts["reader-book-list-title"]
+        for _ in 0..<3 where !bookListTitle.exists {
+            let back = app.buttons["reader-back"]
+            XCTAssertTrue(back.waitForExistence(timeout: 8), "Return to the visible Reader book list")
+            back.tap()
+        }
+        let john = app.buttons["reader-book-JHN"]
+        XCTAssertTrue(john.waitForExistence(timeout: 10))
+        john.tap()
+        let chapterOne = app.buttons["reader-chapter-1"]
+        XCTAssertTrue(chapterOne.waitForExistence(timeout: 10))
+        chapterOne.tap()
         let title = app.buttons["reader-title"]
-        let initial = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "value CONTAINS %@", "anchor=50:85"), object: title)
-        XCTAssertEqual(XCTWaiter.wait(for: [initial], timeout: 15), .completed,
-                       "The task fixture must restore John 1 anchor 50:85")
-        assertSavedAnchorVisible("50:85", verse: 50, title: title, in: app, label: "anchor-50-85-medium")
+        XCTAssertTrue(title.waitForExistence(timeout: 12))
+        // 3. Scroll deep into John 1. The saved anchor is the one the Reader reports at rest.
+        let scroll = app.scrollViews["reader-chapter-scroll"]
+        XCTAssertTrue(scroll.waitForExistence(timeout: 10))
+        let target = app.buttons["reader-verse-50"]
+        for _ in 0..<40 where !(target.exists && target.isHittable) { scroll.swipeUp(velocity: .fast) }
+        XCTAssertTrue(target.exists && target.isHittable, "John 1:50 must be visible after the seed scroll")
+        Thread.sleep(forTimeInterval: 2.2)
+        let seeded = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                guard let t = self.anchorToken(in: title) else { return false }
+                return (Int(t.prefix { $0 != ":" }) ?? 0) >= 40
+            }, object: title)
+        XCTAssertEqual(XCTWaiter.wait(for: [seeded], timeout: 15), .completed,
+                       "The Reader must report an anchor deep in John 1 after the seed scroll")
+        let seedAnchor = self.anchorToken(in: title) ?? ""
+        let anchorVerse = Int(seedAnchor.prefix { $0 != ":" }) ?? 50
         let initialRequest = readerRequest(in: app)
         XCTAssertNotNil(UUID(uuidString: initialRequest), "The saved John 1 location must have a Reader request UUID")
 
@@ -229,7 +257,7 @@ final class ReaderRegressionUITests: XCTestCase {
         Thread.sleep(forTimeInterval: 2.2)
         XCTAssertEqual(readerRequest(in: app), reflowRequest,
                        "The reflowed John 1 request must stay current after settling")
-        assertSavedAnchorVisible("50:85", verse: 50, title: reflowTitle, in: app, label: "anchor-50-85-large")
+        assertSavedAnchorVisible(seedAnchor, verse: anchorVerse, title: reflowTitle, in: app, label: "anchor-50-85-large")
         let reflowShot = XCTAttachment(screenshot: app.screenshot())
         reflowShot.name = "reader-anchor-50-85-large-reflow"
         reflowShot.lifetime = .keepAlways
@@ -245,14 +273,14 @@ final class ReaderRegressionUITests: XCTestCase {
         continued.tap()
         let restoredTitle = app.buttons["reader-title"]
         let restored = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "value CONTAINS %@", "anchor=50:85"), object: restoredTitle)
+            predicate: NSPredicate(format: "value CONTAINS %@", "anchor=" + seedAnchor), object: restoredTitle)
         XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 15), .completed,
                        "A fresh process must restore the exact John 1 anchor")
         let restartRequest = readerRequest(in: app)
         XCTAssertNotNil(UUID(uuidString: restartRequest),
                          "The restored John 1 location must have a valid Reader request UUID")
         Thread.sleep(forTimeInterval: 2.2)
-        assertSavedAnchorVisible("50:85", verse: 50, title: restoredTitle, in: app,
+        assertSavedAnchorVisible(seedAnchor, verse: anchorVerse, title: restoredTitle, in: app,
                                  label: "anchor-50-85-after-restart")
         XCTAssertEqual(readerRequest(in: app), restartRequest,
                        "The restored John 1 request must remain current after settling")
@@ -266,8 +294,14 @@ final class ReaderRegressionUITests: XCTestCase {
         XCTAssertTrue(persistedLarge.waitForExistence(timeout: 8))
         XCTAssertEqual(persistedLarge.value as? String, "Selected",
                        "Large must remain selected after restart")
-        NSLog("L08_READER_ANCHOR exact=50:85 mediumToLarge=true restart=true largePersisted=true initialRequest=%@ restartRequest=%@",
-              initialRequest, restartRequest)
+        // Restore Medium so later tests start from the standard text size.
+        let restoreMedium = app.buttons["settings-text-size-default"]
+        XCTAssertTrue(restoreMedium.waitForExistence(timeout: 8))
+        restoreMedium.tap()
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", "Selected"), object: restoreMedium)], timeout: 8), .completed)
+        NSLog("L08_READER_ANCHOR exact=%@ mediumToLarge=true restart=true largePersisted=true initialRequest=%@ restartRequest=%@",
+              seedAnchor, initialRequest, restartRequest)
     }
 
     func testAaMediumBackgroundVerseTapClosesWithoutSelection() throws {
