@@ -116,10 +116,11 @@ struct FullSettingsView: View {
                     }
                 }
             }
+            .frame(maxWidth: 740, alignment: .leading)
             .padding(.horizontal, 24)
             .padding(.top, 16)
             .padding(.bottom, 48)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
         }
         .background(colors.background)
         .task { await loadInformation() }

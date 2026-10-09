@@ -199,9 +199,11 @@ private struct NovenaLibraryPage<Content: View>: View {
                 }
                 content
             }
+            .frame(maxWidth: 740, alignment: .leading)
             .padding(.horizontal, 24)
             .padding(.top, 24)
             .padding(.bottom, 32)
+            .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
         .background(colors.background)
