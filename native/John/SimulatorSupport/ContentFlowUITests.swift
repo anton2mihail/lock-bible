@@ -30,7 +30,7 @@ final class ContentFlowUITests: XCTestCase {
         let favoriteUpdated = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label == %@", "Remove from favorites"), object: favorite)
         XCTAssertEqual(XCTWaiter.wait(for: [favoriteUpdated], timeout: 8), .completed)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
 
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
@@ -43,7 +43,7 @@ final class ContentFlowUITests: XCTestCase {
         enterText(after, afterReflection, in: app)
         tapWhenReady(app.buttons["Save reflection"], in: app)
         XCTAssertTrue(app.staticTexts["Reflection saved on this device."].waitForExistence(timeout: 8))
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
 
         tabButton(app, "tab-pray").tap()
         let novenaSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
@@ -67,12 +67,12 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(button(containing: "A morning offering", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Morning offering")
         XCTAssertEqual(app.buttons["prayer-favorite"].label, "Remove from favorites")
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
         XCTAssertEqual(textView(label: "Before Mass reflection", in: app).value as? String, beforeReflection)
         XCTAssertEqual(textView(label: "After Mass reflection", in: app).value as? String, afterReflection)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
 
         tabButton(app, "tab-pray").tap()
         let reopenedSearch = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
@@ -96,22 +96,22 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(sirach, in: app)
         XCTAssertEqual(waitForPageTitle(app), "Sirach 27")
         XCTAssertTrue(app.staticTexts["Reading reference: Sirach 27:30—28:7"].waitForExistence(timeout: 8))
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Today’s readings")).firstMatch)
 
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Come ready for Sunday")
         XCTAssertTrue(app.staticTexts["Sep 13, 2026"].exists)
         XCTAssertTrue(button(containing: "Sirach 27:30—28:7", in: app).exists)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
 
         tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Explore the Catholic faith", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "Faith, rooted in Scripture")
         tapWhenReady(button(containing: "The Eucharist", in: app), in: app)
         XCTAssertEqual(waitForPageTitle(app), "The Eucharist")
-        tapSystemBack(in: app)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Faith, rooted in Scripture")).firstMatch)
+        tapSystemBack(in: app, expecting: app.staticTexts["page-title-pray"])
 
     }
 
@@ -132,13 +132,13 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(card.waitForExistence(timeout: 8), "Missing Rosary set \(setID): \(cardTitle)")
             tapWhenReady(card, in: app)
             XCTAssertTrue(app.staticTexts[guideTitle].waitForExistence(timeout: 8))
-            tapWhenReady(app.buttons["Close Rosary guide"], in: app)
+            tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch)
         }
         let sevenSorrows = button(containing: "The Seven Sorrows of Mary", in: app)
         XCTAssertTrue(sevenSorrows.waitForExistence(timeout: 8))
         tapWhenReady(sevenSorrows, in: app)
         XCTAssertTrue(app.staticTexts["Seven Sorrows"].waitForExistence(timeout: 8))
-        tapWhenReady(app.buttons["Close Rosary guide"], in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch)
 
         tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Pray with Scripture", in: app), in: app)
@@ -190,6 +190,150 @@ final class ContentFlowUITests: XCTestCase {
         tapWhenReady(app.buttons["Pray again"], in: app)
         XCTAssertTrue(progress.waitForExistence(timeout: 5))
         XCTAssertEqual(progress.value as? String, "0 percent", "Pray again must reset the temporary guide state")
+    }
+
+    func testL25PadrePioNovenaProgressAndResetConfirmation() throws {
+        let app = launchWithFeatureClock()
+        tabButton(app, "tab-pray").tap()
+
+        let search = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 8), "PrayerHome must show the novena search field")
+        enterText(search, "Padre Pio", in: app)
+        let novena = button(containing: "St. Padre Pio Novena", in: app)
+        tapWhenReady(novena, in: app)
+        XCTAssertTrue(app.staticTexts["St. Padre Pio Novena"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Day 1"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["0 of 9 prayed"].waitForExistence(timeout: 8),
+                      "Use a fresh seed with no Padre Pio progress")
+
+        let dayPicker = app.scrollViews.matching(
+            NSPredicate(format: "label == %@", "Choose a novena day")).firstMatch
+        XCTAssertTrue(dayPicker.waitForExistence(timeout: 8), "The novena day picker must be available")
+
+        func bringDayPickerIntoView() {
+            let pageScroll = app.scrollViews.allElementsBoundByIndex
+                .filter { $0.exists && $0.isHittable && $0.label != "Choose a novena day" }
+                .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+            XCTAssertNotNil(pageScroll, "The novena page must expose its vertical scroll view")
+            for _ in 0..<8 where !dayPicker.isHittable {
+                let viewport = visibleScrollViewport(in: app)
+                if dayPicker.frame.minY > viewport.maxY {
+                    pageScroll?.swipeUp()
+                } else {
+                    pageScroll?.swipeDown()
+                }
+            }
+            XCTAssertTrue(dayPicker.isHittable, "The day picker must be visible before a day tap")
+        }
+
+        for day in 1...9 {
+            bringDayPickerIntoView()
+            let dayButton = app.buttons.matching(NSPredicate(format: "label == %@", "Day \(day)")).firstMatch
+            XCTAssertTrue(dayButton.waitForExistence(timeout: 8), "Missing day selector for Day \(day)")
+            for _ in 0..<8 where !dayButton.isHittable { dayPicker.swipeLeft() }
+            XCTAssertTrue(dayButton.isHittable, "Day \(day) must be visible before selection")
+            if !dayButton.isSelected {
+                dayButton.tap()
+                let selected = XCTNSPredicateExpectation(
+                    predicate: NSPredicate { _, _ in dayButton.isSelected }, object: dayButton)
+                XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 8), .completed,
+                               "Day \(day) must become the selected day")
+            }
+
+            let complete = app.buttons["Mark day \(day) complete"]
+            tapWhenReady(complete, in: app)
+            XCTAssertTrue(app.buttons["Day \(day), complete"].waitForExistence(timeout: 8),
+                          "Day \(day) must show completed state")
+            let count = app.staticTexts["\(day) of 9 prayed"]
+            XCTAssertTrue(count.waitForExistence(timeout: 8),
+                          "Progress must show \(day) of 9 completed days")
+        }
+
+        XCTAssertTrue(app.staticTexts["Novena complete"].waitForExistence(timeout: 8))
+        confirmNovenaCancelAndReset(app: app)
+    }
+
+    func testL25PadrePioCompletedNovenaCancelAndReset() throws {
+        let app = launchWithFeatureClock()
+        tabButton(app, "tab-pray").tap()
+
+        let search = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 8), "PrayerHome must show the novena search field")
+        enterText(search, "Padre Pio", in: app)
+        tapWhenReady(button(containing: "St. Padre Pio Novena", in: app), in: app)
+
+        XCTAssertTrue(app.staticTexts["St. Padre Pio Novena"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["Day 9, complete"].isSelected,
+                      "The preserved post-failure seed must keep Day 9 selected")
+        XCTAssertTrue(app.staticTexts["9 of 9 prayed"].waitForExistence(timeout: 8),
+                      "The preserved post-failure seed must contain all nine completed days")
+        XCTAssertTrue(app.staticTexts["Novena complete"].waitForExistence(timeout: 8),
+                      "The preserved post-failure seed must show completed state")
+        confirmNovenaCancelAndReset(app: app)
+    }
+
+    private func confirmNovenaCancelAndReset(app: XCUIApplication) {
+        XCTAssertTrue(app.staticTexts["9 of 9 prayed"].waitForExistence(timeout: 8),
+                      "Reset checks require all nine days to be complete")
+        let restart = app.buttons["Start the novena again"]
+        tapWhenReady(restart, in: app)
+        let confirmationTitle = app.staticTexts["Reset this novena?"]
+        XCTAssertTrue(confirmationTitle.waitForExistence(timeout: 8),
+                      "Restart must ask before it clears progress")
+        let reset = app.buttons["Reset"]
+        let cancel = app.buttons["Cancel"]
+        XCTAssertTrue(reset.waitForExistence(timeout: 5), "The confirmation must offer Reset")
+        attachNovenaResetEvidence("l25-novena-cancel-before", app: app)
+        if cancel.exists && cancel.isHittable {
+            cancel.tap()
+        } else {
+            // Compact iOS confirmation popovers can omit the Cancel action. Tap app content
+            // above the popover, away from every visible button, to dismiss the surface.
+            let popoverBounds = confirmationTitle.frame.union(reset.frame).insetBy(dx: -28, dy: -28)
+            let outsidePoint = CGPoint(x: app.frame.midX, y: popoverBounds.minY - 16)
+            XCTAssertTrue(app.frame.contains(outsidePoint),
+                          "The confirmation must leave a safe app-content point above its popover")
+            XCTAssertFalse(popoverBounds.contains(outsidePoint),
+                           "The dismissal point must be outside the confirmation popover")
+            let visibleButtons = app.buttons.allElementsBoundByIndex.filter { $0.exists && $0.frame.width > 0 }
+            XCTAssertFalse(visibleButtons.contains { $0.frame.insetBy(dx: -4, dy: -4).contains(outsidePoint) },
+                           "The dismissal point must not activate an underlying button")
+            NSLog("L25_NOVENA outsideDismissPoint=(%.1f,%.1f) popover=%@ app=%@",
+                  outsidePoint.x, outsidePoint.y, frameDescription(popoverBounds), frameDescription(app.frame))
+            let tap = app.coordinate(withNormalizedOffset: CGVector(
+                dx: (outsidePoint.x - app.frame.minX) / app.frame.width,
+                dy: (outsidePoint.y - app.frame.minY) / app.frame.height))
+            tap.tap()
+        }
+        XCTAssertTrue(confirmationTitle.waitForNonExistence(timeout: 8),
+                      "The reset confirmation must close after cancellation")
+        XCTAssertTrue(app.staticTexts["9 of 9 prayed"].waitForExistence(timeout: 8),
+                      "Cancel must keep the completed novena")
+        XCTAssertTrue(app.staticTexts["Novena complete"].exists,
+                      "Cancel must keep the completion state")
+        XCTAssertTrue(restart.exists, "Cancel must keep the restart action")
+        attachNovenaResetEvidence("l25-novena-cancel-after", app: app)
+
+        tapWhenReady(restart, in: app)
+        XCTAssertTrue(confirmationTitle.waitForExistence(timeout: 8))
+        XCTAssertTrue(reset.waitForExistence(timeout: 5))
+        attachNovenaResetEvidence("l25-novena-reset-before", app: app)
+        tapWhenReady(reset, in: app)
+        XCTAssertTrue(app.staticTexts["Day 1"].waitForExistence(timeout: 8),
+                      "Reset must return the novena to Day 1")
+        XCTAssertTrue(app.staticTexts["0 of 9 prayed"].waitForExistence(timeout: 8),
+                      "Reset must clear all completed days")
+        XCTAssertTrue(app.buttons["Day 1"].isSelected, "Reset must select Day 1")
+        XCTAssertTrue(app.buttons["Mark day 1 complete"].waitForExistence(timeout: 8),
+                      "Day 1 must be available after reset")
+        XCTAssertFalse(app.buttons["Start the novena again"].exists,
+                       "Reset must remove the completed-state action")
+        for day in 1...9 {
+            XCTAssertFalse(app.buttons["Day \(day), complete"].exists,
+                           "Reset must clear completion state for Day \(day)")
+        }
+        attachNovenaResetEvidence("l25-novena-reset-after", app: app)
+        NSLog("L25_NOVENA id=st-padre-pio cancelPreservesProgress=true resetReturnsToDay1=true")
     }
 
     func testL18ConfessionNotesClearOnBackgroundAndFinish() throws {
@@ -344,6 +488,18 @@ final class ContentFlowUITests: XCTestCase {
         add(attachment)
     }
 
+    private func attachNovenaResetEvidence(_ name: String, app: XCUIApplication) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "\(name)-screen"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+
+        let accessibility = XCTAttachment(string: app.debugDescription)
+        accessibility.name = "\(name)-accessibility"
+        accessibility.lifetime = .keepAlways
+        add(accessibility)
+    }
+
     /// Verse Moment: countdown text, widget guide steps and durable dismissal, Share, Scripture card, Read in context.
     /// Expected values (optional): STEP7_VERSE_REFERENCE, STEP7_VERSE_TEXT_PREFIX, STEP7_VERSE_ABBREVIATION,
     /// STEP7_VERSE_READER_TITLE. Source: DestinationView.swift VerseMomentDestination; src/screens/VerseOfDayScreen.tsx.
@@ -401,7 +557,7 @@ final class ContentFlowUITests: XCTestCase {
             XCTAssertTrue(card.waitForExistence(timeout: 8), "The card must keep the displayed verse reference")
         }
         step7Attach("step7-verse-moment-card", app: app)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Verse of the moment")).firstMatch)
 
         tapWhenReady(app.buttons["verse-moment-read-context"], in: app)
         let title = app.buttons["reader-title"]
@@ -729,30 +885,13 @@ final class ContentFlowUITests: XCTestCase {
         return app.navigationBars.buttons.firstMatch
     }
 
-    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
-    private func screenSignature(_ app: XCUIApplication) -> String {
-        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
-        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
-            .filter { $0.exists }.map(\.label)
-        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
-            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
-    }
-
-    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
-    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
-    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+    /// Taps Back and waits for the expected parent screen.
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement,
                                file: StaticString = #filePath, line: UInt = #line) {
         let back = systemBack(in: app)
         XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
-        let before = screenSignature(app)
         back.tap()
-        if let parent {
-            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
-            return
-        }
-        let deadline = Date().addingTimeInterval(10)
-        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
-        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
+        XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,

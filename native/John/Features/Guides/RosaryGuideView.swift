@@ -11,8 +11,9 @@ struct RosaryGuideView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var guide: RosaryGuideSession?
-    @State private var credits: [String: String] = [:]
+    @State private var loadedCredits: [String: String] = [:]
     @State private var loadFailed = false
     @State private var stepIndex = 0
     @State private var repetitionIndex = 0
@@ -27,7 +28,13 @@ struct RosaryGuideView: View {
     }
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
-    private var session: RosaryGuideSession? { guide }
+    private var credits: [String: String] { loadedCredits.isEmpty ? runtime.warmArtCredits : loadedCredits }
+    private var session: RosaryGuideSession? {
+        if let guide { return guide }
+        guard !loadFailed else { return nil }
+        let requested = requestedSet ?? TodaySelectors.rosaryWeekdaySet(date: clock(), timeZone: timeZone)
+        return runtime.warmRosarySessions.first { $0.id == requested }
+    }
     private var steps: [RosaryGuideStep] { session?.steps ?? [] }
     private var step: RosaryGuideStep? { steps.indices.contains(stepIndex) ? steps[stepIndex] : nil }
     private var groupLabels: [String] { session?.groupLabels ?? [] }
@@ -61,7 +68,7 @@ struct RosaryGuideView: View {
                     Text("This Rosary guide is not available right now.")
                 }
             } else {
-                ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
+                Color.clear.frame(maxWidth: .infinity).frame(height: 72)
             }
         }
     }
@@ -106,33 +113,20 @@ struct RosaryGuideView: View {
             .accessibilityLabel("Progress")
             .accessibilityValue("\(progressValue) percent")
 
-            HStack(alignment: .top, spacing: 8) {
-                ForEach(Array(groupLabels.enumerated()), id: \.offset) { index, label in
-                    let active = step.mysteryIndex == index
-                    let prayed = step.mysteryIndex.map { index < $0 } ?? false
-                    VStack(spacing: 6) {
-                        Text(prayed ? "✓" : String(index + 1))
-                            .font(JohnTypography.sans(12, weight: .semibold))
-                            .foregroundStyle((active || prayed) ? colors.background : colors.textDim)
-                            .minimumScaleFactor(0.8)
-                            .frame(width: 34, height: 34)
-                            .background((active || prayed) ? colors.tint : colors.card, in: Circle())
-                            .overlay(Circle().stroke(colors.border, lineWidth: 1 / displayScale))
-                        if showBeadLabels {
-                            Text(label.replacingOccurrences(of: #"^The "#, with: "", options: .regularExpression))
-                                .font(JohnTypography.sans(12))
-                                .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 12, targetLineHeight: 14))
-                                .foregroundStyle(active ? colors.tint : colors.textDim)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity)
-                        }
+            if dynamicTypeSize.isAccessibilitySize {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+                    ForEach(groupLabels.indices, id: \.self) { index in
+                        groupIndicator(index: index, label: groupLabels[index])
                     }
-                    .frame(maxWidth: .infinity)
+                }
+                .accessibilityIdentifier("rosary-accessible-group-grid")
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    ForEach(groupLabels.indices, id: \.self) { index in
+                        groupIndicator(index: index, label: groupLabels[index])
+                    }
                 }
             }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(session.id == "seven-sorrows" ? "The seven sorrows" : "Rosary decades")
 
             if let image {
                 VStack(spacing: 8) {
@@ -264,7 +258,8 @@ struct RosaryGuideView: View {
     }
 
     @MainActor private func loadSession() async {
-        guard let repository = runtime.companionRepository else { loadFailed = true; return }
+        let hadSession = session != nil
+        guard let repository = runtime.companionRepository else { if !hadSession { loadFailed = true }; return }
         do {
             let catalog = try await repository.devotionalCatalog()
             let data = try JSONEncoder().encode(catalog.rosary)
@@ -272,16 +267,16 @@ struct RosaryGuideView: View {
             let requested = requestedSet ?? TodaySelectors.rosaryWeekdaySet(date: clock(), timeZone: timeZone)
             guard let value = decoded.sessions.first(where: { $0.id == requested })
                     ?? decoded.sessions.first(where: { $0.id == TodaySelectors.rosaryWeekdaySet(date: clock(), timeZone: timeZone) }) else {
-                loadFailed = true
+                if !hadSession { loadFailed = true }
                 return
             }
             guard !Task.isCancelled else { return }
             guide = value
-            credits = loadCredits()
-            stepIndex = 0; repetitionIndex = 0; complete = false
+            loadedCredits = loadCredits()
+            if !hadSession { stepIndex = 0; repetitionIndex = 0; complete = false }
             loadFailed = false
         } catch {
-            loadFailed = true
+            if !hadSession { loadFailed = true }
         }
     }
 
@@ -310,6 +305,38 @@ struct RosaryGuideView: View {
         if step.repetitions > 1 { return "Complete \(step.title) \(repetitionIndex + 1) of \(step.repetitions)" }
         if step.prayer != nil { return "Complete \(step.title)" }
         return session.id == "seven-sorrows" ? "Begin this sorrow" : "Begin this decade"
+    }
+
+    private func groupIndicator(index: Int, label: String) -> some View {
+        let active = step?.mysteryIndex == index
+        let prayed = step?.mysteryIndex.map { index < $0 } ?? false
+        let visibleLabel = label.replacingOccurrences(of: #"^The "#, with: "", options: .regularExpression)
+        return VStack(spacing: 6) {
+            Text(prayed ? "✓" : String(index + 1))
+                .font(JohnTypography.sans(12, weight: .semibold))
+                .foregroundStyle((active || prayed) ? colors.background : colors.textDim)
+                .minimumScaleFactor(0.7)
+                .frame(width: 34, height: 34)
+                .background((active || prayed) ? colors.tint : colors.card, in: Circle())
+                .overlay(Circle().stroke(colors.border, lineWidth: 1 / displayScale))
+            if showBeadLabels || dynamicTypeSize.isAccessibilitySize {
+                Text(visibleLabel)
+                    .font(JohnTypography.sans(12))
+                    .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 12, targetLineHeight: 14))
+                    .foregroundStyle(active ? colors.tint : colors.textDim)
+                    .lineLimit(nil)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(visibleLabel)
+        .accessibilityValue(active
+            ? (session?.id == "seven-sorrows" ? "Current sorrow" : "Current decade")
+            : (prayed ? "Complete" : "Upcoming"))
+        .accessibilityIdentifier("rosary-mystery-step-\(index + 1)")
     }
 
     private func artName(sessionID: String, index: Int?) -> String? {
@@ -347,11 +374,11 @@ private struct RosaryGuidePage<Content: View>: View {
     }
 }
 
-private struct RosarySourceCatalog: Decodable {
+struct RosarySourceCatalog: Decodable {
     let sessions: [RosaryGuideSession]
 }
 
-private struct RosaryGuideSession: Decodable {
+struct RosaryGuideSession: Decodable {
     let id: String
     let title: String
     let shortTitle: String
@@ -359,7 +386,7 @@ private struct RosaryGuideSession: Decodable {
     let steps: [RosaryGuideStep]
 }
 
-private struct RosaryGuideStep: Decodable {
+struct RosaryGuideStep: Decodable {
     let id: String
     let eyebrow: String
     let title: String
@@ -370,7 +397,7 @@ private struct RosaryGuideStep: Decodable {
     let mysteryIndex: Int?
 }
 
-private struct RosaryGuidePrayer: Decodable {
+struct RosaryGuidePrayer: Decodable {
     let id: String
     let title: String
     let text: String

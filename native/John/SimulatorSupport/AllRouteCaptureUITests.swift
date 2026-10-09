@@ -80,8 +80,27 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route03Saved() throws { try capture("/saved", identity: "Saved all filter; seeded rows") { c in try openTab("saved", label: "Saved", context: c); try waitForAny(c.app, ["All", "All saved passages"]) } }
     func testL25Route04PrayerHome() throws { try capture("/pray", identity: "PrayerHome") { c in try openTab("pray", label: "Pray", context: c); try waitForAny(c.app, ["Pray the Rosary"], contains: c.variant == .baseline) } }
     func testL25Route05Settings() throws { try capture("/settings", identity: "Settings; matched reader preferences") { c in try prepareSettings(c); try verifyTextSizeChoice(c) } }
+    func testL25SettingsTopHeading() throws {
+        try capture("/settings", identity: "Settings heading at top of screen") { c in
+            try openTab("settings", label: "Settings", context: c)
+            let title = c.app.staticTexts["settings-title"]
+            XCTAssertTrue(title.waitForExistence(timeout: 10), "The Settings heading must be visible at the top")
+            XCTAssertTrue(title.isHittable)
+            XCTAssertLessThan(title.frame.minY, c.app.frame.midY,
+                              "The Settings heading must appear in the upper half of the screen")
+        }
+    }
     func testL25Route06GoTo() throws { try capture("/go-to", identity: "GoTo; current JHN 1") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-title", baselineLabel: "John 1")); try waitForAny(c.app, ["Go to", "Go To", "Choose a book"]) } }
-    func testL25Route07Search() throws { try capture("/search", identity: "Search Scripture") { c in try openJohnOne(c); try tap(button(c, nativeID: "reader-search-button", baselineLabel: "Search Scripture")); try waitForAny(c.app, ["Search Scripture", "Search by reference, keyword, or exact phrase."]) } }
+    func testL25Route07Search() throws { try capture("/search", identity: "Search Scripture") { c in
+        try openJohnOne(c)
+        try tap(button(c, nativeID: "reader-search-button", baselineLabel: "Search Scripture"))
+        try waitForAny(c.app, ["Search Scripture", "Search by reference, keyword, or exact phrase."])
+        if c.variant == .native {
+            let title = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "Search Scripture")).firstMatch
+            XCTAssertTrue(title.waitForExistence(timeout: 10), "The complete Search Scripture title must remain accessible at XXXL")
+            XCTAssertEqual(title.label, "Search Scripture")
+        }
+    } }
     func testL25Route08NoteEditor() throws { try capture("/note", identity: "Selected WEB-CE JHN 1:1 note editor") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1")); try verifyNoteEditor(c) } }
     func testL25Route09VerseMoment() throws { try capture("/verse", identity: "Verse of the moment") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-verse-card", baselineLabel: "Verse & lock screen widget")); try waitForAny(c.app, ["Verse of the moment", "No verse available."]) } }
     func testL25Route10DailyReadings() throws { try capture("/daily?date=…", identity: "Daily readings; caller date or current local date") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-readings-card", baselineLabel: "Today’s readings")); try waitForAny(c.app, ["Today’s readings"]) } }
@@ -103,14 +122,36 @@ final class AllRouteCaptureUITests: XCTestCase {
         try waitForAny(c.app, ["A day in the Church"]) } }
     func testL25Route21NovenaDetail() throws { try capture("/pray/[id]", identity: "Novena id st-padre-pio") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "novena-st-padre-pio", baselineLabel: "St. Padre Pio Novena")); try waitForAny(c.app, ["St. Padre Pio Novena"]) } }
     func testL25Route22RosaryHome() throws { try capture("/pray/rosary", identity: "Rosary home") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "prayer-home-rosary", baselineLabel: "Pray the Rosary")); try waitForAny(c.app, ["Choose a mystery"]) } }
-    func testL25Route23RosaryGuide() throws { try capture("/pray/rosary-guide?set=…", identity: "Named Joyful set") { c in try openRosary(c); try tap(button(c, nativeID: "rosary-set-joyful", baselineLabel: "The Joyful Mysteries")); try waitForAny(c.app, ["Joyful"]) } }
+    func testL25Route23RosaryGuide() throws { try capture("/pray/rosary-guide?set=…", identity: "Named Joyful set") { c in
+        try openRosary(c)
+        try tap(button(c, nativeID: "rosary-set-joyful", baselineLabel: "The Joyful Mysteries"))
+        try waitForAny(c.app, ["Joyful"])
+        if c.variant == .native {
+            let expected = ["Annunciation", "Visitation", "Nativity", "Presentation", "Finding in the Temple"]
+            for (index, label) in expected.enumerated() {
+                let step = c.app.descendants(matching: .any)
+                    .matching(identifier: "rosary-mystery-step-\(index + 1)").firstMatch
+                for _ in 0..<8 where !step.exists || !step.isHittable {
+                    if step.exists { scrollToVisible(step, assertProgress: false) }
+                    else { scrollForLazyRow(step, assertProgress: false) }
+                }
+                XCTAssertTrue(step.exists && step.isHittable,
+                              "Rosary step \(index + 1) must be accessible: \(label)")
+                XCTAssertEqual(step.label, label, "The complete Rosary step name must remain available at XXXL")
+            }
+        }
+    } }
     func testL25Route24RosaryReminder() throws { try capture("/pray/rosary-reminder", identity: "Rosary reminder settings") { c in try openRosary(c); try tap(button(c, nativeID: "rosary-reminder", baselineLabel: "Rosary reminder")); try waitForAny(c.app, ["Rosary reminder"]) } }
     func testL25Route25RosaryMedia() throws { try capture("/pray/rosary-media?episode=…", identity: "Rosary media episode resolved from visible series entry") { c in
         try openRosary(c)
         try waitForAny(c.app, ["The Rosary with Bishop Barron"])
-        let media = c.app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "Bishop Robert Barron")).firstMatch
-        if media.waitForExistence(timeout: 2) && !media.label.localizedCaseInsensitiveContains("opens on YouTube") {
-            let entryLabel = media.label
+        let media = c.app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "rosary-media-entry-")).firstMatch
+        if c.variant == .native {
+            XCTAssertTrue(media.waitForExistence(timeout: 15), "Rosary home must show a named series entry")
+            let entryID = media.identifier
+            let prefix = "rosary-media-entry-"
+            XCTAssertTrue(entryID.hasPrefix(prefix), "The selected media entry must identify its source episode")
+            let expectedID = String(entryID.dropFirst(prefix.count))
             try tap(media)
             try waitForAny(c.app, ["WORD ON FIRE SERIES"])
             let ids = ["why-pray", "how-to-pray", "joyful", "sorrowful", "glorious", "luminous"]
@@ -119,7 +160,8 @@ final class AllRouteCaptureUITests: XCTestCase {
                 return choice.exists && selectionState(choice) == true
             }
             XCTAssertNotNil(selectedID, "The media route must expose a selected source episode")
-            c.resolvedIdentity = "Rosary media episode=\(selectedID ?? "unobserved"); entry=\(entryLabel)"
+            XCTAssertEqual(selectedID, expectedID, "The media route must open the episode for the tapped mystery set")
+            c.resolvedIdentity = "Rosary media episode=\(selectedID ?? "unobserved"); entry=\(expectedID)"
         } else {
             c.resolvedIdentity = "Rosary media unresolved; visible Release action is external"
             recordUnresolved(c, reason: "The visible Release control opens an external website. This route was not opened.")
@@ -129,8 +171,8 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route27WorksCollection() throws { try capture("/works/author/[id]", identity: "Collection augustine") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine"))
         // Old collection page: author heading "St Augustine of Hippo" (works-collection-screen.tsx, `collection.author`), which the
         // library row also shows, so the destination is identified by its back control "Back to the library"
-        // (works-collection-screen.tsx accessibilityLabel). Native keeps its accepted "Augustine" title check.
-        try waitForAny(c.app, [c.variant == .native ? "Augustine" : "Back to the library"]) } }
+        // (works-collection-screen.tsx accessibilityLabel). Native heading is collection.author, "St Augustine of Hippo".
+        try waitForAny(c.app, [c.variant == .native ? "St Augustine of Hippo" : "Back to the library"]) } }
     func testL25Route28WorkReader() throws { try capture("/works/[id]?section=…", identity: "Work augustine.the-confessions, section 0") { c in try openWorks(c); try tap(button(c, nativeID: "collection-augustine", baselineLabel: "Augustine")); try tap(button(c, nativeID: "work-augustine.the-confessions", baselineLabel: "The Confessions")); try waitForAny(c.app, ["The Confessions"]) } }
     func testL25Route29ChapterCommentary() throws {
         try capture("/commentary/[book]/[chapter]", identity: "JHN 1; all 30 readings") { c in
@@ -149,7 +191,9 @@ final class AllRouteCaptureUITests: XCTestCase {
                 XCTAssertTrue(destination.waitForExistence(timeout: 30), "The old chapter commentary screen must open (Back to John 1)")
             }
             let chapterTitle = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "John 1")).firstMatch
-            let count = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "30 readings · 3 authors")).firstMatch
+            // John 1 commentary is two collections: Augustine and Chrysostom.
+            // catalog.json and the installed 1.2.2 screen both show this label.
+            let count = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "30 readings · 2 authors")).firstMatch
             XCTAssertTrue(chapterTitle.waitForExistence(timeout: 30), "The chapter commentary destination must show John 1")
             XCTAssertEqual(chapterTitle.label, "John 1")
             XCTAssertTrue(count.waitForExistence(timeout: 30), "The chapter commentary destination must show its exact source count")
@@ -227,16 +271,26 @@ final class AllRouteCaptureUITests: XCTestCase {
         XCTAssertGreaterThanOrEqual(initial.total, 3, "The section needs at least 3 pages for a middle page")
         let target = (initial.total + 1) / 2
         var current = initial.page
+        var currentLabel = initial.label
         var swipes = 0
         while current < target && swipes < initial.total + 2 {
             prose.swipeLeft()
             swipes += 1
-            XCTAssertTrue(c.app.staticTexts["Page \(current + 1) of \(initial.total)"].waitForExistence(timeout: 30),
-                          "Expected the next page label after the swipe")
-            current += 1
+            let expectedPage = current + 1
+            let pageCount = c.app.staticTexts["works-page-count"]
+            let nextPage = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                guard pageCount.exists, let observed = self.parseWorksPageLabel(pageCount.label) else { return false }
+                return observed.page == expectedPage && observed.total == initial.total
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [nextPage], timeout: 30), .completed,
+                           "Expected page \(expectedPage) of \(initial.total) after the swipe")
+            guard pageCount.exists, let observed = parseWorksPageLabel(pageCount.label),
+                  observed.page == expectedPage, observed.total == initial.total else { break }
+            current = observed.page
+            currentLabel = observed.label
         }
         XCTAssertEqual(current, target, "The middle page was not reached")
-        let label = "Page \(current) of \(initial.total)"
+        let label = currentLabel
         c.resolvedIdentity = "Works supplement: middle page \(label)"
         try emitCapture(route: "/works/[id]#middle-page", slug: "works-supplement-middle-page",
                         identity: "Works middle page", entryPath: "Same journey; swipe to the middle page",
@@ -257,6 +311,8 @@ final class AllRouteCaptureUITests: XCTestCase {
         try tap(resume)
         XCTAssertTrue(worksProse(c).waitForExistence(timeout: 30), "Resumed work prose must appear")
         let resumed = try XCTUnwrap(worksPage(c), "Page label must appear after resume")
+        let resumedBody = worksBodySnapshot(c)
+        let resumedViewport = worksProse(c).frame
         c.resolvedIdentity = "Works supplement: resumed \(resumed.label)"
         try emitCapture(route: "/works/[id]#resumed-portrait", slug: "works-supplement-resumed-portrait",
                         identity: "Works resumed", entryPath: "Works library; Continue reading",
@@ -265,6 +321,8 @@ final class AllRouteCaptureUITests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         waitForOrientation(c, landscape: true)
         let landscape = try XCTUnwrap(worksPage(c), "Page label must appear in landscape")
+        let landscapeBody = worksBodySnapshot(c)
+        let landscapeViewport = worksProse(c).frame
         c.resolvedIdentity = "Works supplement: landscape \(landscape.label)"
         try emitCapture(route: "/works/[id]#landscape", slug: "works-supplement-landscape",
                         identity: "Works landscape", entryPath: "Same journey; rotate to landscape",
@@ -272,28 +330,286 @@ final class AllRouteCaptureUITests: XCTestCase {
 
         XCUIDevice.shared.orientation = .portrait
         waitForOrientation(c, landscape: false)
+        let restoredInTime = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let page = c.app.staticTexts["works-page-count"]
+            return page.exists && page.label == resumed.label && self.worksBodySnapshot(c) == resumedBody
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [restoredInTime], timeout: 15), .completed,
+                       "Portrait reflow must restore the saved page and body after layout settles")
         let restored = try XCTUnwrap(worksPage(c), "Page label must appear after rotating back")
+        let restoredBody = worksBodySnapshot(c)
+        let restoredViewport = worksProse(c).frame
+        XCTAssertEqual(restored.page, resumed.page,
+                       "Returning to the original portrait width must restore the same page")
+        XCTAssertEqual(restoredBody, resumedBody,
+                       "Returning to the original portrait width must restore the same visible Works text")
+        XCTAssertEqual(restoredViewport.size.width, resumedViewport.size.width, accuracy: 1,
+                       "Portrait reflow must restore the original text viewport width")
+        XCTAssertEqual(restoredViewport.size.height, resumedViewport.size.height, accuracy: 1,
+                       "Portrait reflow must restore the original text viewport height")
         c.resolvedIdentity = "Works supplement: restored portrait \(restored.label)"
         var extra = worksExtra(c, label: restored.label)
         extra["resumedPageLabel"] = resumed.label
         extra["landscapePageLabel"] = landscape.label
         extra["restoredLabelEqualsResumed"] = restored.label == resumed.label
+        extra["resumedBodySHA256"] = worksBodyHash(resumedBody)
+        extra["landscapeBodySHA256"] = worksBodyHash(landscapeBody)
+        extra["restoredBodySHA256"] = worksBodyHash(restoredBody)
+        extra["resumedViewportFrame"] = rectDictionary(resumedViewport)
+        extra["landscapeViewportFrame"] = rectDictionary(landscapeViewport)
+        extra["restoredViewportFrame"] = rectDictionary(restoredViewport)
         try emitCapture(route: "/works/[id]#restored-portrait", slug: "works-supplement-restored-portrait",
                         identity: "Works restored portrait", entryPath: "Same journey; rotate back to portrait",
                         context: c, extra: extra, captureKind: "supplement")
+    }
+
+    /// At the system XXXL profile, edit the seeded John 1:1 note and confirm that Save persists the new text.
+    func testL25Supplement03NoteEditSaveAtXXXL() throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
+        assertSystemXXXLProfile()
+        try prepareSettings(c)
+        try selectJHN11(c)
+        try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1"))
+
+        let editor = c.app.textViews["saved-note-editor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 15), "The John 1:1 note editor must open")
+        XCTAssertTrue(c.app.staticTexts.matching(NSPredicate(format: "label == %@", "John 1:1")).firstMatch.exists,
+                       "The editor must show the selected John 1:1 reference")
+        let marker = "L25 Oct7 XXXL saved-note check-" + String(repeating: "0123456789", count: 32)
+        editor.tap()
+        editor.typeText(" \(marker)")
+        let keyboard = c.app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 8), "The on-screen keyboard must appear for note editing")
+        XCTAssertTrue((editor.value as? String ?? "").contains(marker), "Typed text must appear before Save")
+        let keyboardTop = keyboard.frame.minY
+        let windowFrame = c.app.windows.firstMatch.frame
+        let navigationBar = c.app.navigationBars.firstMatch
+        XCTAssertTrue(navigationBar.waitForExistence(timeout: 5), "The note editor navigation bar must remain visible")
+        let usableTop = max(windowFrame.minY, navigationBar.frame.maxY)
+        let usableFrame = CGRect(x: windowFrame.minX, y: usableTop,
+                                 width: windowFrame.width,
+                                 height: max(0, keyboardTop - usableTop))
+        let visibleEditorFrame = editor.frame.intersection(usableFrame)
+        XCTAssertTrue(editor.isHittable, "The note editor must be hittable while the keyboard is open")
+        XCTAssertGreaterThanOrEqual(visibleEditorFrame.width, 200,
+                                    "The note editor must keep a visible writing width above the keyboard")
+        XCTAssertGreaterThanOrEqual(visibleEditorFrame.height, 120,
+                                    "The note editor must keep a usable visible height above the keyboard")
+        try emitCapture(route: "/note#keyboard-xxxl", slug: "note-edit-keyboard-xxxl",
+                        identity: "Supplement: note editor with XXXL keyboard",
+                        entryPath: "Read John 1; select verse 1; edit note before Save",
+                        context: c, extra: ["typedMarker": marker,
+                                            "keyboard": keyboardSnapshot(c.app),
+                                            "keyboardFrame": rectDictionary(keyboard.frame),
+                                            "editorFrame": rectDictionary(editor.frame),
+                                            "visibleEditorFrame": rectDictionary(visibleEditorFrame)],
+                        captureKind: "supplement")
+        let save = c.app.buttons["saved-note-save"]
+        XCTAssertTrue(save.waitForExistence(timeout: 10), "Save must stay available while the keyboard is open")
+        try tap(save)
+        XCTAssertTrue(editor.waitForNonExistence(timeout: 15), "Save must close the note editor")
+
+        try tap(tabButton(c.app, "tab-saved"))
+        try tap(c.app.buttons["saved-filter-note"])
+        let row = c.app.buttons.matching(NSPredicate(
+            format: "identifier BEGINSWITH %@ AND label CONTAINS %@", "saved-row-", "John 1:1")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 15), "The saved John 1:1 note must appear in Notes")
+        try tap(row)
+        let reopened = c.app.textViews["saved-note-editor"]
+        XCTAssertTrue(reopened.waitForExistence(timeout: 15), "The saved note must reopen")
+        XCTAssertTrue((reopened.value as? String ?? "").contains(marker),
+                      "The note editor must keep the text that was saved")
+        c.resolvedIdentity = "Supplement: John 1:1 note edit and save at system XXXL"
+        try emitCapture(route: "/note#saved-xxxl", slug: "note-edit-save-xxxl",
+                        identity: c.resolvedIdentity, entryPath: "Read John 1; select verse 1; edit and save note",
+                        context: c, extra: ["savedMarker": marker, "keyboard": keyboardSnapshot(c.app)],
+                        captureKind: "supplement")
+    }
+
+    func testL25Supplement06EmptyNoteAtXXXL() throws {
+        try assertNewNotePlaceholder(contentSize: "accessibility-extra-extra-extra-large",
+                                     category: .accessibilityExtraExtraExtraLarge,
+                                     slug: "note-empty-xxxl")
+    }
+
+    func testL25Supplement07EmptyNoteAtLarge() throws {
+        try assertNewNotePlaceholder(contentSize: "large", category: .large, slug: "note-empty-large")
+    }
+
+    private func assertNewNotePlaceholder(contentSize: String, category: UIContentSizeCategory,
+                                         slug: String) throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
+        XCTAssertEqual(ProcessInfo.processInfo.environment["L25_CONTENT_SIZE"], contentSize)
+        XCTAssertEqual(UITraitCollection.current.preferredContentSizeCategory, category)
+        try prepareSettings(c)
+        try selectJHN11(c)
+        try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1"))
+
+        let editor = c.app.textViews["saved-note-editor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 15), "The John 1:1 note editor must open")
+        // The clean fixture starts with the known migration note. Delete it through the app, then reopen
+        // the same measured verse so this check uses a deterministic XXXL tap point and a truly empty note.
+        let priorText = (editor.value as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if !priorText.isEmpty {
+            let delete = c.app.buttons["saved-note-delete"]
+            XCTAssertTrue(delete.waitForExistence(timeout: 10), "The fixture note must expose Delete")
+            try tap(delete)
+            XCTAssertTrue(editor.waitForNonExistence(timeout: 15), "Delete must close the existing note")
+            try selectJHN11(c)
+            try tap(button(c, nativeID: "reader-selection-note", baselineLabel: "Note John 1:1"))
+            XCTAssertTrue(editor.waitForExistence(timeout: 15), "A new empty note editor must open")
+        }
+        XCTAssertEqual((editor.value as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines), "",
+                       "The new note must start empty")
+        editor.tap()
+        let keyboard = c.app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 8), "The keyboard must appear when editing a new note")
+        let navigationBar = c.app.navigationBars.firstMatch
+        XCTAssertTrue(navigationBar.waitForExistence(timeout: 5))
+        let windowFrame = c.app.windows.firstMatch.frame
+        let top = max(windowFrame.minY, navigationBar.frame.maxY)
+        let visible = editor.frame.intersection(CGRect(x: windowFrame.minX, y: top,
+                                                       width: windowFrame.width,
+                                                       height: max(0, keyboard.frame.minY - top)))
+        XCTAssertTrue(editor.isHittable, "The empty editor must be hittable")
+        XCTAssertGreaterThanOrEqual(visible.height, 120, "The empty editor must have usable visible space")
+        c.resolvedIdentity = "New John 1:1 note placeholder at system \(contentSize)"
+        try emitCapture(route: "/note#empty-\(contentSize)", slug: slug,
+                        identity: c.resolvedIdentity, entryPath: "Read John 1; select verse 1; open a new note",
+                        context: c, extra: ["editorFrame": rectDictionary(editor.frame),
+                                            "visibleEditorFrame": rectDictionary(visible),
+                                            "keyboardFrame": rectDictionary(keyboard.frame),
+                                            "emptyNotePlaceholderVisualReviewRequired": true],
+                        captureKind: "supplement")
+        try tap(c.app.buttons["saved-note-cancel"])
+    }
+
+    /// At the system XXXL profile, scroll the Lectio action above the tab bar and open its next step.
+    func testL25Supplement04LectioContinueAtXXXL() throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
+        assertSystemXXXLProfile()
+        try prepareSettings(c)
+        try selectJHN11(c)
+        try tap(button(c, nativeID: "reader-selection-pray", baselineLabel: "Pray John 1:1"))
+        let currentTitle = c.app.staticTexts.matching(NSPredicate(format: "label == %@", "Read slowly")).firstMatch
+        XCTAssertTrue(currentTitle.waitForExistence(timeout: 15), "Lectio must open for John 1:1")
+
+        let next = c.app.buttons["Continue"]
+        let (nextFrame, nextViewport) = try scrollControlFullyAboveTabBar(next)
+        next.tap()
+        let nextTitle = c.app.staticTexts["content-page-title"]
+        let exactNextTitle = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label == %@", "Stay with a word"), object: nextTitle)
+        XCTAssertEqual(XCTWaiter.wait(for: [exactNextTitle], timeout: 12), .completed,
+                       "Lectio must show the next step after Continue")
+        c.resolvedIdentity = "Supplement: Lectio next step at system XXXL"
+        try emitCapture(route: "/lectio#continue-xxxl", slug: "lectio-continue-xxxl",
+                        identity: c.resolvedIdentity, entryPath: "Read John 1:1; select Pray; scroll to Continue",
+                        context: c, extra: ["nextButtonFrameBeforeTap": rectDictionary(nextFrame),
+                                            "visibleViewportBeforeTap": rectDictionary(nextViewport)],
+                        captureKind: "supplement")
+    }
+
+    /// At the system XXXL profile, scroll to the Scripture card image action and open the system share panel.
+    func testL25Supplement05ScriptureCardShareAtXXXL() throws {
+        try requireSupplements()
+        let c = try makeContext(nativeOnly: true)
+        XCTAssertTrue(c.app.wait(for: .runningForeground, timeout: 30))
+        assertSystemXXXLProfile()
+        try prepareSettings(c)
+        try selectJHN11(c)
+        try tap(button(c, nativeID: "reader-selection-card", baselineLabel: "Create card John 1:1"))
+        let shareImage = c.app.buttons["scripture-card-share-image"]
+        let (shareFrame, shareViewport) = try scrollControlFullyAboveTabBar(shareImage)
+        shareImage.tap()
+        let sharePanel = [c.app.otherElements["ActivityListView"],
+                          c.app.collectionViews["activityCollectionView"],
+                          c.app.cells.matching(NSPredicate(format: "label == %@", "Copy")).firstMatch]
+            .first { $0.waitForExistence(timeout: 20) }
+        XCTAssertNotNil(sharePanel, "The Scripture card action must open the system share panel")
+        c.resolvedIdentity = "Supplement: Scripture card share action at system XXXL"
+        try emitCapture(route: "/share-card#share-xxxl", slug: "scripture-card-share-xxxl",
+                        identity: c.resolvedIdentity, entryPath: "Read John 1:1; select card; scroll to image share",
+                        context: c, extra: ["shareActionFrameBeforeTap": rectDictionary(shareFrame),
+                                            "visibleViewportBeforeTap": rectDictionary(shareViewport),
+                                            "sharePanelOpened": sharePanel != nil],
+                        captureKind: "supplement")
+    }
+
+    private func assertSystemXXXLProfile(file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(ProcessInfo.processInfo.environment["L25_CONTENT_SIZE"],
+                       "accessibility-extra-extra-extra-large", file: file, line: line)
+        XCTAssertEqual(UITraitCollection.current.preferredContentSizeCategory,
+                       .accessibilityExtraExtraExtraLarge,
+                       "The UI test process must read back the system XXXL category", file: file, line: line)
+    }
+
+    private func scrollControlFullyAboveTabBar(_ element: XCUIElement,
+                                               file: StaticString = #filePath,
+                                               line: UInt = #line) throws -> (CGRect, CGRect) {
+        for _ in 0..<60 {
+            guard element.exists else {
+                scrollForLazyRow(element)
+                continue
+            }
+            let frame = element.frame
+            let viewport = visibleScrollViewport()
+            if element.isHittable && viewport.contains(frame) {
+                return (frame, viewport)
+            }
+            scrollToVisible(element)
+        }
+        let exists = element.exists
+        let frame = exists ? element.frame : .zero
+        let viewport = visibleScrollViewport()
+        XCTAssertTrue(exists && element.isHittable && viewport.contains(frame),
+                      "The control must be fully visible above the tab bar: exists=\(exists) frame=\(NSCoder.string(for: frame)) viewport=\(NSCoder.string(for: viewport))",
+                      file: file, line: line)
+        return (frame, viewport)
     }
 
     private func worksProse(_ c: CaptureContext) -> XCUIElement {
         c.app.descendants(matching: .any).matching(identifier: "works-prose").firstMatch
     }
 
+    private func worksBodySnapshot(_ c: CaptureContext) -> String {
+        let prose = worksProse(c)
+        return prose.label + "|" + String(describing: prose.value ?? "")
+    }
+
+    private func worksBodyHash(_ body: String) -> String {
+        SHA256.hash(data: Data(body.utf8)).map { String(format: "%02x", $0) }.joined()
+    }
+
     private func worksPage(_ c: CaptureContext) -> (label: String, page: Int, total: Int)? {
-        let element = c.app.staticTexts.matching(NSPredicate(format: "label MATCHES %@", "^Page [0-9]+ of [0-9]+$")).firstMatch
+        let element = c.app.staticTexts["works-page-count"]
         guard element.waitForExistence(timeout: 30) else { return nil }
-        let label = element.label
-        let numbers = label.split(separator: " ").compactMap { Int($0) }
-        guard numbers.count == 2 else { return nil }
-        return (label, numbers[0], numbers[1])
+        return parseWorksPageLabel(element.label)
+    }
+
+    private func parseWorksPageLabel(_ label: String) -> (label: String, page: Int, total: Int)? {
+        let parts = label.components(separatedBy: " of ")
+        guard parts.count == 2, parts[0].hasPrefix("Page ") else { return nil }
+        let pageText = String(parts[0].dropFirst("Page ".count))
+        let totalText = parts[1]
+        let formatter = NumberFormatter()
+        formatter.locale = Locale.current
+        formatter.numberStyle = .decimal
+        formatter.isLenient = false
+        guard let pageValue = formatter.number(from: pageText),
+              let totalValue = formatter.number(from: totalText) else { return nil }
+        let page = pageValue.intValue
+        let total = totalValue.intValue
+        guard page > 0, page <= total,
+              formatter.string(from: NSNumber(value: page)) == pageText,
+              formatter.string(from: NSNumber(value: total)) == totalText else { return nil }
+        return (label, page, total)
     }
 
     private func waitForOrientation(_ c: CaptureContext, landscape: Bool) {
@@ -865,8 +1181,9 @@ final class AllRouteCaptureUITests: XCTestCase {
         }
     }
 
-    /// Old Reader natural top (Sol required fix 1). The first verse of John 1 must be hittable in the top half of the
-    /// visible scroll area. Verse by verse: button label "Verse 1. <text>" (src/components/ChapterText.tsx:308).
+    /// Old Reader natural top (Sol required fix 1). Check where the first verse starts in the visible scroll area.
+    /// Its center can be far below the viewport at accessibility XXXL because the verse label is very tall.
+    /// Verse by verse: button label "Verse 1. <text>" (src/components/ChapterText.tsx:308).
     /// Paragraphs: the first paragraph text starts with "1 In the beginning".
     private func oldReaderIsAtTop(_ c: CaptureContext) -> Bool {
         let first = c.app.descendants(matching: .any).matching(NSCompoundPredicate(orPredicateWithSubpredicates: [
@@ -876,9 +1193,15 @@ final class AllRouteCaptureUITests: XCTestCase {
         guard first.waitForExistence(timeout: 15) else { return false }
         let deadline = Date().addingTimeInterval(5)
         while !first.isHittable && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.25)) }
-        guard first.isHittable else { return false }
         let viewport = visibleScrollViewport()
-        return viewport.height > 160 && first.frame.midY <= viewport.midY
+        guard viewport.height > 160 else { return false }
+        let firstFrame = first.frame
+        NSLog("L25_BASELINE_TOP label=%@ frame=%@ viewport=%@ hittable=%@", first.label,
+              NSCoder.string(for: firstFrame), NSCoder.string(for: viewport), first.isHittable.description)
+        guard first.isHittable else { return false }
+        return firstFrame.intersects(viewport)
+            && firstFrame.minY >= viewport.minY - 24
+            && firstFrame.minY <= viewport.minY + viewport.height * 0.35
     }
 
     private func selectJHN11(_ c: CaptureContext) throws {
@@ -976,22 +1299,55 @@ final class AllRouteCaptureUITests: XCTestCase {
             try baselineTap(element, file: file, line: line)
             return
         }
-        for _ in 0..<6 {
+        // Native rows can sit far below the viewport at XXXL. Estimate a bounded reach from the
+        // current frame, then update the bound as the target moves. A few no-motion gestures can
+        // occur during scroll settling, so retry them before reporting a final reach failure.
+        let initialViewport = visibleScrollViewport()
+        let initialFrame = element.exists ? element.frame : .zero
+        let initialDistance = max(0, max(initialFrame.midY - initialViewport.maxY,
+                                         initialViewport.minY - initialFrame.midY))
+        let initialEstimate = initialViewport.height > 160
+            ? Int(ceil(initialDistance / (initialViewport.height * 0.4))) + 6
+            : 24
+        var dragLimit = min(180, max(24, initialEstimate))
+        var dragCount = 0
+        var stalledCount = 0
+        while dragCount < dragLimit {
             if element.exists && element.isHittable { element.tap(); return }
-            if element.exists { scrollToVisible(element) }
-            else { scrollForLazyRow(element) }
+            let moved = element.exists
+                ? scrollToVisible(element, assertProgress: false)
+                : scrollForLazyRow(element, assertProgress: false)
+            dragCount += 1
+            stalledCount = moved ? 0 : stalledCount + 1
+
+            let viewport = visibleScrollViewport()
+            if element.exists && viewport.height > 160 {
+                let frame = element.frame
+                let distance = max(0, max(frame.midY - viewport.maxY, viewport.minY - frame.midY))
+                let remainingEstimate = Int(ceil(distance / (viewport.height * 0.4))) + 4
+                dragLimit = min(180, max(dragLimit, dragCount + remainingEstimate))
+            }
+            if stalledCount >= 3 { break }
         }
-        XCTAssertTrue(element.exists, "Expected a route control", file: file, line: line)
-        XCTAssertTrue(element.isHittable, "Route control must be hittable", file: file, line: line)
+        let finalViewport = visibleScrollViewport()
+        let finalFrame = element.exists ? NSCoder.string(for: element.frame) : "absent"
+        guard element.exists else {
+            XCTFail("Route control remains absent after \(dragCount) bounded scrolls; viewport=\(NSCoder.string(for: finalViewport)); stalled=\(stalledCount)", file: file, line: line)
+            return
+        }
+        guard element.isHittable else {
+            XCTFail("Route control remains not hittable after \(dragCount) bounded scrolls; frame=\(finalFrame) viewport=\(NSCoder.string(for: finalViewport)); stalled=\(stalledCount)", file: file, line: line)
+            return
+        }
         element.tap()
     }
 
-    private enum BaselineReach { case hittable, visibleNotHittable, missing }
+    private enum BaselineReach { case hittable, visibleNotHittable, missing, unreachable }
 
     /// Old-app tap. The old lists are virtualized React Native lists with many rows (the Read book list, the Works
-    /// collection list), so six drags are not enough. This loop drags up to 40 times with large drags and stops after two
-    /// drags that change nothing. If the control is visible but reports not hittable (a transient state while the app
-    /// settles), it waits up to 5 s. As a last step it taps the center of the visible frame. The native path above is unchanged.
+    /// collection list), so six drags are not enough. Existing off-screen controls get a drag bound based on their
+    /// distance from the viewport. The loop stops after two drags that make no progress. If the control is visible but
+    /// reports not hittable (a transient state while the app settles), it waits up to 5 s before a center tap.
     private func baselineTap(_ element: XCUIElement, file: StaticString, line: UInt) throws {
         _ = element.waitForExistence(timeout: 5)
         switch baselineReach(element) {
@@ -999,8 +1355,17 @@ final class AllRouteCaptureUITests: XCTestCase {
             baselineWaitUntilStable(element) // a tap during scroll momentum can be ignored by the old app
             element.tap()
         case .visibleNotHittable:
+            let viewport = visibleScrollViewport()
             let frame = element.frame
-            NSLog("L25_COORDINATE_TAP element visible but not hittable after 5 s: %@ frame=%@", element.label, NSCoder.string(for: frame))
+            let center = CGPoint(x: frame.midX, y: frame.midY)
+            guard viewport.height > 160 && viewport.contains(center) else {
+                XCTAssertTrue(false,
+                              "Route control moved outside the viewport before the coordinate tap: frame=\(NSCoder.string(for: frame)) viewport=\(NSCoder.string(for: viewport))",
+                              file: file, line: line)
+                return
+            }
+            NSLog("L25_COORDINATE_TAP element visible but not hittable after 5 s: %@ frame=%@ viewport=%@", element.label,
+                  NSCoder.string(for: frame), NSCoder.string(for: viewport))
             activeContext?.baselineCoordinateTaps.append([
                 "label": element.label, "frame": rectDictionary(frame), "route": activeContext?.route ?? "unknown",
             ])
@@ -1008,6 +1373,11 @@ final class AllRouteCaptureUITests: XCTestCase {
         case .missing:
             XCTAssertTrue(element.exists, "Expected a route control", file: file, line: line)
             XCTAssertTrue(element.isHittable, "Route control must be hittable", file: file, line: line)
+        case .unreachable:
+            let viewport = visibleScrollViewport()
+            XCTAssertTrue(false,
+                          "Route control remains off-screen after scrolling: frame=\(NSCoder.string(for: element.frame)) viewport=\(NSCoder.string(for: viewport))",
+                          file: file, line: line)
         }
     }
 
@@ -1028,7 +1398,17 @@ final class AllRouteCaptureUITests: XCTestCase {
         guard let app = activeApp else { return .missing }
         var stalled = 0
         var reversed = false
-        for _ in 0..<40 {
+        let initialViewport = visibleScrollViewport()
+        let initialFrame = element.exists ? element.frame : .zero
+        let distanceToViewport = max(0, max(initialFrame.midY - initialViewport.maxY,
+                                             initialViewport.minY - initialFrame.midY))
+        let estimatedDrags = initialViewport.height > 160
+            ? Int(ceil(distanceToViewport / (initialViewport.height * 0.65))) + 6
+            : 40
+        var dragLimit = element.exists ? min(180, max(40, estimatedDrags)) : 180
+        var dragCount = 0
+        while dragCount < dragLimit {
+            dragCount += 1
             if element.exists && element.isHittable { return .hittable }
             let viewport = visibleScrollViewport()
             if element.exists, viewport.height > 160, viewport.contains(CGPoint(x: element.frame.midX, y: element.frame.midY)) {
@@ -1040,7 +1420,8 @@ final class AllRouteCaptureUITests: XCTestCase {
                 return element.isHittable ? .hittable : .visibleNotHittable
             }
             guard viewport.height > 160 else { return .missing }
-            let before = scrollSignature(app, viewport)
+            let targetFrameBefore = element.exists ? element.frame : nil
+            let before = targetFrameBefore == nil ? scrollSignature(app, viewport) : nil
             let towardEnd = element.exists ? element.frame.midY >= viewport.midY : !reversed
             let from = viewport.minY + viewport.height * (towardEnd ? 0.85 : 0.15)
             let to = viewport.minY + viewport.height * (towardEnd ? 0.15 : 0.85)
@@ -1048,7 +1429,13 @@ final class AllRouteCaptureUITests: XCTestCase {
             app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: from / app.frame.height))
                 .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: to / app.frame.height)))
             RunLoop.current.run(until: Date().addingTimeInterval(0.6))
-            if scrollSignature(app, viewport) == before {
+            let madeProgress: Bool
+            if let targetFrameBefore, element.exists {
+                madeProgress = abs(element.frame.midY - targetFrameBefore.midY) > 1
+            } else {
+                madeProgress = scrollSignature(app, viewport) != before
+            }
+            if !madeProgress {
                 stalled += 1
                 if stalled >= 2 {
                     if !element.exists && !reversed { reversed = true; stalled = 0 } else { break }
@@ -1056,9 +1443,20 @@ final class AllRouteCaptureUITests: XCTestCase {
             } else {
                 stalled = 0
             }
+            if element.exists, viewport.height > 160 {
+                let frame = element.frame
+                let remaining = max(0, max(frame.midY - viewport.maxY, viewport.minY - frame.midY))
+                let estimate = Int(ceil(remaining / (viewport.height * 0.65))) + 6
+                dragLimit = min(180, max(dragLimit, dragCount + estimate))
+            }
         }
         if element.exists && element.isHittable { return .hittable }
-        return element.exists ? .visibleNotHittable : .missing
+        guard element.exists else { return .missing }
+        let finalViewport = visibleScrollViewport()
+        guard finalViewport.height > 160 else { return .unreachable }
+        let frame = element.frame
+        let center = CGPoint(x: frame.midX, y: frame.midY)
+        return finalViewport.contains(center) ? .visibleNotHittable : .unreachable
     }
 
     /// Labels and vertical positions of the first buttons and static texts in the viewport. A change means the list moved.
@@ -1077,19 +1475,23 @@ final class AllRouteCaptureUITests: XCTestCase {
         return parts.joined(separator: "|")
     }
 
-    private func scrollForLazyRow(_ element: XCUIElement) {
+    @discardableResult
+    private func scrollForLazyRow(_ element: XCUIElement, assertProgress: Bool = true) -> Bool {
         let viewport = visibleScrollViewport()
-        guard viewport.height > 160 else { return }
+        guard viewport.height > 160 else { return false }
         // Lazy lists can scroll before the requested row exists in the accessibility tree.
-        drag(in: viewport, upward: true, oldFrame: .zero, element: element, allowUnmaterializedTarget: true)
+        return drag(in: viewport, upward: true, oldFrame: .zero, element: element,
+                    allowUnmaterializedTarget: true, assertProgress: assertProgress)
     }
 
-    private func scrollToVisible(_ element: XCUIElement) {
+    @discardableResult
+    private func scrollToVisible(_ element: XCUIElement, assertProgress: Bool = true) -> Bool {
         let viewport = visibleScrollViewport()
-        guard viewport.height > 160 else { return }
+        guard viewport.height > 160 else { return false }
         let frame = element.frame
         let upward = frame.midY >= viewport.midY
-        drag(in: viewport, upward: upward, oldFrame: frame, element: element)
+        return drag(in: viewport, upward: upward, oldFrame: frame, element: element,
+                    assertProgress: assertProgress)
     }
 
     private func visibleScrollViewport() -> CGRect {
@@ -1111,11 +1513,13 @@ final class AllRouteCaptureUITests: XCTestCase {
         return viewport
     }
 
-    private func drag(in viewport: CGRect, upward: Bool, oldFrame: CGRect, element: XCUIElement, allowUnmaterializedTarget: Bool = false) {
-        guard let app = activeApp else { return }
+    private func drag(in viewport: CGRect, upward: Bool, oldFrame: CGRect, element: XCUIElement,
+                     allowUnmaterializedTarget: Bool = false, assertProgress: Bool = true) -> Bool {
+        guard let app = activeApp else { return false }
         let oldExists = element.exists
         let oldKeyboard = app.keyboards.firstMatch
         let oldKeyboardFrame = oldKeyboard.exists ? oldKeyboard.frame : nil
+        let oldSignature = oldExists ? nil : scrollSignature(app, viewport)
         let x = viewport.midX
         let from = viewport.minY + viewport.height * (upward ? 0.75 : 0.25)
         let to = viewport.minY + viewport.height * (upward ? 0.25 : 0.75)
@@ -1125,15 +1529,20 @@ final class AllRouteCaptureUITests: XCTestCase {
         app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: from / app.frame.height))
             .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: to / app.frame.height)))
         let moved = NSPredicate { _, _ in
-            element.exists != oldExists || element.frame != oldFrame ||
-            (oldKeyboard.exists ? oldKeyboard.frame : nil) != oldKeyboardFrame
+            let currentExists = element.exists
+            let targetMoved = currentExists != oldExists || (currentExists && element.frame != oldFrame)
+            return targetMoved ||
+            (oldKeyboard.exists ? oldKeyboard.frame : nil) != oldKeyboardFrame ||
+            (oldSignature != nil && self.scrollSignature(app, viewport) != oldSignature)
         }
         let expectation = XCTNSPredicateExpectation(predicate: moved, object: element)
         let result = XCTWaiter.wait(for: [expectation], timeout: 2)
-        if !(allowUnmaterializedTarget && !oldExists && !element.exists) {
+        let didMove = result == .completed
+        if assertProgress && !(allowUnmaterializedTarget && !oldExists && !element.exists) {
             XCTAssertEqual(result, .completed,
                            "The route target, scroll view, or keyboard must move after the gesture")
         }
+        return didMove
     }
 
     /// `contains` is used only for the old app, where a card label is longer than the visible title.
@@ -1212,14 +1621,20 @@ final class AllRouteCaptureUITests: XCTestCase {
         let label = name.prefix(1).uppercased() + name.dropFirst()
         let bar = app.tabBars.firstMatch
         func find() -> XCUIElement? {
-            [bar.buttons[identifier], bar.buttons[label], app.buttons[identifier]].first { $0.exists }
+            let barIdentifier = bar.buttons.matching(identifier: identifier).firstMatch
+            let barLabel = bar.buttons.matching(NSPredicate(format: "label == %@", String(label))).firstMatch
+            let appIdentifier = app.buttons.matching(identifier: identifier).firstMatch
+            let appLabel = app.buttons.matching(NSPredicate(format: "label == %@", String(label))).firstMatch
+            return [barIdentifier, barLabel, appIdentifier, appLabel].first { $0.exists }
         }
         if let found = find() { return found }
         if bar.exists, bar.isHittable {
             bar.tap()
-            _ = bar.buttons[label].waitForExistence(timeout: 2)
+            _ = bar.buttons.matching(NSPredicate(format: "label == %@", String(label))).firstMatch
+                .waitForExistence(timeout: 2)
             if let found = find() { return found }
         }
-        return bar.buttons[label]
+        return app.buttons.matching(NSPredicate(format: "identifier == %@ OR label == %@",
+                                                identifier, String(label))).firstMatch
     }
 }

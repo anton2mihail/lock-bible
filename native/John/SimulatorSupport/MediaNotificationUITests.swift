@@ -33,7 +33,7 @@ final class MediaNotificationUITests: XCTestCase {
         XCUIDevice.shared.press(.home)
         app.activate()
         XCTAssertTrue(app.staticTexts["WORD ON FIRE SERIES"].waitForExistence(timeout: 8))
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "The Rosary with Bishop Barron")).firstMatch)
         XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
         NSLog("MEDIA_DEBUG mode=audio episodeID=why-pray episodeTitle=Why Pray the Rosary? afterActivation=true routeReturn=true")
     }
@@ -45,9 +45,38 @@ final class MediaNotificationUITests: XCTestCase {
         openRosaryHome(in: app)
         let externalMediaAction = button(containing: "opens on YouTube", in: app)
         XCTAssertTrue(externalMediaAction.waitForExistence(timeout: 8))
+        let entryID = externalMediaAction.identifier
+        let entryPrefix = "rosary-media-entry-"
+        XCTAssertTrue(entryID.hasPrefix(entryPrefix), "The external action must identify its Rosary set")
+        let setID = String(entryID.dropFirst(entryPrefix.count))
+        let destinations: [String: (videoID: String, title: String)] = [
+            "joyful": ("ckUJRg04jyg", "The Joyful Mysteries"),
+            "sorrowful": ("ry7FbjkN-p0", "The Sorrowful Mysteries"),
+            "glorious": ("WoJ1hQTVdSo", "The Glorious Mysteries"),
+            "luminous": ("b2EjBt2PFpc", "The Luminous Mysteries")
+        ]
+        guard let expected = destinations[setID] else {
+            XCTFail("The visible Release action has no reviewed destination for set \(setID)")
+            return
+        }
         XCTAssertFalse(app.buttons["rosary-media-mode-video"].exists)
         XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "More from the series")).firstMatch.exists)
-        NSLog("MEDIA_RELEASE sourceCatalog=ROSARY_MEDIA_EPISODES noApprovedMediaURIs=true playerModes=absent externalAction=available seriesLink=true")
+        tapWhenReady(externalMediaAction, in: app)
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 20),
+                      "The Release action must open its public official media destination")
+        let expectedVideo = safari.descendants(matching: .any).matching(NSPredicate(
+            format: "label CONTAINS[c] %@ OR value CONTAINS[c] %@", expected.videoID, expected.videoID)).firstMatch
+        let expectedTitle = safari.descendants(matching: .any).matching(NSPredicate(
+            format: "label CONTAINS[c] %@ OR value CONTAINS[c] %@", expected.title, expected.title)).firstMatch
+        let videoIDVisible = expectedVideo.waitForExistence(timeout: 20)
+        let exactTitleVisible = videoIDVisible ? false : expectedTitle.waitForExistence(timeout: 5)
+        XCTAssertTrue(videoIDVisible || exactTitleVisible,
+                      "Safari must show the selected catalog video ID \(expected.videoID) or exact episode title \(expected.title)")
+        NSLog("MEDIA_RELEASE sourceCatalog=ROSARY_MEDIA_EPISODES setID=%@ expectedVideoID=%@ expectedTitle=%@ observedVideoID=%@ observedTitle=%@ playerPlayback=not-claimed",
+              setID, expected.videoID, expected.title,
+              videoIDVisible ? expected.videoID : "not-exposed",
+              exactTitleVisible ? expectedTitle.label : "not-exposed")
     }
     #endif
 
@@ -67,30 +96,13 @@ final class MediaNotificationUITests: XCTestCase {
         return app.navigationBars.buttons.firstMatch
     }
 
-    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
-    private func screenSignature(_ app: XCUIApplication) -> String {
-        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
-        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
-            .filter { $0.exists }.map(\.label)
-        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
-            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
-    }
-
-    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
-    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
-    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+    /// Taps Back and waits for the expected parent screen.
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement,
                                file: StaticString = #filePath, line: UInt = #line) {
         let back = systemBack(in: app)
         XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
-        let before = screenSignature(app)
         back.tap()
-        if let parent {
-            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
-            return
-        }
-        let deadline = Date().addingTimeInterval(10)
-        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
-        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
+        XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
     }
 
     /// Leaves the media page and checks that the Rosary home appears (Step 7 media-lifecycle).
@@ -169,7 +181,7 @@ final class MediaNotificationUITests: XCTestCase {
         attachment.name = "step7-media-failure"
         attachment.lifetime = .keepAlways
         add(attachment)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "The Rosary with Bishop Barron")).firstMatch)
         XCTAssertTrue(app.staticTexts["The Rosary with Bishop Barron"].waitForExistence(timeout: 8))
         NSLog("STEP7_MEDIA_FAILURE audioUnavailable=true")
     }
@@ -209,7 +221,7 @@ final class MediaNotificationUITests: XCTestCase {
         tapWhenReady(app.buttons["calendar-notifications-save"], in: app)
         XCTAssertTrue(app.staticTexts["Calendar notifications are off."].waitForExistence(timeout: 8))
 
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["settings-title"])
         tabButton(app, "tab-pray").tap()
         tapWhenReady(button(containing: "Pray the Rosary", in: app), in: app)
         tapWhenReady(button(containing: "Rosary reminder", in: app), in: app)

@@ -39,8 +39,10 @@ struct SavedView: View {
                     .contentAnnouncement(message)
             }
             if loading {
-                ProgressView("Loading saved items…")
+                Color.clear
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .accessibilityElement()
+                    .accessibilityLabel("Loading saved items")
             } else if items.isEmpty {
                 emptyOrErrorState
             } else {
@@ -76,6 +78,8 @@ struct SavedView: View {
             }
         }
         .animation(reduceMotion ? nil : .snappy, value: undoItem?.id)
+        .transaction(value: loading) { $0.animation = nil }
+        .transaction(value: items.count) { if undoItem == nil { $0.animation = nil } }
         .background(colors.background.ignoresSafeArea())
         .task(id: filter.rawValue) { await reload() }
         .onChange(of: router.selectedTab) { _, tab in
@@ -339,6 +343,7 @@ struct SavedNoteEditor: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @FocusState private var editorFocused: Bool
     let item: SavedItem?
     let initialPassage: PassageSelection?
     let onSaved: () async -> Void
@@ -401,30 +406,38 @@ struct SavedNoteEditor: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        ScrollViewReader { scrollProxy in
+          ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
                 Text(scriptureText)
-                    .font(.custom("Georgia", size: 17))
+                    .font(.custom("Georgia", size: 17, relativeTo: .body))
                     .lineSpacing(10)
                     .foregroundStyle(colors.text)
                     .lineLimit(8)
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("saved-note-scripture")
                 TextEditor(text: $draft)
-                    .font(.custom("SpaceGrotesk-Regular", size: 18))
+                    .font(.custom("SpaceGrotesk-Regular", size: 18, relativeTo: .body))
                     .lineSpacing(10)
                     .scrollContentBackground(.hidden)
                     .padding(8)
+                    .frame(minHeight: 180, maxHeight: 280, alignment: .topLeading)
                     .background(colors.card, in: RoundedRectangle(cornerRadius: 12))
                     .overlay(alignment: .topLeading) {
                         if draft.isEmpty {
                             Text("Write a private note…")
-                                .font(.custom("SpaceGrotesk-Regular", size: 18))
+                                .font(.custom("SpaceGrotesk-Regular", size: 18, relativeTo: .body))
                                 .foregroundStyle(colors.textDim.opacity(0.7))
                                 .padding(.horizontal, 13)
                                 .padding(.vertical, 16)
                                 .allowsHitTesting(false)
                         }
                     }
+                    .focused($editorFocused)
+                    .accessibilityLabel("Private note")
+                    .accessibilityHint("Write a private note for this passage.")
                     .accessibilityIdentifier("saved-note-editor")
+                    .id("saved-note-editor")
                     .disabled(isLoading || !isLoadReady)
                 if hasPersistedNote {
                     Button("Delete note", role: .destructive) { Task { await deleteNote() } }
@@ -438,9 +451,17 @@ struct SavedNoteEditor: View {
                         .foregroundStyle(colors.textDim)
                         .accessibilityIdentifier("saved-note-error")
                 }
-                Spacer(minLength: 0)
+            }
+            .padding(20)
+          }
+          .scrollDismissesKeyboard(.interactively)
+          .onChange(of: editorFocused) { _, focused in
+              guard focused else { return }
+              withAnimation(.easeOut(duration: 0.2)) {
+                  scrollProxy.scrollTo("saved-note-editor", anchor: .bottom)
+              }
+          }
         }
-        .padding(20)
         .background(colors.background.ignoresSafeArea())
         // An editor needs Cancel and Save, so it keeps its own bar. It is a sheet from Saved and a push from the Reader.
         // The pushed editor hides the system back button: Cancel is its only exit, and the edge swipe cannot drop a draft.

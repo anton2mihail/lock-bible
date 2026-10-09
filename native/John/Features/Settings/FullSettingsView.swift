@@ -22,6 +22,8 @@ struct FullSettingsView: View {
                 Text("Settings")
                     .font(JohnTypography.sans(36, weight: .bold))
                     .foregroundStyle(colors.text)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityIdentifier("settings-title")
 

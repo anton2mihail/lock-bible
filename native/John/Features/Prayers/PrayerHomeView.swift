@@ -9,7 +9,8 @@ struct PrayerHomeView: View {
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
-    @State private var catalog: DevotionalCatalog?
+    @State private var loadedCatalog: DevotionalCatalog?
+    private var catalog: DevotionalCatalog? { loadedCatalog ?? runtime.warmDevotionalCatalog }
     @State private var query = ""
     @State private var loadError = false
 
@@ -115,16 +116,16 @@ struct PrayerHomeView: View {
             } else if loadError {
                 ContentMutedText(text: "The prayer library is not available.")
             } else {
-                ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
+                Color.clear.frame(maxWidth: .infinity).frame(height: 72)
             }
         }
         .task { await loadCatalog() }
     }
 
     @MainActor private func loadCatalog() async {
-        guard let repository = runtime.companionRepository else { loadError = true; return }
-        do { catalog = try await repository.devotionalCatalog() }
-        catch { loadError = true }
+        guard let repository = runtime.companionRepository else { if catalog == nil { loadError = true }; return }
+        do { loadedCatalog = try await repository.devotionalCatalog() }
+        catch { if catalog == nil { loadError = true } }
     }
 
     private func mysteryTitle(_ id: String) -> String {

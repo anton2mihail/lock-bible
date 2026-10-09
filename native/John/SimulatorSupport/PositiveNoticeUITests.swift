@@ -28,14 +28,14 @@ final class PositiveNoticeUITests: XCTestCase {
         }
         XCTAssertTrue(app.staticTexts["Calendar notifications are on."].waitForExistence(timeout: timeout))
         stage("calendar-on-0915")
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["settings-title"])
 
         openCalendarSettings(in: app)
         XCTAssertTrue(calendarEnabled.exists)
         XCTAssertTrue(calendarEnabled.value as? String == "1", "Calendar must remain enabled after re-entry")
         tap(app.buttons["calendar-notifications-delivery-time"])
         assertTime(hour: 9, minute: 15, in: app)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["settings-title"])
 
         openRosaryReminder(in: app)
         let rosaryEnabled = app.switches["rosary-reminder-enabled"]
@@ -48,7 +48,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertTrue(monday830.waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE rosary-weekly-monday-0830 observed=%@ rawWeekday=2", monday830.label)
         stage("rosary-weekly-monday-0830")
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch)
 
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
@@ -57,7 +57,7 @@ final class PositiveNoticeUITests: XCTestCase {
         openCompactPicker(compactPicker(in: app))
         assertTime(hour: 8, minute: 30, in: app)
         dismissCompactPicker(in: app)
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch)
 
         openRosaryReminder(in: app)
         tap(app.buttons["rosary-reminder-frequency-daily"])
@@ -67,7 +67,7 @@ final class PositiveNoticeUITests: XCTestCase {
         XCTAssertTrue(daily835.waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE rosary-daily-0835 observed=%@", daily835.label)
         stage("rosary-daily-0835")
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch)
 
         openRosaryReminder(in: app)
         XCTAssertEqual(rosaryEnabled.value as? String, "1")
@@ -79,7 +79,7 @@ final class PositiveNoticeUITests: XCTestCase {
         tap(app.buttons["rosary-reminder-save"])
         XCTAssertTrue(app.staticTexts["Reminder turned off"].waitForExistence(timeout: timeout))
         stage("rosary-off")
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts.matching(NSPredicate(format: "label == %@", "Pray the Rosary")).firstMatch)
 
         openCalendarSettings(in: app)
         setSwitch(calendarEnabled, on: false)
@@ -113,12 +113,55 @@ final class PositiveNoticeUITests: XCTestCase {
         ].waitForExistence(timeout: timeout))
         NSLog("NOTICE_STAGE calendar-denied-visible-feedback")
         stage("calendar-denied-visible-feedback")
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["settings-title"])
         openCalendarSettings(in: app)
         XCTAssertEqual(enabled.value as? String, "0", "Denied permission must leave committed Calendar notifications disabled")
         NSLog("NOTICE_UI_ONLY journey=notDetermined-deny seed=%@ bundle=%@; Main must verify zero durable and pending-request changes",
               seedID, bundleID)
     }
+
+    #if DEBUG
+    /// Host-driven remote-push notices test the real SpringBoard tap and notification delegate callback.
+    /// They do not test local reminder scheduling. The host driver waits for each marker and sends one push.
+    func testSimulatedNotificationResponsesRouteAcrossTabs() throws {
+        let authorization = try requiredEnvironment("L22_NOTICE_INITIAL_AUTHORIZATION")
+        XCTAssertEqual(authorization, "authorized", "Notification response test requires an authorized task-only app seed")
+        guard authorization == "authorized" else { return }
+        let app = try launch(configuration: "authorized")
+        let dateKey = try requiredEnvironment("NOTICE_ROUTE_DATE")
+        let runID = try requiredEnvironment("NOTICE_ROUTE_RUN_ID")
+        let parsedDate = Self.routeDateFormatter.date(from: dateKey)
+        XCTAssertNotNil(parsedDate, "NOTICE_ROUTE_DATE must use yyyy-MM-dd")
+        guard let parsedDate else { return }
+        XCTAssertEqual(Self.routeDateFormatter.string(from: parsedDate), dateKey,
+                       "NOTICE_ROUTE_DATE must be a valid Gregorian date")
+
+        let cases: [(key: String, start: String, tab: String, route: String)] = [
+            ("daily-today", "today", "tab-today", "/daily?date=\(dateKey)"),
+            ("daily-pray", "pray", "tab-pray", "/daily?date=\(dateKey)"),
+            ("daily-read-pushed", "read-pushed", "tab-read", "/daily?date=\(dateKey)"),
+            ("rosary-pray", "pray", "tab-pray", "/pray/rosary"),
+            ("rosary-today", "today", "tab-today", "/pray/rosary"),
+            ("rosary-read-pushed", "read-pushed", "tab-read", "/pray/rosary")
+        ]
+
+        for routeCase in cases {
+            prepareNotificationStart(routeCase.start, tab: routeCase.tab, in: app)
+            XCUIDevice.shared.press(.home)
+            let noticeTitle = "NATIVE ROUTE TEST \(runID) \(routeCase.key)"
+            NSLog("NOTICE_ROUTE_WAIT run=%@ case=%@ start=%@ route=%@ title=%@",
+                  runID, routeCase.key, routeCase.start, routeCase.route, noticeTitle)
+            tapInjectedNotice(title: noticeTitle)
+            assertNotificationDestination(routeCase.route, date: parsedDate, in: app)
+
+            Thread.sleep(forTimeInterval: 10)
+            assertNotificationDestination(routeCase.route, date: parsedDate, in: app)
+            attachNotificationDestinationEvidence(routeCase.key, app: app)
+            NSLog("NOTICE_ROUTE_DONE run=%@ case=%@ start=%@ route=%@ stableSeconds=10",
+                  runID, routeCase.key, routeCase.start, routeCase.route)
+        }
+    }
+    #endif
 
     private func launch(configuration: String) throws -> XCUIApplication {
         let authorizedBundleID = try requiredEnvironment("L22_NOTICE_BUNDLE_ID")
@@ -354,30 +397,13 @@ final class PositiveNoticeUITests: XCTestCase {
         return app.navigationBars.buttons.firstMatch
     }
 
-    /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
-    private func screenSignature(_ app: XCUIApplication) -> String {
-        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
-        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
-            .filter { $0.exists }.map(\.label)
-        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
-            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
-    }
-
-    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
-    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
-    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+    /// Taps Back and waits for the expected parent screen.
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement,
                                file: StaticString = #filePath, line: UInt = #line) {
         let back = systemBack(in: app)
         XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
-        let before = screenSignature(app)
         back.tap()
-        if let parent {
-            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
-            return
-        }
-        let deadline = Date().addingTimeInterval(10)
-        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
-        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
+        XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
     }
 
     private func tap(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
@@ -447,6 +473,130 @@ final class PositiveNoticeUITests: XCTestCase {
         }
         return value
     }
+
+    #if DEBUG
+    private static let routeDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = .autoupdatingCurrent
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    private func prepareNotificationStart(_ start: String, tab: String, in app: XCUIApplication) {
+        let tabControl = tabButton(app, tab)
+        XCTAssertTrue(tabControl.waitForExistence(timeout: timeout), "Missing start tab \(tab)")
+        tabControl.tap()
+        tabControl.tap() // A second tap returns a retained stack to its root.
+
+        switch start {
+        case "today":
+            XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: timeout),
+                          "Today must be the route start root")
+        case "pray":
+            XCTAssertTrue(app.textFields["Search novenas"].waitForExistence(timeout: timeout),
+                          "Pray must be the route start root")
+        case "read-pushed":
+            let bookListTitle = app.staticTexts["reader-book-list-title"]
+            for _ in 0..<5 where !bookListTitle.exists {
+                let back = app.buttons["reader-back"]
+                XCTAssertTrue(back.waitForExistence(timeout: 5),
+                              "Reader must expose its visible Back action before opening the Works page")
+                XCTAssertTrue(back.isHittable, "Reader Back must be visible before returning to the book list")
+                back.tap()
+            }
+            XCTAssertTrue(bookListTitle.waitForExistence(timeout: timeout),
+                          "Read must return to its book list before the Works page is pushed")
+            let worksLink = app.buttons["reader-works-link"]
+            XCTAssertTrue(worksLink.waitForExistence(timeout: timeout), "Read must show its Works link")
+            tap(worksLink)
+            XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "The Fathers"))
+                .firstMatch.waitForExistence(timeout: timeout), "Read must have a pushed Works page")
+        default:
+            XCTFail("Unknown notification start: \(start)")
+        }
+        NSLog("NOTICE_ROUTE_START_READY start=%@ selectedTab=%@", start, tab)
+    }
+
+    private func tapInjectedNotice(title: String) {
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let notice = springboard.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", title)).firstMatch
+        var found = notice.waitForExistence(timeout: 20)
+        if !found {
+            let start = springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02))
+            let end = springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+            start.press(forDuration: 0.1, thenDragTo: end)
+            found = notice.waitForExistence(timeout: 10)
+        }
+        guard found else {
+            attachSpringBoardEvidence(title, phase: "missing", app: springboard)
+            NSLog("NOTICE_ROUTE_MISSING title=%@ springboardTree=%@", title, springboard.debugDescription)
+            XCTFail("SpringBoard did not show the injected notification \(title); no callback is claimed")
+            return
+        }
+        guard notice.isHittable else {
+            attachSpringBoardEvidence(title, phase: "not-hittable", app: springboard)
+            XCTFail("Injected SpringBoard notification must be hittable: \(title)")
+            return
+        }
+        NSLog("NOTICE_ROUTE_TAP title=%@ role=%@ frame=%@",
+              title, String(describing: notice.elementType), NSCoder.string(for: notice.frame))
+        attachSpringBoardEvidence(title, phase: "before-tap", app: springboard)
+        notice.tap()
+    }
+
+    private func attachSpringBoardEvidence(_ title: String, phase: String, app: XCUIApplication) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "notification-\(title)-springboard-\(phase)"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        let tree = XCTAttachment(string: app.debugDescription)
+        tree.name = "notification-\(title)-springboard-\(phase)-ax"
+        tree.lifetime = .keepAlways
+        add(tree)
+    }
+
+    private func assertNotificationDestination(_ route: String, date: Date, in app: XCUIApplication) {
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 12), "The notification tap must foreground John")
+        let expectedTab: String
+        if route == "/pray/rosary" {
+            expectedTab = "tab-pray"
+            XCTAssertTrue(app.staticTexts["Pray the Rosary"].waitForExistence(timeout: timeout),
+                          "Rosary notice must open the Rosary home")
+        } else {
+            expectedTab = "tab-today"
+            let pageTitle = app.staticTexts["content-page-title"]
+            XCTAssertTrue(pageTitle.waitForExistence(timeout: timeout), "Daily notice must open its readings page")
+            XCTAssertEqual(pageTitle.label, "Today’s readings")
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US")
+            dateFormatter.calendar = Calendar(identifier: .gregorian)
+            dateFormatter.timeZone = .autoupdatingCurrent
+            dateFormatter.dateFormat = "MMM d, yyyy"
+            let expectedDate = dateFormatter.string(from: date)
+            XCTAssertTrue(app.staticTexts[expectedDate].waitForExistence(timeout: timeout),
+                          "Daily notice must open the requested date \(expectedDate)")
+        }
+        let selectedTab = tabButton(app, expectedTab)
+        XCTAssertTrue(selectedTab.exists, "Destination tab must exist: \(expectedTab)")
+        XCTAssertTrue(selectedTab.isSelected, "Notification route must select \(expectedTab)")
+        XCTAssertTrue(app.navigationBars.buttons["BackButton"].exists,
+                      "The notification destination must be a pushed page")
+    }
+
+    private func attachNotificationDestinationEvidence(_ key: String, app: XCUIApplication) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "notification-route-\(key)"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        let tree = XCTAttachment(string: app.debugDescription)
+        tree.name = "notification-route-\(key)-ax"
+        tree.lifetime = .keepAlways
+        add(tree)
+    }
+    #endif
 
     /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.
     /// Otherwise use the top of the tab buttons minus 12 pt (Liquid-glass-tabview-review.md fix 3).

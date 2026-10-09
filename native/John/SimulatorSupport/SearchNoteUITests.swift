@@ -52,7 +52,7 @@ final class SearchNoteUITests: XCTestCase {
         assertResult("John 3:16", in: app)
         app.buttons["search-scope-all"].tap()
 
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.buttons["reader-title"])
         selectEdition("vulgate", in: app)
         openSearch(in: app)
 
@@ -98,7 +98,7 @@ final class SearchNoteUITests: XCTestCase {
 
         app.buttons["reader-search-button"].tap()
         XCTAssertTrue(app.textFields["search-query-input"].waitForExistence(timeout: 8))
-        tapSystemBack(in: app)
+        tapSystemBack(in: app, expecting: app.buttons["reader-title"])
         XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["reader-verse-16"].exists)
         NSLog("SEARCH_ROUTE_RESULT reference=John3:16 openedVerse=16 repeatedResult=John3:16 cancel=Reader; rapidReplacement=final-visible-query-state")
@@ -195,29 +195,13 @@ final class SearchNoteUITests: XCTestCase {
     }
 
     /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
-    private func screenSignature(_ app: XCUIApplication) -> String {
-        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
-        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
-            .filter { $0.exists }.map(\.label)
-        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
-            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
-    }
-
-    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
-    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
-    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+    /// Taps Back and waits for the expected parent screen.
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement,
                                file: StaticString = #filePath, line: UInt = #line) {
         let back = systemBack(in: app)
         XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
-        let before = screenSignature(app)
         back.tap()
-        if let parent {
-            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
-            return
-        }
-        let deadline = Date().addingTimeInterval(10)
-        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
-        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
+        XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
     }
 
     private func openSearch(in app: XCUIApplication) {

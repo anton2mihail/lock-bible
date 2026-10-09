@@ -24,6 +24,8 @@ import JohnCore
     private(set) var editionAttribution = ""
     private(set) var pendingContextIndex: Int?
     private(set) var activeChapterRequestID: UUID?
+    /// Set when a chapter open has no restore target. The view drops the previous chapter offset.
+    private(set) var chapterScrollResetID: UUID?
     private var handledRequestID: UUID?
     private var manifestLoadID: UUID?
     private var chapterLoadID: UUID?
@@ -163,6 +165,11 @@ import JohnCore
         screen = .chapter
         lastRead = (book.code, number)
         pendingRestoreAnchor = anchor.map { ReaderAnchorRestoreRequest(id: UUID(), anchor: $0, chapterRequestID: loadID) }
+        // The Reader scroll position outlives the chapter ScrollView. Clear it before the next
+        // chapter view is created, or the previous chapter's offset opens the new chapter.
+        if pendingRestoreScrollY == nil, pendingRestoreAnchor == nil {
+            chapterScrollResetID = loadID
+        }
         await runtime.saveReaderLocation(bookCode: book.code, chapter: number, scrollY: scrollY, anchor: anchor)
         guard chapterLoadID == loadID else { return }
         defer { if chapterLoadID == loadID { isLoading = false } }

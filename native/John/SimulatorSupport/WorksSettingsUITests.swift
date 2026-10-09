@@ -164,9 +164,9 @@ final class WorksSettingsUITests: XCTestCase {
         assertWorksFooter(footerLabels, above: tab, in: app)
 
         // The system glass back button replaced the reader's "Close the reader" and the page's "Back to the library".
-        tapSystemBack(in: app) // work reader back to the author page
+        tapSystemBack(in: app, expecting: app.buttons["work-\(worksID)"]) // work reader back to the author page
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForNonExistence(timeout: 8), "The reader must leave before the next back tap")
-        tapSystemBack(in: app) // author page back to the library
+        tapSystemBack(in: app, expecting: app.buttons["collection-\(collectionID)"]) // author page back to the library
         let continueReading = app.buttons["works-continue"]
         XCTAssertTrue(continueReading.waitForExistence(timeout: 10))
         XCTAssertTrue(continueReading.label.contains("section 10"))
@@ -193,6 +193,87 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts[sectionTitle].waitForExistence(timeout: 10))
         waitForTextLabel(in: app, containing: sectionAnchor)
         NSLog("WORKS_RESUME_VISIBLE workID=%@ sectionIndex=9 page=1 sectionTextMarker=true", worksID)
+    }
+
+    func testWorksSystemBackBeforeSettingsRoundTrip() throws {
+        let app = launchWorkReaderForBackCheck()
+        verifyWorksBackToAuthor(in: app, caseName: "before-settings")
+    }
+
+    func testWorksSystemBackAfterSettingsRoundTripWithoutChange() throws {
+        let app = launchWorkReaderForBackCheck()
+        tabButton(app, "tab-settings").tap()
+        XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
+        attachWorksBackEvidence("settings-unchanged", app: app)
+        tabButton(app, "tab-read").tap()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Contents, section "))
+            .firstMatch.waitForExistence(timeout: 10), "Read tab must restore the current Works route")
+        verifyWorksBackToAuthor(in: app, caseName: "after-settings-unchanged")
+    }
+
+    func testWorksSystemBackAfterSettingsTextSizeChange() throws {
+        let app = launchWorkReaderForBackCheck()
+        tabButton(app, "tab-settings").tap()
+        XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
+        let sizeOptions = ["settings-text-size-small", "settings-text-size-default",
+                           "settings-text-size-large", "settings-text-size-extra-large"]
+        let originalSize = try selectedIdentifier(sizeOptions, in: app)
+        let originalSuffix = String(originalSize.dropFirst("settings-text-size-".count))
+        let changedSuffix = originalSuffix == "large" ? "default" : "large"
+        tapAndWaitForSelection("settings-text-size-\(changedSuffix)", in: app)
+        attachWorksBackEvidence("settings-text-size-changed", app: app)
+        tabButton(app, "tab-read").tap()
+        let currentSection = app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Contents, section ")).firstMatch
+        XCTAssertTrue(currentSection.waitForExistence(timeout: 12),
+                      "Read tab must restore the current Works route after a text-size change")
+        attachWorksBackEvidence("reader-restored-after-size-change", app: app)
+        verifyWorksBackToAuthor(in: app, caseName: "after-settings-size-change")
+        tabButton(app, "tab-settings").tap()
+        XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 8))
+        tapAndWaitForSelection(originalSize, in: app)
+    }
+
+    private func launchWorkReaderForBackCheck() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launch()
+        openWorksLibrary(in: app)
+        tapWhenReady(app.buttons["collection-\(collectionID)"], in: app)
+        XCTAssertTrue(app.buttons["work-\(worksID)"].waitForExistence(timeout: 10),
+                      "The Works collection must show the selected author’s work")
+        tapWhenReady(app.buttons["work-\(worksID)"], in: app)
+        let currentSection = app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Contents, section ")).firstMatch
+        XCTAssertTrue(currentSection.waitForExistence(timeout: 12), "The selected work must open in WorkReader")
+        NSLog("WORKS_BACK_REPRO stage=reader-open workID=%@ sectionControl=%@", worksID, currentSection.label)
+        attachWorksBackEvidence("reader-open", app: app)
+        return app
+    }
+
+    private func verifyWorksBackToAuthor(in app: XCUIApplication, caseName: String) {
+        let back = systemBack(in: app)
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "The system Back button must appear for \(caseName)")
+        NSLog("WORKS_BACK_REPRO case=%@ button=%@ frame=%@", caseName, back.identifier,
+              NSCoder.string(for: back.frame))
+        back.tap()
+        attachWorksBackEvidence("\(caseName)-after-back", app: app)
+        let authorWork = app.buttons["work-\(worksID)"]
+        XCTAssertTrue(authorWork.waitForExistence(timeout: 10),
+                      "Back must return to the author’s Works list for \(caseName)")
+        NSLog("WORKS_BACK_REPRO case=%@ parent=author-work-list visible=true", caseName)
+    }
+
+    private func attachWorksBackEvidence(_ name: String, app: XCUIApplication) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "works-back-\(name)-screen"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+
+        let accessibility = XCTAttachment(string: app.debugDescription)
+        accessibility.name = "works-back-\(name)-accessibility"
+        accessibility.lifetime = .keepAlways
+        add(accessibility)
     }
 
     private func selectedIdentifier(_ identifiers: [String], in app: XCUIApplication) throws -> String {
@@ -317,43 +398,128 @@ final class WorksSettingsUITests: XCTestCase {
     }
 
     /// Identity of the visible screen: the navigation bars, the page titles, and the number of back buttons.
-    private func screenSignature(_ app: XCUIApplication) -> String {
-        let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.exists }.map { "\($0.identifier)|\($0.label)" }
-        let titles = app.staticTexts.matching(identifier: "content-page-title").allElementsBoundByIndex
-            .filter { $0.exists }.map(\.label)
-        return bars.joined(separator: ",") + "#" + titles.joined(separator: ",") + "#"
-            + String(app.navigationBars.buttons.matching(identifier: "BackButton").count)
-    }
-
-    /// Taps the system back control and asserts that the parent screen appears: the given element when `expecting` is
-    /// set, otherwise a changed screen signature (a different title, bar, or back-button count).
-    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement? = nil,
+    /// Taps Back and waits for the expected parent screen.
+    private func tapSystemBack(in app: XCUIApplication, expecting parent: XCUIElement,
                                file: StaticString = #filePath, line: UInt = #line) {
         let back = systemBack(in: app)
         XCTAssertTrue(back.waitForExistence(timeout: 10), "Back control did not appear", file: file, line: line)
-        let before = screenSignature(app)
         back.tap()
-        if let parent {
-            XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
-            return
-        }
-        let deadline = Date().addingTimeInterval(10)
-        while screenSignature(app) == before && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.3)) }
-        XCTAssertNotEqual(screenSignature(app), before, "The screen must change after Back", file: file, line: line)
+        XCTAssertTrue(parent.waitForExistence(timeout: 10), "The parent screen must appear after Back", file: file, line: line)
     }
 
     private func tapWhenReady(_ element: XCUIElement, in app: XCUIApplication,
                               file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(element.waitForExistence(timeout: 12), "Control did not appear", file: file, line: line)
-        for _ in 0..<8 where !element.isHittable {
-            let scroll = app.scrollViews.allElementsBoundByIndex
-                .filter { $0.exists && $0.isHittable }
-                .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
-            let frame = scroll?.frame ?? app.frame
-            if element.frame.maxY < frame.minY { app.swipeDown() } else { app.swipeUp() }
+        guard let scroll = scrollView(containing: element, in: app) else {
+            guard element.isHittable, app.frame.contains(element.frame) else {
+                XCTFail("Control has no containing scroll view and is not hittable inside the app: id=\(element.identifier) frame=\(NSCoder.string(for: element.frame)) app=\(NSCoder.string(for: app.frame))",
+                        file: file, line: line)
+                return
+            }
+            element.tap()
+            return
         }
-        XCTAssertTrue(element.isHittable, "Control is not hittable", file: file, line: line)
+
+        var previousFrame = element.frame
+        var stalledAttempts = 0
+        for attempt in 0..<12 {
+            guard element.exists else {
+                XCTFail("Control disappeared while scrolling: \(element.identifier)", file: file, line: line)
+                return
+            }
+            guard scroll.exists, scroll.isHittable else {
+                XCTFail("Control scroll view disappeared or is not hittable: \(element.identifier)", file: file, line: line)
+                return
+            }
+            let viewport = visibleViewport(for: scroll, in: app)
+            guard viewport.height > 120 else {
+                XCTFail("No safe visible scroll area: id=\(element.identifier) scroll=\(scroll.identifier) viewport=\(NSCoder.string(for: viewport))",
+                        file: file, line: line)
+                return
+            }
+            let targetFrame = element.frame
+            if element.isHittable && viewport.contains(targetFrame) { break }
+            let scrollDown = targetFrame.midY < viewport.midY
+            let startFraction: CGFloat = scrollDown ? 0.25 : 0.75
+            let endFraction: CGFloat = scrollDown ? 0.75 : 0.25
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            NSLog("WORKS_TAP_SCROLL attempt=%d id=%@ scroll=%@ scrollFrame=%@ viewport=%@ target=%@ direction=%@ start=%@ end=%@",
+                  attempt + 1, element.identifier, scroll.identifier, NSCoder.string(for: scroll.frame),
+                  NSCoder.string(for: viewport), NSCoder.string(for: targetFrame), scrollDown ? "down" : "up",
+                  String(describing: start), String(describing: end))
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(
+                    withNormalizedOffset: normalized(end, in: app)))
+            guard element.exists, scroll.exists else {
+                XCTFail("Control or scroll view disappeared after drag: \(element.identifier)", file: file, line: line)
+                return
+            }
+            let currentFrame = element.frame
+            if abs(currentFrame.minY - previousFrame.minY) < 1 {
+                stalledAttempts += 1
+                NSLog("WORKS_TAP_SCROLL_NO_PROGRESS attempt=%d id=%@ scroll=%@ target=%@ viewport=%@ stalled=%d",
+                      attempt + 1, element.identifier, scroll.identifier, NSCoder.string(for: currentFrame),
+                      NSCoder.string(for: viewport), stalledAttempts)
+            } else {
+                stalledAttempts = 0
+            }
+            previousFrame = currentFrame
+            if stalledAttempts >= 3 {
+                XCTFail("Scroll made no progress after 3 drags: id=\(element.identifier) scroll=\(scroll.identifier) target=\(NSCoder.string(for: currentFrame)) viewport=\(NSCoder.string(for: viewport))",
+                        file: file, line: line)
+                break
+            }
+        }
+        guard scroll.exists, scroll.isHittable else {
+            XCTFail("Control scroll view disappeared before tap: id=\(element.identifier)", file: file, line: line)
+            return
+        }
+        let finalViewport = visibleViewport(for: scroll, in: app)
+        guard element.isHittable && finalViewport.contains(element.frame) else {
+            XCTFail("Control is not safely hittable: id=\(element.identifier) scroll=\(scroll.identifier) frame=\(NSCoder.string(for: element.frame)) viewport=\(NSCoder.string(for: finalViewport))",
+                    file: file, line: line)
+            return
+        }
         element.tap()
+    }
+
+    private func scrollView(containing element: XCUIElement, in app: XCUIApplication) -> XCUIElement? {
+        guard !element.identifier.isEmpty else { return nil }
+        let containingScroll = app.scrollViews.containing(.any, identifier: element.identifier).firstMatch
+        return containingScroll.exists ? containingScroll : nil
+    }
+
+    private func visibleViewport(for scroll: XCUIElement, in app: XCUIApplication) -> CGRect {
+        var viewport = scroll.frame.intersection(app.frame)
+        guard viewport.width > 0, viewport.height > 0 else { return .zero }
+
+        let topOverlays = [app.statusBars.firstMatch] + app.navigationBars.allElementsBoundByIndex
+        let topOcclusion = topOverlays
+            .filter { $0.exists && $0.frame.height > 0 && $0.frame.intersects(viewport) }
+            .map(\.frame.maxY)
+            .filter { $0 > viewport.minY && $0 < viewport.maxY }
+            .max()
+        if let topOcclusion {
+            viewport.size.height -= topOcclusion - viewport.minY
+            viewport.origin.y = topOcclusion
+        }
+
+        if let tabTop = tabBarTopEdge(in: app, within: viewport), tabTop > viewport.minY, tabTop < viewport.maxY {
+            viewport.size.height = min(viewport.height, tabTop - viewport.minY)
+        }
+        let keyboard = app.keyboards.firstMatch
+        if keyboard.exists, keyboard.frame.height > 0, keyboard.frame.intersects(viewport),
+           keyboard.frame.minY > viewport.minY {
+            viewport.size.height = min(viewport.height, keyboard.frame.minY - viewport.minY)
+        }
+        return viewport
+    }
+
+    private func normalized(_ point: CGPoint, in app: XCUIApplication) -> CGVector {
+        let frame = app.frame
+        return CGVector(dx: (point.x - frame.minX) / frame.width,
+                        dy: (point.y - frame.minY) / frame.height)
     }
 
     private func scrollContentsUntilHittable(_ target: XCUIElement, list: XCUIElement,
@@ -372,9 +538,9 @@ final class WorksSettingsUITests: XCTestCase {
             let endY = viewport.minY + viewport.height * 0.25
             NSLog("WORKS_CONTENTS_SCROLL attempt=%d viewport=%@ target=%@ direction=up",
                   attempt + 1, NSCoder.string(for: viewport), NSCoder.string(for: oldTarget))
-            app.coordinate(withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: startY / app.frame.height))
+            app.coordinate(withNormalizedOffset: normalized(CGPoint(x: x, y: startY), in: app))
                 .press(forDuration: 0.05, thenDragTo: app.coordinate(
-                    withNormalizedOffset: CGVector(dx: x / app.frame.width, dy: endY / app.frame.height)))
+                    withNormalizedOffset: normalized(CGPoint(x: x, y: endY), in: app)))
             let moved = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
                 target.exists != wasPresent || (target.exists && target.frame != oldTarget) || list.frame != oldList
             }, object: target)

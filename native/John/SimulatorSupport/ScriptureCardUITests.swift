@@ -453,18 +453,42 @@ final class ScriptureCardUITests: XCTestCase {
     }
 
     private func dismissShareSurface(in app: XCUIApplication, copyAction: XCUIElement) {
-        let close = app.buttons.matching(NSPredicate(
-            format: "label == %@ OR label == %@", "Close", "Cancel"
-        )).firstMatch
-        if close.exists && close.isHittable {
-            close.tap()
-        } else {
-            copyAction.swipeDown()
+        let shareSurface = app.descendants(matching: .any)
+            .matching(identifier: "ActivityListView").firstMatch
+        guard shareSurface.waitForExistence(timeout: 8) else {
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "card-share-surface-missing-ax"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            XCTFail("The iOS activity sheet must be visible before cancellation")
+            return
         }
+        let close = shareSurface.buttons["header.closeButton"]
+        guard close.exists && close.isHittable else {
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "card-share-close-control-missing-ax"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            XCTFail("The iOS activity sheet must expose its hittable Close control")
+            return
+        }
+        NSLog("CARD_CLOSE_SURFACE id=ActivityListView surfaceFrame=%@ closeFrame=%@ hittable=%d",
+              NSCoder.string(for: shareSurface.frame), NSCoder.string(for: close.frame), close.isHittable)
+        close.tap()
         let dismissed = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == false"), object: copyAction)
-        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
-                       "The share panel must dismiss without selecting Copy")
+        let result = XCTWaiter.wait(for: [dismissed], timeout: 10)
+        if result != .completed {
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "card-share-dismissal-failed"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "card-share-dismissal-failed-ax"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+        }
+        XCTAssertEqual(result, .completed, "The share panel must dismiss without selecting Copy")
     }
 
     private func scrollToVisible(_ element: XCUIElement, in app: XCUIApplication) {

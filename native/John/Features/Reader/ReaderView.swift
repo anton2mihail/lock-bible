@@ -24,7 +24,7 @@ struct ReaderView: View {
     @State private var programmaticRestoreChapterID: UUID?
     @State private var programmaticRestoreY: CGFloat?
     @State private var workCatalog: WorkCatalog?
-    @State private var lastContextRequest: String?
+    @State private var lastContextRequestID: UUID?
     @State private var selectedBookmarkState: Bool?
     @State private var selectionFeedback: String?
     @State private var feedbackHaptic = ReaderFeedbackHaptic()
@@ -197,6 +197,12 @@ struct ReaderView: View {
             Task { await loadBookmarkState(passage, chapterRequestID: chapterRequestID, selectionID: identity) }
         }
         .onAppear { model.prepareVisibleLocationRestore(preferences.readerLocation) }
+        .onChange(of: model.chapterScrollResetID) { _, resetID in
+            guard resetID != nil,
+                  model.pendingRestoreScrollY == nil,
+                  model.pendingRestoreAnchor == nil else { return }
+            readerScrollPosition.scrollTo(y: 0)
+        }
         .sheet(item: Binding(get: { router.sheet }, set: { router.sheet = $0 })) { sheet in
             switch sheet {
             case .readerAppearance:
@@ -205,7 +211,7 @@ struct ReaderView: View {
                 // Go to as a sheet (audit B6): the chapter stays in context above it, and a swipe down closes it.
                 GoToView(initialBookCode: model.book?.code, initialChapter: model.currentChapterNumber,
                          presentedAsSheet: true)
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
             }
         }
     }
@@ -233,16 +239,20 @@ struct ReaderView: View {
 
     /// Shows the chapter text down from the top safe area. Above that line (under the status bar) the text fades out
     /// in one fixed band at the bottom of the safe area instead of a hard cut through the glyphs (audit B5). The band
-    /// is at most 12 pt and leaves at least 12 pt fully clear at the top, so no text shows behind the status bar
+    /// is at most 12 pt and leaves at least 20 pt fully clear at the top, so no text shows behind the status bar
     /// glyphs on a short safe area either. iPhone 17 Pro (62 pt): clear 0–50 pt, fade 50–62 pt.
-    /// iPhone SE 3 (20 pt): clear 0–12 pt, fade 12–20 pt. At the bottom the mask goes into the safe area, so the text
+    /// iPhone SE 3 (20 pt): clear 0–20 pt, no fade. At the bottom the mask goes into the safe area, so the text
     /// scrolls under the floating glass tab bar and the selection panel.
     /// The anchor math does not use this mask: `ReaderTextGeometryProbe` measures the visible viewport from the
-    /// window safe area. With Reduce Transparency on, the mask keeps the former hard cut at the safe area line.
+    /// window safe area. The mask converts the key-window safe-area boundary to its local coordinates because its
+    /// geometry ignores the safe area. With Reduce Transparency on, it keeps the hard cut at that boundary.
     private var readerTopSafeAreaMask: some View {
         GeometryReader { proxy in
-            let top = max(0, proxy.safeAreaInsets.top)
-            let fadeBand = reduceTransparency ? 0 : min(12, max(0, top - 12))
+            let globalOriginY = proxy.frame(in: .global).minY
+            let top = windowSafeAreaTop >= 0
+                ? max(0, windowSafeAreaTop - globalOriginY)
+                : max(0, proxy.safeAreaInsets.top)
+            let fadeBand = reduceTransparency ? 0 : min(12, max(0, top - 20))
             VStack(spacing: 0) {
                 Color.clear.frame(height: top - fadeBand)
                 LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
@@ -255,27 +265,15 @@ struct ReaderView: View {
     }
 
     private var bookList: some View {
-        VStack(alignment: .leading, spacing: 20) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("Read the Bible")
-                        .font(JohnTypography.sans(36, weight: .bold))
-                        .tracking(-0.8)
-                        .foregroundStyle(colors.text)
-                        .accessibilityAddTraits(.isHeader)
-                        .accessibilityIdentifier("reader-book-list-title")
-                    Spacer()
-                    Button("Search") { router.push(.search) }
-                        .font(JohnTypography.sans(14, weight: .medium))
-                        .foregroundStyle(colors.tint)
-                        .accessibilityIdentifier("reader-search-button")
-                }
-                .padding(.horizontal, 24)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                bookListHeader
 
                 if let lastRead = model.lastRead,
                    let descriptor = model.books.first(where: { $0.code == lastRead.bookCode }) {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Continue reading")
-                            .font(JohnTypography.sans(13, weight: .medium))
+                            .font(bookListFont(13, weight: .medium))
                             .foregroundStyle(colors.textDim)
                         Button {
                             let location = preferences.readerLocation
@@ -288,7 +286,7 @@ struct ReaderView: View {
                         } label: {
                             HStack {
                                 Text("\(descriptor.name) \(lastRead.chapter)")
-                                    .font(JohnTypography.serif(20))
+                                    .font(.custom("Lora-Regular", size: 20, relativeTo: .body))
                                 Spacer()
                                 FeatherIcon(name: "chevron-right", color: colors.tint)
                             }
@@ -305,12 +303,12 @@ struct ReaderView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("The Church Fathers")
-                        .font(JohnTypography.sans(13, weight: .medium))
+                        .font(bookListFont(13, weight: .medium))
                         .foregroundStyle(colors.textDim)
                     Button { router.push(.works) } label: {
                         HStack {
                             Text(fathersCountLabel)
-                                .font(JohnTypography.sans(15, weight: .medium))
+                                .font(bookListFont(15, weight: .medium))
                             Spacer()
                             FeatherIcon(name: "chevron-right", color: colors.tint)
                         }
@@ -323,48 +321,96 @@ struct ReaderView: View {
                     .accessibilityIdentifier("reader-works-link")
                 }
                 .padding(.horizontal, 24)
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                ForEach(BookGroupOrder.allCases, id: \.self) { group in
-                    let groupBooks = model.books.filter { $0.group == group.rawValue }
-                    if !groupBooks.isEmpty {
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(group.title)
-                                .font(JohnTypography.sans(13, weight: .medium))
-                                .foregroundStyle(colors.textDim)
-                                .padding(.bottom, 6)
-                            ForEach(groupBooks, id: \.code) { book in
-                                Button { model.openBook(book) } label: {
-                                    HStack {
-                                        Text(book.name)
-                                            .font(JohnTypography.sans(16))
-                                            .foregroundStyle(colors.text)
-                                        Spacer()
-                                        FeatherIcon(name: "chevron-right", color: colors.textDim)
+
+                VStack(alignment: .leading, spacing: 24) {
+                    ForEach(BookGroupOrder.allCases, id: \.self) { group in
+                        let groupBooks = model.books.filter { $0.group == group.rawValue }
+                        if !groupBooks.isEmpty {
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(group.title)
+                                    .font(bookListFont(13, weight: .medium))
+                                    .foregroundStyle(colors.textDim)
+                                    .padding(.bottom, 6)
+                                ForEach(groupBooks, id: \.code) { book in
+                                    Button { model.openBook(book) } label: {
+                                        HStack {
+                                            Text(book.name)
+                                                .font(bookListFont(16))
+                                                .foregroundStyle(colors.text)
+                                            Spacer()
+                                            FeatherIcon(name: "chevron-right", color: colors.textDim)
+                                        }
+                                        .frame(minHeight: 52)
+                                        .overlay(alignment: .bottom) { Rectangle().fill(colors.separator).frame(height: 1) }
+                                        .contentShape(Rectangle())
                                     }
-                                    .frame(minHeight: 52)
-                                    .overlay(alignment: .bottom) { Rectangle().fill(colors.separator).frame(height: 1) }
-                                    .contentShape(Rectangle())
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("\(book.name), \(book.chapterCount) chapters")
+                                    .accessibilityIdentifier("reader-book-\(book.code)")
                                 }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("\(book.name), \(book.chapterCount) chapters")
-                                .accessibilityIdentifier("reader-book-\(book.code)")
                             }
                         }
                     }
+                    if let message = model.message { MutedText(text: message) }
                 }
-                if let message = model.message { MutedText(text: message) }
-                    }
-                    .frame(maxWidth: 740, alignment: .leading)
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
-                    .frame(maxWidth: .infinity)
-                }
-                    .contentMargins(.top, max(0, windowSafeAreaTop), for: .scrollContent)
-                    .accessibilityIdentifier("reader-book-list")
+                .frame(maxWidth: 740, alignment: .leading)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 32)
+            }
+            .padding(.top, 24)
+            .frame(maxWidth: .infinity, alignment: .top)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding(.top, 24)
+        .accessibilityIdentifier("reader-book-list")
+    }
+
+    private var bookListHeader: some View {
+        let title = Text("Read the Bible")
+            .font(.custom("SpaceGrotesk-Bold", size: 36, relativeTo: .largeTitle))
+            .tracking(-0.8)
+            .foregroundStyle(colors.text)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityIdentifier("reader-book-list-title")
+        let searchButton = Button("Search") { router.push(.search) }
+            .font(bookListFont(14, weight: .medium))
+            .foregroundStyle(colors.tint)
+            .frame(minHeight: 44)
+            .accessibilityIdentifier("reader-search-button")
+
+        return Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    title
+                    searchButton
+                }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        title.fixedSize(horizontal: true, vertical: false)
+                        Spacer(minLength: 0)
+                        searchButton
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        title
+                        searchButton
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 24)
+    }
+
+    private func bookListFont(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        let name: String
+        switch weight {
+        case .light: name = "SpaceGrotesk-Light"
+        case .medium: name = "SpaceGrotesk-Medium"
+        case .semibold: name = "SpaceGrotesk-SemiBold"
+        case .bold: name = "SpaceGrotesk-Bold"
+        default: name = "SpaceGrotesk-Regular"
+        }
+        return .custom(name, size: size, relativeTo: .body)
     }
 
     private var chapterGrid: some View {
@@ -473,14 +519,17 @@ struct ReaderView: View {
                                     router.sheet = nil
                                     return true
                                 },
-                                onContextVerseY: { y in
-                                    guard let context = model.pendingContextIndex else { return true }
-                                    let key = runtime.reader.openRequest?.id.uuidString ?? "\(book.code)-\(number)-\(context)"
-                                    guard lastContextRequest != key else { return true }
+                                onContextVerseY: { y, renderedRequestID in
+                                    // A UIKit layout callback can arrive while a new Reader request is replacing
+                                    // the old chapter. Attribute the scroll to the chapter that produced this layout.
+                                    guard let renderedRequestID,
+                                          model.activeChapterRequestID == renderedRequestID else { return false }
+                                    guard model.pendingContextIndex != nil else { return true }
+                                    guard lastContextRequestID != renderedRequestID else { return true }
                                     // Mark the request done only when the scroll target exists. Without a window or
                                     // scroll view yet, the next layout pass tries again.
                                     guard let target = textGeometryProbe.scrollTargetY(forLocalY: y, margin: 24) else { return false }
-                                    lastContextRequest = key
+                                    lastContextRequestID = renderedRequestID
                                     readerScrollPosition.scrollTo(y: target)
                                     return true
                                 },
@@ -599,7 +648,14 @@ struct ReaderView: View {
                     .coordinateSpace(name: "readerScroll")
                     .scrollPosition($readerScrollPosition)
                     .accessibilityValue(String(format: "%.1f", windowSafeAreaTop))
-                    .onAppear { updateUIKitReaderGeometry() }
+                    .onAppear {
+                        updateUIKitReaderGeometry()
+                        // Backup for the request-ID reset. Skip when this chapter must restore a place or a verse.
+                        guard model.pendingRestoreScrollY == nil,
+                              model.pendingRestoreAnchor == nil,
+                              model.pendingContextIndex == nil else { return }
+                        readerScrollPosition.scrollTo(y: 0)
+                    }
                     .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y } action: { _, value in
                         readerScrollOffset = value
                         updateUIKitReaderGeometry()
@@ -872,51 +928,59 @@ private struct ReaderHeader: View {
     let onTextSettings: (() -> Void)?
     var requestID: String? = nil
     let colors: JohnColors
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Button(action: onBack) {
-                    backIcon
-                }
+        HStack(alignment: dynamicTypeSize.isAccessibilitySize ? .top : .center, spacing: 4) {
+            Button(action: onBack) { backIcon }
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
                 .accessibilityLabel(backLabel)
                 .accessibilityIdentifier("reader-back")
-                Spacer()
-                if let onTextSettings {
-                    Button(action: onTextSettings) {
-                        Text("Aa")
-                            .font(JohnTypography.sans(18, weight: .semibold))
-                            .foregroundStyle(colors.tint)
-                    }
-                    .accessibilityLabel("Text settings")
-                    .accessibilityIdentifier("reader-appearance-button")
-                }
-                Button(action: onSearch) {
-                    FeatherIcon(name: "search", color: colors.tint)
-                        .frame(width: 36, height: 44)
-                }
-                .accessibilityLabel("Search Scripture")
-                .accessibilityIdentifier("reader-search-button")
-            }
+
             Button(action: onTitlePress) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(title)
                         .font(JohnTypography.sans(36, weight: .bold))
                         .tracking(-0.7)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.6)
+                        .minimumScaleFactor(0.45)
                     FeatherIcon(name: "chevron-down", color: colors.text)
                 }
                 .foregroundStyle(colors.text)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
             }
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .buttonStyle(.plain)
+            .accessibilityLabel(title)
             .accessibilityIdentifier("reader-title")
             #if DEBUG
             .accessibilityValue(requestID ?? "")
             #endif
+
+            if let onTextSettings {
+                Button(action: onTextSettings) {
+                    Text("Aa")
+                        .font(JohnTypography.sans(18, weight: .semibold))
+                        .foregroundStyle(colors.tint)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityLabel("Text settings")
+                .accessibilityIdentifier("reader-appearance-button")
+            }
+
+            Button(action: onSearch) {
+                FeatherIcon(name: "search", color: colors.tint)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Search Scripture")
+            .accessibilityIdentifier("reader-search-button")
         }
+        .frame(minHeight: 44)
+        .dynamicTypeSize(.xSmall ... .xLarge)
     }
 
     @ViewBuilder private var backIcon: some View {

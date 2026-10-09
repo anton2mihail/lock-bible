@@ -22,17 +22,16 @@ struct GoToView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
-                Text("Go to")
-                    .font(JohnTypography.sans(36, weight: .bold))
-                    .tracking(-0.8)
-                    .foregroundStyle(colors.text)
-                    .accessibilityAddTraits(.isHeader)
-                Spacer()
-                Button("Cancel") { dismiss() }
-                    .font(JohnTypography.sans(15, weight: .medium))
-                    .foregroundStyle(colors.tint)
-                    .accessibilityIdentifier("go-to-cancel")
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline) {
+                    titleText.lineLimit(1).fixedSize(horizontal: true, vertical: false)
+                    Spacer(minLength: 8)
+                    cancelButton
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    titleText.lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                    HStack { Spacer(); cancelButton }
+                }
             }
             .frame(maxWidth: 740, alignment: .leading)
             .padding(.horizontal, 24)
@@ -121,6 +120,22 @@ struct GoToView: View {
         }
         }
         .background(presentedAsSheet ? Color.clear : colors.background)
+    }
+
+    private var titleText: some View {
+        Text("Go to")
+            .font(JohnTypography.sans(36, weight: .bold))
+            .tracking(-0.8)
+            .foregroundStyle(colors.text)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private var cancelButton: some View {
+        Button("Cancel") { dismiss() }
+            .font(JohnTypography.sans(15, weight: .medium))
+            .foregroundStyle(colors.tint)
+            .fixedSize(horizontal: true, vertical: false)
+            .accessibilityIdentifier("go-to-cancel")
     }
 
     private func selectBook(_ book: BibleBookDescriptor) {

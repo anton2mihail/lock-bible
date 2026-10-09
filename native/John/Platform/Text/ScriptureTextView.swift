@@ -89,7 +89,7 @@ struct ScriptureTextView: UIViewRepresentable {
     /// Runs first on each tap on the chapter text, also between verses. True takes the tap: no verse selection.
     let onTapChapter: () -> Bool
     /// Returns true when the context verse scroll is done (now or before). False means "not ready, try again".
-    let onContextVerseY: (CGFloat) -> Bool
+    let onContextVerseY: (CGFloat, UUID?) -> Bool
     let onVisibleAnchor: (ReaderAnchorCaptureRequest, ReaderAnchor?) -> Void
     let onAnchorRestoreY: (ReaderAnchorRestoreRequest, CGFloat?) -> Void
 
@@ -218,8 +218,8 @@ struct ScriptureTextView: UIViewRepresentable {
         /// A context verse scroll (URL verse, saved passage, Read in context) wins over a reflow restore that is
         /// still waiting for a stable layout: that anchor was read before the context scroll. A saved-location
         /// restore (`anchorRestoreRequest`) is not a reflow and stays scheduled.
-        func contextVerseY(_ y: CGFloat) -> Bool {
-            guard parent.onContextVerseY(y) else { return false }
+        func contextVerseY(_ y: CGFloat, chapterRequestID: UUID?) -> Bool {
+            guard parent.onContextVerseY(y, chapterRequestID) else { return false }
             if scheduledRestoreIsReflow {
                 scheduledRestoreID = nil
                 scheduledRestoreIsReflow = false
@@ -554,7 +554,7 @@ struct ScriptureTextView: UIViewRepresentable {
             setNeedsLayout()
         }
     }
-    var onContextVerseY: ((CGFloat) -> Bool)?
+    var onContextVerseY: ((CGFloat, UUID?) -> Bool)?
     private var lastContextVerseIndex: Int?
     var readerLayout: ReaderLayout = .paragraphs { didSet { setNeedsDisplay() } }
     var contextRange: ClosedRange<Int>? { didSet { setNeedsDisplay() } }
@@ -662,7 +662,8 @@ struct ScriptureTextView: UIViewRepresentable {
         if let contextVerseIndex, lastContextVerseIndex != contextVerseIndex,
            let range = verseRanges[contextVerseIndex]?.first {
             let frame = rect(for: range)
-            if !frame.isNull, frame.height > 0, onContextVerseY?(frame.minY) == true {
+            if !frame.isNull, frame.height > 0,
+               onContextVerseY?(frame.minY, chapterRequestID) == true {
                 lastContextVerseIndex = contextVerseIndex
             }
         }

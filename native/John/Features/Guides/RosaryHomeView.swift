@@ -12,7 +12,7 @@ struct RosaryHomeView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.openURL) private var openURL
-    @State private var catalog: RosaryHomeCatalog?
+    @State private var loadedCatalog: RosaryHomeCatalog?
     @State private var loadFailed = false
 
     init(clock: @escaping () -> Date = Date.init,
@@ -29,6 +29,7 @@ struct RosaryHomeView: View {
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var suggestedID: String { TodaySelectors.rosaryWeekdaySet(date: clock(), timeZone: timeZone) }
+    private var catalog: RosaryHomeCatalog? { loadedCatalog ?? runtime.warmRosaryHome }
     private var suggestedSet: RosaryMysterySet? { catalog?.mysterySets.first { $0.id == suggestedID } }
     private var reminder: RosaryReminderSettings { runtime.committedNativeState?.rosaryReminder ?? RosaryReminderSettings() }
     private var reminderText: String { reminderSummary(reminder) }
@@ -122,7 +123,7 @@ struct RosaryHomeView: View {
             } else if loadFailed {
                 ContentMutedText(text: "The Rosary catalog is not available right now.")
             } else {
-                ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
+                Color.clear.frame(maxWidth: .infinity).frame(height: 72)
             }
         }
         .task { await loadCatalog() }
@@ -231,6 +232,7 @@ struct RosaryHomeView: View {
                 .background(colors.text, in: RoundedRectangle(cornerRadius: 18))
             }
             .buttonStyle(RosaryHomePressStyle())
+            .accessibilityIdentifier("rosary-media-entry-\(set.id)")
             if playerGate {
                 ContentMutedText(text: "\(catalog.mediaEpisodes.count) episodes catalogued from the official series")
             } else {
@@ -266,11 +268,11 @@ struct RosaryHomeView: View {
     }
 
     @MainActor private func loadCatalog() async {
-        guard let repository = runtime.companionRepository else { loadFailed = true; return }
+        guard let repository = runtime.companionRepository else { if catalog == nil { loadFailed = true }; return }
         do {
             let catalog = try await repository.devotionalCatalog()
-            self.catalog = try RosaryCatalogAdapter.decode(catalog.rosary)
-        } catch { loadFailed = true }
+            self.loadedCatalog = try RosaryCatalogAdapter.decode(catalog.rosary)
+        } catch { if catalog == nil { loadFailed = true } }
     }
 }
 

@@ -91,9 +91,20 @@ final class ReaderParityUITests: XCTestCase {
 
     func testBibleRepositoryCasesAcrossEditions() throws {
         let variant = CaptureVariant.current
+        let baselineNavigation = ProcessInfo.processInfo.environment["READER_PARITY_BASELINE_NAVIGATION"] ?? "book-list"
+        if variant == .baseline && baselineNavigation != "book-list" && baselineNavigation != "public-url" {
+            XCTFail("Unsupported READER_PARITY_BASELINE_NAVIGATION: \(baselineNavigation). Use book-list or public-url.")
+            return
+        }
+        let usePublicBaselineURL = variant == .baseline && baselineNavigation == "public-url"
         let allSamples = Edition.allCases.flatMap { samples(for: $0) }
+        let topOnly = ProcessInfo.processInfo.environment["READER_PARITY_TOP_ONLY"] == "1"
         // READER_PARITY_CASE accepts one exact key or a comma-separated list. The list order is the run order.
         let caseValue = CaptureMetadata.value("READER_PARITY_CASE")
+        if topOnly && caseValue == "unprovided" {
+            XCTFail("READER_PARITY_TOP_ONLY=1 requires an explicit READER_PARITY_CASE so this partial capture has a clear scope")
+            return
+        }
         let selectedSamples: [BibleCase]
         if caseValue == "unprovided" {
             selectedSamples = allSamples
@@ -113,36 +124,82 @@ final class ReaderParityUITests: XCTestCase {
             }
             selectedSamples = chosen
         }
+        if topOnly {
+            NSLog("READER_PARITY_MODE coverage=top-only-partial selectedCases=%@ endText=skipped footerAttribution=skipped",
+                  selectedSamples.map(\.key).joined(separator: ","))
+        } else {
+            NSLog("READER_PARITY_MODE coverage=full selectedCases=%@",
+                  selectedSamples.map(\.key).joined(separator: ","))
+        }
         guard let textSize = requestedTextSize() else {
             XCTFail("Unsupported READER_PARITY_TEXT_SIZE: \(CaptureMetadata.value("READER_PARITY_TEXT_SIZE")). Use Default or Extra large.")
             return
         }
         let app = launch(variant: variant)
 
-        for sample in selectedSamples {
+        for (sampleIndex, sample) in selectedSamples.enumerated() {
             let profile = applyCaptureProfile(edition: sample.edition, textSize: textSize, in: app, variant: variant)
-            openCaptureBookList(in: app, variant: variant)
-            let book = captureBookControl(sample, in: app, variant: variant)
-            tapWhenReady(book, in: app)
+            if usePublicBaselineURL {
+                let contextRequest = String(Int(Date().timeIntervalSince1970 * 1_000) + sampleIndex)
+                var components = URLComponents()
+                components.scheme = "nrsv"
+                components.host = "read"
+                components.queryItems = [
+                    URLQueryItem(name: "book", value: sample.code),
+                    URLQueryItem(name: "chapter", value: String(sample.chapter)),
+                    URLQueryItem(name: "verse", value: String(sample.firstVerseNumber)),
+                    URLQueryItem(name: "contextRequest", value: contextRequest),
+                ]
+                guard let url = components.url else {
+                    XCTFail("Could not construct the public Reader URL for \(sample.key)")
+                    return
+                }
+                NSLog("READER_PARITY_BASELINE_NAVIGATION path=public-url excludesBookList=1 case=%@ url=%@",
+                      sample.key, url.absoluteString)
+                app.open(url)
+            } else {
+                if variant == .baseline {
+                    NSLog("READER_PARITY_BASELINE_NAVIGATION path=book-list excludesBookList=0 case=%@", sample.key)
+                }
+                openCaptureBookList(in: app, variant: variant)
+                let book = captureBookControl(sample, in: app, variant: variant)
+                tapWhenReady(book, in: app)
 
-            let chapter = captureChapterControl(sample, in: app, variant: variant)
-            tapWhenReady(chapter, in: app)
+                let chapter = captureChapterControl(sample, in: app, variant: variant)
+                tapWhenReady(chapter, in: app)
+            }
             let title = captureTitleControl(sample, in: app, variant: variant)
             waitForLabel(title, equals: "\(sample.bookName) \(sample.chapter)")
 
             let attribution = captureAttributionControl(sample.edition, in: app, variant: variant)
-            let firstVerse = captureVerseControl(sample.firstVerseNumber, text: sample.firstVerseText,
-                                                 in: app, variant: variant)
-            XCTAssertTrue(firstVerse.waitForExistence(timeout: 10), "Missing first verse: \(sample.key)")
-            XCTAssertTrue(firstVerse.isHittable, "The chapter must open at its natural top: \(sample.key)")
-            XCTAssertTrue(firstVerse.label.contains(sample.firstVerseText), "First verse differs from source: \(sample.key)")
+            if variant == .native {
+                assertNativeFirstVerseAtTop(sample, in: app)
+            } else {
+                // The old app splits a poetry verse across line labels. One label does not hold the full verse.
+                let firstSpan = requireBaselineVerseSpan(sample.firstVerseText, in: app, key: sample.key, role: "first")
+                XCTAssertTrue(firstSpan.head.isHittable, "Baseline chapter top \(sample.key)")
+                XCTAssertTrue(firstSpan.normalizedText.contains(normalizedCaptureText(sample.firstVerseText)),
+                              "First verse differs from source: \(sample.key)")
+            }
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-top", app: app)
             attachAXTreeIfRequested("reader-parity-\(variant.rawValue)-\(sample.key)-top", app: app)
 
-            let lastVerse = captureVerseControl(sample.lastVerseNumber, text: sample.lastVerseText,
-                                                in: app, variant: variant)
-            scrollToLastVerseTail(lastVerse, in: app, key: sample.key)
-            XCTAssertTrue(lastVerse.label.contains(sample.lastVerseText), "Last verse differs from source: \(sample.key)")
+            if topOnly {
+                NSLog("READER_PARITY_PARTIAL case=%@ coverage=top-only-partial title=passed firstVerse=passed endText=skipped footerAttribution=skipped",
+                      sample.key)
+                continue
+            }
+
+            if variant == .native {
+                let lastVerse = captureVerseControl(sample.lastVerseNumber, text: sample.lastVerseText,
+                                                    in: app, variant: variant)
+                scrollToLastVerseTail(lastVerse, in: app, key: sample.key)
+                XCTAssertTrue(lastVerse.label.contains(sample.lastVerseText), "Last verse differs from source: \(sample.key)")
+            } else {
+                let lastSpan = scrollBaselineVerseTail(sample.lastVerseText, in: app, key: sample.key)
+                XCTAssertTrue(lastSpan.normalizedText.contains(normalizedCaptureText(sample.lastVerseText)),
+                              "Last verse differs from source: \(sample.key)")
+            }
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end-text", app: app)
             attachAXTreeIfRequested("reader-parity-\(variant.rawValue)-\(sample.key)-end-text", app: app)
 
@@ -150,7 +207,7 @@ final class ReaderParityUITests: XCTestCase {
             waitForLabel(attribution, equals: sample.edition.attribution)
             attachScreenshot("reader-parity-\(variant.rawValue)-\(sample.key)-end-footer", app: app)
             attachAXTreeIfRequested("reader-parity-\(variant.rawValue)-\(sample.key)-end-footer", app: app)
-            NSLog("READER_PARITY case=%@ variant=%@ edition=%@ book=%@ chapter=%d first=%d last=%d attribution=%@ requestedProfile=%@ verifiedProfile=%@ appearancePreference=%@ effectiveAppearance=%@ appVersion=%@ device=%@ seed=%@",
+            NSLog("READER_PARITY case=%@ coverage=full variant=%@ edition=%@ book=%@ chapter=%d first=%d last=%d attribution=%@ requestedProfile=%@ verifiedProfile=%@ appearancePreference=%@ effectiveAppearance=%@ appVersion=%@ device=%@ seed=%@",
                   sample.key, variant.rawValue, sample.edition.id, sample.bookName, sample.chapter,
                   sample.firstVerseNumber, sample.lastVerseNumber, sample.edition.abbreviation,
                   profile.requested, profile.verified, profile.appearancePreference,
@@ -203,6 +260,7 @@ final class ReaderParityUITests: XCTestCase {
         selectVerse(12, expectedSummary: "Selected: verses 10–12", reference: "John 1:10–12", in: app)
         selectVerse(8, expectedSummary: "Selected: verses 8–10", reference: "John 1:8–10", in: app)
         selectVerse(11, expectedSummary: "Selected: verses 8–11", reference: "John 1:8–11", in: app)
+        attachAXTree("reader-parity-selected-range-8-11", app: app)
 
         // A repeated endpoint keeps a multi-verse range. Source clears a repeated singleton only.
         tapVerse(11, in: app)
@@ -261,7 +319,7 @@ final class ReaderParityUITests: XCTestCase {
         }
         let translation = app.buttons["translation-\(edition.id)"]
         tapIfNotSelected(translation, in: app)
-        waitForValue(translation, equals: "Selected")
+        waitForTranslationCommit(translation, in: app)
         let observedAppearance = ["system", "light", "dark"].first { name in
             (app.buttons["settings-appearance-\(name)"].value as? String) == "Selected"
         } ?? "unresolved"
@@ -336,13 +394,192 @@ final class ReaderParityUITests: XCTestCase {
     private func captureBookControl(_ sample: BibleCase, in app: XCUIApplication,
                                     variant: CaptureVariant) -> XCUIElement {
         if variant == .native { return app.buttons["reader-book-\(sample.code)"] }
-        return app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "\(sample.bookName), ")).firstMatch
+        let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "\(sample.bookName), ")).firstMatch
+        scrollBaselineBookIntoView(book, key: sample.key, in: app)
+        return book
+    }
+
+    /// The baseline Reader keeps the selected tab's prior list offset. At large text sizes,
+    /// the book-list title can exist far above the viewport while later sections are visible.
+    /// Drag only inside the visible Read content until the exact requested book row appears.
+    private func scrollBaselineBookIntoView(_ book: XCUIElement, key: String, in app: XCUIApplication,
+                                            file: StaticString = #filePath, line: UInt = #line) {
+        let title = app.staticTexts.matching(NSPredicate(format: "label == %@", "Read the Bible")).firstMatch
+        guard title.exists else {
+            XCTFail("Baseline book list is not open for \(key)", file: file, line: line)
+            return
+        }
+
+        let statusBar = app.statusBars.firstMatch
+        let topInset = statusBar.exists && statusBar.frame.height > 0
+            ? statusBar.frame.maxY + 8 : app.frame.minY + 64
+        var viewport = app.frame.intersection(CGRect(x: app.frame.minX, y: topInset,
+                                                       width: app.frame.width, height: app.frame.maxY - topInset))
+        let tabs = ["Today", "Read", "Saved", "Pray", "Settings"]
+            .map { baselineTab($0, in: app) }
+            .filter { $0.exists && $0.frame.intersects(app.frame) }
+        if let tabTop = tabs.map(\.frame.minY).min() {
+            viewport.size.height = min(viewport.height, tabTop - 8 - viewport.minY)
+        }
+        viewport = viewport.insetBy(dx: 8, dy: 4)
+        NSLog("BASELINE_BOOK_VIEWPORT key=%@ app=%@ statusBar=%@ viewport=%@ tabTop=%@",
+              key, NSCoder.string(for: app.frame), statusBar.exists ? NSCoder.string(for: statusBar.frame) : "unavailable",
+              NSCoder.string(for: viewport), tabs.map { NSCoder.string(for: $0.frame) }.joined(separator: ";"))
+        guard viewport.height > 120 else {
+            baselineSnapshot("baseline-book-\(key)-unsafe-viewport", app: app)
+            XCTFail("Baseline Reader has no safe visible content area for \(key): \(NSCoder.string(for: viewport))",
+                    file: file, line: line)
+            return
+        }
+
+        let continueLabel = app.staticTexts.matching(NSPredicate(format: "label == %@", "Continue reading")).firstMatch
+        let progressAnchor = continueLabel.exists ? continueLabel : title
+        let anchorPosition: () -> String = {
+            guard progressAnchor.exists else { return "absent" }
+            return String(describing: progressAnchor.frame.minY)
+        }
+        let visibleContentSignature: () -> String = {
+            app.staticTexts.allElementsBoundByIndex
+                .filter { $0.exists && !$0.label.isEmpty && $0.frame.intersects(viewport) }
+                .map { "\($0.label):\(Int($0.frame.minY.rounded()))" }
+                .joined(separator: "|")
+        }
+        var previousProgress = book.exists
+            ? String(describing: book.frame.minY) : visibleContentSignature() + "|anchor:\(anchorPosition())"
+        var stalledAttempts = 0
+        for attempt in 0..<120 {
+            if book.exists && book.isHittable && book.frame.intersects(viewport) {
+                NSLog("BASELINE_BOOK_VISIBLE key=%@ attempt=%d frame=%@ viewport=%@",
+                      key, attempt, NSCoder.string(for: book.frame), NSCoder.string(for: viewport))
+                return
+            }
+            // An absent row is a lazy baseline list item. The visible heading shows list movement.
+            // When the exact row exists, use its frame to choose the direction directly.
+            let dragDown = book.exists && book.frame.midY < viewport.midY
+            let startFraction: CGFloat = dragDown ? 0.20 : 0.85
+            let endFraction: CGFloat = dragDown ? 0.85 : 0.20
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+
+            let currentProgress = book.exists
+                ? String(describing: book.frame.minY) : visibleContentSignature() + "|anchor:\(anchorPosition())"
+            stalledAttempts = currentProgress == previousProgress ? stalledAttempts + 1 : 0
+            NSLog("BASELINE_BOOK_SCROLL key=%@ attempt=%d exists=%d hittable=%d frame=%@ viewport=%@ stalled=%d",
+                  key, attempt, book.exists ? 1 : 0, book.isHittable ? 1 : 0,
+                  NSCoder.string(for: book.exists ? book.frame : (progressAnchor.exists ? progressAnchor.frame : .zero)),
+                  NSCoder.string(for: viewport), stalledAttempts)
+            previousProgress = currentProgress
+            if stalledAttempts >= 3 { break }
+        }
+
+        baselineSnapshot("baseline-book-\(key)-scroll-failure", app: app)
+        let finalBookFrame = book.exists ? NSCoder.string(for: book.frame) : "absent"
+        XCTFail("Baseline book row did not become visible: key=\(key) exists=\(book.exists) hittable=\(book.isHittable) frame=\(finalBookFrame) viewport=\(NSCoder.string(for: viewport)) stalls=\(stalledAttempts)",
+                file: file, line: line)
     }
 
     private func captureChapterControl(_ sample: BibleCase, in app: XCUIApplication,
                                        variant: CaptureVariant) -> XCUIElement {
-        if variant == .native { return app.buttons["reader-chapter-\(sample.chapter)"] }
+        if variant == .native {
+            let chapter = app.buttons["reader-chapter-\(sample.chapter)"]
+            scrollNativeChapterGridTargetIntoView(chapter, sample: sample, app: app)
+            return chapter
+        }
         return app.buttons.matching(NSPredicate(format: "label == %@", "\(sample.bookName) chapter \(sample.chapter)")).firstMatch
+    }
+
+    /// The native chapter grid uses lazy cells. A distant chapter can be absent from accessibility
+    /// until the grid scrolls near it. Keep this gesture inside that grid and stop on no progress.
+    private func scrollNativeChapterGridTargetIntoView(_ target: XCUIElement, sample: BibleCase,
+                                                       app: XCUIApplication) {
+        let scroll = app.scrollViews["reader-chapter-grid-scroll"]
+        guard scroll.waitForExistence(timeout: 8), scroll.exists, scroll.isHittable else {
+            NSLog("READER_PARITY_CHAPTER_REACH case=%@ result=failed reason=grid-unavailable", sample.key)
+            attachScreenshot("reader-parity-chapter-reach-failure-\(sample.key)", app: app)
+            attachAXTree("reader-parity-chapter-reach-failure-\(sample.key)", app: app)
+            XCTFail("Native chapter grid missing or not hittable for \(sample.key)")
+            return
+        }
+
+        var previousSignature = ""
+        var stalledAttempts = 0
+        var finalViewport = CGRect.zero
+        for attempt in 0..<40 {
+            var viewport = scroll.frame.intersection(app.frame)
+            let topOverlays = [app.statusBars.firstMatch] + app.navigationBars.allElementsBoundByIndex
+            let topOcclusion = topOverlays
+                .filter { $0.exists && $0.frame.height > 0 && $0.frame.intersects(viewport) }
+                .map(\.frame.maxY)
+                .max()
+            if let topOcclusion = topOcclusion {
+                let bottom = viewport.maxY
+                viewport.origin.y = max(viewport.minY, topOcclusion + 4)
+                viewport.size.height = max(0, bottom - viewport.minY)
+            }
+            if let tabTop = tabBarTopEdge(in: app, within: viewport) {
+                viewport.size.height = min(viewport.height, tabTop - viewport.minY)
+            }
+            viewport = viewport.insetBy(dx: 4, dy: 4)
+            finalViewport = viewport
+            let targetFrame = target.exists ? target.frame : .zero
+            if target.exists && !targetFrame.isEmpty && viewport.contains(targetFrame)
+                && viewport.contains(CGPoint(x: targetFrame.midX, y: targetFrame.midY)) && target.isHittable {
+                NSLog("READER_PARITY_CHAPTER_REACH case=%@ attempt=%d result=visible frame=%@ viewport=%@",
+                      sample.key, attempt, NSCoder.string(for: targetFrame), NSCoder.string(for: viewport))
+                attachScreenshot("reader-parity-chapter-reach-\(sample.key)", app: app)
+                attachAXTreeIfRequested("reader-parity-chapter-reach-\(sample.key)", app: app)
+                return
+            }
+            guard viewport.height > 100 else {
+                NSLog("READER_PARITY_CHAPTER_REACH case=%@ result=failed reason=unsafe-viewport viewport=%@",
+                      sample.key, NSCoder.string(for: viewport))
+                attachScreenshot("reader-parity-chapter-reach-failure-\(sample.key)", app: app)
+                attachAXTree("reader-parity-chapter-reach-failure-\(sample.key)", app: app)
+                XCTFail("No safe chapter-grid viewport for \(sample.key): \(viewport)")
+                return
+            }
+
+            let scrollDown = target.exists && !targetFrame.isEmpty && targetFrame.minY < viewport.minY
+            let startFraction: CGFloat = scrollDown ? 0.25 : 0.75
+            let endFraction: CGFloat = scrollDown ? 0.75 : 0.25
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            NSLog("READER_PARITY_CHAPTER_REACH case=%@ attempt=%d targetExists=%d frame=%@ viewport=%@ direction=%@",
+                  sample.key, attempt, target.exists ? 1 : 0, NSCoder.string(for: targetFrame),
+                  NSCoder.string(for: viewport), scrollDown ? "down" : "up")
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            XCTAssertTrue(scroll.exists && scroll.isHittable,
+                          "Native chapter grid left the foreground for \(sample.key)")
+
+            let visibleCells = app.buttons.matching(
+                NSPredicate(format: "identifier BEGINSWITH %@", "reader-chapter-")
+            ).allElementsBoundByIndex
+            let signature = visibleCells.map {
+                "\($0.identifier):\(Int($0.frame.minY))"
+            }.joined(separator: "|")
+            stalledAttempts = signature == previousSignature ? stalledAttempts + 1 : 0
+            previousSignature = signature
+            NSLog("READER_PARITY_CHAPTER_REACH_PROGRESS case=%@ attempt=%d cells=%d stalled=%d",
+                  sample.key, attempt, visibleCells.count, stalledAttempts)
+            if stalledAttempts >= 4 { break }
+        }
+
+        let finalTargetFrame = target.exists ? target.frame : .zero
+        let reached = target.exists && !finalTargetFrame.isEmpty && finalViewport.contains(finalTargetFrame)
+            && finalViewport.contains(CGPoint(x: finalTargetFrame.midX, y: finalTargetFrame.midY))
+            && target.isHittable
+        guard reached else {
+            NSLog("READER_PARITY_CHAPTER_REACH case=%@ result=failed exists=%d hittable=%d frame=%@ viewport=%@ stalls=%d",
+                  sample.key, target.exists ? 1 : 0, target.isHittable ? 1 : 0,
+                  NSCoder.string(for: finalTargetFrame), NSCoder.string(for: finalViewport), stalledAttempts)
+            attachScreenshot("reader-parity-chapter-reach-failure-\(sample.key)", app: app)
+            attachAXTree("reader-parity-chapter-reach-failure-\(sample.key)", app: app)
+            XCTFail("Chapter did not become fully visible and hittable in the bounded native grid scroll: \(sample.key)")
+            return
+        }
     }
 
     private func captureTitleControl(_ sample: BibleCase, in app: XCUIApplication,
@@ -351,10 +588,186 @@ final class ReaderParityUITests: XCTestCase {
         return app.buttons.matching(NSPredicate(format: "label == %@", "\(sample.bookName) \(sample.chapter)")).firstMatch
     }
 
+    /// The chapter header and verse 1 must both sit under the status bar.
+    /// A carried scroll offset can leave a short chapter's verse hittable while the header has left the screen.
+    /// The source text keeps a stale `reader-verse-1` from the previous chapter from passing this check.
+    private func assertNativeFirstVerseAtTop(_ sample: BibleCase, in app: XCUIApplication,
+                                             file: StaticString = #filePath, line: UInt = #line) {
+        let verse = app.buttons.matching(NSPredicate(
+            format: "identifier == %@ AND label CONTAINS %@",
+            "reader-verse-\(sample.firstVerseNumber)", sample.firstVerseText
+        )).firstMatch
+        NSLog("READER_PARITY_TOP_ENTER case=%@", sample.key)
+        XCTAssertTrue(verse.waitForExistence(timeout: 10), "Missing native first verse: \(sample.key)", file: file, line: line)
+        let title = app.buttons["reader-title"]
+        let scroll = app.scrollViews["reader-chapter-scroll"]
+        if sample.key == "web-ce-PSA-23" {
+            let heading = app.descendants(matching: .any).matching(identifier: "reader-heading-d").firstMatch
+            let headingExists = heading.waitForExistence(timeout: 10)
+            let safeTop = CGFloat(Double(scroll.value as? String ?? "") ?? 0)
+            let deadline = Date().addingTimeInterval(3)
+            var titleFrame = CGRect.null
+            var headingFrame = CGRect.null
+            var verseFrame = CGRect.null
+            var exactHeading = false
+            var titleVisible = false
+            var headingAtTop = false
+            var verseFollowsHeading = false
+            var sourceVerseMatches = false
+            var settled = false
+            while headingExists && Date() < deadline {
+                titleFrame = title.frame
+                headingFrame = heading.frame
+                verseFrame = verse.frame
+                exactHeading = heading.label == "A Psalm by David."
+                titleVisible = title.exists && titleFrame.minY >= safeTop - 24 && titleFrame.maxY > safeTop
+                headingAtTop = exactHeading && headingFrame.height > 1
+                    && headingFrame.minY >= titleFrame.maxY - 16
+                    && headingFrame.minY <= titleFrame.maxY + 96
+                    && headingFrame.maxY > titleFrame.maxY
+                verseFollowsHeading = verseFrame.height > 1
+                    && verseFrame.minY >= headingFrame.maxY
+                    && verseFrame.minY <= headingFrame.maxY + 96
+                sourceVerseMatches = verse.label.contains(sample.firstVerseText)
+                settled = titleVisible && headingAtTop && verseFollowsHeading && sourceVerseMatches
+                    && verse.isHittable
+                if settled { break }
+                RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+            }
+            let detail = "heading=\(NSCoder.string(for: headingFrame)) title=\(NSCoder.string(for: titleFrame)) verse=\(NSCoder.string(for: verseFrame)) safeTop=\(safeTop) exactHeading=\(exactHeading) hittable=\(verse.isHittable) sourceVerseMatches=\(sourceVerseMatches)"
+            NSLog("READER_PARITY_TOP case=%@ firstContent=source-heading %@", sample.key, detail)
+            guard settled else {
+                attachScreenshot("reader-parity-native-\(sample.key)-top-failure", app: app)
+                attachAXTree("reader-parity-native-\(sample.key)-top-failure", app: app)
+                XCTFail("Native chapter top with source heading \(sample.key) \(detail)", file: file, line: line)
+                return
+            }
+            return
+        }
+        let deadline = Date().addingTimeInterval(3)
+        var atTop = false
+        var lastFrame = CGRect.null
+        var titleFrame = CGRect.null
+        var safeTop: CGFloat = 0
+        while Date() < deadline {
+            lastFrame = verse.frame
+            titleFrame = title.frame
+            safeTop = CGFloat(Double(scroll.value as? String ?? "") ?? 0)
+            let headerVisible = title.exists && titleFrame.minY >= safeTop - 24 && titleFrame.maxY > safeTop
+            let underHeader = lastFrame.height > 1
+                && lastFrame.minY >= titleFrame.maxY - 16
+                && lastFrame.minY <= titleFrame.maxY + 96
+            atTop = headerVisible && underHeader
+            if atTop { break }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
+        let detail = "frame=\(NSCoder.string(for: lastFrame)) title=\(NSCoder.string(for: titleFrame)) safeTop=\(safeTop) hittable=\(verse.isHittable) label=\(verse.label.prefix(60))"
+        NSLog("READER_PARITY_TOP case=%@ %@", sample.key, detail)
+        XCTAssertTrue(atTop, "Native chapter top \(sample.key) \(detail)", file: file, line: line)
+        XCTAssertTrue(verse.label.contains(sample.firstVerseText), "First verse differs from source: \(sample.key)", file: file, line: line)
+    }
+
     private func captureVerseControl(_ number: Int, text: String, in app: XCUIApplication,
                                      variant: CaptureVariant) -> XCUIElement {
         if variant == .native { return app.buttons["reader-verse-\(number)"] }
         return app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
+    }
+
+    private struct BaselineVerseSpan {
+        let head: XCUIElement
+        let tail: XCUIElement
+        let normalizedText: String
+    }
+
+    /// Joins consecutive old-app line labels. A poetry verse is not one StaticText.
+    /// The first line must contain the start of the source verse, so a heading cannot open the match.
+    private func baselineVerseSpan(_ text: String, in app: XCUIApplication) -> BaselineVerseSpan? {
+        let target = normalizedCaptureText(text)
+        guard !target.isEmpty else { return nil }
+        let prefixCount = min(16, target.count)
+        let prefix = String(target.prefix(prefixCount))
+        let nodes = baselineTextNodes(in: app)
+        let labels = nodes.map { normalizedCaptureText($0.label) }
+        for start in labels.indices where labels[start].contains(prefix) {
+            var joined = ""
+            let endLimit = min(labels.count - 1, start + 11)
+            for end in start...endLimit {
+                joined = joined.isEmpty ? labels[end] : "\(joined) \(labels[end])"
+                if joined.contains(target) {
+                    return BaselineVerseSpan(head: nodes[start], tail: nodes[end], normalizedText: joined)
+                }
+            }
+        }
+        return nil
+    }
+
+    private func requireBaselineVerseSpan(_ text: String, in app: XCUIApplication, key: String, role: String,
+                                          file: StaticString = #filePath, line: UInt = #line) -> BaselineVerseSpan {
+        let deadline = Date().addingTimeInterval(10)
+        while Date() < deadline {
+            if let span = baselineVerseSpan(text, in: app) { return span }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
+        if let span = baselineVerseSpan(text, in: app) { return span }
+        XCTFail("Missing \(role) verse: \(key)", file: file, line: line)
+        return BaselineVerseSpan(head: app.staticTexts.firstMatch, tail: app.staticTexts.firstMatch, normalizedText: "")
+    }
+
+    private func scrollBaselineVerseTail(_ text: String, in app: XCUIApplication, key: String,
+                                         file: StaticString = #filePath, line: UInt = #line) -> BaselineVerseSpan {
+        var span = requireBaselineVerseSpan(text, in: app, key: key, role: "final", file: file, line: line)
+        // One full label scan is enough. Each later scan cost about 30 seconds and made 12 drags miss a long chapter.
+        // Douay-Rheims John 1 moved about 350 points per drag and still sat 682 points below the viewport after 11 drags.
+        for attempt in 0..<24 {
+            let viewport = visibleViewport(for: span.tail, in: app).insetBy(dx: 4, dy: 4)
+            let verseFrame = span.tail.frame
+            let verseTailVisible = verseFrame.intersects(viewport) && verseFrame.maxY <= viewport.maxY
+            NSLog("READER_PARITY_END_TEXT case=%@ attempt=%d viewport=%@ verse=%@ tailVisible=%d",
+                  key, attempt, NSCoder.string(for: viewport), NSCoder.string(for: verseFrame), verseTailVisible ? 1 : 0)
+            if verseTailVisible { return span }
+
+            XCTAssertGreaterThan(viewport.height, 120, "No safe Reader viewport for final verse tail: \(key)", file: file, line: line)
+            let needsScrollDown = verseFrame.maxY < viewport.minY
+            let startFraction: CGFloat = needsScrollDown ? 0.25 : 0.75
+            let endFraction: CGFloat = needsScrollDown ? 0.75 : 0.25
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            let moved = span.tail.frame
+            if abs(moved.minY - verseFrame.minY) < 1 {
+                span = requireBaselineVerseSpan(text, in: app, key: key, role: "final", file: file, line: line)
+            }
+        }
+
+        let viewport = visibleViewport(for: span.tail, in: app).insetBy(dx: 4, dy: 4)
+        XCTAssertTrue(span.tail.frame.intersects(viewport) && span.tail.frame.maxY <= viewport.maxY,
+                      "The final verse tail must be above the tab boundary before capture: \(key)", file: file, line: line)
+        return span
+    }
+
+    private func baselineTextNodes(in app: XCUIApplication) -> [XCUIElement] {
+        var seen = Set<String>()
+        var nodes: [XCUIElement] = []
+        for element in app.staticTexts.allElementsBoundByIndex where element.exists {
+            let label = element.label
+            guard !label.isEmpty else { continue }
+            let frame = element.frame
+            let key = "\(label)|\(Int(frame.minX.rounded()))|\(Int(frame.minY.rounded()))|\(Int(frame.width.rounded()))|\(Int(frame.height.rounded()))"
+            if seen.insert(key).inserted {
+                nodes.append(element)
+            }
+        }
+        return nodes.sorted { lhs, rhs in
+            if abs(lhs.frame.minY - rhs.frame.minY) > 1 { return lhs.frame.minY < rhs.frame.minY }
+            return lhs.frame.minX < rhs.frame.minX
+        }
+    }
+
+    private func normalizedCaptureText(_ raw: String) -> String {
+        raw.replacingOccurrences(of: "\u{00A0}", with: " ")
+            .split(whereSeparator: \.isWhitespace)
+            .joined(separator: " ")
     }
 
     private func captureAttributionControl(_ edition: Edition, in app: XCUIApplication,
@@ -386,7 +799,22 @@ final class ReaderParityUITests: XCTestCase {
     private func tapIfNotSelected(_ element: XCUIElement, in app: XCUIApplication) {
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing Settings control: \(element.identifier)")
         if (element.value as? String) != "Selected" {
-            tapWhenReady(element, in: app)
+            if element.identifier.hasPrefix("translation-") {
+                scrollToVisible(element, in: app)
+                let viewport = visibleViewport(for: element, in: app).insetBy(dx: 4, dy: 4)
+                let tapPoint = CGPoint(x: element.frame.midX, y: element.frame.midY)
+                let normalizedTapPoint = normalized(tapPoint, in: app)
+                guard element.isHittable, viewport.contains(element.frame) else {
+                    XCTFail("Translation target is not fully safe to tap: id=\(element.identifier) frame=\(NSCoder.string(for: element.frame)) viewport=\(NSCoder.string(for: viewport))")
+                    return
+                }
+                NSLog("READER_PARITY_TRANSLATION_TAP id=%@ target=%@ viewport=%@ point=%@ normalized=%@",
+                      element.identifier, NSCoder.string(for: element.frame), NSCoder.string(for: viewport),
+                      String(describing: tapPoint), String(describing: normalizedTapPoint))
+                app.coordinate(withNormalizedOffset: normalizedTapPoint).tap()
+            } else {
+                tapWhenReady(element, in: app)
+            }
         }
     }
 
@@ -445,7 +873,23 @@ final class ReaderParityUITests: XCTestCase {
     private func scrollToVisible(_ element: XCUIElement, in app: XCUIApplication,
                                  file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Missing visible target: \(element.identifier)", file: file, line: line)
-        for _ in 0..<12 where !element.isHittable {
+        // Extra large John 1 leaves the Back control about 7700 pt above the footer. Twelve drags cannot reach it.
+        let requiresFullVisibility = element.identifier.hasPrefix("translation-")
+        var previousFrame = element.frame
+        var stalledAttempts = 0
+        for attempt in 0..<24 {
+            let safeViewport = requiresFullVisibility
+                ? visibleViewport(for: element, in: app).insetBy(dx: 4, dy: 4)
+                : .zero
+            if element.isHittable && (!requiresFullVisibility || safeViewport.contains(element.frame)) { break }
+            guard element.exists else {
+                XCTFail("Target disappeared while scrolling: \(element.identifier)", file: file, line: line)
+                return
+            }
+            guard let scroll = scrollView(containing: element, in: app), scroll.exists, scroll.isHittable else {
+                XCTFail("Target scroll view disappeared or is not hittable: \(element.identifier)", file: file, line: line)
+                return
+            }
             let viewport = visibleViewport(for: element, in: app)
             XCTAssertGreaterThan(viewport.height, 120, "No safe visible scroll area", file: file, line: line)
             let above = element.frame.midY < viewport.midY
@@ -453,13 +897,38 @@ final class ReaderParityUITests: XCTestCase {
             let endFraction: CGFloat = above ? 0.75 : 0.25
             let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
             let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
-            NSLog("READER_PARITY_SCROLL id=%@ viewport=%@ target=%@ start=%@ end=%@",
-                  element.identifier, String(describing: viewport), String(describing: element.frame),
+            NSLog("READER_PARITY_SCROLL attempt=%d id=%@ scroll=%@ viewport=%@ target=%@ start=%@ end=%@",
+                  attempt, element.identifier, scroll.identifier, String(describing: viewport), String(describing: element.frame),
                   String(describing: start), String(describing: end))
             app.coordinate(withNormalizedOffset: normalized(start, in: app))
                 .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            guard element.exists, scroll.exists else {
+                XCTFail("Target or scroll view disappeared after drag: \(element.identifier)", file: file, line: line)
+                return
+            }
+            let currentFrame = element.frame
+            if abs(currentFrame.minY - previousFrame.minY) < 1 {
+                stalledAttempts += 1
+                NSLog("READER_PARITY_SCROLL_NO_PROGRESS attempt=%d id=%@ scroll=%@ frame=%@ viewport=%@ stalled=%d",
+                      attempt, element.identifier, scroll.identifier, NSCoder.string(for: currentFrame),
+                      NSCoder.string(for: viewport), stalledAttempts)
+            } else {
+                stalledAttempts = 0
+            }
+            previousFrame = currentFrame
+            if stalledAttempts >= 3 {
+                XCTFail("Scroll made no progress after 3 drags: id=\(element.identifier) scroll=\(scroll.identifier) frame=\(NSCoder.string(for: currentFrame)) viewport=\(NSCoder.string(for: viewport))",
+                        file: file, line: line)
+                break
+            }
         }
         XCTAssertTrue(element.isHittable, "Target must be visible and hittable", file: file, line: line)
+        if requiresFullVisibility {
+            let safeViewport = visibleViewport(for: element, in: app).insetBy(dx: 4, dy: 4)
+            XCTAssertTrue(safeViewport.contains(element.frame),
+                          "Translation target must be fully inside the safe visible viewport: id=\(element.identifier) frame=\(NSCoder.string(for: element.frame)) viewport=\(NSCoder.string(for: safeViewport))",
+                          file: file, line: line)
+        }
     }
 
     private func scrollToLastVerseTail(_ lastVerse: XCUIElement,
@@ -468,28 +937,90 @@ final class ReaderParityUITests: XCTestCase {
                                        file: StaticString = #filePath,
                                        line: UInt = #line) {
         XCTAssertTrue(lastVerse.waitForExistence(timeout: 10), "Missing final verse: \(key)", file: file, line: line)
+        let initialViewport = visibleViewport(for: lastVerse, in: app).insetBy(dx: 4, dy: 4)
+        let initialFrame = lastVerse.frame
+        let initialDistance: CGFloat
+        if initialFrame.maxY > initialViewport.maxY {
+            initialDistance = initialFrame.maxY - initialViewport.maxY
+        } else if initialFrame.maxY < initialViewport.minY {
+            initialDistance = initialViewport.minY - initialFrame.maxY
+        } else {
+            initialDistance = 0
+        }
+        let estimatedProgressPerDrag = max(1, initialViewport.height * 0.55)
+        let marginAttempts = 12
+        let derivedAttempts = Int(ceil(initialDistance / estimatedProgressPerDrag)) + marginAttempts
+        let maxAttempts = min(180, max(1, derivedAttempts))
+        guard let scroll = scrollView(containing: lastVerse, in: app) else {
+            XCTFail("No Reader scroll view contains final verse \(key)", file: file, line: line)
+            return
+        }
+        NSLog("READER_PARITY_END_TEXT_BOUND case=%@ distance=%.1f viewportHeight=%.1f estimatedPerDrag=%.1f margin=%d attempts=%d cap=180",
+              key, initialDistance, initialViewport.height, estimatedProgressPerDrag, marginAttempts, maxAttempts)
 
-        for attempt in 0..<12 {
+        var stalledBatches = 0
+        var batchCount = 0
+        var totalGestures = 0
+        var previousFrame = initialFrame
+        var previousScrollValue = String(describing: scroll.value ?? "nil")
+        while totalGestures < maxAttempts {
             let viewport = visibleViewport(for: lastVerse, in: app).insetBy(dx: 4, dy: 4)
             let verseFrame = lastVerse.frame
             let verseTailVisible = verseFrame.intersects(viewport) && verseFrame.maxY <= viewport.maxY
-            NSLog("READER_PARITY_END_TEXT case=%@ attempt=%d viewport=%@ verse=%@ tailVisible=%d",
-                  key, attempt, NSCoder.string(for: viewport), NSCoder.string(for: verseFrame), verseTailVisible ? 1 : 0)
+            let scrollValue = String(describing: scroll.value ?? "nil")
+            NSLog("READER_PARITY_END_TEXT case=%@ batch=%d totalGestures=%d viewport=%@ verse=%@ scrollFrame=%@ scrollValue=%@ tailVisible=%d",
+                  key, batchCount, totalGestures, NSCoder.string(for: viewport), NSCoder.string(for: verseFrame),
+                  NSCoder.string(for: scroll.frame), scrollValue, verseTailVisible ? 1 : 0)
             if verseTailVisible { break }
 
             XCTAssertGreaterThan(viewport.height, 120, "No safe Reader viewport for final verse tail: \(key)", file: file, line: line)
             let needsScrollDown = verseFrame.maxY < viewport.minY
-            let startFraction: CGFloat = needsScrollDown ? 0.25 : 0.75
-            let endFraction: CGFloat = needsScrollDown ? 0.75 : 0.25
+            let remainingDistance = needsScrollDown
+                ? viewport.minY - verseFrame.maxY
+                : verseFrame.maxY - viewport.maxY
+            let remainingGestureBudget = maxAttempts - totalGestures
+            let gestureBatch = min(remainingGestureBudget,
+                                   remainingDistance > 8 * viewport.height ? 8 : 1)
+            let startFraction: CGFloat = needsScrollDown ? 0.1 : 0.9
+            let endFraction: CGFloat = needsScrollDown ? 0.9 : 0.1
             let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
             let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
-            app.coordinate(withNormalizedOffset: normalized(start, in: app))
-                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            NSLog("READER_PARITY_END_TEXT_BATCH case=%@ batch=%d gestures=%d totalBefore=%d remainingDistance=%.1f viewportHeight=%.1f",
+                  key, batchCount, gestureBatch, totalGestures, remainingDistance, viewport.height)
+            for _ in 0..<gestureBatch {
+                app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                    .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            }
+            totalGestures += gestureBatch
+            batchCount += 1
+
+            let currentFrame = lastVerse.frame
+            let currentScrollValue = String(describing: scroll.value ?? "nil")
+            let frameProgress = abs(currentFrame.minY - previousFrame.minY) > 1
+            let scrollProgress = currentScrollValue != previousScrollValue
+            if frameProgress || scrollProgress {
+                stalledBatches = 0
+            } else {
+                stalledBatches += 1
+                NSLog("READER_PARITY_END_TEXT_STALL case=%@ stalledBatches=%d batch=%d totalGestures=%d frame=%@ scrollFrame=%@ scrollValue=%@",
+                      key, stalledBatches, batchCount, totalGestures, NSCoder.string(for: currentFrame),
+                      NSCoder.string(for: scroll.frame), currentScrollValue)
+            }
+            previousFrame = currentFrame
+            previousScrollValue = currentScrollValue
+            if stalledBatches >= 3 {
+                XCTFail("Reader stopped scrolling before final verse tail was visible: case=\(key) batches=\(batchCount) totalGestures=\(totalGestures) frame=\(NSCoder.string(for: currentFrame)) scrollFrame=\(NSCoder.string(for: scroll.frame)) scrollValue=\(currentScrollValue)",
+                        file: file, line: line)
+                break
+            }
         }
 
         let viewport = visibleViewport(for: lastVerse, in: app).insetBy(dx: 4, dy: 4)
-        XCTAssertTrue(lastVerse.frame.intersects(viewport) && lastVerse.frame.maxY <= viewport.maxY,
-                      "The final verse tail must be above the tab boundary before capture: \(key)", file: file, line: line)
+        let finalFrame = lastVerse.frame
+        let finalScrollValue = String(describing: scroll.value ?? "nil")
+        XCTAssertTrue(finalFrame.intersects(viewport) && finalFrame.maxY <= viewport.maxY,
+                      "The final verse tail must be above the tab boundary before capture: case=\(key) frame=\(NSCoder.string(for: finalFrame)) viewport=\(NSCoder.string(for: viewport)) scrollFrame=\(NSCoder.string(for: scroll.frame)) scrollValue=\(finalScrollValue)",
+                      file: file, line: line)
     }
 
     private func scrollToAttribution(_ attribution: XCUIElement,
@@ -527,14 +1058,36 @@ final class ReaderParityUITests: XCTestCase {
         element.tap()
     }
 
-    private func visibleViewport(for element: XCUIElement, in app: XCUIApplication) -> CGRect {
+    private func scrollView(containing element: XCUIElement, in app: XCUIApplication) -> XCUIElement? {
+        let identifier = element.identifier
+        let isGoToTarget = identifier.hasPrefix("go-to-book-") || identifier.hasPrefix("go-to-chapter-")
+        if !identifier.isEmpty {
+            // Go To is a sheet. Its underlying Reader scroll view can still exist while the sheet is foreground.
+            let containingScroll = app.scrollViews.containing(.any, identifier: identifier).firstMatch
+            if containingScroll.exists, containingScroll.isHittable {
+                return containingScroll
+            }
+            if isGoToTarget { return nil }
+        } else if isGoToTarget {
+            return nil
+        }
+
         let chapterScroll = app.scrollViews["reader-chapter-scroll"]
-        let scroll = chapterScroll.exists ? chapterScroll :
-            app.scrollViews.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
-                .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
-        var viewport = (scroll?.frame ?? app.frame).intersection(app.frame)
-        if chapterScroll.exists {
-            let safeTop = Double(chapterScroll.value as? String ?? "") ?? 0
+        if chapterScroll.exists, chapterScroll.isHittable { return chapterScroll }
+        return app.scrollViews.allElementsBoundByIndex
+            .filter { $0.exists && $0.isHittable }
+            .max { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+    }
+
+    private func visibleViewport(for element: XCUIElement, in app: XCUIApplication) -> CGRect {
+        guard let scroll = scrollView(containing: element, in: app), scroll.exists, scroll.isHittable else {
+            XCTFail("No visible scroll view contains target: id=\(element.identifier) frame=\(NSCoder.string(for: element.frame))")
+            return .zero
+        }
+        let isReaderScroll = scroll.identifier == "reader-chapter-scroll"
+        var viewport = scroll.frame.intersection(app.frame)
+        if isReaderScroll {
+            let safeTop = Double(scroll.value as? String ?? "") ?? 0
             viewport.origin.y = max(viewport.minY, safeTop + 8)
             let title = app.buttons["reader-title"]
             if title.exists, title.frame.maxY > viewport.minY {
@@ -545,10 +1098,12 @@ final class ReaderParityUITests: XCTestCase {
         if let top = tabBarTopEdge(in: app, within: viewport) {
             viewport.size.height = min(viewport.height, top - viewport.minY)
         }
-        // Native: Scripture scrolls under the floating selection panel (audit B3). Keep taps above the panel.
-        let panel = app.descendants(matching: .any).matching(identifier: "reader-selection-panel").firstMatch
-        if panel.exists, panel.frame.height > 0, panel.frame.minY > viewport.minY {
-            viewport.size.height = min(viewport.height, panel.frame.minY - 8 - viewport.minY)
+        if isReaderScroll {
+            // Native: Scripture scrolls under the floating selection panel (audit B3). Keep taps above the panel.
+            let panel = app.descendants(matching: .any).matching(identifier: "reader-selection-panel").firstMatch
+            if panel.exists, panel.frame.height > 0, panel.frame.minY > viewport.minY {
+                viewport.size.height = min(viewport.height, panel.frame.minY - 8 - viewport.minY)
+            }
         }
         let baselineTabs = ["Today", "Read", "Saved", "Pray", "Settings"]
             .map { baselineTab($0, in: app) }
@@ -578,6 +1133,20 @@ final class ReaderParityUITests: XCTestCase {
                        file: file, line: line)
     }
 
+    private func waitForTranslationCommit(_ element: XCUIElement, in app: XCUIApplication,
+                                          file: StaticString = #filePath, line: UInt = #line) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Selected"),
+                                                     object: element)
+        let result = XCTWaiter.wait(for: [expectation], timeout: 10)
+        if result != .completed {
+            attachScreenshot("reader-parity-\(element.identifier)-commit-failure", app: app)
+            attachAXTree("reader-parity-\(element.identifier)-commit-failure", app: app)
+        }
+        XCTAssertEqual(result, .completed,
+                       "Expected committed value: Selected, observed: \(String(describing: element.value))",
+                       file: file, line: line)
+    }
+
     private func baselineRadioValue(_ element: XCUIElement) -> String? {
         guard element.elementType == .other, let value = element.value as? String,
               value == "radio button, checked" || value == "radio button, unchecked" else { return nil }
@@ -602,6 +1171,10 @@ final class ReaderParityUITests: XCTestCase {
     /// READER_PARITY_AX_TREE=1 attaches `XCUIApplication.debugDescription` next to each screenshot.
     private func attachAXTreeIfRequested(_ name: String, app: XCUIApplication) {
         guard CaptureMetadata.value("READER_PARITY_AX_TREE") == "1" else { return }
+        attachAXTree(name, app: app)
+    }
+
+    private func attachAXTree(_ name: String, app: XCUIApplication) {
         let attachment = XCTAttachment(string: app.debugDescription)
         attachment.name = "\(name)-ax"
         attachment.lifetime = .keepAlways

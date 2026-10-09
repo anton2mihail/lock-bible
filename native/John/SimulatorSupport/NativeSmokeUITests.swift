@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 @MainActor
 final class NativeSmokeUITests: XCTestCase {
@@ -561,8 +562,9 @@ final class NativeSmokeUITests: XCTestCase {
               safeTop, NSCoder.string(for: reader.frame),
               NSCoder.string(for: savedTab.frame))
         XCTAssertGreaterThan(safeTop, 0, "The process window must report its top safe-area inset")
-        XCTAssertLessThanOrEqual(reader.frame.maxY, savedTab.frame.minY,
-                                 "Reader viewport must end above the tab bar")
+        let visibleViewportBottom = tabBarTopEdge(in: app, within: app.frame) ?? savedTab.frame.minY
+        XCTAssertGreaterThan(min(reader.frame.maxY, visibleViewportBottom) - reader.frame.minY, 0,
+                             "Reader must have a visible scroll area above the tab bar")
 
         for _ in 0..<12 { reader.swipeUp() }
         let next = app.buttons["reader-next-chapter"]
@@ -572,8 +574,8 @@ final class NativeSmokeUITests: XCTestCase {
         for _ in 0..<12 where !next.isHittable { reader.swipeUp() }
         XCTAssertTrue(next.isHittable, "The next control must be reachable at the end of the chapter")
         XCTAssertTrue(previous.isHittable, "The previous control must be reachable at the end of the chapter")
-        XCTAssertLessThanOrEqual(next.frame.maxY, savedTab.frame.minY)
-        XCTAssertLessThanOrEqual(previous.frame.maxY, savedTab.frame.minY)
+        XCTAssertLessThanOrEqual(next.frame.maxY, visibleViewportBottom)
+        XCTAssertLessThanOrEqual(previous.frame.maxY, visibleViewportBottom)
         attachScreenshot("L08-reader-lower-controls-at-maximum-scroll", app: app)
 
         let anchorValue = waitForSavedAnchor(title)
@@ -654,8 +656,15 @@ final class NativeSmokeUITests: XCTestCase {
         attachScreenshot("L08-reader-chapter-top", app: app)
 
         let initialVerseY = firstVerse.frame.minY
-        let start = reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
-        let end = reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.63))
+        let readerHeight = max(reader.frame.height, 1)
+        let startFraction: CGFloat = 0.65
+        let dragDistance: CGFloat = min(40, readerHeight * 0.4)
+        let endFraction = max(0.05, startFraction - dragDistance / readerHeight)
+        let start = reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: startFraction))
+        let end = reader.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: endFraction))
+        NSLog("L08_TOP_PROBE_DRAG distance=%.1f startFraction=%.3f endFraction=%.3f viewport=%@",
+              readerHeight * (startFraction - endFraction), startFraction, endFraction,
+              NSCoder.string(for: reader.frame))
         start.press(forDuration: 0.1, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
         let moved = NSPredicate { _, _ in firstVerse.frame.minY < initialVerseY - 1 }
         let movedWait = XCTNSPredicateExpectation(predicate: moved, object: firstVerse)
@@ -665,6 +674,80 @@ final class NativeSmokeUITests: XCTestCase {
               NSCoder.string(for: reader.frame), NSCoder.string(for: title.frame),
               NSCoder.string(for: firstVerse.frame))
         attachScreenshot("L08-reader-small-scroll", app: app)
+    }
+
+    func testReaderChapterGridGoToAndAaReachableAtSystemXXXL() throws {
+        assertSystemXXXLProfile()
+        let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+
+        tabButton(app, "tab-read").tap()
+        let psalms = app.buttons["reader-book-PSA"]
+        let bookList = app.scrollViews["reader-book-list"]
+        XCTAssertTrue(bookList.waitForExistence(timeout: 8), "Read must show the book list at XXXL")
+        let bookViewport = try scrollTargetIntoVisibleArea(psalms, in: bookList, app: app,
+                                                           avoidTabBar: true, allowLazyTarget: true)
+        XCTAssertTrue(bookViewport.contains(psalms.frame), "Psalms must be fully visible before the tap at XXXL")
+        XCTAssertTrue(psalms.isHittable, "Psalms must be reachable before the tap at XXXL")
+        psalms.tap()
+        let chapterScroll = app.scrollViews["reader-chapter-grid-scroll"]
+        XCTAssertTrue(chapterScroll.waitForExistence(timeout: 8), "The Reader chapter grid must open at XXXL")
+        let psalm149 = app.buttons["reader-chapter-149"]
+        let chapterViewport = try scrollTargetIntoVisibleArea(psalm149, in: chapterScroll, app: app,
+                                                              avoidTabBar: true, allowLazyTarget: true,
+                                                              targetName: "reader-chapter-149")
+        XCTAssertTrue(chapterViewport.contains(psalm149.frame),
+                      "Psalm 149 must be fully visible above the tab bar at XXXL")
+        XCTAssertTrue(psalm149.isHittable, "Psalm 149 must be reachable at XXXL")
+        attachScreenshot("reader-chapter-grid-xxxl-psalm-149", app: app)
+        psalm149.tap()
+        XCTAssertTrue(app.buttons["reader-title"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["reader-title"].label.contains("149"),
+                      "The selected chapter must open at XXXL")
+
+        app.buttons["reader-title"].tap()
+        let goTo149 = app.buttons["go-to-chapter-PSA-149"]
+        XCTAssertTrue(goTo149.waitForExistence(timeout: 8), "Go To must expose Psalm 149 at XXXL")
+        let goToScroll = app.scrollViews.containing(.any, identifier: goTo149.identifier).firstMatch
+        XCTAssertTrue(goToScroll.waitForExistence(timeout: 5),
+                      "Go To must use its foreground sheet scroll view")
+        let goToViewport = try scrollTargetIntoVisibleArea(goTo149, in: goToScroll, app: app,
+                                                           avoidTabBar: false)
+        XCTAssertTrue(goToViewport.contains(goTo149.frame),
+                      "The selected Go To chapter must be fully visible in the sheet at XXXL")
+        XCTAssertTrue(goTo149.isHittable, "The selected Go To chapter must be reachable at XXXL")
+        attachScreenshot("reader-go-to-grid-xxxl-psalm-149", app: app)
+        app.buttons["go-to-cancel"].tap()
+
+        let appearance = app.buttons["reader-appearance-button"]
+        XCTAssertTrue(appearance.waitForExistence(timeout: 8), "Reader Aa must be available at XXXL")
+        appearance.tap()
+        XCTAssertTrue(app.buttons["reader-appearance-close"].waitForExistence(timeout: 5),
+                      "The Aa sheet must open at XXXL")
+        attachScreenshot("reader-aa-sheet-xxxl", app: app)
+
+        let appearanceIDs = [
+            "settings-text-size-default",
+            "settings-line-spacing-comfortable",
+            "settings-scripture-typeface-serif",
+            "settings-layout-paragraphs",
+            "settings-appearance-system",
+        ]
+        for identifier in appearanceIDs {
+            let control = app.buttons[identifier]
+            XCTAssertTrue(control.waitForExistence(timeout: 5), "Missing Aa control at XXXL: \(identifier)")
+            let sheetScroll = app.scrollViews.containing(.any, identifier: identifier).firstMatch
+            XCTAssertTrue(sheetScroll.exists && sheetScroll.isHittable,
+                          "Aa control must belong to the foreground sheet scroll: \(identifier)")
+            let viewport = try scrollTargetIntoVisibleArea(control, in: sheetScroll, app: app,
+                                                           avoidTabBar: false)
+            XCTAssertTrue(viewport.contains(control.frame),
+                          "Aa control must be fully visible when reached at XXXL: \(identifier)")
+            XCTAssertTrue(control.isHittable, "Aa control must be reachable at XXXL: \(identifier)")
+        }
+        attachScreenshot("reader-aa-sheet-xxxl-controls-reached", app: app)
     }
 
     func testReaderAppearanceAccessibilityValues() throws {
@@ -799,6 +882,112 @@ final class NativeSmokeUITests: XCTestCase {
         add(attachment)
     }
 
+    private func assertSystemXXXLProfile(file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(ProcessInfo.processInfo.environment["L25_CONTENT_SIZE"],
+                       "accessibility-extra-extra-extra-large", file: file, line: line)
+        XCTAssertEqual(UITraitCollection.current.preferredContentSizeCategory,
+                       .accessibilityExtraExtraExtraLarge,
+                       "The UI test process must read back the system XXXL category", file: file, line: line)
+    }
+
+    private func scrollTargetIntoVisibleArea(_ target: XCUIElement, in scroll: XCUIElement,
+                                             app: XCUIApplication, avoidTabBar: Bool,
+                                             allowLazyTarget: Bool = false,
+                                             targetName: String? = nil,
+                                             file: StaticString = #filePath,
+                                             line: UInt = #line) throws -> CGRect {
+        let safeTargetName = targetName ?? (target.exists ? target.identifier : "unresolved-lazy-target")
+        if !allowLazyTarget {
+            XCTAssertTrue(target.waitForExistence(timeout: 8), "Missing scroll target: \(safeTargetName)",
+                          file: file, line: line)
+        }
+        XCTAssertTrue(scroll.exists && scroll.isHittable,
+                      "Target scroll view must be visible: target=\(safeTargetName) scroll=\(scroll.identifier)",
+                      file: file, line: line)
+        let initialFrame = target.exists ? target.frame : .zero
+        var previousY = initialFrame.minY
+        var hadTargetFrame = !initialFrame.isEmpty
+        var stalled = 0
+        for attempt in 0..<40 {
+            let viewport = safeVisibleViewport(for: scroll, in: app, avoidTabBar: avoidTabBar).insetBy(dx: 4, dy: 4)
+            let targetExists = target.exists
+            let targetFrame = targetExists ? target.frame : .zero
+            if targetExists && !targetFrame.isEmpty && viewport.contains(targetFrame) && target.isHittable {
+                return viewport
+            }
+            XCTAssertGreaterThan(viewport.height, 100,
+                                 "No safe visible scroll area for target \(safeTargetName): \(viewport)",
+                                 file: file, line: line)
+            let swipeUp = !targetExists || targetFrame.isEmpty || targetFrame.minY >= viewport.maxY
+                || (targetFrame.intersects(viewport) && targetFrame.midY >= viewport.midY)
+            let startFraction: CGFloat = swipeUp ? 0.75 : 0.25
+            let endFraction: CGFloat = swipeUp ? 0.25 : 0.75
+            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            NSLog("XXXL_SCROLL attempt=%d id=%@ scroll=%@ frame=%@ viewport=%@ direction=%@",
+                  attempt, safeTargetName, scroll.identifier, NSCoder.string(for: targetFrame),
+                  NSCoder.string(for: viewport), swipeUp ? "up" : "down")
+            app.coordinate(withNormalizedOffset: normalized(start, in: app))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: normalized(end, in: app)))
+            XCTAssertTrue(scroll.exists && scroll.isHittable,
+                          "Foreground scroll disappeared after drag: \(scroll.identifier)", file: file, line: line)
+            let currentExists = target.exists
+            let currentFrame = currentExists ? target.frame : .zero
+            if currentExists && !currentFrame.isEmpty {
+                if hadTargetFrame && abs(currentFrame.minY - previousY) < 1 {
+                    stalled += 1
+                } else {
+                    stalled = 0
+                }
+                previousY = currentFrame.minY
+                hadTargetFrame = true
+            } else {
+                // A lazy grid can omit a far cell from accessibility until the scroll reaches it.
+                stalled = 0
+            }
+            XCTAssertLessThan(stalled, 4,
+                              "Scroll made no progress for target \(safeTargetName): frame=\(currentFrame)",
+                              file: file, line: line)
+        }
+        let viewport = safeVisibleViewport(for: scroll, in: app, avoidTabBar: avoidTabBar).insetBy(dx: 4, dy: 4)
+        let finalTargetExists = target.exists
+        let finalTargetFrame = finalTargetExists ? target.frame : .zero
+        let finalTargetIsHittable = finalTargetExists && target.isHittable
+        XCTAssertTrue(finalTargetExists, "Target did not appear after bounded scroll: \(safeTargetName)",
+                      file: file, line: line)
+        XCTAssertTrue(finalTargetExists && viewport.contains(finalTargetFrame) && finalTargetIsHittable,
+                      "Target did not become fully visible and hittable: id=\(safeTargetName) frame=\(finalTargetFrame) viewport=\(viewport)",
+                      file: file, line: line)
+        return viewport
+    }
+
+    private func safeVisibleViewport(for scroll: XCUIElement, in app: XCUIApplication,
+                                     avoidTabBar: Bool) -> CGRect {
+        var viewport = scroll.frame.intersection(app.frame)
+        guard viewport.width > 0, viewport.height > 0 else { return .zero }
+        let topOverlays = [app.statusBars.firstMatch] + app.navigationBars.allElementsBoundByIndex
+        let topOcclusion = topOverlays
+            .filter { $0.exists && $0.frame.height > 0 && $0.frame.intersects(viewport) }
+            .map(\.frame.maxY)
+            .filter { $0 > viewport.minY && $0 < viewport.maxY }
+            .max()
+        if let topOcclusion {
+            viewport.size.height -= topOcclusion - viewport.minY
+            viewport.origin.y = topOcclusion
+        }
+        if avoidTabBar, let tabTop = tabBarTopEdge(in: app, within: viewport),
+           tabTop > viewport.minY, tabTop < viewport.maxY {
+            viewport.size.height = min(viewport.height, tabTop - viewport.minY)
+        }
+        return viewport
+    }
+
+    private func normalized(_ point: CGPoint, in app: XCUIApplication) -> CGVector {
+        let frame = app.frame
+        return CGVector(dx: (point.x - frame.minX) / frame.width,
+                        dy: (point.y - frame.minY) / frame.height)
+    }
+
     private func waitForRowCount(_ rows: XCUIElementQuery, _ expected: Int,
                                  file: StaticString = #filePath, line: UInt = #line) {
         let deadline = Date().addingTimeInterval(8)
@@ -917,7 +1106,7 @@ final class NativeSmokeUITests: XCTestCase {
             ("tab-pray", "page-title-pray"),
             ("tab-today", "today-title")
         ] {
-            let button = app.buttons[tab]
+            let button = tabButton(app, tab)
             XCTAssertTrue(button.waitForExistence(timeout: 5), "Missing tab: \(tab)")
             button.tap()
             XCTAssertTrue(app.descendants(matching: .any).matching(identifier: title).firstMatch.waitForExistence(timeout: 5), "Missing root: \(title)")

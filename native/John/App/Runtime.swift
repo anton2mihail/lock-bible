@@ -77,6 +77,11 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     @ObservationIgnored private let library: SQLiteLibraryRepository?
     @ObservationIgnored private let searchRepository: SQLiteSearchRepository?
     @ObservationIgnored let companionRepository: BundledCompanionRepository?
+    /// Devotional data read once before the first screen shows. Screens use it in their first frame, so no spinner swaps in later.
+    @ObservationIgnored private(set) var warmDevotionalCatalog: DevotionalCatalog?
+    @ObservationIgnored private(set) var warmRosaryHome: RosaryHomeCatalog?
+    @ObservationIgnored private(set) var warmRosarySessions: [RosaryGuideSession] = []
+    @ObservationIgnored private(set) var warmArtCredits: [String: String] = [:]
 
     init(bundle: Bundle = .main) {
         let root = bundle.resourceURL?.appendingPathComponent("App", isDirectory: true)
@@ -146,8 +151,32 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     }
     #endif
 
+    private func warmDevotionalData() async {
+        guard let companionRepository, let catalog = try? await companionRepository.devotionalCatalog() else { return }
+        warmDevotionalCatalog = catalog
+        warmRosaryHome = try? RosaryCatalogAdapter.decode(catalog.rosary)
+        let rosary = catalog.rosary
+        let resourceURL = Bundle.main.resourceURL
+        let (sessions, credits) = await Task.detached(priority: .userInitiated) {
+            var sessions: [RosaryGuideSession]?
+            if let data = try? JSONEncoder().encode(rosary),
+               let decoded = try? JSONDecoder().decode(RosarySourceCatalog.self, from: data) {
+                sessions = decoded.sessions
+            }
+            var credits: [String: String]?
+            if let url = resourceURL?.appendingPathComponent("App/Artwork/credits.json"),
+               let data = try? Data(contentsOf: url) {
+                credits = try? JSONDecoder().decode([String: String].self, from: data)
+            }
+            return (sessions, credits)
+        }.value
+        if let sessions { warmRosarySessions = sessions }
+        if let credits { warmArtCredits = credits }
+    }
+
     func start() async {
         guard !startupComplete else { return }
+        await warmDevotionalData()
         #if DEBUG
         await runScenarioFromLaunchArguments()
         if let index = ProcessInfo.processInfo.arguments.firstIndex(of: "-L04TestStartupDelaySeconds"),

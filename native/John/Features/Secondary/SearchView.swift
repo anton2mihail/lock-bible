@@ -21,15 +21,14 @@ struct SearchView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Text("Search Scripture")
-                    .font(JohnTypography.sans(36, weight: .bold))
-                    .foregroundStyle(colors.text)
-                    .accessibilityAddTraits(.isHeader)
-                Spacer()
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
+            Text("Search Scripture")
+                .font(.custom("SpaceGrotesk-Bold", size: 36, relativeTo: .largeTitle))
+                .foregroundStyle(colors.text)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
             searchField
             scopePicker
             content

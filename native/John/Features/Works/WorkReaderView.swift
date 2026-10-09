@@ -40,6 +40,9 @@ struct WorkReaderView: View {
     private var pageCount: Int { pages.count }
     private var currentPageAnchor: WorksAnchor? { pages.indices.contains(pageIndex) ? pages[pageIndex].anchor : nil }
     private var reading: ReadingPreferences { preferences.reading }
+    private var needsExpandedWorkTitle: Bool {
+        currentTitle.count > 24 || (work?.title.count ?? 0) > 24
+    }
 
     var body: some View {
         Group {
@@ -64,9 +67,29 @@ struct WorkReaderView: View {
         .background(colors.background)
     }
 
+    private var workTitleHeader: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(currentTitle)
+                .font(JohnTypography.sans(14, weight: .semibold))
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+            if currentTitle != work?.title {
+                Text(work?.title ?? "")
+                    .font(JohnTypography.sans(12))
+                    .foregroundStyle(colors.textDim)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+            }
+        }
+        .dynamicTypeSize(.xSmall ... .xLarge)
+    }
+
     private var reader: some View {
         VStack(spacing: 8) {
-            topBar
+            if needsExpandedWorkTitle {
+                workTitleHeader
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if let section {
                 GeometryReader { proxy in
                     Group {
@@ -82,7 +105,10 @@ struct WorkReaderView: View {
                                     else if value.translation.width > 32 { changePage(pageIndex - 1) }
                                 })
                                 .accessibilityIdentifier("works-prose")
-                                .onAppear { persistPosition(section: section.index, page: pageIndex, anchor: currentPageAnchor) }
+                                .onAppear {
+                                    persistPosition(section: section.index, page: pageIndex,
+                                                    anchor: anchor ?? storedAnchor ?? currentPageAnchor)
+                                }
                         }
                     }
                     .onAppear { updateViewport(proxy.size) }
@@ -97,10 +123,15 @@ struct WorkReaderView: View {
             }
             if let saveNotice { Text(saveNotice).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).contentAnnouncement(saveNotice) }
             footer
+                .dynamicTypeSize(.xSmall ... .xLarge)
             if let collection {
                 Text(collection.translation)
                     .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
-                    .frame(maxWidth: .infinity).padding(.top, 4)
+                    .dynamicTypeSize(.xSmall ... .xLarge)
+                    .frame(maxWidth: .infinity)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel(collection.translation)
+                    .padding(.top, 4)
             }
         }
         .padding(.horizontal, 24)
@@ -111,22 +142,14 @@ struct WorkReaderView: View {
         .onChange(of: reading) { _, _ in preserveAnchorAndRebuild() }
         .onChange(of: dynamicTypeSize) { _, _ in preserveAnchorAndRebuild() }
         .onChange(of: colorScheme) { _, _ in preserveAnchorAndRebuild() }
-    }
-
-    private var topBar: some View {
-        HStack(spacing: 12) {
-            VStack(spacing: 2) {
-                Text(currentTitle).font(JohnTypography.sans(14, weight: .semibold)).lineLimit(1)
-                if currentTitle != work?.title { Text(work?.title ?? "").font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).lineLimit(1) }
+        .toolbar {
+            if !needsExpandedWorkTitle {
+                ToolbarItem(placement: .principal) {
+                    workTitleHeader
+                        .frame(maxWidth: .infinity, maxHeight: 44)
+                }
             }
-            .frame(maxWidth: .infinity)
-            Text(pageCount > 0 ? "\(pageIndex + 1)/\(pageCount)" : "…")
-                .font(JohnTypography.sans(12, weight: .semibold).monospacedDigit())
-                .foregroundStyle(colors.tint)
-                .numericChange(pageIndex)
-                .accessibilityLabel(pageCount > 0 ? "Page \(pageIndex + 1) of \(pageCount)" : "Loading pages")
         }
-        .frame(minHeight: 44)
     }
 
     private var footer: some View {
@@ -137,14 +160,25 @@ struct WorkReaderView: View {
             .disabled(isFirst)
             .accessibilityLabel("Previous \(currentNoun)")
             Spacer()
-            Button { contentsPresented = true } label: {
-                Text("\(currentSectionIndex + 1) of \(sectionCount)")
-                    .font(JohnTypography.sans(12, weight: .semibold).monospacedDigit())
-                    .foregroundStyle(sectionCount < 2 ? colors.textDim : colors.tint)
-                    .frame(minHeight: 44).padding(.horizontal, 12)
+            VStack(spacing: 0) {
+                Button { contentsPresented = true } label: {
+                    Text("\(currentSectionIndex + 1) of \(sectionCount)")
+                        .font(JohnTypography.sans(12, weight: .semibold).monospacedDigit())
+                        .foregroundStyle(sectionCount < 2 ? colors.textDim : colors.tint)
+                        .frame(minHeight: 44)
+                        .padding(.horizontal, 12)
+                }
+                .disabled(sectionCount < 2)
+                .accessibilityLabel("Contents, \(currentNoun) \(currentSectionIndex + 1) of \(sectionCount)")
+                Text(pageCount > 0 ? "Page \(pageIndex + 1) of \(pageCount)" : "Loading pages")
+                    .font(JohnTypography.sans(10, weight: .medium).monospacedDigit())
+                    .foregroundStyle(colors.textDim)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .numericChange(pageIndex)
+                    .accessibilityIdentifier("works-page-count")
             }
-            .disabled(sectionCount < 2)
-            .accessibilityLabel("Contents, \(currentNoun) \(currentSectionIndex + 1) of \(sectionCount)")
+            .frame(minHeight: 44)
             Spacer()
             Button { changeSection(currentSectionIndex + 1) } label: {
                 Text("›").font(JohnTypography.sans(24)).foregroundStyle(isLast ? colors.border : colors.tint).frame(minWidth: 44, minHeight: 44)
@@ -258,21 +292,25 @@ struct WorkReaderView: View {
                                                 paragraphGap: 14, sectionIndex: section.index,
                                                 foregroundColor: UIColor(colors.text))
         pages = result.isEmpty ? [WorkPageSlice(text: NSAttributedString(string: ""), anchor: try? WorksAnchor(sectionIndex: section.index, paragraphIndex: 0, utf16Offset: 0))].compactMap { $0 } : result
-        if let preferredAnchor = anchor ?? storedAnchor, preferredAnchor.sectionIndex == section.index {
+        let preferredAnchor = anchor ?? storedAnchor
+        let restoreAnchor = preferredAnchor?.sectionIndex == section.index ? preferredAnchor : nil
+        if let restoreAnchor {
             let matchingPage = pages.lastIndex { page in
                 guard let anchor = page.anchor else { return false }
-                return anchor.paragraphIndex < preferredAnchor.paragraphIndex
-                    || (anchor.paragraphIndex == preferredAnchor.paragraphIndex && anchor.utf16Offset <= preferredAnchor.utf16Offset)
+                return anchor.paragraphIndex < restoreAnchor.paragraphIndex
+                    || (anchor.paragraphIndex == restoreAnchor.paragraphIndex && anchor.utf16Offset <= restoreAnchor.utf16Offset)
             }
             if let matchingPage { pageIndex = matchingPage }
         }
         pageIndex = min(max(pageIndex, 0), max(pages.count - 1, 0))
         storedAnchor = nil
-        anchor = currentPageAnchor
+        // Keep the semantic position across layout changes. Page starts change
+        // when the viewport changes, but the saved paragraph and text offset do not.
+        anchor = restoreAnchor ?? currentPageAnchor
     }
 
     @MainActor private func preserveAnchorAndRebuild() {
-        anchor = currentPageAnchor ?? anchor ?? storedAnchor
+        anchor = anchor ?? storedAnchor ?? currentPageAnchor
         Task { await buildPages() }
     }
 

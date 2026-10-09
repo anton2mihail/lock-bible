@@ -10,7 +10,7 @@ struct NovenaView: View {
     @Environment(\.displayScale) private var displayScale
     @Environment(\.openURL) private var openURL
     @ScaledMetric(relativeTo: .caption) private var dayTextHeight = 21.0
-    @State private var catalog: DevotionalCatalog?
+    @State private var loadedCatalog: DevotionalCatalog?
     @State private var intentionDraft: String?
     @State private var loadMessage: String?
     @State private var saveMessage: String?
@@ -20,6 +20,7 @@ struct NovenaView: View {
     @State private var confirmingReset = false
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
+    private var catalog: DevotionalCatalog? { loadedCatalog ?? runtime.warmDevotionalCatalog }
     private var novena: NovenaCatalogItem? { catalog?.novenas.first { $0.id == id } }
     private var progress: NovenaProgress {
         let source = NovenaProgressSelectors.normalize(runtime.committedNativeState?.novenaProgress[id])
@@ -57,13 +58,12 @@ struct NovenaView: View {
                             subtitle: "This prayer is not in your offline library.") {}
             } else {
                 ContentPage(title: "Novena", eyebrow: nil, subtitle: nil) {
-                    ProgressView().frame(maxWidth: .infinity).padding(.vertical, 24)
+                    Color.clear.frame(maxWidth: .infinity).frame(height: 72)
                 }
             }
         }
         .task(id: id) {
             routeGeneration &+= 1
-            catalog = nil
             intentionDraft = nil
             loadMessage = nil
             saveMessage = nil
@@ -292,7 +292,7 @@ struct NovenaView: View {
         do {
             let loaded = try await repository.devotionalCatalog()
             guard !Task.isCancelled, id == requestedID else { return }
-            catalog = loaded
+            loadedCatalog = loaded
             intentionDraft = progress.intention
             loadMessage = nil
         } catch {
