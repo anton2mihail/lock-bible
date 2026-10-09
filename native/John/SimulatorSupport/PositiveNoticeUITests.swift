@@ -534,15 +534,26 @@ final class PositiveNoticeUITests: XCTestCase {
             XCTFail("SpringBoard did not show the injected notification \(title); no callback is claimed")
             return
         }
-        guard notice.isHittable else {
+        let matches = springboard.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", title))
+        var target = notice
+        let hittableDeadline = Date().addingTimeInterval(10)
+        while !target.isHittable && Date() < hittableDeadline {
+            for index in 0..<matches.count {
+                let candidate = matches.element(boundBy: index)
+                if candidate.exists && candidate.isHittable { target = candidate; break }
+            }
+            if !target.isHittable { Thread.sleep(forTimeInterval: 0.5) }
+        }
+        guard target.isHittable else {
             attachSpringBoardEvidence(title, phase: "not-hittable", app: springboard)
             XCTFail("Injected SpringBoard notification must be hittable: \(title)")
             return
         }
         NSLog("NOTICE_ROUTE_TAP title=%@ role=%@ frame=%@",
-              title, String(describing: notice.elementType), NSCoder.string(for: notice.frame))
+              title, String(describing: target.elementType), NSCoder.string(for: target.frame))
         attachSpringBoardEvidence(title, phase: "before-tap", app: springboard)
-        notice.tap()
+        target.tap()
     }
 
     private func attachSpringBoardEvidence(_ title: String, phase: String, app: XCUIApplication) {
