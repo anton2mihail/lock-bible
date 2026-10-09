@@ -216,6 +216,12 @@ struct ReaderView: View {
         }
     }
 
+    private var windowSafeAreaBoundaryY: CGFloat {
+        guard let window = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene }).flatMap(\.windows).first(where: \.isKeyWindow) else { return -1 }
+        return window.frame.minY + window.safeAreaInsets.top
+    }
+
     private var windowSafeAreaTop: CGFloat {
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -249,8 +255,9 @@ struct ReaderView: View {
     private var readerTopSafeAreaMask: some View {
         GeometryReader { proxy in
             let globalOriginY = proxy.frame(in: .global).minY
-            let top = windowSafeAreaTop >= 0
-                ? max(0, windowSafeAreaTop - globalOriginY)
+            let boundary = windowSafeAreaBoundaryY
+            let top = boundary >= 0
+                ? max(0, boundary - globalOriginY)
                 : max(0, proxy.safeAreaInsets.top)
             let fadeBand = reduceTransparency ? 0 : min(12, max(0, top - 20))
             VStack(spacing: 0) {
@@ -361,6 +368,7 @@ struct ReaderView: View {
             .padding(.top, 24)
             .frame(maxWidth: .infinity, alignment: .top)
         }
+        .contentMargins(.top, max(0, windowSafeAreaTop), for: .scrollContent)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .accessibilityIdentifier("reader-book-list")
     }

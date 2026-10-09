@@ -271,9 +271,10 @@ struct RosaryGuideView: View {
                 return
             }
             guard !Task.isCancelled else { return }
+            let changedSet = guide?.id != value.id
             guide = value
             loadedCredits = loadCredits()
-            if !hadSession { stepIndex = 0; repetitionIndex = 0; complete = false }
+            if !hadSession || changedSet { stepIndex = 0; repetitionIndex = 0; complete = false }
             loadFailed = false
         } catch {
             if !hadSession { loadFailed = true }
@@ -374,11 +375,11 @@ private struct RosaryGuidePage<Content: View>: View {
     }
 }
 
-struct RosarySourceCatalog: Decodable {
+struct RosarySourceCatalog: Decodable, Sendable {
     let sessions: [RosaryGuideSession]
 }
 
-struct RosaryGuideSession: Decodable {
+struct RosaryGuideSession: Decodable, Sendable {
     let id: String
     let title: String
     let shortTitle: String
@@ -386,7 +387,7 @@ struct RosaryGuideSession: Decodable {
     let steps: [RosaryGuideStep]
 }
 
-struct RosaryGuideStep: Decodable {
+struct RosaryGuideStep: Decodable, Sendable {
     let id: String
     let eyebrow: String
     let title: String
@@ -397,7 +398,7 @@ struct RosaryGuideStep: Decodable {
     let mysteryIndex: Int?
 }
 
-struct RosaryGuidePrayer: Decodable {
+struct RosaryGuidePrayer: Decodable, Sendable {
     let id: String
     let title: String
     let text: String

@@ -286,7 +286,7 @@ struct NovenaView: View {
 
     @MainActor private func load(for requestedID: String) async {
         guard let repository = runtime.companionRepository else {
-            loadMessage = "This prayer is not available in your offline library."
+            if catalog == nil { loadMessage = "This prayer is not available in your offline library." }
             return
         }
         do {
@@ -297,7 +297,7 @@ struct NovenaView: View {
             loadMessage = nil
         } catch {
             guard !Task.isCancelled, id == requestedID else { return }
-            loadMessage = "This prayer is not available in your offline library."
+            if catalog == nil { loadMessage = "This prayer is not available in your offline library." }
         }
     }
 
