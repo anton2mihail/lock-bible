@@ -16,6 +16,7 @@ struct SavedView: View {
     @State private var generation = 0
     @State private var loadedFilter: SavedFilter?
     @State private var undoToken = UUID()
+    @State private var undoCount = 0
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     var body: some View {
@@ -49,6 +50,10 @@ struct SavedView: View {
             } else {
                 savedList
             }
+            if !items.isEmpty && undoItem == nil {
+                StaticTipView(tip: SwipeSavedShareTip(), identifier: "tip-swipe-saved")
+                    .padding(.horizontal, 16)
+            }
             if let undoItem {
                 HStack(spacing: 12) {
                     Text("\(undoItem.reference) deleted")
@@ -71,14 +76,15 @@ struct SavedView: View {
                 .padding(.leading, 16)
                 .padding(.trailing, 8)
                 .frame(maxWidth: .infinity, minHeight: 52)
-                .background(colors.card, in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(colors.border, lineWidth: 1))
+                .johnGlassSurface(cornerRadius: 12, colors: colors)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .accessibilityIdentifier("saved-undo-bar")
             }
         }
-        .animation(reduceMotion ? nil : .snappy, value: undoItem?.id)
+        .transaction(value: undoItem?.id) { $0.animation = nil }
+        .onAppear { JohnTips.noteUse() }
+        .sensoryFeedback(.impact(weight: .medium), trigger: undoCount)
         .transaction(value: loading) { $0.animation = nil }
         .transaction(value: items.count) { if undoItem == nil { $0.animation = nil } }
         .background(colors.background.ignoresSafeArea())
@@ -245,6 +251,7 @@ struct SavedView: View {
             try await runtime.restoreSavedItem(item)
             generation += 1
             if token == undoToken { undoItem = nil; undoToken = UUID() }
+            undoCount += 1
             await reload()
             message = nil
         } catch {

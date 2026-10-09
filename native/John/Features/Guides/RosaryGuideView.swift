@@ -211,7 +211,7 @@ struct RosaryGuideView: View {
                             .frame(minHeight: 44)
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.glass)
                 }
             }
         }

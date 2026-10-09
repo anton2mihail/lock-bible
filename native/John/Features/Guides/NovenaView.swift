@@ -18,6 +18,7 @@ struct NovenaView: View {
     @State private var routeGeneration = 0
     @State private var saveQueue = NovenaProgressSaveQueue()
     @State private var confirmingReset = false
+    @State private var dayCompleteCount = 0
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var catalog: DevotionalCatalog? { loadedCatalog ?? runtime.warmDevotionalCatalog }
@@ -70,6 +71,7 @@ struct NovenaView: View {
             await load(for: id)
         }
         .onDisappear { routeGeneration &+= 1 }
+        .sensoryFeedback(.success, trigger: dayCompleteCount)
         .onChange(of: runtime.committedNativeState?.novenaProgress[id]) { _, value in
             if intentionDraft == nil { intentionDraft = value?.intention ?? "" }
         }
@@ -234,7 +236,7 @@ struct NovenaView: View {
                     }
             } else {
                 ContentButton(title: selectedIsComplete ? "Day \(progress.selectedDay) complete" : "Mark day \(progress.selectedDay) complete") {
-                    enqueueProgressChange { NovenaProgressSelectors.completeSelectedDay($0) }
+                    enqueueProgressChange({ NovenaProgressSelectors.completeSelectedDay($0) }, completesDay: true)
                 }
                 .disabled(selectedIsComplete)
             }
@@ -322,13 +324,15 @@ struct NovenaView: View {
     }
 
     @MainActor private func enqueueProgressChange(_ change: @escaping (NovenaProgress) -> NovenaProgress,
-                                                  clearIntentionOnSuccess: Bool = false) {
+                                                  clearIntentionOnSuccess: Bool = false,
+                                                  completesDay: Bool = false) {
         let revision = intentionRevision
         let generation = routeGeneration
         saveQueue.enqueue(id: id, runtime: runtime, change: change) { success, _ in
             guard routeGeneration == generation else { return }
             if success {
                 saveMessage = nil
+                if completesDay { dayCompleteCount += 1 }
                 if clearIntentionOnSuccess, intentionRevision == revision {
                     intentionRevision &+= 1
                     intentionDraft = ""

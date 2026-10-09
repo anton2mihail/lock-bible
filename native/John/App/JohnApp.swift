@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import TipKit
 @preconcurrency import UserNotifications
 
 @main
@@ -7,6 +8,8 @@ struct JohnApp: App {
     @UIApplicationDelegateAdaptor(JohnNotificationDelegate.self) private var appDelegate
     @State private var runtime = JohnRuntime()
     @State private var router = AppRouter()
+
+    init() { JohnTips.configure() }
 
     var body: some Scene {
         WindowGroup {

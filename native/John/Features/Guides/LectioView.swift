@@ -18,6 +18,7 @@ struct LectioView: View {
     @State private var stepIndex = 0
     @State private var deadline: Date?
     @State private var seconds = 0
+    @State private var timerFinishCount = 0
 
     init(initialPassage: PassageSelection? = nil, clock: @escaping () -> Date = Date.init,
          onClose: @escaping () -> Void, onOpenReader: @escaping (PassageSelection) -> Void,
@@ -48,6 +49,7 @@ struct LectioView: View {
         }
         .task(id: initialPassage?.id.legacyKey ?? "current") { await loadPassageIfNeeded() }
         .task(id: deadline) { await runTimer() }
+        .sensoryFeedback(.success, trigger: timerFinishCount)
         .onChange(of: deadline != nil) { _, _ in updateIdleTimer() }
         .onChange(of: scenePhase) { _, _ in updateIdleTimer() }
         .onDisappear {
@@ -156,6 +158,7 @@ struct LectioView: View {
             seconds = remaining
             if remaining == 0 {
                 self.deadline = nil
+                timerFinishCount += 1
                 return
             }
             try? await Task.sleep(for: .milliseconds(250))

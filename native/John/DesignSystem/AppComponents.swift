@@ -113,3 +113,28 @@ extension View {
         modifier(NumericChangeModifier(value: value, countsDown: countsDown))
     }
 }
+
+/// A floating bar surface. It uses Liquid Glass. With Reduce Transparency on, it uses a solid card and a border,
+/// so the text keeps its contrast in light and dark mode.
+private struct JohnGlassSurface: ViewModifier {
+    let cornerRadius: CGFloat
+    let colors: JohnColors
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        if reduceTransparency {
+            content
+                .background(colors.card, in: shape)
+                .overlay(shape.strokeBorder(colors.border, lineWidth: 1))
+        } else {
+            GlassEffectContainer { content.glassEffect(.regular, in: shape) }
+        }
+    }
+}
+
+extension View {
+    func johnGlassSurface(cornerRadius: CGFloat, colors: JohnColors) -> some View {
+        modifier(JohnGlassSurface(cornerRadius: cornerRadius, colors: colors))
+    }
+}

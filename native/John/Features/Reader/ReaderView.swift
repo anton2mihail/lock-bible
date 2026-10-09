@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import JohnCore
+import TipKit
 
 struct ReaderView: View {
     @Environment(JohnRuntime.self) private var runtime
@@ -121,6 +122,7 @@ struct ReaderView: View {
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectionFeedback = color.map { "\($0.rawValue.capitalized) highlight applied" } ?? "Highlight removed"
             UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
+            feedbackHaptic.fire(failed: false)
         } catch {
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectionFeedback = "Highlight could not be updated"
@@ -137,6 +139,7 @@ struct ReaderView: View {
                 let current = preferences.reading.textSize
                 let target = ReaderTextSize.pinchTarget(from: current, scale: value.magnification)
                 guard target != current else { return }
+                PinchTextSizeTip().invalidate(reason: .actionPerformed)
                 Task { _ = await runtime.applyWithResult(.setReaderTextSize(target)) }
             }
     }
@@ -637,6 +640,8 @@ struct ReaderView: View {
                                     .accessibilityIdentifier("reader-next-chapter")
                                 }
                             }
+                            StaticTipView(tip: PinchTextSizeTip(), identifier: "tip-pinch-text")
+                            StaticTipView(tip: ShareVerseTip(), identifier: "tip-share-verse")
                             if !model.editionAttribution.isEmpty {
                                 Text(model.editionAttribution)
                                     .font(JohnTypography.sans(11))
@@ -656,6 +661,7 @@ struct ReaderView: View {
                     .coordinateSpace(name: "readerScroll")
                     .scrollPosition($readerScrollPosition)
                     .simultaneousGesture(textSizePinch)
+                    .onAppear { JohnTips.noteUse() }
                     .accessibilityValue(String(format: "%.1f", windowSafeAreaTop))
                     .onAppear {
                         updateUIKitReaderGeometry()
