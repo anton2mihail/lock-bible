@@ -30,7 +30,6 @@ struct ReaderView: View {
     @State private var feedbackHaptic = ReaderFeedbackHaptic()
     @State private var isSelectionMutationRunning = false
     @State private var selectionIdentity = UUID()
-    @State private var selectionSharePayload: ReaderSharePayload?
 
     private var model: ReaderScreenModel { runtime.readerScreen }
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
@@ -130,28 +129,28 @@ struct ReaderView: View {
         }
     }
 
+    /// Pinch changes the text size in the existing steps. The step is set when the pinch ends.
+    /// The Reader keeps the top verse in place, because the text view restores its anchor on reflow.
+    private var textSizePinch: some Gesture {
+        MagnifyGesture()
+            .onEnded { value in
+                let current = preferences.reading.textSize
+                let target = ReaderTextSize.pinchTarget(from: current, scale: value.magnification)
+                guard target != current else { return }
+                Task { _ = await runtime.applyWithResult(.setReaderTextSize(target)) }
+            }
+    }
+
     @MainActor private func copySelectedPassage() async {
         guard let passage = model.selectedPassage,
               let chapterRequestID = model.activeChapterRequestID else { return }
         let selectionID = selectionIdentity
         let abbreviation = await runtime.translationAbbreviation(passage.translationID)
         guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
-        UIPasteboard.general.string = "\(passage.scriptureText)\n\(reference(for: passage)) (\(abbreviation))"
+        UIPasteboard.general.string = "\(passage.scriptureText) — \(reference(for: passage)) (\(abbreviation))"
         selectionFeedback = "Passage copied"
         UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
         feedbackHaptic.fire(failed: false)
-    }
-
-    @MainActor private func shareSelectedPassage() async {
-        guard let passage = model.selectedPassage,
-              let chapterRequestID = model.activeChapterRequestID else { return }
-        let selectionID = selectionIdentity
-        let abbreviation = await runtime.translationAbbreviation(passage.translationID)
-        guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
-        selectionSharePayload = ReaderSharePayload(
-            text: "\(passage.scriptureText)\n\(reference(for: passage)) (\(abbreviation))",
-            passage: passage, chapterRequestID: chapterRequestID, selectionID: selectionID
-        )
     }
 
     private func reference(for passage: PassageSelection) -> String {
@@ -656,6 +655,7 @@ struct ReaderView: View {
                     .scrollEdgeEffectStyle(.soft, for: .top)
                     .coordinateSpace(name: "readerScroll")
                     .scrollPosition($readerScrollPosition)
+                    .simultaneousGesture(textSizePinch)
                     .accessibilityValue(String(format: "%.1f", windowSafeAreaTop))
                     .onAppear {
                         updateUIKitReaderGeometry()
@@ -751,7 +751,6 @@ struct ReaderView: View {
                             onClearHighlight: { Task { await updateSelectedHighlight(nil) } },
                             onNote: { router.push(.noteEditor(passage)) },
                             onCopy: { Task { await copySelectedPassage() } },
-                            onShare: { Task { await shareSelectedPassage() } },
                             onPray: { router.push(.companion(.lectio(passage))) },
                             onCard: { router.push(.companion(.scriptureCard(passage))) }
                         )
@@ -759,18 +758,6 @@ struct ReaderView: View {
                         .padding(.horizontal, 8)
                         .padding(.bottom, 8)
                         .frame(maxWidth: .infinity)
-                        .sheet(item: $selectionSharePayload) { payload in
-                            ReaderActivitySheet(text: payload.text) { error in
-                                guard error != nil,
-                                      isCurrentSelection(payload.passage,
-                                                        chapterRequestID: payload.chapterRequestID,
-                                                        selectionID: payload.selectionID) else { return }
-                                selectionFeedback = "Share sheet could not be opened"
-                                UIAccessibility.post(notification: .announcement, argument: selectionFeedback)
-                                feedbackHaptic.fire(failed: true)
-                            }
-                                .presentationDetents([.medium, .large])
-                        }
                     }
                     }
                 } else if model.isLoading {
@@ -1067,29 +1054,6 @@ private struct ReaderTextSettingsSheet: View {
     }
 }
 
-private struct ReaderSharePayload: Identifiable {
-    let id = UUID()
-    let text: String
-    let passage: PassageSelection
-    let chapterRequestID: UUID
-    let selectionID: UUID
-}
-
-private struct ReaderActivitySheet: UIViewControllerRepresentable {
-    let text: String
-    let onError: (Error?) -> Void
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: [text], applicationActivities: nil)
-        controller.completionWithItemsHandler = { _, _, _, error in
-            onError(error)
-        }
-        return controller
-    }
-
-    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
-}
-
 /// One haptic event for a finished Reader selection action. The counter makes two equal
 /// outcomes in a row (for example two copies) fire twice.
 private struct ReaderFeedbackHaptic: Equatable {
@@ -1104,5 +1068,16 @@ private struct ReaderFeedbackHaptic: Equatable {
     var feedback: SensoryFeedback? {
         guard count > 0 else { return nil }
         return failed ? .error : .success
+    }
+}
+
+extension ReaderTextSize {
+    static let pinchSteps: [ReaderTextSize] = [.small, .medium, .large, .extraLarge]
+
+    /// Maps a pinch scale to a size step. Each 1.2x of scale moves one step. The result stays in range.
+    static func pinchTarget(from current: ReaderTextSize, scale: CGFloat) -> ReaderTextSize {
+        guard scale.isFinite, scale > 0, let index = pinchSteps.firstIndex(of: current) else { return current }
+        let delta = Int((log(Double(scale)) / log(1.2)).rounded())
+        return pinchSteps[min(max(index + delta, 0), pinchSteps.count - 1)]
     }
 }

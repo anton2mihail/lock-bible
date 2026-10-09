@@ -18,7 +18,6 @@ struct ReaderSelectionToolbar: View {
     let onClearHighlight: () -> Void
     let onNote: () -> Void
     let onCopy: () -> Void
-    let onShare: () -> Void
     let onPray: () -> Void
     let onCard: () -> Void
 
@@ -71,8 +70,13 @@ struct ReaderSelectionToolbar: View {
                        id: "reader-selection-note", disabled: isBusy, action: onNote)
                 action("copy", title: "Copy", label: "Copy \(displayReference)",
                        id: "reader-selection-copy", action: onCopy)
-                action("share", title: "Share", label: "Share \(displayReference)",
-                       id: "reader-selection-share", action: onShare)
+                ScriptureShareLink(text: passage.scriptureText, reference: displayReference,
+                                   translationLabel: passage.translationID.shareLabel) {
+                    shareLabel
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Share \(displayReference)")
+                .accessibilityIdentifier("reader-selection-share")
                 action("pray", title: "Pray", label: "Pray \(displayReference)",
                        id: "reader-selection-pray", action: onPray)
                 action("card", title: "Card", label: "Create card \(displayReference)",
@@ -197,6 +201,18 @@ struct ReaderSelectionToolbar: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier(id)
         .disabled(disabled)
+    }
+
+    private var shareLabel: some View {
+        VStack(spacing: 4) {
+            icon("share", color: colors.text).frame(width: 36, height: 36)
+            Text("Share")
+                .font(.custom("SpaceGrotesk-Medium", fixedSize: min(max(scaledLabelSize, 12), 18)))
+                .lineLimit(1).minimumScaleFactor(0.8)
+        }
+        .foregroundStyle(colors.text)
+        .frame(minWidth: 56, maxWidth: .infinity, minHeight: 56)
+        .contentShape(Rectangle())
     }
 
     @ViewBuilder

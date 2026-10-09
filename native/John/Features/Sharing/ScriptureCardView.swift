@@ -25,15 +25,8 @@ struct ScriptureCardView: View {
         let end = passage.endVerse.rawValue
         return start == end ? "\(passage.bookName) \(passage.chapter):\(start)" : "\(passage.bookName) \(passage.chapter):\(start)–\(end)"
     }
-    private var shareText: String {
-        "\(passage.scriptureText)\n\n\(reference) (\(translationLabel))\nJohn 1:1 · Scripture & Prayer"
-    }
     private var translationLabel: String {
-        switch passage.translationID {
-        case .webCE: "WEB-CE"
-        case .douayRheims: "DRB"
-        case .vulgate: "VUL"
-        }
+        passage.translationID.shareLabel
     }
 
     var body: some View {
@@ -45,7 +38,7 @@ struct ScriptureCardView: View {
             }
 
             GeometryReader { proxy in
-                ShareCardSurface(passage: passage, reference: reference,
+                ShareCardSurface(text: passage.scriptureText, reference: reference,
                                  translationLabel: translationLabel, plum: plum,
                                  artworkFailed: $artworkFailed)
                     .frame(width: proxy.size.width)
@@ -89,9 +82,7 @@ struct ScriptureCardView: View {
             .disabled(shareBusy)
             .accessibilityIdentifier("scripture-card-share-image")
 
-            ShareLink(item: shareText,
-                      subject: Text("Share Scripture card"),
-                      preview: SharePreview(reference, image: Image(systemName: "book.closed"))) {
+            ScriptureShareLink(text: passage.scriptureText, reference: reference, translationLabel: translationLabel) {
                 Text("Share text instead")
                     .font(JohnTypography.sans(14, weight: .medium))
                     .foregroundStyle(colors.text)
@@ -113,7 +104,7 @@ struct ScriptureCardView: View {
     }
 
     @ViewBuilder private func shareArtwork(width: CGFloat) -> some View {
-        let surface = ShareCardSurface(passage: passage, reference: reference,
+        let surface = ShareCardSurface(text: passage.scriptureText, reference: reference,
                                        translationLabel: translationLabel, plum: plum,
                                        artworkFailed: $artworkFailed)
         surface.frame(width: width, alignment: .leading).frame(minHeight: 480)
@@ -169,8 +160,8 @@ struct ScriptureCardView: View {
     }
 }
 
-private struct ShareCardSurface: View {
-    let passage: PassageSelection
+struct ShareCardSurface: View {
+    let text: String
     let reference: String
     let translationLabel: String
     let plum: Bool
@@ -178,8 +169,8 @@ private struct ShareCardSurface: View {
 
     private var background: Color { plum ? Color(red: 47.0 / 255, green: 29.0 / 255, blue: 44.0 / 255) : Color(red: 244.0 / 255, green: 234.0 / 255, blue: 219.0 / 255) }
     private var foreground: Color { plum ? Color(red: 1, green: 247.0 / 255, blue: 232.0 / 255) : Color(red: 52.0 / 255, green: 38.0 / 255, blue: 45.0 / 255) }
-    private var fontSize: CGFloat { passage.scriptureText.utf16.count > 900 ? 20 : 26 }
-    private var targetHeight: CGFloat { passage.scriptureText.utf16.count > 900 ? 31 : 39 }
+    private var fontSize: CGFloat { text.utf16.count > 900 ? 20 : 26 }
+    private var targetHeight: CGFloat { text.utf16.count > 900 ? 31 : 39 }
 
     var body: some View {
         ZStack {
@@ -192,7 +183,7 @@ private struct ShareCardSurface: View {
             }
             VStack(alignment: .leading, spacing: 32) {
                 Text("JOHN 1:1").font(JohnTypography.sans(11, weight: .semibold)).tracking(5)
-                Text(passage.scriptureText)
+                Text(text)
                     .font(JohnTypography.serif(fontSize))
                     .lineSpacing(ContentTypography.additionalSpacing(fontName: "Lora-Regular", size: fontSize, targetLineHeight: targetHeight))
                     .fixedSize(horizontal: false, vertical: true)

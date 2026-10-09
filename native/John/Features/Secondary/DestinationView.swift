@@ -197,10 +197,6 @@ private struct VerseMomentDestination: View {
 
     private var verse: RotatingVerse { refreshedVerse ?? selection.verse }
     private var guideDismissed: Bool { runtime.committedNativeState?.widgetGuideDismissed ?? false }
-    private var shareText: String {
-        "“\(verse.text)”\n— \(verse.reference) (\(metadata?.abbreviation ?? selection.translation.rawValue.uppercased()))"
-    }
-
     var body: some View {
         ContentPage(title: "Verse of the moment", eyebrow: "\(countdown)",
                     subtitle: "") {
@@ -254,7 +250,8 @@ private struct VerseMomentDestination: View {
                 }
             }
             HStack(spacing: 12) {
-                ShareLink(item: shareText) {
+                ScriptureShareLink(text: verse.text, reference: verse.reference,
+                                   translationLabel: metadata?.abbreviation ?? selection.translation.rawValue.uppercased()) {
                     Text("Share")
                         .font(JohnTypography.sans(14, weight: .semibold))
                         .foregroundStyle(preferences.colors(for: colorScheme).card)
