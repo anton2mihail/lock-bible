@@ -191,6 +191,7 @@ private struct NovenaLibraryPage<Content: View>: View {
                         .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Bold", size: 36, targetLineHeight: 44))
                         .foregroundStyle(colors.text)
                         .accessibilityAddTraits(.isHeader)
+                        .accessibilityIdentifier("page-title-pray")
                     Text("Everyday prayer, the Rosary, and Catholic novenas. A little space to be with God.")
                         .font(JohnTypography.sans(16))
                         .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 16, targetLineHeight: 24))

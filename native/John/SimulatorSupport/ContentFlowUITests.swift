@@ -60,6 +60,7 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertTrue(selectedDayTwo.isSelected)
 
         app.terminate()
+        app.launchArguments.removeAll { $0 == "-JohnResetNativeState" } // keep the state across the relaunch
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
@@ -206,6 +207,31 @@ final class ContentFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["0 of 9 prayed"].waitForExistence(timeout: 8),
                       "Use a fresh seed with no Padre Pio progress")
 
+        completeAllNovenaDays(app)
+        XCTAssertTrue(app.staticTexts["Novena complete"].waitForExistence(timeout: 8))
+        confirmNovenaCancelAndReset(app: app)
+    }
+
+    func testL25PadrePioCompletedNovenaCancelAndReset() throws {
+        let app = launchWithFeatureClock()
+        tabButton(app, "tab-pray").tap()
+
+        let search = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 8), "PrayerHome must show the novena search field")
+        enterText(search, "Padre Pio", in: app)
+        tapWhenReady(button(containing: "St. Padre Pio Novena", in: app), in: app)
+
+        XCTAssertTrue(app.staticTexts["St. Padre Pio Novena"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["0 of 9 prayed"].waitForExistence(timeout: 8), "The reset state must have no progress")
+        completeAllNovenaDays(app)
+        XCTAssertTrue(app.buttons["Day 9, complete"].isSelected, "Day 9 must stay selected after the last day")
+        XCTAssertTrue(app.staticTexts["9 of 9 prayed"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Novena complete"].waitForExistence(timeout: 8))
+        confirmNovenaCancelAndReset(app: app)
+    }
+
+    /// Marks Day 1 to Day 9 complete on the open novena page. The tests do not depend on an earlier run.
+    private func completeAllNovenaDays(_ app: XCUIApplication) {
         let dayPicker = app.scrollViews.matching(
             NSPredicate(format: "label == %@", "Choose a novena day")).firstMatch
         XCTAssertTrue(dayPicker.waitForExistence(timeout: 8), "The novena day picker must be available")
@@ -249,27 +275,6 @@ final class ContentFlowUITests: XCTestCase {
                           "Progress must show \(day) of 9 completed days")
         }
 
-        XCTAssertTrue(app.staticTexts["Novena complete"].waitForExistence(timeout: 8))
-        confirmNovenaCancelAndReset(app: app)
-    }
-
-    func testL25PadrePioCompletedNovenaCancelAndReset() throws {
-        let app = launchWithFeatureClock()
-        tabButton(app, "tab-pray").tap()
-
-        let search = app.textFields.matching(NSPredicate(format: "label == %@", "Search novenas")).firstMatch
-        XCTAssertTrue(search.waitForExistence(timeout: 8), "PrayerHome must show the novena search field")
-        enterText(search, "Padre Pio", in: app)
-        tapWhenReady(button(containing: "St. Padre Pio Novena", in: app), in: app)
-
-        XCTAssertTrue(app.staticTexts["St. Padre Pio Novena"].waitForExistence(timeout: 8))
-        XCTAssertTrue(app.buttons["Day 9, complete"].isSelected,
-                      "The preserved post-failure seed must keep Day 9 selected")
-        XCTAssertTrue(app.staticTexts["9 of 9 prayed"].waitForExistence(timeout: 8),
-                      "The preserved post-failure seed must contain all nine completed days")
-        XCTAssertTrue(app.staticTexts["Novena complete"].waitForExistence(timeout: 8),
-                      "The preserved post-failure seed must show completed state")
-        confirmNovenaCancelAndReset(app: app)
     }
 
     private func confirmNovenaCancelAndReset(app: XCUIApplication) {
@@ -353,6 +358,7 @@ final class ContentFlowUITests: XCTestCase {
 
         let routeExitNote = "L18 route exit note 9152."
         enterText(textView(label: "Temporary confession notes", in: app), routeExitNote, in: app)
+        dismissKeyboard(app) // the keyboard covers the tab bar
         tabButton(app, "tab-pray").tap()
         XCTAssertTrue(button(containing: "Pray the Rosary", in: app).waitForExistence(timeout: 8))
         tabButton(app, "tab-today").tap()
@@ -365,6 +371,7 @@ final class ContentFlowUITests: XCTestCase {
 
         let reopenedNotes = textView(label: "Temporary confession notes", in: app)
         enterText(reopenedNotes, privateNote, in: app)
+        dismissKeyboard(app)
         tapWhenReady(app.buttons["Continue"], in: app)
         tapWhenReady(app.buttons["Continue"], in: app)
         XCTAssertEqual(waitForPageTitle(app), "Confess your sins")
@@ -394,7 +401,7 @@ final class ContentFlowUITests: XCTestCase {
 
     /// Fixed feature clock by default (same as the L14 and L15 tests). STEP7_REAL_CLOCK=1 uses the device clock.
     private func step7Launch() -> XCUIApplication {
-        guard ProcessInfo.processInfo.environment["STEP7_REAL_CLOCK"] == "1" else { return launchWithFeatureClock() }
+        guard ProcessInfo.processInfo.environment["STEP7_REAL_CLOCK"] == "1" else { return launchWithFeatureClock(reset: false) }
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
@@ -835,10 +842,12 @@ final class ContentFlowUITests: XCTestCase {
         NSLog("STEP7_FAULT fault=%@ observed=true", fault)
     }
 
-    private func launchWithFeatureClock() -> XCUIApplication {
+    /// `reset` starts from default native state. A test that relaunches must not pass the reset argument again.
+    private func launchWithFeatureClock(reset: Bool = true) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-L14FeatureDate", featureDate,
                                "-L14FeatureTimeZone", featureZone]
+        if reset { app.launchArguments += ["-JohnResetNativeState"] }
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
@@ -924,6 +933,16 @@ final class ContentFlowUITests: XCTestCase {
         }
         XCTAssertTrue(element.isHittable, "Control is not hittable", file: file, line: line)
         element.tap()
+    }
+
+    /// Drags down over the keyboard. The page scroll view closes it (`scrollDismissesKeyboard(.interactively)`).
+    private func dismissKeyboard(_ app: XCUIApplication) {
+        for _ in 0..<3 where app.keyboards.count > 0 {
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45))
+                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.98)))
+            _ = app.keyboards.firstMatch.waitForNonExistence(timeout: 2)
+        }
+        XCTAssertEqual(app.keyboards.count, 0, "The keyboard must close")
     }
 
     private func visibleScrollViewport(in app: XCUIApplication) -> CGRect {

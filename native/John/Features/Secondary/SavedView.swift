@@ -27,6 +27,7 @@ struct SavedView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 8)
                 .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("page-title-saved")
             filterBar
             if let message, !items.isEmpty {
                 Text(message)

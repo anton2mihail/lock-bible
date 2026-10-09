@@ -5,6 +5,7 @@ import UIKit
 final class NativeSmokeUITests: XCTestCase {
     func testReaderVerseWordPointDiagnostic() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnResetNativeState"] // test isolation: default text size and Reader location
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
@@ -83,6 +84,7 @@ final class NativeSmokeUITests: XCTestCase {
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+        resetSavedLibrary(app)
         tabButton(app, "tab-saved").tap()
 
         let bookmarkFilter = app.buttons["saved-filter-bookmark"]
@@ -115,14 +117,8 @@ final class NativeSmokeUITests: XCTestCase {
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
-
+        resetSavedLibrary(app)
         tabButton(app, "tab-read").tap()
-        let john = app.buttons["reader-book-JHN"]
-        XCTAssertTrue(john.waitForExistence(timeout: 5))
-        john.tap()
-        let chapter = app.buttons["reader-chapter-1"]
-        XCTAssertTrue(chapter.waitForExistence(timeout: 5))
-        chapter.tap()
         XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 12))
         XCTAssertTrue(app.buttons["reader-title"].label.contains("John 1"))
         XCTAssertFalse(app.staticTexts["saved-status"].exists)
@@ -172,7 +168,7 @@ final class NativeSmokeUITests: XCTestCase {
         let bookmarkRows = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "saved-row-"))
         waitForRowCount(bookmarkRows, 2)
         let firstBookmark = bookmarkRows.firstMatch
-        XCTAssertTrue(firstBookmark.label.contains("John 1:1") || firstBookmark.label.contains("John 3:16"))
+        XCTAssertTrue(firstBookmark.label.contains("John 1:"))
         let savedID = String(firstBookmark.identifier.dropFirst("saved-row-".count))
         let deleteButton = app.buttons["saved-delete-\(savedID)"]
         XCTAssertTrue(deleteButton.waitForExistence(timeout: 5))
@@ -205,6 +201,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testSearchResultsAndSavedFilters() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnResetNativeState"] // test isolation: default text size and Reader location
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
@@ -682,7 +679,7 @@ final class NativeSmokeUITests: XCTestCase {
     }
 
     func testReaderChapterGridGoToAndAaReachableAtSystemXXXL() throws {
-        assertSystemXXXLProfile()
+        try assertSystemXXXLProfile()
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never"]
         app.launch()
@@ -757,6 +754,7 @@ final class NativeSmokeUITests: XCTestCase {
 
     func testReaderAppearanceAccessibilityValues() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnResetNativeState"] // test isolation: default Aa values
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
@@ -891,7 +889,9 @@ final class NativeSmokeUITests: XCTestCase {
         add(attachment)
     }
 
-    private func assertSystemXXXLProfile(file: StaticString = #filePath, line: UInt = #line) {
+    private func assertSystemXXXLProfile(file: StaticString = #filePath, line: UInt = #line) throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["L25_CONTENT_SIZE"] == "accessibility-extra-extra-extra-large",
+                          "Skipped: this test needs the simulator at XXXL text size. Run scripts/native/run-tests.sh, which sets it (see native/reviews/test-runbook.md).")
         XCTAssertEqual(ProcessInfo.processInfo.environment["L25_CONTENT_SIZE"],
                        "accessibility-extra-extra-extra-large", file: file, line: line)
         XCTAssertEqual(UITraitCollection.current.preferredContentSizeCategory,
@@ -995,6 +995,84 @@ final class NativeSmokeUITests: XCTestCase {
         let frame = app.frame
         return CGVector(dx: (point.x - frame.minX) / frame.width,
                         dy: (point.y - frame.minY) / frame.height)
+    }
+
+    // MARK: Saved library fixture (test isolation)
+
+    /// Deletes every Saved row, then creates the fixture through visible controls: bookmarks on John 1:1 and 1:2,
+    /// a highlight on John 1:1, and a note on John 1:1. No test depends on data that an earlier test left behind.
+    private func resetSavedLibrary(_ app: XCUIApplication, noteText: String = "Synthetic migration fixture note.") {
+        let rows = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "saved-row-"))
+        tabButton(app, "tab-saved").tap()
+        let all = app.buttons["saved-filter-all"]
+        XCTAssertTrue(all.waitForExistence(timeout: 8))
+        all.tap()
+        for _ in 0..<40 {
+            _ = rows.firstMatch.waitForExistence(timeout: 1.5)
+            guard rows.firstMatch.exists else { break }
+            let id = String(rows.firstMatch.identifier.dropFirst("saved-row-".count))
+            let delete = app.buttons["saved-delete-\(id)"]
+            XCTAssertTrue(delete.waitForExistence(timeout: 5))
+            delete.tap()
+            let deadline = Date().addingTimeInterval(5)
+            while app.buttons["saved-row-\(id)"].exists, Date() < deadline { Thread.sleep(forTimeInterval: 0.1) }
+        }
+        XCTAssertEqual(rows.count, 0, "The Saved library must be empty before seeding")
+
+        tabButton(app, "tab-read").tap()
+        for _ in 0..<4 where !app.staticTexts["reader-book-list-title"].exists {
+            let back = app.buttons["reader-back"]
+            guard back.waitForExistence(timeout: 3) else { break }
+            back.tap()
+        }
+        let john = app.buttons["reader-book-JHN"]
+        XCTAssertTrue(john.waitForExistence(timeout: 8))
+        john.tap()
+        app.buttons["reader-chapter-1"].tap()
+        XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 12))
+        // A selection can survive a tab change. A second tap on the same verse would clear it.
+        if app.buttons["reader-selection-close"].exists {
+            app.buttons["reader-selection-close"].tap()
+            XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForNonExistence(timeout: 5))
+        }
+
+        func select(_ number: Int) {
+            let verse = app.buttons["reader-verse-\(number)"]
+            XCTAssertTrue(verse.waitForExistence(timeout: 8))
+            _ = tapVerse(verse, in: app, lineFraction: 0.18, horizontalFraction: 0.08)
+            XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForExistence(timeout: 5))
+        }
+        func closeSelection() {
+            app.buttons["reader-selection-close"].tap()
+            XCTAssertTrue(app.staticTexts["reader-selection-summary"].waitForNonExistence(timeout: 5))
+        }
+        func bookmark() {
+            let button = app.buttons["reader-selection-bookmark"]
+            XCTAssertTrue(button.waitForExistence(timeout: 5))
+            let ready = NSPredicate(format: "isEnabled == YES")
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: button)], timeout: 5), .completed)
+            button.tap()
+            _ = XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "label CONTAINS 'Saved' OR value == 'Selected'"), object: button)], timeout: 3)
+        }
+        select(1)
+        bookmark()
+        app.buttons["reader-highlight-gold"].tap()
+        app.buttons["reader-selection-note"].tap()
+        let editor = app.textViews["saved-note-editor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 8))
+        editor.tap()
+        editor.typeText(noteText)
+        app.buttons["saved-note-save"].tap()
+        waitForDisappearance(editor)
+        if app.staticTexts["reader-selection-summary"].exists { closeSelection() }
+        select(2)
+        bookmark()
+        closeSelection()
+        tabButton(app, "tab-saved").tap()
+        XCTAssertTrue(all.waitForExistence(timeout: 8))
+        all.tap()
+        waitForRowCount(rows, 4)
     }
 
     private func waitForRowCount(_ rows: XCUIElementQuery, _ expected: Int,
@@ -1171,6 +1249,8 @@ final class NativeSmokeUITests: XCTestCase {
     }
 
     func testSameIDReleasePreferenceSurvivesFreshProcess() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["JOHN_RELEASE_BUNDLE_INSTALLED"] == "1",
+                          "Skipped: this test needs the release build (com.nrsv.verse) installed on the simulator. Run scripts/native/run-tests.sh (see native/reviews/test-runbook.md).")
         let app = XCUIApplication(bundleIdentifier: "com.nrsv.verse")
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
@@ -1205,6 +1285,9 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 5))
 
         NSLog("L04_READY_URL_PHASE_1")
+        // The test sends the URL itself. No host script is needed.
+        let readURL = URL(string: "nrsv://read?book=JHN&chapter=1&verse=1")!
+        app.open(readURL)
         let firstReader = app.buttons["reader-verse-1"]
         XCTAssertTrue(firstReader.waitForExistence(timeout: 45), "Host must send the first URL to the running app")
         let readerTitle = app.buttons["reader-title"]
@@ -1216,6 +1299,7 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 5))
 
         NSLog("L04_READY_URL_PHASE_2")
+        app.open(readURL)
         let newRequest = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == YES AND value != %@ AND value != ''", firstRequestID),
             object: readerTitle
@@ -1227,7 +1311,6 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertEqual(readerTitle.label, "John 1")
         XCTAssertTrue(firstReader.waitForExistence(timeout: 5))
         NSLog("L04_READY_URL_PHASE_2_DELIVERED firstID=%@ secondID=%@", firstRequestID, secondRequestID)
-        Thread.sleep(forTimeInterval: 15)
     }
 
     /// Top edge of the tab bar. The glass bar surface starts above its buttons, so use the bar element frame when it exists.

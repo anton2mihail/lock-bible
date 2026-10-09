@@ -38,6 +38,7 @@ final class SearchNoteUITests: XCTestCase {
 
     func testSearchScopesEditionAndLatinText() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnResetNativeState"] // test isolation: default edition and Reader location
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         selectEdition("web-ce", in: app)
@@ -52,7 +53,7 @@ final class SearchNoteUITests: XCTestCase {
         assertResult("John 3:16", in: app)
         app.buttons["search-scope-all"].tap()
 
-        tapSystemBack(in: app, expecting: app.buttons["reader-title"])
+        tapSystemBack(in: app, expecting: app.buttons["reader-search-button"])
         selectEdition("vulgate", in: app)
         openSearch(in: app)
 

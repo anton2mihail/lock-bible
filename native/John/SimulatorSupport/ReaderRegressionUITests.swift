@@ -69,7 +69,14 @@ final class ReaderRegressionUITests: XCTestCase {
                        "The bookmark action must apply to verse 16 only")
         let bookmark = app.buttons["reader-selection-bookmark"]
         XCTAssertTrue(bookmark.waitForExistence(timeout: 8))
-        XCTAssertEqual(bookmark.value as? String, "Not selected", "The L25 seed must not contain a John 3:16 bookmark")
+        // Test isolation: an earlier run can leave this bookmark. Remove it so the test starts clean.
+        if bookmark.value as? String == "Selected" {
+            bookmark.tap()
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "value == %@", "Not selected"), object: bookmark)], timeout: 8), .completed,
+                           "The stale John 3:16 bookmark must clear")
+        }
+        XCTAssertEqual(bookmark.value as? String, "Not selected")
         bookmark.tap()
         let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Selected"), object: bookmark)
         XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 8), .completed, "John 3:16 bookmark must save")

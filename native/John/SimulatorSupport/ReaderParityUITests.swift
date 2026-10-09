@@ -10,8 +10,7 @@ final class ReaderParityUITests: XCTestCase {
     func testBaselineNavigationControlsReconnaissance() throws {
         let bundleID = CaptureMetadata.value("READER_PARITY_BASELINE_BUNDLE_ID")
         guard bundleID != "unprovided" else {
-            XCTFail("Reconnaissance requires an explicit baseline bundle ID")
-            return
+            throw XCTSkip("Skipped: this test needs READER_PARITY_BASELINE_BUNDLE_ID (the installed baseline app). See native/reviews/test-runbook.md.")
         }
 
         let app = XCUIApplication(bundleIdentifier: bundleID)

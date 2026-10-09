@@ -103,6 +103,15 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
             let applicationSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             if let documents, let applicationSupport {
                 let libraryURL = documents.appendingPathComponent("SQLite/user-library.db", isDirectory: false)
+                #if DEBUG
+                // UI tests pass `-JohnResetNativeState` to start from the default native state (test isolation).
+                if ProcessInfo.processInfo.arguments.contains("-JohnResetNativeState") {
+                    let stateDirectory = applicationSupport.appendingPathComponent("John", isDirectory: true)
+                    for name in ["native-state-v1.json", "native-state-v1.previous.json"] {
+                        try? FileManager.default.removeItem(at: stateDirectory.appendingPathComponent(name))
+                    }
+                }
+                #endif
                 let legacyRoot = documents.appendingPathComponent("mmkv", isDirectory: true)
                 let recoveryDirectory = applicationSupport.appendingPathComponent("John/recovery", isDirectory: true)
                 stateStore = NativeStateStore(applicationSupportURL: applicationSupport,

@@ -110,6 +110,7 @@ final class WorksSettingsUITests: XCTestCase {
 
     func testWorksContentsFooterStyleAnchorAndResume() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-JohnResetNativeState"] // test isolation: no saved Works position
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         NSLog("WORKS_EXPECTED workID=%@ collectionID=%@ title=%@ sectionIndex=9 sectionTitle=%@ pageIndex=0 anchor={sectionIndex:9,paragraphIndex:0,utf16Offset:0}",
@@ -172,6 +173,7 @@ final class WorksSettingsUITests: XCTestCase {
         XCTAssertTrue(continueReading.label.contains("section 10"))
 
         app.terminate()
+        app.launchArguments.removeAll { $0 == "-JohnResetNativeState" } // keep the state across the relaunch
         app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         openWorksLibrary(in: app)

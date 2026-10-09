@@ -56,8 +56,7 @@ final class SystemAccessibilityUITests: XCTestCase {
               ["on", "off"].contains(stateValue),
               let phaseValue = environment["JOHN_SYSTEM_ACCESSIBILITY_PHASE"],
               let phase = Phase(rawValue: phaseValue) else {
-            XCTFail("Set JOHN_SYSTEM_ACCESSIBILITY_SETTING, JOHN_SYSTEM_ACCESSIBILITY_VALUE, and JOHN_SYSTEM_ACCESSIBILITY_PHASE.")
-            return
+            throw XCTSkip("Skipped: set JOHN_SYSTEM_ACCESSIBILITY_SETTING, JOHN_SYSTEM_ACCESSIBILITY_VALUE, and JOHN_SYSTEM_ACCESSIBILITY_PHASE. See native/reviews/test-runbook.md.")
         }
 
         let expected = stateValue == "on"
