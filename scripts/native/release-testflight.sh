@@ -27,7 +27,7 @@ PL
 xcodebuild archive -project native/John/John.xcodeproj -scheme "John Update" \
   -configuration Release -destination "generic/platform=iOS" \
   -archivePath "$OUT/John.xcarchive" DEVELOPMENT_TEAM=$TEAM \
-  -allowProvisioningUpdates | tail -25
+  -allowProvisioningUpdates 2>&1 | grep -v "Progress [0-9]*%" | tail -25
 xcodebuild -exportArchive -archivePath "$OUT/John.xcarchive" \
   -exportOptionsPlist "$OUT/ExportOptions.plist" -exportPath "$OUT/export" \
-  -allowProvisioningUpdates | tail -25
+  -allowProvisioningUpdates 2>&1 | grep -v "Progress [0-9]*%" | tail -25
