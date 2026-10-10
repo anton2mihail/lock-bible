@@ -66,23 +66,27 @@ enum SpotlightIndexer {
         }
     }
 
-    /// Replaces all saved items in the index. A deleted item leaves the index, because the new list lacks it.
-    static func replaceSaved(_ saved: [SavedItem]) async {
+    /// Replaces all saved items in the index. Note text is never indexed: only the reference and a fixed title.
+    /// Returns false if the delete or the index call failed. Pass nil when the saved list could not load: the domain is cleared.
+    @discardableResult
+    static func replaceSaved(_ saved: [SavedItem]?) async -> Bool {
         let index = CSSearchableIndex.default()
-        let items = saved.filter { $0.kind != .highlight }.map { entry in
+        let items = (saved ?? []).filter { $0.kind != .highlight }.map { entry in
             item(id: savedIdentifier(entry.id),
-                 title: entry.reference,
-                 text: entry.noteText.flatMap { $0.isEmpty ? nil : $0 } ?? entry.scriptureText,
+                 title: entry.kind == .note ? "Note on \(entry.reference)" : entry.reference,
+                 text: entry.reference,
                  domain: savedDomain,
                  keywords: [entry.bookName, entry.kind.rawValue])
         }
         do {
             try await index.deleteSearchableItems(withDomainIdentifiers: [savedDomain])
             if !items.isEmpty { try await index.indexSearchableItems(items) }
+            return true
         } catch {
             #if DEBUG
             NSLog("John Spotlight saved index failed: %@", String(describing: error))
             #endif
+            return false
         }
     }
 

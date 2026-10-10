@@ -57,6 +57,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     /// Increases after undo, redo, import, or tag changes. Views reload saved data when it changes.
     var savedRevision = 0
     let tagStore: SavedTagStore?
+    private var spotlightRefreshTask: Task<Void, Never>?
+    private var spotlightRefreshWanted = false
     private(set) var settingSaveUncertain = false
     private(set) var startupComplete = false
     private(set) var hasNativeState = false
@@ -888,10 +890,19 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
 
     /// Rebuilds the Spotlight entries for saved bookmarks and notes. It runs after each change to saved data.
     func refreshSpotlightSaved() {
-        guard let library else { return }
-        Task {
-            guard let saved = try? await library.listSavedItems(filter: .all) else { return }
-            await SpotlightIndexer.replaceSaved(saved)
+        guard library != nil else { return }
+        spotlightRefreshWanted = true
+        guard spotlightRefreshTask == nil else { return }
+        spotlightRefreshTask = Task { [weak self] in
+            // One task runs at a time. A change during a run sets the flag, so the loop reads the list again.
+            // Each pass reads the list after the last change, so no stale result reaches the index.
+            while let self, self.spotlightRefreshWanted {
+                self.spotlightRefreshWanted = false
+                let saved = try? await self.library?.listSavedItems(filter: .all)
+                // A failed pass is not retried at once. The next saved change runs a new refresh.
+                _ = await SpotlightIndexer.replaceSaved(saved)
+            }
+            self?.spotlightRefreshTask = nil
         }
     }
 

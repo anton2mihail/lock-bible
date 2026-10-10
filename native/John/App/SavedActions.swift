@@ -3,14 +3,47 @@ import UIKit
 import JohnCore
 
 /// One reversible change. UndoManager holds it for undo and for redo.
-@MainActor final class SavedUndoStep {
+final class SavedUndoStep: @unchecked Sendable {
     let name: String
-    let undo: @MainActor () async -> Void
-    let redo: @MainActor () async -> Void
-    init(name: String, undo: @escaping @MainActor () async -> Void, redo: @escaping @MainActor () async -> Void) {
+    let undo: @MainActor @Sendable () async -> Void
+    let redo: @MainActor @Sendable () async -> Void
+    init(name: String, undo: @escaping @MainActor @Sendable () async -> Void, redo: @escaping @MainActor @Sendable () async -> Void) {
         self.name = name; self.undo = undo; self.redo = redo
     }
     var inverse: SavedUndoStep { SavedUndoStep(name: name, undo: redo, redo: undo) }
+}
+
+/// Runs undo and redo steps one at a time, in order, on the main actor.
+final class SavedUndoQueue: @unchecked Sendable {
+    static let shared = SavedUndoQueue()
+    private let lock = NSLock()
+    private var pending: [@MainActor @Sendable () async -> Void] = []
+    private var draining = false
+
+    func enqueue(_ work: @escaping @MainActor @Sendable () async -> Void) {
+        lock.lock()
+        pending.append(work)
+        let start = !draining
+        draining = true
+        lock.unlock()
+        guard start else { return }
+        Task { @MainActor in
+            while let next = self.pop() { await next() }
+        }
+    }
+
+    /// Returns after every step queued before this call has finished.
+    func flush() async {
+        await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
+            enqueue { done.resume() }
+        }
+    }
+
+    private func pop() -> (@MainActor @Sendable () async -> Void)? {
+        lock.lock(); defer { lock.unlock() }
+        if pending.isEmpty { draining = false; return nil }
+        return pending.removeFirst()
+    }
 }
 
 @MainActor extension JohnRuntime {
@@ -27,12 +60,23 @@ import JohnCore
         nonisolated(unsafe) let box = manager
         // UndoManager keeps its target weakly, so the runtime is the target and the closure holds the step.
         manager.registerUndo(withTarget: self) { runtime in
-            MainActor.assumeIsolated {
-                runtime.register(step.inverse, in: box)
-                Task { @MainActor in
-                    await step.undo()
-                    runtime.savedRevision += 1
-                }
+            // The inverse step is registered at once, so UndoManager treats it as redo.
+            Self.registerInverse(of: step, in: box, runtime: runtime)
+            SavedUndoQueue.shared.enqueue { [weak runtime] in
+                await step.undo()
+                runtime?.savedRevision += 1
+            }
+        }
+        manager.setActionName(step.name)
+    }
+
+    nonisolated static func registerInverse(of step: SavedUndoStep, in manager: UndoManager, runtime: JohnRuntime) {
+        let inverse = step.inverse
+        manager.registerUndo(withTarget: runtime) { runtime in
+            registerInverse(of: inverse, in: manager, runtime: runtime)
+            SavedUndoQueue.shared.enqueue { [weak runtime] in
+                await inverse.undo()
+                runtime?.savedRevision += 1
             }
         }
         manager.setActionName(step.name)
@@ -98,6 +142,43 @@ import JohnCore
         savedRevision += 1
     }
 
+    /// Sets the tags of one item and registers an undo step that puts the old tags back.
+    func setTagsUndoable(_ tags: [String], for id: String, undoManager: UndoManager?) async throws {
+        let before = await savedTags()[id] ?? []
+        try await setTags(tags, for: id)
+        let after = await savedTags()[id] ?? []
+        guard before != after else { return }
+        register(SavedUndoStep(name: "Tag", undo: { [weak self] in try? await self?.setTags(before, for: id) },
+                               redo: { [weak self] in try? await self?.setTags(after, for: id) }),
+                 in: undoManager)
+    }
+
+    /// Imports a backup and registers one undo step for the items and tags that the import changed.
+    func importBackupUndoable(_ data: Data, undoManager: UndoManager?) async throws -> Int {
+        let itemsBefore = try await savedItems()
+        let tagsBefore = await savedTags()
+        let count = try await importBackup(data)
+        let itemsAfter = try await savedItems()
+        let tagsAfter = await savedTags()
+        let beforeByID = Dictionary(itemsBefore.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        let afterByID = Dictionary(itemsAfter.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        let added = itemsAfter.filter { beforeByID[$0.id] == nil }
+        let changed = itemsBefore.filter { afterByID[$0.id] != nil && afterByID[$0.id] != $0 }
+        let changedAfter = changed.compactMap { afterByID[$0.id] }
+        guard !(added.isEmpty && changed.isEmpty && tagsBefore == tagsAfter) else { return count }
+        register(SavedUndoStep(name: "Import", undo: { [weak self] in
+            guard let self else { return }
+            for item in added { try? await self.deleteSavedItem(item) }
+            for item in changed { try? await self.restoreSavedItem(item) }
+            try? await self.tagStore?.replaceAll(tagsBefore)
+        }, redo: { [weak self] in
+            guard let self else { return }
+            for item in added + changedAfter { try? await self.restoreSavedItem(item) }
+            try? await self.tagStore?.replaceAll(tagsAfter)
+        }), in: undoManager)
+        return count
+    }
+
     // MARK: Export and import
 
     /// Writes the three export files to a temporary folder. The names are stable so tests can find them.
@@ -112,8 +193,7 @@ import JohnCore
     /// Adds backup items that are not yet saved. Returns the number of added items.
     func importBackup(_ data: Data) async throws -> Int {
         let backup = try SavedBackup.decode(data)
-        let existing = Set(try await savedItems().map(\.id))
-        let fresh = backup.newItems(existingIDs: existing)
+        let fresh = backup.itemsToApply(existing: try await savedItems())
         for item in fresh { try await restoreSavedItem(item) }
         try await tagStore?.merge(backup.tags)
         savedRevision += 1

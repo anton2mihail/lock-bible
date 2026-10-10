@@ -1,4 +1,6 @@
 import SwiftUI
+import UIKit
+import CoreText
 import UniformTypeIdentifiers
 import JohnCore
 
@@ -15,65 +17,61 @@ struct SavedFileDocument: FileDocument {
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { FileWrapper(regularFileWithContents: data) }
 }
 
-/// Renders the saved items as PDF pages with ImageRenderer. No view animates, so the pages are final at once.
+/// Renders the saved items as PDF pages with CoreText. Text flows over as many pages as it needs, with no truncation.
+/// It throws if no PDF data results, so a blank file is never written.
 @MainActor enum SavedPDFRenderer {
-    private static let pageSize = CGSize(width: 612, height: 792)
+    struct RenderError: Error {}
+    private static let pageSize = CGRect(x: 0, y: 0, width: 612, height: 792)
+    private static let margin: CGFloat = 40
 
-    static func render(items: [SavedItem], tags: [String: [String]]) -> Data {
-        let pages = paginate(items)
-        let data = NSMutableData()
-        guard let consumer = CGDataConsumer(data: data as CFMutableData) else { return Data() }
-        var box = CGRect(origin: .zero, size: pageSize)
-        guard let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return Data() }
-        for (index, page) in pages.enumerated() {
-            let renderer = ImageRenderer(content: PDFPage(items: page, tags: tags, number: index + 1, count: pages.count)
-                .frame(width: pageSize.width, height: pageSize.height))
-            renderer.proposedSize = ProposedViewSize(pageSize)
-            renderer.render { _, draw in
-                context.beginPDFPage(nil)
-                draw(context)
-                context.endPDFPage()
-            }
+    static func attributedText(items: [SavedItem], tags: [String: [String]]) -> NSAttributedString {
+        let out = NSMutableAttributedString()
+        func add(_ text: String, _ font: UIFont, _ color: UIColor = .black, after: CGFloat = 2) {
+            let style = NSMutableParagraphStyle()
+            style.paragraphSpacing = after
+            out.append(NSAttributedString(string: text + "\n", attributes: [
+                .font: font, .foregroundColor: color, .paragraphStyle: style]))
         }
-        context.closePDF()
-        return data as Data
-    }
-
-    private static func paginate(_ items: [SavedItem]) -> [[SavedItem]] {
-        var pages: [[SavedItem]] = [[]]
-        var used = 0
+        add("Saved passages", .systemFont(ofSize: 20, weight: .bold), after: 10)
         for item in items {
-            let cost = 3 + min(8, (item.scriptureText.count + 79) / 80) + min(6, ((item.noteText ?? "").count + 79) / 80)
-            if used + cost > 38, !pages[pages.count - 1].isEmpty { pages.append([]); used = 0 }
-            pages[pages.count - 1].append(item); used += cost
+            add("\(item.reference) · \(item.kind.rawValue.capitalized)", .systemFont(ofSize: 11, weight: .semibold))
+            add(item.scriptureText, UIFont(descriptor: UIFont.systemFont(ofSize: 10).fontDescriptor.withDesign(.serif) ?? UIFont.systemFont(ofSize: 10).fontDescriptor, size: 10))
+            if let note = item.noteText, !note.isEmpty { add(note, .systemFont(ofSize: 10)) }
+            if let list = tags[item.id], !list.isEmpty {
+                add(list.map { "#\($0)" }.joined(separator: " "), .systemFont(ofSize: 9), .darkGray)
+            }
+            add("", .systemFont(ofSize: 6), after: 6)
         }
-        return pages
+        return out
     }
 
-    private struct PDFPage: View {
-        let items: [SavedItem]; let tags: [String: [String]]; let number: Int; let count: Int
-        var body: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                if number == 1 { Text("Saved passages").font(.system(size: 20, weight: .bold)) }
-                ForEach(items, id: \.id) { item in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(item.reference) · \(item.kind.rawValue.capitalized)").font(.system(size: 11, weight: .semibold))
-                        Text(item.scriptureText).font(.system(size: 10, design: .serif)).lineLimit(8)
-                        if let note = item.noteText, !note.isEmpty { Text(note).font(.system(size: 10)).lineLimit(6) }
-                        if let list = tags[item.id], !list.isEmpty {
-                            Text(list.map { "#\($0)" }.joined(separator: " ")).font(.system(size: 9)).foregroundStyle(.secondary)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Spacer(minLength: 0)
-                Text("Page \(number) of \(count)").font(.system(size: 8)).foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            }
-            .padding(40)
-            .foregroundStyle(.black)
-            .background(.white)
+    static func render(items: [SavedItem], tags: [String: [String]]) throws -> Data {
+        let text = attributedText(items: items, tags: tags)
+        let framesetter = CTFramesetterCreateWithAttributedString(text)
+        let area = pageSize.insetBy(dx: margin, dy: margin)
+        let renderer = UIGraphicsPDFRenderer(bounds: pageSize)
+        var failed = false
+        var pageCount = 0
+        let data = renderer.pdfData { context in
+            var location = 0
+            repeat {
+                context.beginPage()
+                pageCount += 1
+                let cg = context.cgContext
+                cg.saveGState()
+                cg.translateBy(x: 0, y: pageSize.height)
+                cg.scaleBy(x: 1, y: -1)
+                let path = CGPath(rect: CGRect(x: area.minX, y: margin, width: area.width, height: area.height), transform: nil)
+                let frame = CTFramesetterCreateFrame(framesetter, CFRange(location: location, length: 0), path, nil)
+                let visible = CTFrameGetVisibleStringRange(frame)
+                CTFrameDraw(frame, cg)
+                cg.restoreGState()
+                if visible.length == 0 { failed = true; return }
+                location += visible.length
+            } while location < text.length
         }
+        guard !failed, pageCount > 0, data.count > 0 else { throw RenderError() }
+        return data
     }
 }
 
@@ -81,6 +79,7 @@ struct SavedFileDocument: FileDocument {
 struct SavedExportSheet: View {
     @Environment(JohnRuntime.self) private var runtime
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.undoManager) private var undoManager
     let colors: JohnColors
     let onImported: (Int) -> Void
     @State private var bundle: SavedExportBundle?
@@ -104,7 +103,7 @@ struct SavedExportSheet: View {
                 ForEach([ExportKind.markdown, .pdf, .backup]) { kind in
                     HStack {
                         Button(kind.title) { exporting = kind }
-                            .disabled(bundle == nil)
+                            .disabled(bundle == nil || (kind == .pdf && pdf.isEmpty))
                             .frame(minHeight: 44)
                             .accessibilityIdentifier("saved-export-\(kind.rawValue)")
                         Spacer()
@@ -151,14 +150,19 @@ struct SavedExportSheet: View {
         do {
             let made = try await runtime.exportDocuments()
             bundle = made
-            pdf = SavedPDFRenderer.render(items: made.items, tags: made.tags)
+            pdf = Data()
+            urls = [:]
+            var pdfFailed = false
+            do { pdf = try SavedPDFRenderer.render(items: made.items, tags: made.tags) } catch { pdfFailed = true }
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent("saved-export", isDirectory: true)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
             for kind in [ExportKind.markdown, .pdf, .backup] {
+                if kind == .pdf, pdfFailed { continue }
                 let url = folder.appendingPathComponent(kind.fileName)
                 try data(for: kind).write(to: url, options: .atomic)
                 urls[kind.rawValue] = url
             }
+            status = pdfFailed ? "The PDF could not be made. Markdown and backup are ready." : nil
         } catch {
             status = "The export could not be prepared."
         }
@@ -169,7 +173,7 @@ struct SavedExportSheet: View {
             let url = try result.get()
             let scoped = url.startAccessingSecurityScopedResource()
             defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-            let added = try await runtime.importBackup(Data(contentsOf: url))
+            let added = try await runtime.importBackupUndoable(Data(contentsOf: url), undoManager: undoManager)
             status = added == 0 ? "Nothing new to import." : "Imported \(added) items."
             onImported(added)
             await prepare()

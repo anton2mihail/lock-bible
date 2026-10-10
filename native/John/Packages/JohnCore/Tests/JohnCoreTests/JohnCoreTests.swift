@@ -147,4 +147,28 @@ private func book(_ code: String, _ name: String, chapters: Int, order: Int) thr
         try await store.set(["Hope", "hope", ""], for: "a")
         #expect(await SavedTagStore(url: url).tags(for: "a") == ["hope"])
     }
+
+    @Test func corruptTagFileIsKeptAndNotOverwritten() async throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("tags-\(UUID()).json")
+        try Data("{not json".utf8).write(to: url)
+        let store = SavedTagStore(url: url)
+        #expect(await store.all().isEmpty)
+        try await store.set(["hope"], for: "a")
+        let kept = try Data(contentsOf: url.appendingPathExtension("corrupt"))
+        #expect(String(decoding: kept, as: UTF8.self) == "{not json")
+        #expect(await SavedTagStore(url: url).tags(for: "a") == ["hope"])
+    }
+
+    @Test func importKeepsNewerItem() {
+        let backup = SavedBackup(items: [item("a", .note, updated: 5), item("b", .note, updated: 9),
+                                         item("b", .note, updated: 12), item("c", .note, updated: 1)], tags: [:], exportedAt: 0)
+        let apply = backup.itemsToApply(existing: [item("a", .note, updated: 7), item("b", .note, updated: 9)])
+        #expect(apply.map(\.id) == ["b", "c"])
+        #expect(apply.first?.updatedAt == 12)
+    }
+
+    @Test func unknownVersionIsRejected() {
+        let json = #"{"format":"john-saved-backup","version":2,"items":[]}"#
+        #expect(throws: (any Error).self) { try SavedBackup.decode(Data(json.utf8)) }
+    }
 }

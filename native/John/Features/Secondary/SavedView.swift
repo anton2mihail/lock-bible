@@ -125,7 +125,7 @@ struct SavedView: View {
             TextField("Tag", text: $tagDraft)
             Button("Add") {
                 if let target = tagTarget, let tag = SavedTags.normalize(tagDraft) {
-                    Task { try? await runtime.setTags((tags[target.id] ?? []) + [tag], for: target.id) }
+                    Task { try? await runtime.setTagsUndoable((tags[target.id] ?? []) + [tag], for: target.id, undoManager: undoManager) }
                 }
                 tagDraft = ""; tagTarget = nil
             }
@@ -246,7 +246,7 @@ struct SavedView: View {
                         Button { tagTarget = item } label: { Label("Add tag", systemImage: "tag") }
                         ForEach(tags[item.id] ?? [], id: \.self) { tag in
                             Button {
-                                Task { try? await runtime.setTags((tags[item.id] ?? []).filter { $0 != tag }, for: item.id) }
+                                Task { try? await runtime.setTagsUndoable((tags[item.id] ?? []).filter { $0 != tag }, for: item.id, undoManager: undoManager) }
                             } label: { Label("Remove #\(tag)", systemImage: "tag.slash") }
                         }
                         Button(role: .destructive) {
@@ -343,6 +343,8 @@ struct SavedView: View {
             // The undo bar and UndoManager share one step. Use the step when it exists, so redo stays valid.
             if let manager = runtime.resolveUndoManager(undoManager), manager.canUndo {
                 manager.undo()
+                // The step runs on the queue. Wait for it, so reload reads the restored data.
+                await SavedUndoQueue.shared.flush()
             } else {
                 try await runtime.restoreSavedItem(item)
             }

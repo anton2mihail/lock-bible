@@ -113,7 +113,7 @@ struct ScriptureTextView: UIViewRepresentable {
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.didTap(_:)))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
-        view.addInteraction(UIDragInteraction(delegate: view))
+        view.installDragInteraction()
         context.coordinator.view = view
         return view
     }
@@ -547,7 +547,18 @@ struct ScriptureTextView: UIViewRepresentable {
         didSet { if oldValue != chapterRequestID { lastContextVerseIndex = nil } }
     }
     var headingRanges: [(String, NSRange)] = [] { didSet { setNeedsLayout() } }
-    var activeSelection: ClosedRange<Int>? { didSet { setNeedsLayout() } }
+    var activeSelection: ClosedRange<Int>? {
+        didSet { dragInteraction?.isEnabled = activeSelection != nil; setNeedsLayout() }
+    }
+    private var dragInteraction: UIDragInteraction?
+
+    /// The drag interaction is on only while a selection exists, so scroll, tap, and selection gestures stay free.
+    func installDragInteraction() {
+        let drag = UIDragInteraction(delegate: self)
+        drag.isEnabled = activeSelection != nil
+        addInteraction(drag)
+        dragInteraction = drag
+    }
     /// Each update sets the same value again, so only a new value (or a new chapter request) starts a new context scroll.
     var contextVerseIndex: Int? {
         didSet {

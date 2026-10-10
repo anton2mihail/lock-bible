@@ -19,6 +19,7 @@ public struct SavedBackup: Codable, Hashable, Sendable {
         format = try values.decode(String.self, forKey: .format)
         guard format == Self.formatName else { throw CoreError.invalidIdentity("backup format") }
         version = try values.decodeIfPresent(Int.self, forKey: .version) ?? 1
+        guard version == 1 else { throw CoreError.invalidIdentity("backup version") }
         exportedAt = try values.decodeIfPresent(Int64.self, forKey: .exportedAt) ?? 0
         items = try values.decode([SavedItem].self, forKey: .items)
         tags = try values.decodeIfPresent([String: [String]].self, forKey: .tags) ?? [:]
@@ -32,6 +33,24 @@ public struct SavedBackup: Codable, Hashable, Sendable {
 
     public static func decode(_ data: Data) throws -> SavedBackup {
         try JSONDecoder().decode(SavedBackup.self, from: data)
+    }
+
+    /// Items to write on import. An item is new, or it is newer (by `updatedAt`) than the saved one with the same ID.
+    /// If the backup repeats an ID, the newest copy counts. An equal or older item never replaces saved data.
+    public func itemsToApply(existing: [SavedItem]) -> [SavedItem] {
+        let current = Dictionary(existing.map { ($0.id, $0.updatedAt) }, uniquingKeysWith: { max($0, $1) })
+        var best: [String: SavedItem] = [:]
+        var order: [String] = []
+        for item in items {
+            if let old = best[item.id] {
+                if item.updatedAt > old.updatedAt { best[item.id] = item }
+            } else { best[item.id] = item; order.append(item.id) }
+        }
+        return order.compactMap { id in
+            guard let item = best[id] else { return nil }
+            if let have = current[id], item.updatedAt <= have { return nil }
+            return item
+        }
     }
 
     /// Items whose ID is not in `existingIDs`. Duplicate IDs inside the backup count once.
@@ -68,15 +87,35 @@ public actor SavedTagStore {
 
     public func all() -> [String: [String]] {
         if let cache { return cache }
-        let loaded = (try? JSONDecoder().decode([String: [String]].self, from: Data(contentsOf: url))) ?? [:]
-        cache = loaded
-        return loaded
+        return (try? load()) ?? [:]
+    }
+
+    /// Reads the file. A missing file is empty. A corrupt file moves to `.corrupt` and the map is empty.
+    /// An unreadable file throws and is not cached, so a later write cannot replace it.
+    private func load() throws -> [String: [String]] {
+        if let cache { return cache }
+        guard FileManager.default.fileExists(atPath: url.path) else { cache = [:]; return [:] }
+        let data = try Data(contentsOf: url)
+        do {
+            let loaded = try JSONDecoder().decode([String: [String]].self, from: data)
+            cache = loaded
+            return loaded
+        } catch {
+            var target = url.appendingPathExtension("corrupt")
+            var n = 1
+            while FileManager.default.fileExists(atPath: target.path) {
+                target = url.appendingPathExtension("corrupt\(n)"); n += 1
+            }
+            try FileManager.default.moveItem(at: url, to: target)
+            cache = [:]
+            return [:]
+        }
     }
 
     public func tags(for id: String) -> [String] { all()[id] ?? [] }
 
     public func set(_ tags: [String], for id: String) throws {
-        var current = all()
+        var current = try load()
         let clean = tags.compactMap(SavedTags.normalize)
         var unique: [String] = []
         for tag in clean where !unique.contains(tag) { unique.append(tag) }
@@ -85,7 +124,13 @@ public actor SavedTagStore {
     }
 
     public func merge(_ incoming: [String: [String]]) throws {
-        try write(SavedTags.merge(all(), incoming))
+        try write(SavedTags.merge(try load(), incoming))
+    }
+
+    /// Replaces the whole map. Undo of an import uses it.
+    public func replaceAll(_ value: [String: [String]]) throws {
+        _ = try load()
+        try write(value)
     }
 
     private func write(_ value: [String: [String]]) throws {
