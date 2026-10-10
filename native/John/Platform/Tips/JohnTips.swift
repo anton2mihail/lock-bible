@@ -40,20 +40,62 @@ struct ShareVerseTip: Tip {
 
 struct SwipeSavedShareTip: Tip {
     var title: Text { Text("Share a saved verse") }
-    var message: Text? { Text("Swipe a saved item to the right to share it.") }
-    var image: Image? { Image(systemName: "arrow.right.circle") }
+    var message: Text? { Text("Touch and hold a saved item to share it.") }
+    var image: Image? { Image(systemName: "hand.tap") }
     var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 3 }] }
 }
 
-/// A TipView with no entrance animation.
+/// A static tip view. It reads the Tip status and shows the tip at once, with no transition.
 struct StaticTipView<T: Tip>: View {
     let tip: T
     let identifier: String
+    @State private var visible: Bool
+
+    init(tip: T, identifier: String) {
+        self.tip = tip
+        self.identifier = identifier
+        _visible = State(initialValue: tip.shouldDisplay)
+    }
 
     var body: some View {
-        TipView(tip)
-            .transaction { $0.animation = nil }
-            .transition(.identity)
+        VStack(spacing: 0) {
+            // A zero-size anchor keeps the status task alive while the tip is hidden.
+            Color.clear.frame(height: 0).accessibilityHidden(true)
+            content
+        }
+            .animation(nil, value: visible)
+            .transaction { $0.animation = nil; $0.disablesAnimations = true }
+            .task {
+                for await status in tip.statusUpdates {
+                    var show = false
+                    if case .available = status { show = true }
+                    var t = Transaction(animation: nil)
+                    t.disablesAnimations = true
+                    withTransaction(t) { visible = show }
+                }
+            }
+    }
+
+    @ViewBuilder private var content: some View {
+        if visible {
+            HStack(alignment: .top, spacing: 12) {
+                if let image = tip.image { image.font(.title3).foregroundStyle(.tint) }
+                VStack(alignment: .leading, spacing: 4) {
+                    tip.title.font(.headline)
+                    if let message = tip.message { message.font(.subheadline).foregroundStyle(.secondary) }
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "xmark").font(.footnote.weight(.semibold))
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+                    .onTapGesture { tip.invalidate(reason: .tipClosed) }
+                    .accessibilityHidden(true)
+            }
+            .padding(.leading, 16)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .accessibilityElement(children: .combine)
             .accessibilityIdentifier(identifier)
+            .accessibilityAction(named: "Close tip") { tip.invalidate(reason: .tipClosed) }
+        }
     }
 }

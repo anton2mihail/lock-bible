@@ -211,7 +211,7 @@ struct RosaryGuideView: View {
                             .frame(minHeight: 44)
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.glass)
+                    .modifier(PreviousButtonStyle(colors: colors))
                 }
             }
         }
@@ -402,4 +402,22 @@ struct RosaryGuidePrayer: Decodable, Sendable {
     let id: String
     let title: String
     let text: String
+}
+
+/// Glass button. Reduce Transparency or Increase Contrast gives a solid card with a border.
+private struct PreviousButtonStyle: ViewModifier {
+    let colors: JohnColors
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var contrast
+
+    func body(content: Content) -> some View {
+        if reduceTransparency || contrast == .increased {
+            let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+            content.buttonStyle(.plain)
+                .background(colors.card, in: shape)
+                .overlay(shape.strokeBorder(colors.border, lineWidth: 1))
+        } else {
+            content.buttonStyle(.glass)
+        }
+    }
 }

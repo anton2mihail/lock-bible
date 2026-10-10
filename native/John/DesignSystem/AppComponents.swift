@@ -120,10 +120,11 @@ private struct JohnGlassSurface: ViewModifier {
     let cornerRadius: CGFloat
     let colors: JohnColors
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var contrast
 
     func body(content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-        if reduceTransparency {
+        if reduceTransparency || contrast == .increased {
             content
                 .background(colors.card, in: shape)
                 .overlay(shape.strokeBorder(colors.border, lineWidth: 1))

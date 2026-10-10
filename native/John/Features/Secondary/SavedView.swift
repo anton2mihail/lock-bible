@@ -144,13 +144,6 @@ struct SavedView: View {
                             Label("Delete", systemImage: "trash")
                         }
                     }
-                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                        ScriptureShareLink(text: item.scriptureText, reference: item.reference,
-                                           translationLabel: TranslationID(rawValue: item.translationID)?.shareLabel
-                                               ?? item.translationID.uppercased()) {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                    }
                     .contextMenu {
                         Button { open(item) } label: { Label("Open", systemImage: "book") }
                         ScriptureShareLink(text: item.scriptureText, reference: item.reference,

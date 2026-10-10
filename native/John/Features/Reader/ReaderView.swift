@@ -136,6 +136,8 @@ struct ReaderView: View {
     private var textSizePinch: some Gesture {
         MagnifyGesture()
             .onEnded { value in
+                // Ignore small scale changes (a two-finger pan gives about 1.0), so scroll and selection keep working.
+                guard abs(value.magnification - 1) >= 0.12 else { return }
                 let current = preferences.reading.textSize
                 let target = ReaderTextSize.pinchTarget(from: current, scale: value.magnification)
                 guard target != current else { return }

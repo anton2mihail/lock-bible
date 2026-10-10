@@ -21,10 +21,10 @@ struct ScriptureShareItem: Transferable, Sendable {
     var plainText: String { "\(text) — \(reference) (\(translationLabel))" }
 
     static var transferRepresentation: some TransferRepresentation {
-        DataRepresentation(exportedContentType: .png) { item in
-            await item.renderedPNG()
-        }
         ProxyRepresentation(exporting: \.plainText)
+        DataRepresentation(exportedContentType: .png) { item in
+            try await item.renderedPNG()
+        }
     }
 
     @MainActor static func render(text: String, reference: String, translationLabel: String,
@@ -40,13 +40,14 @@ struct ScriptureShareItem: Transferable, Sendable {
         return renderer.uiImage
     }
 
-    private func renderedPNG() async -> Data {
+    private func renderedPNG() async throws -> Data {
         let item = self
         let data = await MainActor.run {
             Self.render(text: item.text, reference: item.reference, translationLabel: item.translationLabel,
                         width: 390, scale: 1080 / 390)?.pngData()
         }
-        return data ?? Data()
+        guard let data else { throw CocoaError(.fileWriteUnknown) }
+        return data
     }
 }
 
@@ -60,10 +61,14 @@ struct ScriptureShareLink<Label: View>: View {
 
     var body: some View {
         let item = ScriptureShareItem(text: text, reference: reference, translationLabel: translationLabel)
-        ShareLink(item: item,
-                  subject: Text(reference),
-                  preview: SharePreview(reference, image: Image(uiImage: preview ?? UIImage(systemName: "book.closed")!)),
-                  label: label)
+        Group {
+            if let preview {
+                ShareLink(item: item, subject: Text(reference),
+                          preview: SharePreview(reference, image: Image(uiImage: preview)), label: label)
+            } else {
+                ShareLink(item: item, subject: Text(reference), preview: SharePreview(reference), label: label)
+            }
+        }
             .task(id: text + reference) {
                 preview = ScriptureShareItem.render(text: text, reference: reference,
                                                     translationLabel: translationLabel, width: 195, scale: 2)
