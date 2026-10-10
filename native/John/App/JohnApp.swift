@@ -242,7 +242,7 @@ private struct JohnRootView: View {
     /// so the router paths, the zoom namespaces and the Reader/Saved pushes work in both layouts.
     private var splitShell: some View {
         NavigationSplitView(columnVisibility: $splitVisibility) {
-            List(selection: Binding(get: { Optional(router.selectedTab) }, set: { if let tab = $0 { router.selectFromTabBar(tab) } })) {
+            List(selection: Binding(get: { Optional(router.selectedTab) }, set: { if let tab = $0 { router.select(tab) } })) {
                 ForEach(AppTab.allCases) { tab in
                     Label { Text(tab.rawValue) } icon: { tabIcon(tab) }
                         .tag(tab)

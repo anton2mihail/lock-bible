@@ -19,6 +19,8 @@ struct ReaderView: View {
     /// Reading progress (E7). The chapter counts as read when the user scrolls to its end, or taps "Mark read".
     @State private var progressSnapshot = ReadingProgressSnapshot()
     @State private var userScrolledChapter = false
+    @State private var chapterFitsViewport = false
+    @State private var chapterEndVisible = false
     @State private var scriptureOriginY: CGFloat = 0
     @State private var scriptureGlobalY: CGFloat = 0
     @State private var readerViewportTopY: CGFloat = 0
@@ -40,7 +42,7 @@ struct ReaderView: View {
     private let pushedRequest: ReaderChapterRequest?
     @State private var pushedModel: ReaderScreenModel?
 
-    init(pushedRequest: ReaderChapterRequest? = nil) {
+    @MainActor init(pushedRequest: ReaderChapterRequest? = nil) {
         self.pushedRequest = pushedRequest
         _pushedModel = State(initialValue: pushedRequest == nil ? nil : ReaderScreenModel())
     }
@@ -54,6 +56,11 @@ struct ReaderView: View {
         guard let spokenIndex, let label = runtime.readAloud.currentLabel else { return "idle" }
         _ = spokenIndex
         return "\(runtime.readAloud.isPlaying ? "playing" : "paused") verse \(label)"
+    }
+
+    private func markOpenChapterRead() {
+        guard let book = model.book, let number = model.chapterNumber, model.chapter?.number == number else { return }
+        Task { await runtime.setChapterRead(true, book: book.code, chapter: number) }
     }
 
     private func toggleReadAloud(book: BibleBookDescriptor, number: Int, chapter: BibleChapter) {
@@ -103,7 +110,13 @@ struct ReaderView: View {
         pushedRequest != nil || (router.selectedTab == .read && router.path(for: .read).isEmpty)
     }
     /// Back leaves a pushed Reader. In the Read tab root it steps from chapter to chapter list to book list.
-    private var goBack: () -> Void { pushedRequest == nil ? { model.goBack() } : { router.pop() } }
+    private var goBack: () -> Void {
+        pushedRequest != nil && model.screen == .chapter ? { router.pop() } : { model.goBack() }
+    }
+    /// The chapter screen of a pushed Reader pops to the previous page. Other screens step back inside the Reader.
+    private func chapterBackLabel(_ book: BibleBookDescriptor) -> String {
+        pushedRequest != nil ? "Back" : "Back to \(book.name) chapters"
+    }
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var systemTextScale: CGFloat {
         switch dynamicTypeSize {
@@ -612,7 +625,7 @@ struct ReaderView: View {
                 if let chapter = model.chapter, let layout = model.layout {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 0) {
-                            ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
+                            ReaderHeader(title: "\(book.name) \(number)", backLabel: chapterBackLabel(book),
                                          onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                                          onTextSettings: {
                                              #if DEBUG
@@ -820,23 +833,35 @@ struct ReaderView: View {
                             finishProgrammaticRestore()
                         }
                     }
-                    .onScrollGeometryChange(for: Bool.self) { geometry in
+                    .onScrollGeometryChange(for: ReaderEndState.self) { geometry in
                         let visibleBottom = geometry.contentOffset.y + geometry.containerSize.height
-                        return geometry.contentSize.height > geometry.containerSize.height
-                            && visibleBottom >= geometry.contentSize.height - 24
-                    } action: { _, atEnd in
-                        guard atEnd, userScrolledChapter,
-                              let book = model.book, let number = model.chapterNumber,
-                              model.chapter?.number == number else { return }
-                        Task { await runtime.setChapterRead(true, book: book.code, chapter: number) }
+                        let scrollable = geometry.contentSize.height > geometry.containerSize.height
+                        return ReaderEndState(fits: !scrollable,
+                                              atEnd: scrollable && visibleBottom >= geometry.contentSize.height - 24)
+                    } action: { _, state in
+                        chapterFitsViewport = state.fits
+                        chapterEndVisible = state.atEnd
+                        if state.atEnd, userScrolledChapter { markOpenChapterRead() }
                     }
+                    // A chapter that fits the viewport counts as read after 2 s on screen.
+                    .task(id: "\(model.book?.code ?? "")-\(model.chapterNumber ?? 0)-\(chapterFitsViewport)") {
+                        guard chapterFitsViewport else { return }
+                        try? await Task.sleep(for: .seconds(2))
+                        guard !Task.isCancelled, chapterFitsViewport else { return }
+                        markOpenChapterRead()
+                    }
+                    .simultaneousGesture(TapGesture().onEnded { if chapterFitsViewport { markOpenChapterRead() } })
                     .onChange(of: model.chapterNumber) { _, _ in userScrolledChapter = false }
                     .onChange(of: model.book?.code) { _, _ in userScrolledChapter = false }
                     .task(id: runtime.progressRevision) {
                         progressSnapshot = await loadReadingProgress(runtime: runtime, translation: model.edition)
                     }
                     .onScrollPhaseChange { oldPhase, phase in
-                        if phase == .interacting { userScrolledChapter = true }
+                        if phase == .interacting {
+                            // Set the flag first. If the end is already visible, this first touch marks the chapter read.
+                            userScrolledChapter = true
+                            if chapterEndVisible { markOpenChapterRead() }
+                        }
                         #if DEBUG
                         NSLog("L08_SCROLL_PHASE old=%@ new=%@ offset=%.1f textOrigin=%.1f",
                               String(describing: oldPhase), String(describing: phase),
@@ -922,7 +947,7 @@ struct ReaderView: View {
                 } else if model.isLoading {
                     ScrollView {
                         VStack(spacing: 20) {
-                            ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
+                            ReaderHeader(title: "\(book.name) \(number)", backLabel: chapterBackLabel(book),
                                          onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                                          onTextSettings: { router.sheet = .readerAppearance }, colors: colors)
                         .padding(.horizontal, 24)
@@ -934,7 +959,7 @@ struct ReaderView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 20) {
-                            ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
+                            ReaderHeader(title: "\(book.name) \(number)", backLabel: chapterBackLabel(book),
                                          onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                                          onTextSettings: { router.sheet = .readerAppearance }, colors: colors)
                         .padding(.horizontal, 24)
@@ -1277,4 +1302,9 @@ extension ReaderTextSize {
         let delta = Int((log(Double(scale)) / log(1.2)).rounded())
         return pinchSteps[min(max(index + delta, 0), pinchSteps.count - 1)]
     }
+}
+
+private struct ReaderEndState: Equatable {
+    let fits: Bool
+    let atEnd: Bool
 }

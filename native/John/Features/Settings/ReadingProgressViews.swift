@@ -157,6 +157,7 @@ struct ReadingProgressSettings: View {
     @State private var data = ReadingProgressData()
     @State private var message: String?
     @State private var saving = false
+    @State private var saveTask: Task<Void, Never>?
     @State private var confirmReset = false
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var reminder: ReadingReminderSettings { data.reminder ?? ReadingReminderSettings() }
@@ -196,19 +197,27 @@ struct ReadingProgressSettings: View {
         .task(id: runtime.progressRevision) { data = await runtime.readingProgress() }
     }
 
+    /// The picker and the scheduler (`.autoupdatingCurrent`) use the same time zone.
+    private var reminderCalendar: Calendar {
+        var calendar = Calendar.current
+        calendar.timeZone = .autoupdatingCurrent
+        return calendar
+    }
     private func date(_ value: ReadingReminderSettings) -> Date {
-        Calendar.current.date(bySettingHour: value.hour, minute: value.minute, second: 0, of: Date()) ?? Date()
+        reminderCalendar.date(bySettingHour: value.hour, minute: value.minute, second: 0, of: Date()) ?? Date()
     }
     private func settings(from date: Date) -> ReadingReminderSettings {
-        let c = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let c = reminderCalendar.dateComponents([.hour, .minute], from: date)
         return ReadingReminderSettings(enabled: true, hour: c.hour ?? 8, minute: c.minute ?? 0)
     }
     private func save(_ value: ReadingReminderSettings) {
+        saveTask?.cancel()
         saving = true
         message = nil
-        Task {
+        saveTask = Task {
             do { _ = try await runtime.saveReadingReminder(value) }
-            catch { message = error.localizedDescription }
+            catch { if !Task.isCancelled { message = error.localizedDescription } }
+            guard !Task.isCancelled else { return }
             data = await runtime.readingProgress()
             saving = false
         }

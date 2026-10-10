@@ -50,7 +50,15 @@ enum RosaryMediaPlaybackState: Equatable {
         guard !isActive else { return }
         isActive = true
         // Audio keeps playing with the screen locked (UIBackgroundModes audio).
-        try? AVAudioSession.sharedInstance().setCategory(.playback)
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback)
+            try session.setActive(true)
+        } catch {
+            #if DEBUG
+            NSLog("John media audio session failed: %@", error.localizedDescription)
+            #endif
+        }
         interruptionObserver = NotificationCenter.default.addObserver(
             forName: AVAudioSession.interruptionNotification,
             object: nil,

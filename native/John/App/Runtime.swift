@@ -159,6 +159,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
             today = TodayModel(appResources: nil, rotation: nil)
             startupStatus = "App resources are missing."
         }
+        readAloud.otherAudioActive = { [weak self] in self?.mediaAudio != nil }
         configureNoticeService()
         #if DEBUG
         configureFeatureClockFromArguments()
@@ -1137,7 +1138,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                         rollbackFailures: []
                     )
                 }
-            }
+            },
+            readReadingReminder: { [weak self] in await self?.progressStore?.data().reminder }
         )
     }
 

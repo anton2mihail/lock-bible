@@ -53,4 +53,17 @@ final class IPadB3dUITests: XCTestCase {
         shot("ipad-landscape-read", app)
         device.orientation = .portrait
     }
+
+    /// B3e: a sidebar tap on the selected tab must not pop that tab's stack.
+    func testSidebarSameTabTapKeepsReaderChapter() throws {
+        XCUIDevice.shared.orientation = .portrait
+        let app = launch()
+        item("tab-read", in: app).tap()
+        let book = app.buttons["reader-book-JHN"]
+        XCTAssertTrue(book.waitForExistence(timeout: 10))
+        book.tap()
+        XCTAssertTrue(app.buttons["reader-chapter-1"].waitForExistence(timeout: 8))
+        item("tab-read", in: app).tap()
+        XCTAssertTrue(app.buttons["reader-chapter-1"].waitForExistence(timeout: 4), "Same-tab sidebar tap must not pop")
+    }
 }

@@ -51,6 +51,9 @@ struct ReadAloudChapter: Equatable, Sendable {
     @ObservationIgnored private var currentUtterance: AVSpeechUtterance?
     @ObservationIgnored private var interruptionObserver: NSObjectProtocol?
     @ObservationIgnored private var commandsRegistered = false
+    @ObservationIgnored private var commandTokens: [(command: MPRemoteCommand, token: Any)] = []
+    /// Returns true while other audio (Rosary media) owns the audio session. Read aloud then keeps the session active.
+    @ObservationIgnored var otherAudioActive: @MainActor () -> Bool = { false }
 
     override init() {
         let stored = UserDefaults.standard.object(forKey: Self.rateKey) as? Float
@@ -129,7 +132,16 @@ struct ReadAloudChapter: Equatable, Sendable {
         isPlaying = false
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         removeInterruptionObserver()
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        removeRemoteCommands()
+        if !otherAudioActive() {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    }
+
+    private func removeRemoteCommands() {
+        for entry in commandTokens { entry.command.removeTarget(entry.token) }
+        commandTokens = []
+        commandsRegistered = false
     }
 
     // MARK: Speech
@@ -205,26 +217,26 @@ struct ReadAloudChapter: Equatable, Sendable {
         guard !commandsRegistered else { return }
         commandsRegistered = true
         let center = MPRemoteCommandCenter.shared()
-        center.playCommand.addTarget { [weak self] _ in
+        commandTokens.append((center.playCommand, center.playCommand.addTarget { [weak self] _ in
             Task { @MainActor in self?.play() }
             return .success
-        }
-        center.pauseCommand.addTarget { [weak self] _ in
+        }))
+        commandTokens.append((center.pauseCommand, center.pauseCommand.addTarget { [weak self] _ in
             Task { @MainActor in self?.pause() }
             return .success
-        }
-        center.togglePlayPauseCommand.addTarget { [weak self] _ in
+        }))
+        commandTokens.append((center.togglePlayPauseCommand, center.togglePlayPauseCommand.addTarget { [weak self] _ in
             Task { @MainActor in self?.togglePlayback() }
             return .success
-        }
-        center.nextTrackCommand.addTarget { [weak self] _ in
+        }))
+        commandTokens.append((center.nextTrackCommand, center.nextTrackCommand.addTarget { [weak self] _ in
             Task { @MainActor in self?.next() }
             return .success
-        }
-        center.previousTrackCommand.addTarget { [weak self] _ in
+        }))
+        commandTokens.append((center.previousTrackCommand, center.previousTrackCommand.addTarget { [weak self] _ in
             Task { @MainActor in self?.previous() }
             return .success
-        }
+        }))
     }
 
     private func updateNowPlaying() {

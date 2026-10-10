@@ -22,6 +22,7 @@ public final class LocalNoticeService {
     private let readCommitted: StateReader
     private let readCalendars: CalendarReader
     private let commit: StateCommitter
+    private let readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)?
     private var operationActive = false
     private var operationWaiters: [CheckedContinuation<Void, Never>] = []
 
@@ -30,7 +31,9 @@ public final class LocalNoticeService {
                 timeZone: @escaping @MainActor () -> TimeZone,
                 readCommitted: @escaping StateReader,
                 readCalendars: @escaping CalendarReader,
-                commit: @escaping StateCommitter) {
+                commit: @escaping StateCommitter,
+                readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)? = nil) {
+        self.readReadingReminder = readReadingReminder
         self.center = center
         self.now = now
         self.timeZone = timeZone
@@ -206,6 +209,25 @@ public final class LocalNoticeService {
                     mutation: refreshedReminder == reminder ? nil : .setRosaryReminder(refreshedReminder))
             } catch {
                 failures.append("Rosary: \(error.localizedDescription)")
+            }
+            if let readReadingReminder {
+                do {
+                    let reading = await readReadingReminder() ?? ReadingReminderSettings()
+                    let shouldSchedule = reading.enabled && currentPermission.canDeliver
+                    let pending = try await center.pendingRequests()
+                    let desired = shouldSchedule ? [NoticeRequest(
+                        identifier: Self.readingIdentifier,
+                        title: "Your John reading is ready",
+                        body: "Open today’s chapter and read a little.",
+                        userInfo: ["url": "/read/john"],
+                        trigger: .daily(hour: min(23, max(0, reading.hour)), minute: min(59, max(0, reading.minute)),
+                                        timeZoneIdentifier: timeZone().identifier))] : []
+                    try await reconcileAndCommit(desired: desired, pending: pending,
+                        owned: { $0.identifier == Self.readingIdentifier }, preserveSameIdentifier: false,
+                        restoreOnlyFutureCalendarRequests: false, operation: "Reading reminder refresh", mutation: nil)
+                } catch {
+                    failures.append("Reading: \(error.localizedDescription)")
+                }
             }
             if !failures.isEmpty { throw LocalNoticeError.refreshFailures(failures) }
         }
