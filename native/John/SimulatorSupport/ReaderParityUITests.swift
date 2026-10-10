@@ -894,8 +894,8 @@ final class ReaderParityUITests: XCTestCase {
             let above = element.frame.midY < viewport.midY
             let startFraction: CGFloat = above ? 0.25 : 0.75
             let endFraction: CGFloat = above ? 0.75 : 0.25
-            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
-            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            let start = CGPoint(x: viewport.minX + 24, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.minX + 24, y: viewport.minY + viewport.height * endFraction)
             NSLog("READER_PARITY_SCROLL attempt=%d id=%@ scroll=%@ viewport=%@ target=%@ start=%@ end=%@",
                   attempt, element.identifier, scroll.identifier, String(describing: viewport), String(describing: element.frame),
                   String(describing: start), String(describing: end))

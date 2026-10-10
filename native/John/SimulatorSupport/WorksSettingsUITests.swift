@@ -444,8 +444,8 @@ final class WorksSettingsUITests: XCTestCase {
             let scrollDown = targetFrame.midY < viewport.midY
             let startFraction: CGFloat = scrollDown ? 0.25 : 0.75
             let endFraction: CGFloat = scrollDown ? 0.75 : 0.25
-            let start = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * startFraction)
-            let end = CGPoint(x: viewport.midX, y: viewport.minY + viewport.height * endFraction)
+            let start = CGPoint(x: viewport.minX + 24, y: viewport.minY + viewport.height * startFraction)
+            let end = CGPoint(x: viewport.minX + 24, y: viewport.minY + viewport.height * endFraction)
             NSLog("WORKS_TAP_SCROLL attempt=%d id=%@ scroll=%@ scrollFrame=%@ viewport=%@ target=%@ direction=%@ start=%@ end=%@",
                   attempt + 1, element.identifier, scroll.identifier, NSCoder.string(for: scroll.frame),
                   NSCoder.string(for: viewport), NSCoder.string(for: targetFrame), scrollDown ? "down" : "up",
