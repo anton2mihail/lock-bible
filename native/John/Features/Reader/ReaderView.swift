@@ -938,6 +938,7 @@ private struct ReaderHeader: View {
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
                 .accessibilityLabel(backLabel)
+                .accessibilityInputLabels([backLabel, "Back"])
                 .accessibilityIdentifier("reader-back")
 
             Button(action: onTitlePress) {
@@ -945,8 +946,9 @@ private struct ReaderHeader: View {
                     Text(title)
                         .font(JohnTypography.sans(36, weight: .bold))
                         .tracking(-0.7)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.45)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
+                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.45)
+                        .fixedSize(horizontal: false, vertical: dynamicTypeSize.isAccessibilitySize)
                     FeatherIcon(name: "chevron-down", color: colors.text)
                 }
                 .foregroundStyle(colors.text)
@@ -956,6 +958,8 @@ private struct ReaderHeader: View {
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .buttonStyle(.plain)
             .accessibilityLabel(title)
+            .accessibilityHint("Opens the book and chapter list")
+            .accessibilityInputLabels([title, "Choose chapter", "Go to"])
             .accessibilityIdentifier("reader-title")
             #if DEBUG
             .accessibilityValue(requestID ?? "")
@@ -970,6 +974,7 @@ private struct ReaderHeader: View {
                         .contentShape(Rectangle())
                 }
                 .accessibilityLabel("Text settings")
+                .accessibilityInputLabels(["Text settings", "Aa", "Text size"])
                 .accessibilityIdentifier("reader-appearance-button")
             }
 
@@ -979,10 +984,10 @@ private struct ReaderHeader: View {
                     .contentShape(Rectangle())
             }
             .accessibilityLabel("Search Scripture")
+            .accessibilityInputLabels(["Search Scripture", "Search"])
             .accessibilityIdentifier("reader-search-button")
         }
         .frame(minHeight: 44)
-        .dynamicTypeSize(.xSmall ... .xLarge)
     }
 
     @ViewBuilder private var backIcon: some View {

@@ -9,6 +9,7 @@ let package = Package(
         .systemLibrary(name: "CSQLite", path: "Sources/CSQLite"),
         .systemLibrary(name: "CZlib", path: "Sources/CZlib"),
         .target(name: "JohnCore", dependencies: ["CSQLite", "CZlib"], path: "Sources/JohnCore"),
+        .testTarget(name: "JohnCoreTests", dependencies: ["JohnCore"], path: "Tests/JohnCoreTests"),
     ],
     swiftLanguageModes: [.v6]
 )
