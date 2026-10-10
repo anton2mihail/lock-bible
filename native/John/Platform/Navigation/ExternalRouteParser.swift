@@ -11,6 +11,8 @@ enum ExternalRoute: Sendable {
     /// `nil` when the URL has no date, or a date that fails the source check.
     case daily(String?)
     case rosary
+    /// Opens the Saved tab. Spotlight uses it for a saved item.
+    case saved
     case read(bookCode: String?, chapter: Int?, verse: String?, endVerse: String?, translation: TranslationID?)
 }
 
@@ -24,6 +26,7 @@ enum ExternalRouteParser {
             // Old app: `parseDate` (src/services/companion/calendar.ts:13-18) uses today for a missing or bad date.
             return .daily(values["date"].flatMap { isValidDateKey($0) ? $0 : nil })
         }
+        if host == "saved" { return .saved }
         if host == "pray", components.path == "/rosary" { return .rosary }
         guard host == "read" else { return nil }
         // Old app: ReaderScreen.tsx:84-90 reads book, chapter, verse, endVerse, and contextRequest only.

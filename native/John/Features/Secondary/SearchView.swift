@@ -15,6 +15,16 @@ struct SearchView: View {
     @State private var isSearching = false
     @State private var searchTerms: [String] = []
     @State private var responseTranslation: TranslationID = .webCE
+    // E11: scope tokens, suggested completions, and recent searches.
+    @State private var bookToken: BibleBookDescriptor?
+    @State private var editionOverride: TranslationID?
+    @State private var books: [BibleBookDescriptor] = []
+    @State private var recents: [String] = SearchRecents.load()
+
+    private var effectiveTranslation: TranslationID { editionOverride ?? preferences.translation }
+    private var suggestions: [BibleBookDescriptor] {
+        SearchRecents.completions(for: cleanQuery, in: books, excluding: bookToken)
+    }
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var cleanQuery: String { query.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -30,13 +40,16 @@ struct SearchView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
             searchField
+            tokenRow
             scopePicker
+            suggestionRow
             content
         }
         .background(colors.background.ignoresSafeArea())
-        .task(id: cleanQuery + "|" + scope.rawValue + "|" + preferences.translation.rawValue) {
+        .task(id: cleanQuery + "|" + scope.rawValue + "|" + effectiveTranslation.rawValue + "|" + (bookToken?.code ?? "")) {
             await runSearchAfterDelay()
         }
+        .task(id: effectiveTranslation) { books = await runtime.books(translation: effectiveTranslation) }
         .onAppear { searchFieldFocused = true }
     }
 
@@ -72,6 +85,113 @@ struct SearchView: View {
         .padding(.top, 12)
     }
 
+    /// Scope tokens: the book scope and the edition scope. A tap on a token removes it.
+    private var tokenRow: some View {
+        AdaptiveChipStack {
+            if let bookToken {
+                tokenButton(title: bookToken.name, id: "search-book-token", label: "Book scope \(bookToken.name). Remove.") {
+                    self.bookToken = nil
+                }
+            }
+            ForEach(TranslationID.allCases, id: \.rawValue) { edition in
+                let selected = effectiveTranslation == edition
+                Button {
+                    editionOverride = edition == preferences.translation ? nil : edition
+                } label: {
+                    Text(edition.shareLabel)
+                        .font(JohnTypography.sans(13, weight: .medium))
+                        .foregroundStyle(selected ? colors.card : colors.text)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .background(selected ? colors.tint : colors.card, in: Capsule())
+                        .overlay(Capsule().stroke(selected ? colors.tint : colors.border, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("search-edition-\(edition.rawValue)")
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 8)
+    }
+
+    private func tokenButton(title: String, id: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Text(title).font(JohnTypography.sans(13, weight: .semibold))
+                FeatherIcon(name: "x", color: colors.card)
+            }
+            .foregroundStyle(colors.card)
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .background(colors.tint, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+        .accessibilityIdentifier(id)
+    }
+
+    /// Suggested completions: books whose name starts with the typed text. A tap makes the book a scope token.
+    @ViewBuilder private var suggestionRow: some View {
+        let items = suggestions
+        if !items.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(Array(items.enumerated()), id: \.element.code) { offset, book in
+                        Button {
+                            bookToken = book
+                            query = ""
+                            response = nil
+                        } label: {
+                            Text("In \(book.name)")
+                                .font(JohnTypography.sans(14, weight: .medium))
+                                .foregroundStyle(colors.text)
+                                .padding(.horizontal, 14)
+                                .frame(minHeight: 44)
+                                .background(colors.card, in: Capsule())
+                                .overlay(Capsule().stroke(colors.border, lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("search-suggestion-\(offset + 1)")
+                    }
+                }
+                .padding(.horizontal, 24)
+            }
+        }
+    }
+
+    @ViewBuilder private var recentsList: some View {
+        if recents.isEmpty {
+            emptyMessage("Search by reference, keyword, or exact phrase.", title: "Find a passage", icon: "magnifyingglass")
+        } else {
+            List {
+                Section {
+                    ForEach(Array(recents.enumerated()), id: \.element) { offset, text in
+                        Button { query = text } label: {
+                            Label(text, systemImage: "clock.arrow.circlepath")
+                                .foregroundStyle(colors.text)
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        }
+                        .accessibilityIdentifier("search-recent-\(offset + 1)")
+                        .listRowBackground(colors.background)
+                    }
+                } header: {
+                    HStack {
+                        Text("Recent searches")
+                        Spacer()
+                        Button("Clear") { recents = SearchRecents.clear() }
+                            .accessibilityIdentifier("search-recents-clear")
+                    }
+                    .font(JohnTypography.sans(12, weight: .medium))
+                    .textCase(nil)
+                    .foregroundStyle(colors.textDim)
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .accessibilityIdentifier("search-status")
+        }
+    }
+
     private var scopePicker: some View {
         AdaptiveChipStack {
             ForEach(SearchScopeChoice.allCases) { choice in
@@ -97,10 +217,10 @@ struct SearchView: View {
 
     @ViewBuilder private var content: some View {
         if cleanQuery.count < 2 {
-            emptyMessage("Search by reference, keyword, or exact phrase.", title: "Find a passage", icon: "magnifyingglass")
+            recentsList
         } else if let errorMessage {
             emptyMessage(errorMessage, title: "Search failed", icon: "exclamationmark.triangle")
-        } else if let response, response.results.isEmpty {
+        } else if let response, scoped(response).isEmpty {
             emptyMessage("No passages found. Try fewer words or check the reference.", title: "No results", icon: "text.magnifyingglass")
         } else if let response {
             resultList(response)
@@ -109,8 +229,15 @@ struct SearchView: View {
         }
     }
 
+    /// The results that match the book scope token. The search itself has no book filter, so this filter runs on the list.
+    private func scoped(_ response: BibleSearchResponse) -> [BibleSearchResult] {
+        guard let bookToken else { return response.results }
+        return response.results.filter { $0.bookCode == bookToken.code }
+    }
+
     private func resultList(_ response: BibleSearchResponse) -> some View {
-        List {
+        let results = scoped(response)
+        return List {
             if let corrected = response.correctedQuery {
                 Text("Showing results for “\(corrected)”")
                     .font(JohnTypography.sans(14))
@@ -119,7 +246,7 @@ struct SearchView: View {
                     .accessibilityIdentifier("search-correction-notice")
             }
             Section {
-                ForEach(Array(response.results.enumerated()), id: \.element.id) { offset, result in
+                ForEach(Array(results.enumerated()), id: \.element.id) { offset, result in
                     Button { open(result, translation: responseTranslation) } label: {
                         VStack(alignment: .leading, spacing: 6) {
                             HStack(alignment: .firstTextBaseline) {
@@ -140,11 +267,11 @@ struct SearchView: View {
                     .listRowBackground(colors.background)
                 }
             } header: {
-                Text("\(response.results.count == 60 ? "60+" : String(response.results.count)) \(response.results.count == 1 ? "result" : "results")")
+                Text("\(results.count == 60 ? "60+" : String(results.count)) \(results.count == 1 ? "result" : "results")")
                     .font(JohnTypography.sans(12, weight: .medium))
                     .textCase(nil)
                     .foregroundStyle(colors.textDim)
-                    .numericChange(response.results.count)
+                    .numericChange(results.count)
                     .accessibilityIdentifier("search-result-count")
             }
         }
@@ -166,7 +293,7 @@ struct SearchView: View {
         let requestID = UUID().uuidString
         let submittedQuery = cleanQuery
         let submittedScope = scope
-        let submittedTranslation = preferences.translation
+        let submittedTranslation = effectiveTranslation
         activeRequestID = requestID
         errorMessage = nil
         guard submittedQuery.count >= 2 else {
@@ -199,6 +326,7 @@ struct SearchView: View {
 
     private func open(_ result: BibleSearchResult, translation: TranslationID) {
         searchFieldFocused = false
+        recents = SearchRecents.record(cleanQuery)
         Task {
             guard let passage = await runtime.passage(translation: translation,
                                                        bookCode: result.bookCode, chapter: result.chapter,
@@ -233,5 +361,42 @@ private enum SearchScopeChoice: String, CaseIterable, Identifiable {
     var scope: BibleSearchScope { BibleSearchScope(rawValue: rawValue)! }
     var title: String {
         switch self { case .all: "All"; case .ot: "Old Testament"; case .nt: "New Testament" }
+    }
+}
+
+/// Recent searches (E11). The list lives in UserDefaults. The helpers are pure, apart from the load and save calls.
+enum SearchRecents {
+    static let key = "search.recents.v1"
+    static let limit = 8
+
+    static func load() -> [String] { UserDefaults.standard.stringArray(forKey: key) ?? [] }
+
+    static func record(_ query: String) -> [String] {
+        let updated = merged(load(), adding: query)
+        UserDefaults.standard.set(updated, forKey: key)
+        return updated
+    }
+
+    static func clear() -> [String] {
+        UserDefaults.standard.removeObject(forKey: key)
+        return []
+    }
+
+    static func merged(_ existing: [String], adding query: String) -> [String] {
+        let clean = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard clean.count >= 2 else { return existing }
+        let others = existing.filter { $0.caseInsensitiveCompare(clean) != .orderedSame }
+        return Array(([clean] + others).prefix(limit))
+    }
+
+    /// Books whose name starts with the typed text. It returns nothing for a text that is a longer phrase.
+    static func completions(for query: String, in books: [BibleBookDescriptor],
+                            excluding token: BibleBookDescriptor?) -> [BibleBookDescriptor] {
+        let typed = query.lowercased()
+        guard !typed.isEmpty, typed.count <= 12 else { return [] }
+        return Array(books.filter { book in
+            book.code != token?.code && (book.name.lowercased().hasPrefix(typed) || book.longName.lowercased().hasPrefix(typed))
+                && book.name.lowercased() != typed
+        }.prefix(5))
     }
 }

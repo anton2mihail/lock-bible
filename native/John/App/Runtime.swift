@@ -880,6 +880,22 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         return try await searchRepository.search(request)
     }
 
+    /// Rebuilds the Spotlight entries for saved bookmarks and notes. It runs after each change to saved data.
+    func refreshSpotlightSaved() {
+        guard let library else { return }
+        Task {
+            guard let saved = try? await library.listSavedItems(filter: .all) else { return }
+            await SpotlightIndexer.replaceSaved(saved)
+        }
+    }
+
+    /// Indexes books and chapters of the current edition, and the saved items. Called after startup.
+    func refreshSpotlightAll() async {
+        let translation = preferences.translation
+        await SpotlightIndexer.indexBible(translation: translation, books: await books(translation: translation))
+        refreshSpotlightSaved()
+    }
+
     func savedItems(filter: SavedFilter = .all) async throws -> [SavedItem] {
         guard let library else { throw CoreError.unreadableLibrary("saved items unavailable") }
         return try await library.listSavedItems(filter: filter)
@@ -888,11 +904,13 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     func deleteSavedItem(_ item: SavedItem) async throws {
         guard let library else { throw CoreError.unreadableLibrary("saved items unavailable") }
         try await library.delete(item)
+        refreshSpotlightSaved()
     }
 
     func restoreSavedItem(_ item: SavedItem) async throws {
         guard let library else { throw CoreError.unreadableLibrary("saved items unavailable") }
         try await library.restore(item)
+        refreshSpotlightSaved()
     }
 
     func note(for passage: PassageID) async throws -> String {
@@ -903,11 +921,13 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     func saveNote(_ passage: PassageSelection, text: String) async throws {
         guard let library else { throw CoreError.unreadableLibrary("saved notes unavailable") }
         try await library.saveNote(passage, text: text)
+        refreshSpotlightSaved()
     }
 
     func deleteNote(for passage: PassageSelection) async throws {
         guard let library else { throw CoreError.unreadableLibrary("saved notes unavailable") }
         try await library.saveNote(passage, text: "")
+        refreshSpotlightSaved()
     }
 
     func isBookmarked(_ passage: PassageID) async throws -> Bool {
@@ -917,17 +937,21 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
 
     func toggleBookmark(_ passage: PassageSelection) async throws -> Bool {
         guard let library else { throw CoreError.unreadableLibrary("bookmarks unavailable") }
-        return try await library.toggleBookmark(passage)
+        let marked = try await library.toggleBookmark(passage)
+        refreshSpotlightSaved()
+        return marked
     }
 
     func applyHighlight(_ passage: PassageSelection, color: HighlightColor) async throws {
         guard let library else { throw CoreError.unreadableLibrary("highlights unavailable") }
         try await library.applyHighlight(passage, color: color)
+        refreshSpotlightSaved()
     }
 
     func clearHighlight(_ passage: PassageSelection) async throws {
         guard let library else { throw CoreError.unreadableLibrary("highlights unavailable") }
         try await library.clearHighlight(passage)
+        refreshSpotlightSaved()
     }
 
     func chapterHighlights(translation: TranslationID, bookCode: String, chapter: Int) async -> [String: HighlightColor] {

@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import TipKit
+import CoreSpotlight
 @preconcurrency import UserNotifications
 
 @main
@@ -21,6 +22,20 @@ struct JohnApp: App {
                 .onOpenURL { url in
                     runtime.enqueueExternalURL(url, using: router)
                 }
+                .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                    guard let identifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
+                          let url = SpotlightIndexer.route(forIdentifier: identifier) else { return }
+                    runtime.enqueueExternalURL(url, using: router)
+                }
+                #if DEBUG
+                .task {
+                    // UI test hook: the launch argument -JohnSpotlightIdentifier <id> takes the same route as a Spotlight tap.
+                    if let identifier = UserDefaults.standard.string(forKey: "JohnSpotlightIdentifier"),
+                       let url = SpotlightIndexer.route(forIdentifier: identifier) {
+                        runtime.enqueueExternalURL(url, using: router)
+                    }
+                }
+                #endif
         }
     }
 }
@@ -73,6 +88,10 @@ private struct JohnRootView: View {
             }
             await runtime.start()
             await runtime.drainExternalURLs(using: router)
+        }
+        .task(id: runtime.startupComplete && runtime.hasNativeState ? preferences.translation.rawValue : "") {
+            guard runtime.startupComplete, runtime.hasNativeState else { return }
+            await runtime.refreshSpotlightAll()
         }
         .task(id: scenePhase) {
             guard scenePhase == .active else { return }

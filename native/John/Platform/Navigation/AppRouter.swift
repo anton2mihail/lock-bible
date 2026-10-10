@@ -202,6 +202,10 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             select(.today)
             paths[.today, default: []].append(.daily(key))
             markRoutedByCode(.today)
+        case .saved:
+            select(.saved)
+            paths[.saved] = []
+            markRoutedByCode(.saved)
         case .rosary:
             select(.pray)
             paths[.pray] = [.companion(.rosaryHome)]
