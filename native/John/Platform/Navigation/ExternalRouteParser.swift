@@ -13,6 +13,10 @@ enum ExternalRoute: Sendable {
     case rosary
     /// Opens the Saved tab. Spotlight uses it for a saved item.
     case saved
+    /// Opens the last chapter and starts read aloud. App Intents use it.
+    case readAloud
+    /// Opens a new note on John 1:1. App Intents use it.
+    case note
     case read(bookCode: String?, chapter: Int?, verse: String?, endVerse: String?, translation: TranslationID?)
 }
 
@@ -27,6 +31,8 @@ enum ExternalRouteParser {
             return .daily(values["date"].flatMap { isValidDateKey($0) ? $0 : nil })
         }
         if host == "saved" { return .saved }
+        if host == "readaloud" { return .readAloud }
+        if host == "note" { return .note }
         if host == "pray", components.path == "/rosary" { return .rosary }
         guard host == "read" else { return nil }
         // Old app: ReaderScreen.tsx:84-90 reads book, chapter, verse, endVerse, and contextRequest only.

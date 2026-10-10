@@ -20,6 +20,7 @@ struct JohnApp: App {
                 .environment(router)
                 .environment(runtime.preferences)
                 .preferredColorScheme(runtime.preferences.preferredColorScheme)
+                .onChange(of: router.selectedTab) { _, tab in IntentDonor.donate(tab: tab) }
                 .onOpenURL { url in
                     runtime.enqueueExternalURL(url, using: router)
                 }
@@ -33,6 +34,10 @@ struct JohnApp: App {
                     // UI test hook: the launch argument -JohnSpotlightIdentifier <id> takes the same route as a Spotlight tap.
                     if let identifier = UserDefaults.standard.string(forKey: "JohnSpotlightIdentifier"),
                        let url = SpotlightIndexer.route(forIdentifier: identifier) {
+                        runtime.enqueueExternalURL(url, using: router)
+                    }
+                    // UI test hook: -JohnOpenURL <url> takes the same route as an App Intent.
+                    if let raw = UserDefaults.standard.string(forKey: "JohnOpenURL"), let url = URL(string: raw) {
                         runtime.enqueueExternalURL(url, using: router)
                     }
                 }
@@ -409,7 +414,7 @@ private final class JohnNotificationDelegate: NSObject, UIApplicationDelegate, U
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
                                             willPresent notification: UNNotification,
                                             withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound])
+        completionHandler(FocusQuiet.muteReminders ? [] : [.banner, .sound])
     }
 
     nonisolated private static func routeURL(_ rawValue: String?) -> URL? {

@@ -93,6 +93,8 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
     /// `ReaderScreenModel.receive` request handling (commit 9d3753c) were verified with that lifecycle.
     private(set) var readEntryID = UUID()
     var sheet: AppSheet?
+    /// An App Intent sets this. The Reader starts read aloud when the chapter is ready, then clears it.
+    var pendingReadAloud = false
     private(set) var latestPassageRequest: PassageRequest?
     private(set) var latestChapterRequest: ReaderChapterRequest?
     private var paths: [AppTab: [AppRoute]] = [:]
@@ -222,6 +224,21 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             select(.pray)
             paths[.pray] = [.companion(.rosaryHome)]
             markRoutedByCode(.pray)
+        case .readAloud:
+            let location = runtime.preferences.readerLocation
+            pendingReadAloud = true
+            openReader(bookCode: location?.bookCode.rawValue ?? "JHN", chapter: location?.chapter ?? 1,
+                       translation: runtime.preferences.translation)
+        case .note:
+            let translation = runtime.preferences.translation
+            if let passage = await runtime.passage(translation: translation, bookCode: "JHN", chapter: 1,
+                                                   startVerse: "1", endVerse: "1") {
+                select(.read)
+                paths[.read] = [.noteEditor(passage)]
+                markRoutedByCode(.read)
+            } else {
+                openReader(bookCode: "JHN", chapter: 1, translation: translation)
+            }
         case let .read(bookCode, chapter, verse, endVerse, requestedTranslation):
             // Old app: the Read tab opens for every `read` URL. Then ReaderScreen.tsx:286-308 decides.
             let translation = requestedTranslation ?? runtime.preferences.translation

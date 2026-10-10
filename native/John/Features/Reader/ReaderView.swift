@@ -300,6 +300,13 @@ struct ReaderView: View {
         .onAppear {
             if pushedRequest == nil { model.prepareVisibleLocationRestore(preferences.readerLocation) }
         }
+        .task(id: "\(model.book?.code ?? "")-\(model.chapterNumber ?? 0)-\(model.chapter?.number ?? 0)-\(router.pendingReadAloud)") {
+            // An App Intent asked for read aloud. Start it once the chapter is loaded.
+            guard router.pendingReadAloud, let book = model.book, let number = model.chapterNumber,
+                  let chapter = model.chapter, chapter.number == number else { return }
+            router.pendingReadAloud = false
+            toggleReadAloud(book: book, number: number, chapter: chapter)
+        }
         .onChange(of: model.chapterScrollResetID) { _, resetID in
             guard resetID != nil,
                   model.pendingRestoreScrollY == nil,

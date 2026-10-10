@@ -35,6 +35,10 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The microphone lets you dictate a note. The app does not keep the audio.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speech recognition turns your voice into note text. It runs on this device only.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Feather.ttf</string>

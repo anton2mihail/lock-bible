@@ -19,7 +19,13 @@ enum JohnTips {
         }
         #endif
         try? Tips.configure([.displayFrequency(.immediate)])
+        applyFocus()
     }
+
+    /// A Focus filter sets this to true. Each tip has a rule that needs false.
+    @Parameter static var hiddenByFocus: Bool = false
+
+    @MainActor static func applyFocus() { hiddenByFocus = FocusQuiet.hideTips }
 
     static func noteUse() { Task { await used.donate() } }
 }
@@ -28,21 +34,21 @@ struct PinchTextSizeTip: Tip {
     var title: Text { Text("Resize the text") }
     var message: Text? { Text("Pinch the chapter with two fingers to make the text larger or smaller.") }
     var image: Image? { Image(systemName: "textformat.size") }
-    var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 3 }] }
+    var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 3 }, #Rule(JohnTips.$hiddenByFocus) { $0 == false }] }
 }
 
 struct ShareVerseTip: Tip {
     var title: Text { Text("Share a verse") }
     var message: Text? { Text("Press and hold a verse. Then choose Card or Copy to share it.") }
     var image: Image? { Image(systemName: "square.and.arrow.up") }
-    var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 5 }] }
+    var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 5 }, #Rule(JohnTips.$hiddenByFocus) { $0 == false }] }
 }
 
 struct SwipeSavedShareTip: Tip {
     var title: Text { Text("Share a saved verse") }
     var message: Text? { Text("Touch and hold a saved item to share it.") }
     var image: Image? { Image(systemName: "hand.tap") }
-    var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 3 }] }
+    var rules: [Rule] { [#Rule(JohnTips.used) { $0.donations.count >= 3 }, #Rule(JohnTips.$hiddenByFocus) { $0 == false }] }
 }
 
 /// A static tip view. It reads the Tip status and shows the tip at once, with no transition.

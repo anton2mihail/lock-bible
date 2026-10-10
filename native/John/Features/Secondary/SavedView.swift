@@ -1,3 +1,4 @@
+import PencilKit
 import SwiftUI
 import JohnCore
 
@@ -478,6 +479,11 @@ struct SavedNoteEditor: View {
     @State private var isLoadReady = false
     @State private var isSaving = false
     @State private var errorMessage: String?
+    @State private var dictation = NoteDictation()
+    @State private var dictationBase = ""
+    @State private var drawing = PKDrawing()
+    @State private var originalDrawingData = Data()
+    @State private var showCanvas = false
 
     init(item: SavedItem, onSaved: @escaping () async -> Void, onClose: (() -> Void)? = nil) {
         self.item = item
@@ -556,6 +562,7 @@ struct SavedNoteEditor: View {
                         }
                     }
                     .focused($editorFocused)
+                    .writingToolsBehavior(.complete)
                     .dropDestination(for: String.self) { texts, _ in
                         guard isLoadReady, !texts.isEmpty else { return false }
                         let dropped = texts.joined(separator: "\n")
@@ -567,6 +574,34 @@ struct SavedNoteEditor: View {
                     .accessibilityIdentifier("saved-note-editor")
                     .id("saved-note-editor")
                     .disabled(isLoading || !isLoadReady)
+                HStack(spacing: 12) {
+                    Button { Task { await toggleDictation() } } label: {
+                        Label(dictation.isListening ? "Stop dictation" : "Dictate",
+                              systemImage: dictation.isListening ? "mic.fill" : "mic")
+                    }
+                    .frame(minHeight: 44)
+                    .disabled(isLoading || !isLoadReady)
+                    .accessibilityIdentifier("saved-note-dictate")
+                    Button { showCanvas = true } label: {
+                        Label("Handwrite", systemImage: "pencil.tip")
+                    }
+                    .frame(minHeight: 44)
+                    .disabled(isLoading || !isLoadReady)
+                    .accessibilityIdentifier("saved-note-handwrite")
+                }
+                if dictation.state == .denied {
+                    Text("Dictation needs microphone and speech access. Allow it in Settings, or use the keyboard microphone.")
+                        .font(JohnTypography.sans(13)).foregroundStyle(colors.textDim)
+                        .accessibilityIdentifier("saved-note-dictation-denied")
+                } else if dictation.state == .unavailable {
+                    Text("Dictation on this device is not available now. Use the keyboard microphone.")
+                        .font(JohnTypography.sans(13)).foregroundStyle(colors.textDim)
+                        .accessibilityIdentifier("saved-note-dictation-unavailable")
+                }
+                if !drawing.strokes.isEmpty {
+                    NoteDrawingPreview(drawing: drawing)
+                        .accessibilityIdentifier("saved-note-drawing")
+                }
                 if hasPersistedNote {
                     Button("Delete note", role: .destructive) { Task { await deleteNote() } }
                         .disabled(isLoading || isSaving || !isLoadReady)
@@ -607,11 +642,28 @@ struct SavedNoteEditor: View {
                     .accessibilityIdentifier("saved-note-save")
             }
         }
-        .interactiveDismissDisabled(draft != originalText)
+        .interactiveDismissDisabled(draft != originalText || drawing.dataRepresentation() != originalDrawingData)
+        .sheet(isPresented: $showCanvas) { NoteDrawingSheet(drawing: $drawing) }
+        .onChange(of: dictation.transcript) { _, text in
+            guard dictation.isListening || !text.isEmpty else { return }
+            draft = dictationBase.isEmpty ? text : dictationBase + " " + text
+        }
+        .onDisappear { dictation.stop() }
         .overlay {
             if isLoading { ProgressView("Loading note…") }
         }
         .task { await loadPassage() }
+    }
+
+    @MainActor private func toggleDictation() async {
+        if !dictation.isListening { dictationBase = draft.trimmingCharacters(in: .whitespacesAndNewlines) }
+        await dictation.toggle()
+    }
+
+    @MainActor private func loadDrawing(for passage: PassageSelection?) {
+        guard let passage, let stored = NoteDrawingStore.load(key: NoteDrawingStore.key(for: passage)) else { return }
+        drawing = stored
+        originalDrawingData = stored.dataRepresentation()
     }
 
     @MainActor private func loadPassage() async {
@@ -621,6 +673,7 @@ struct SavedNoteEditor: View {
                 draft = try await runtime.note(for: initialPassage.id)
                 originalText = draft
                 hasPersistedNote = draftHasContent
+                loadDrawing(for: initialPassage)
                 isLoadReady = true
             } catch {
                 errorMessage = "Your note could not be loaded. Return to the reader and try again."
@@ -640,6 +693,7 @@ struct SavedNoteEditor: View {
         if passage == nil {
             errorMessage = "This note could not be opened. Return to the reader and try again."
         } else {
+            loadDrawing(for: passage)
             isLoadReady = true
         }
         isLoading = false
@@ -653,6 +707,7 @@ struct SavedNoteEditor: View {
         isSaving = true
         do {
             try await runtime.saveNoteUndoable(passage, text: draft, undoManager: undoManager)
+            try? NoteDrawingStore.save(drawing, key: NoteDrawingStore.key(for: passage))
             await onSaved()
             close()
         } catch {
@@ -669,6 +724,7 @@ struct SavedNoteEditor: View {
         isSaving = true
         do {
             try await runtime.deleteNoteUndoable(for: passage, undoManager: undoManager)
+            NoteDrawingStore.delete(key: NoteDrawingStore.key(for: passage))
             await onSaved()
             close()
         } catch {
