@@ -113,6 +113,7 @@ struct ScriptureTextView: UIViewRepresentable {
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.didTap(_:)))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+        view.addInteraction(UIDragInteraction(delegate: view))
         context.coordinator.view = view
         return view
     }
@@ -852,4 +853,17 @@ private final class ReaderVerseAccessibilityElement: UIAccessibilityElement {
 private extension NSAttributedString.Key {
     static let verseIndex = NSAttributedString.Key("reader.verseIndex")
     static let verseBody = NSAttributedString.Key("reader.verseBody")
+}
+
+
+/// A selected verse can be dragged out as plain text, for example into a note editor.
+extension ReaderTextKitView: UIDragInteractionDelegate {
+    func dragInteraction(_ interaction: UIDragInteraction, itemsForBeginning session: any UIDragSession) -> [UIDragItem] {
+        guard let selection = activeSelection,
+              let index = verseIndex(at: session.location(in: self)), selection.contains(index) else { return [] }
+        let text = selection.compactMap { verseDescriptions.indices.contains($0) ? verseDescriptions[$0] : nil }
+            .joined(separator: " ")
+        guard !text.isEmpty else { return [] }
+        return [UIDragItem(itemProvider: NSItemProvider(object: text as NSString))]
+    }
 }

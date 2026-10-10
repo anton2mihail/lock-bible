@@ -110,3 +110,41 @@ private func book(_ code: String, _ name: String, chapters: Int, order: Int) thr
         #expect(again == summary)
     }
 }
+
+@Suite struct SavedBackupTests {
+    private func item(_ id: String, _ kind: SavedItemKind, updated: Int64 = 1000) -> SavedItem {
+        SavedItem(id: id, kind: kind, translationID: "nrsv", bookCode: "JHN", bookName: "John", bookOrder: 1, chapter: 3,
+                  startVerse: "16", endVerse: "16", startIndex: 0, endIndex: 0, scriptureText: "For God so loved",
+                  reference: "John 3:16", createdAt: 1, updatedAt: updated, noteText: kind == .note ? "n" : nil)
+    }
+
+    @Test func roundTripAndMergeWithoutDuplicates() throws {
+        let backup = SavedBackup(items: [item("a", .note), item("a", .note), item("b", .bookmark)], tags: ["a": ["x"]], exportedAt: 5)
+        let decoded = try SavedBackup.decode(try backup.encoded())
+        #expect(decoded.newItems(existingIDs: ["b"]).map(\.id) == ["a"])
+        #expect(decoded.tags["a"] == ["x"])
+    }
+
+    @Test func oldBackupWithoutTagsDecodes() throws {
+        let json = #"{"format":"john-saved-backup","items":[]}"#
+        #expect(try SavedBackup.decode(Data(json.utf8)).tags.isEmpty)
+        #expect(throws: (any Error).self) { try SavedBackup.decode(Data(#"{"format":"x","items":[]}"#.utf8)) }
+    }
+
+    @Test func smartFoldersAndTags() {
+        let now: Int64 = 10 * 24 * 3600 * 1000
+        let old = item("o", .highlight, updated: 0), fresh = item("f", .highlight, updated: now - 1000)
+        #expect(!SavedSmartFolder.highlightsThisWeek.matches(old, tags: [], nowMilliseconds: now))
+        #expect(SavedSmartFolder.highlightsThisWeek.matches(fresh, tags: [], nowMilliseconds: now))
+        #expect(!SavedSmartFolder.untagged.matches(fresh, tags: ["a"], nowMilliseconds: now))
+        #expect(SavedTags.normalize(" #Faith ") == "faith")
+        #expect(SavedTags.merge(["a": ["x"]], ["a": ["x", "y"]])["a"] == ["x", "y"])
+    }
+
+    @Test func tagStorePersists() async throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("tags-\(UUID()).json")
+        let store = SavedTagStore(url: url)
+        try await store.set(["Hope", "hope", ""], for: "a")
+        #expect(await SavedTagStore(url: url).tags(for: "a") == ["hope"])
+    }
+}

@@ -54,6 +54,9 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     private(set) var startupStatus = "Loading saved data."
     private(set) var nativeStateCapability: String?
     private(set) var libraryCapability: String?
+    /// Increases after undo, redo, import, or tag changes. Views reload saved data when it changes.
+    var savedRevision = 0
+    let tagStore: SavedTagStore?
     private(set) var settingSaveUncertain = false
     private(set) var startupComplete = false
     private(set) var hasNativeState = false
@@ -119,13 +122,16 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                                               roots: roots,
                                               legacyReader: LegacyMMKVReader(rootURL: legacyRoot))
                 library = SQLiteLibraryRepository(databaseURL: libraryURL, recoveryDirectory: recoveryDirectory)
+                tagStore = SavedTagStore(url: applicationSupport.appendingPathComponent("John/saved-tags-v1.json", isDirectory: false))
             } else {
                 stateStore = nil
+                tagStore = nil
                 library = nil
                 startupStatus = "The app cannot find its saved-data folders."
             }
         } else {
             stateStore = nil
+            tagStore = nil
             library = nil
             searchRepository = nil
             bible = nil

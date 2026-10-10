@@ -199,6 +199,49 @@ final class NativeSmokeUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["saved-status"].exists)
     }
 
+    func testSavedTagsSmartFoldersExportAndUndoManager() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
+        resetSavedLibrary(app)
+        tabButton(app, "tab-saved").tap()
+        let rows = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "saved-row-"))
+        waitForRowCount(rows, 4)
+
+        rows.firstMatch.press(forDuration: 1.2)
+        let addTag = app.buttons["Add tag"]
+        XCTAssertTrue(addTag.waitForExistence(timeout: 5))
+        addTag.tap()
+        let field = app.alerts.textFields.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.typeText("Hope")
+        app.alerts.buttons["Add"].tap()
+        let chip = app.buttons["saved-tag-hope"]
+        XCTAssertTrue(chip.waitForExistence(timeout: 5))
+        chip.tap()
+        waitForRowCount(rows, 1)
+        chip.tap()
+        waitForRowCount(rows, 4)
+        app.buttons["saved-folder-untagged"].tap()
+        waitForRowCount(rows, 3)
+        app.buttons["saved-folder-untagged"].tap()
+        waitForRowCount(rows, 4)
+
+        app.buttons["saved-export-menu"].tap()
+        XCTAssertTrue(app.buttons["saved-export-markdown"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["saved-export-share-backup"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["saved-import-button"].exists)
+        app.buttons["saved-export-done"].tap()
+
+        let first = rows.firstMatch
+        let savedID = String(first.identifier.dropFirst("saved-row-".count))
+        app.buttons["saved-delete-\(savedID)"].tap()
+        waitForRowCount(rows, 3)
+        app.buttons["saved-undo-button"].tap()
+        waitForRowCount(rows, 4)
+    }
+
     func testSearchResultsAndSavedFilters() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnResetNativeState"] // test isolation: default text size and Reader location

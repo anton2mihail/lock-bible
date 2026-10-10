@@ -17,19 +17,45 @@ struct SavedView: View {
     @State private var loadedFilter: SavedFilter?
     @State private var undoToken = UUID()
     @State private var undoCount = 0
+    @Environment(\.undoManager) private var undoManager
+    @State private var tags: [String: [String]] = [:]
+    @State private var tagFilter: String?
+    @State private var smartFolder: SavedSmartFolder?
+    @State private var showExport = false
+    @State private var tagTarget: SavedItem?
+    @State private var tagDraft = ""
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     var body: some View {
         VStack(spacing: 0) {
-            Text("Saved")
-                .font(JohnTypography.sans(36, weight: .bold))
-                .foregroundStyle(colors.text)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 24)
-                .padding(.top, 8)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityIdentifier("page-title-saved")
+            HStack {
+                Text("Saved")
+                    .font(JohnTypography.sans(36, weight: .bold))
+                    .foregroundStyle(colors.text)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityIdentifier("page-title-saved")
+                Button { showExport = true } label: {
+                    Image(systemName: "square.and.arrow.up.on.square")
+                        .font(.system(size: 20))
+                        .foregroundStyle(colors.tint)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Export and import")
+                .accessibilityIdentifier("saved-export-menu")
+                // Hidden shortcut for Cmd-Z and Cmd-Shift-Z on a hardware keyboard. Shake to undo uses the window undo manager.
+                Button("Undo") { runtime.resolveUndoManager(undoManager)?.undo() }
+                    .keyboardShortcut("z", modifiers: .command)
+                    .frame(width: 1, height: 1).opacity(0.01).accessibilityHidden(true)
+                Button("Redo") { runtime.resolveUndoManager(undoManager)?.redo() }
+                    .keyboardShortcut("z", modifiers: [.command, .shift])
+                    .frame(width: 1, height: 1).opacity(0.01).accessibilityHidden(true)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 8)
             filterBar
+            organizerBar
             if let message, !items.isEmpty {
                 Text(message)
                     .font(JohnTypography.sans(13))
@@ -90,6 +116,21 @@ struct SavedView: View {
         .transaction(value: items.count) { if undoItem == nil { $0.animation = nil } }
         .background(colors.background.ignoresSafeArea())
         .task(id: filter.rawValue) { await reload() }
+        .onChange(of: runtime.savedRevision) { _, _ in Task { await reload() } }
+        .sheet(isPresented: $showExport) {
+            SavedExportSheet(colors: colors, onImported: { _ in })
+                .environment(runtime)
+        }
+        .alert("Add tag", isPresented: Binding(get: { tagTarget != nil }, set: { if !$0 { tagTarget = nil } })) {
+            TextField("Tag", text: $tagDraft)
+            Button("Add") {
+                if let target = tagTarget, let tag = SavedTags.normalize(tagDraft) {
+                    Task { try? await runtime.setTags((tags[target.id] ?? []) + [tag], for: target.id) }
+                }
+                tagDraft = ""; tagTarget = nil
+            }
+            Button("Cancel", role: .cancel) { tagDraft = ""; tagTarget = nil }
+        }
         .onChange(of: router.selectedTab) { _, tab in
             if tab == .saved { Task { await reload() } }
         }
@@ -132,12 +173,62 @@ struct SavedView: View {
         .sensoryFeedback(.selection, trigger: filter)
     }
 
+    private var visibleItems: [SavedItem] {
+        let now = Int64(runtime.featureNow().timeIntervalSince1970 * 1000)
+        return items.filter { item in
+            let itemTags = tags[item.id] ?? []
+            if let smartFolder, !smartFolder.matches(item, tags: itemTags, nowMilliseconds: now) { return false }
+            if let tagFilter, !itemTags.contains(tagFilter) { return false }
+            return true
+        }
+    }
+
+    private var organizerBar: some View {
+        let allTags = Array(Set(tags.values.flatMap { $0 })).sorted()
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(SavedSmartFolder.allCases, id: \.rawValue) { folder in
+                    chip(folder.title, selected: smartFolder == folder, id: "saved-folder-\(folder.rawValue)") {
+                        smartFolder = smartFolder == folder ? nil : folder
+                    }
+                }
+                ForEach(allTags, id: \.self) { tag in
+                    chip("#\(tag)", selected: tagFilter == tag, id: "saved-tag-\(tag)") {
+                        tagFilter = tagFilter == tag ? nil : tag
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+        }
+        .padding(.bottom, 8)
+    }
+
+    private func chip(_ title: String, selected: Bool, id: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(JohnTypography.sans(13, weight: .medium))
+                .foregroundStyle(selected ? colors.card : colors.text)
+                .padding(.horizontal, 12)
+                .frame(minHeight: 44)
+                .background(selected ? colors.tint : colors.card, in: Capsule())
+                .overlay(Capsule().stroke(selected ? colors.tint : colors.border, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(id)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
     private var savedList: some View {
         List {
-            ForEach(items, id: \.id) { item in
-                SavedRow(item: item, colors: colors,
+            ForEach(visibleItems, id: \.id) { item in
+                SavedRow(item: item, tags: tags[item.id] ?? [], colors: colors,
                          open: { open(item) }, editNote: { open(item) }, delete: { Task { await delete(item) } })
                     .listRowBackground(colors.background)
+                    .draggable(item.scriptureText)
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        Button { tagTarget = item } label: { Label("Tag", systemImage: "tag") }
+                            .tint(colors.tint)
+                    }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             Task { await delete(item) }
@@ -151,6 +242,12 @@ struct SavedView: View {
                                            translationLabel: TranslationID(rawValue: item.translationID)?.shareLabel
                                                ?? item.translationID.uppercased()) {
                             Label("Share", systemImage: "square.and.arrow.up")
+                        }
+                        Button { tagTarget = item } label: { Label("Add tag", systemImage: "tag") }
+                        ForEach(tags[item.id] ?? [], id: \.self) { tag in
+                            Button {
+                                Task { try? await runtime.setTags((tags[item.id] ?? []).filter { $0 != tag }, for: item.id) }
+                            } label: { Label("Remove #\(tag)", systemImage: "tag.slash") }
                         }
                         Button(role: .destructive) {
                             Task { await delete(item) }
@@ -212,6 +309,7 @@ struct SavedView: View {
             let result = try await runtime.savedItems(filter: requestedFilter)
             guard current == generation else { return }
             items = result
+            tags = await runtime.savedTags()
             loadedFilter = requestedFilter
             message = nil
         } catch {
@@ -225,7 +323,7 @@ struct SavedView: View {
     @MainActor private func delete(_ item: SavedItem) async {
         generation += 1
         do {
-            try await runtime.deleteSavedItem(item)
+            try await runtime.deleteSavedItemUndoable(item, undoManager: undoManager)
             generation += 1
             undoItem = item
             items.removeAll { $0.id == item.id }
@@ -242,7 +340,12 @@ struct SavedView: View {
         let token = undoToken
         generation += 1
         do {
-            try await runtime.restoreSavedItem(item)
+            // The undo bar and UndoManager share one step. Use the step when it exists, so redo stays valid.
+            if let manager = runtime.resolveUndoManager(undoManager), manager.canUndo {
+                manager.undo()
+            } else {
+                try await runtime.restoreSavedItem(item)
+            }
             generation += 1
             if token == undoToken { undoItem = nil; undoToken = UUID() }
             undoCount += 1
@@ -272,6 +375,7 @@ struct SavedView: View {
 
 private struct SavedRow: View {
     let item: SavedItem
+    let tags: [String]
     let colors: JohnColors
     let open: () -> Void
     let editNote: () -> Void
@@ -303,7 +407,7 @@ private struct SavedRow: View {
                             .lineLimit(2)
                             .multilineTextAlignment(.leading)
                     }
-                    Text(kindName)
+                    Text(kindName + (tags.isEmpty ? "" : " · " + tags.map { "#\($0)" }.joined(separator: " ")))
                         .font(JohnTypography.sans(12))
                         .foregroundStyle(colors.textDim)
                 }
@@ -353,6 +457,7 @@ private enum SavedFilterChoice: String, CaseIterable, Identifiable {
 }
 
 struct SavedNoteEditor: View {
+    @Environment(\.undoManager) private var undoManager
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.dismiss) private var dismiss
@@ -448,6 +553,12 @@ struct SavedNoteEditor: View {
                         }
                     }
                     .focused($editorFocused)
+                    .dropDestination(for: String.self) { texts, _ in
+                        guard isLoadReady, !texts.isEmpty else { return false }
+                        let dropped = texts.joined(separator: "\n")
+                        draft += (draft.isEmpty || draft.hasSuffix("\n") ? "" : "\n") + dropped
+                        return true
+                    }
                     .accessibilityLabel("Private note")
                     .accessibilityHint("Write a private note for this passage.")
                     .accessibilityIdentifier("saved-note-editor")
@@ -538,7 +649,7 @@ struct SavedNoteEditor: View {
         }
         isSaving = true
         do {
-            try await runtime.saveNote(passage, text: draft)
+            try await runtime.saveNoteUndoable(passage, text: draft, undoManager: undoManager)
             await onSaved()
             close()
         } catch {
@@ -554,7 +665,7 @@ struct SavedNoteEditor: View {
         }
         isSaving = true
         do {
-            try await runtime.deleteNote(for: passage)
+            try await runtime.deleteNoteUndoable(for: passage, undoManager: undoManager)
             await onSaved()
             close()
         } catch {

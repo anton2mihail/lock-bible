@@ -70,6 +70,17 @@ import JohnCore
         }
     }
 
+    /// Reloads the visible highlights after an undo or redo changed saved data.
+    func reloadHighlights(using runtime: JohnRuntime) async {
+        guard let chapter, let book else { return }
+        guard let number = chapterNumber else { return }
+        let loaded = await runtime.chapterHighlights(translation: edition, bookCode: book.code, chapter: number)
+        guard self.chapter?.verses.count == chapter.verses.count, self.book?.code == book.code, chapterNumber == number else { return }
+        highlightColors = loaded.reduce(into: [:]) { result, item in
+            if let index = chapter.verses.firstIndex(where: { $0.label == item.key }) { result[index] = item.value }
+        }
+    }
+
     func loadBooks(translation: TranslationID, using runtime: JohnRuntime) async {
         invalidatePendingChapterLoad()
         let requestID = UUID()

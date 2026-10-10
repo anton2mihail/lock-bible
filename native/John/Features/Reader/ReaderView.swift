@@ -26,6 +26,7 @@ struct ReaderView: View {
     @State private var programmaticRestoreY: CGFloat?
     @State private var workCatalog: WorkCatalog?
     @State private var lastContextRequestID: UUID?
+    @Environment(\.undoManager) private var undoManager
     @State private var selectedBookmarkState: Bool?
     @State private var selectionFeedback: String?
     @State private var feedbackHaptic = ReaderFeedbackHaptic()
@@ -89,7 +90,7 @@ struct ReaderView: View {
         isSelectionMutationRunning = true
         defer { isSelectionMutationRunning = false }
         do {
-            let isSaved = try await runtime.toggleBookmark(passage)
+            let isSaved = try await runtime.toggleBookmarkUndoable(passage, undoManager: undoManager)
             guard isCurrentSelection(passage, chapterRequestID: chapterRequestID, selectionID: selectionID) else { return }
             selectedBookmarkState = isSaved
             selectionFeedback = isSaved ? "Bookmark saved" : "Bookmark removed"
@@ -110,8 +111,8 @@ struct ReaderView: View {
         isSelectionMutationRunning = true
         defer { isSelectionMutationRunning = false }
         do {
-            if let color { try await runtime.applyHighlight(passage, color: color) }
-            else { try await runtime.clearHighlight(passage) }
+            if let color { try await runtime.applyHighlightUndoable(passage, color: color, undoManager: undoManager) }
+            else { try await runtime.clearHighlightUndoable(passage, undoManager: undoManager) }
             let sameChapter = model.activeChapterRequestID == chapterRequestID &&
                 model.edition == passage.translationID &&
                 model.book?.code == passage.bookCode.rawValue &&
@@ -190,6 +191,9 @@ struct ReaderView: View {
         .onChange(of: runtime.reader.openRequest?.id) { _, _ in
             guard let request = runtime.reader.openRequest else { return }
             Task { await model.receive(request, using: runtime) }
+        }
+        .onChange(of: runtime.savedRevision) { _, _ in
+            Task { await model.reloadHighlights(using: runtime) }
         }
         .onChange(of: model.selectedRange) { _, _ in
             selectionIdentity = UUID()
