@@ -238,14 +238,17 @@ struct ReaderView: View {
 
     var body: some View {
         Group {
-            switch model.screen {
-            case .books:
-                bookList
-            case .chapters:
-                chapterGrid
-            case .chapter:
-                chapterReader
+            Group {
+                switch model.screen {
+                case .books:
+                    bookList
+                case .chapters:
+                    chapterGrid
+                case .chapter:
+                    chapterReader
+                }
             }
+            .focusedSceneValue(\.readerCommands, ownsSheet ? commandActions : nil)
         }
         .background(colors.background)
         .sensoryFeedback(trigger: feedbackHaptic) { _, event in event.feedback }
@@ -437,6 +440,7 @@ struct ReaderView: View {
                                         .frame(minHeight: 52)
                                         .overlay(alignment: .bottom) { Rectangle().fill(colors.separator).frame(height: 1) }
                                         .contentShape(Rectangle())
+                                        .hoverEffect()
                                     }
                                     .buttonStyle(.plain)
                                     .accessibilityLabel("\(book.name), \(book.chapterCount) chapters")
@@ -519,6 +523,7 @@ struct ReaderView: View {
                 .frame(maxWidth: .infinity, minHeight: 44)
         }
         .buttonStyle(.bordered)
+        .hoverEffect()
         .accessibilityLabel(isRead ? "Read. Tap to mark unread." : "Mark read")
         .accessibilityIdentifier("reader-mark-read")
         .accessibilityValue(isRead ? "Read" : "Unread")
@@ -570,6 +575,7 @@ struct ReaderView: View {
                                     }
                             }
                             .buttonStyle(.plain)
+                            .hoverEffect()
                             .accessibilityLabel("\(book.name) chapter \(number)")
                             .accessibilityValue(progressSnapshot.data.readChapters(book.code).contains(number) ? "Read" : "")
                             .accessibilityIdentifier("reader-chapter-\(number)")
@@ -957,6 +963,17 @@ struct ReaderView: View {
         programmaticRestoreY = nil
     }
 
+    /// Menu-bar and keyboard actions (E30). Only the visible Reader publishes them.
+    private var commandActions: ReaderCommandActions {
+        var actions = ReaderCommandActions(goTo: openGoTo)
+        if let book = model.book, let number = model.chapterNumber, let chapter = model.chapter {
+            let isRead = progressSnapshot.data.readChapters(book.code).contains(number)
+            actions.markRead = { Task { await runtime.setChapterRead(!isRead, book: book.code, chapter: number) } }
+            actions.readAloud = { toggleReadAloud(book: book, number: number, chapter: chapter) }
+        }
+        return actions
+    }
+
     private func openGoTo() {
         router.sheet = .goTo
     }
@@ -999,6 +1016,7 @@ struct ReaderView: View {
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                             .contentShape(Rectangle())
+                            .hoverEffect()
                             .overlay(alignment: .bottom) {
                                 if showsSeparator {
                                     Rectangle().fill(colors.separator).frame(height: 1 / displayScale)
@@ -1087,6 +1105,7 @@ private struct ReaderHeader: View {
             Button(action: onBack) { backIcon }
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
+                .hoverEffect()
                 .accessibilityLabel(backLabel)
                 .accessibilityInputLabels([backLabel, "Back"])
                 .accessibilityIdentifier("reader-back")
@@ -1104,6 +1123,7 @@ private struct ReaderHeader: View {
                 .foregroundStyle(colors.text)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(Rectangle())
+                .hoverEffect()
             }
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .buttonStyle(.plain)
@@ -1122,6 +1142,7 @@ private struct ReaderHeader: View {
                         .foregroundStyle(colors.tint)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
+                        .hoverEffect()
                 }
                 .accessibilityLabel("Text settings")
                 .accessibilityInputLabels(["Text settings", "Aa", "Text size"])
@@ -1135,6 +1156,7 @@ private struct ReaderHeader: View {
                         .foregroundStyle(colors.tint)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
+                        .hoverEffect()
                 }
                 .accessibilityLabel(readAloudPlaying ? "Pause reading aloud" : "Read aloud")
                 .accessibilityValue(readAloudValue)
@@ -1145,6 +1167,7 @@ private struct ReaderHeader: View {
                 FeatherIcon(name: "search", color: colors.tint)
                     .frame(width: 44, height: 44)
                     .contentShape(Rectangle())
+                    .hoverEffect()
             }
             .accessibilityLabel("Search Scripture")
             .accessibilityInputLabels(["Search Scripture", "Search"])

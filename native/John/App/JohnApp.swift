@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 import TipKit
 import CoreSpotlight
+import JohnCore
 @preconcurrency import UserNotifications
 
 @main
@@ -37,6 +38,68 @@ struct JohnApp: App {
                 }
                 #endif
         }
+        .commands { JohnCommands(runtime: runtime, router: router) }
+    }
+}
+
+/// Reader actions that the menu bar and the keyboard call (E30). The visible Reader publishes them as a focused scene value.
+struct ReaderCommandActions {
+    var goTo: () -> Void
+    var markRead: (() -> Void)?
+    var readAloud: (() -> Void)?
+}
+
+extension FocusedValues {
+    @Entry var readerCommands: ReaderCommandActions?
+}
+
+/// Menu-bar commands (E30). The app keeps one window: `UIApplicationSupportsMultipleScenes` stays false.
+/// Runtime, router and the persistence store are single shared objects, so a second scene would share one tab selection and one
+/// push path. That would break the saved-anchor logic. Multiple windows are not supported.
+struct JohnCommands: Commands {
+    let runtime: JohnRuntime
+    let router: AppRouter
+    @FocusedValue(\.readerCommands) private var reader
+
+    private static let sizes: [ReaderTextSize] = [.small, .medium, .large, .extraLarge]
+
+    private func stepTextSize(_ delta: Int) {
+        let current = runtime.preferences.reading.textSize
+        guard let index = Self.sizes.firstIndex(of: current) else { return }
+        let target = Self.sizes[min(max(index + delta, 0), Self.sizes.count - 1)]
+        guard target != current else { return }
+        Task { _ = await runtime.applyWithResult(.setReaderTextSize(target)) }
+    }
+
+    var body: some Commands {
+        CommandGroup(after: .textEditing) {
+            Button("Search") {
+                if router.path(for: router.selectedTab).last != .search { router.push(.search) }
+            }
+            .keyboardShortcut("f", modifiers: .command)
+        }
+        CommandMenu("Reader") {
+            Button("Go To…") { reader?.goTo() }
+                .keyboardShortcut("g", modifiers: .command)
+                .disabled(reader == nil)
+            Button("Mark Chapter Read") { reader?.markRead?() }
+                .keyboardShortcut("m", modifiers: [.command, .shift])
+                .disabled(reader?.markRead == nil)
+            Button("Read Aloud") { reader?.readAloud?() }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
+                .disabled(reader?.readAloud == nil)
+            Divider()
+            Button("Increase Text Size") { stepTextSize(1) }
+                .keyboardShortcut("+", modifiers: .command)
+            Button("Decrease Text Size") { stepTextSize(-1) }
+                .keyboardShortcut("-", modifiers: .command)
+        }
+        CommandGroup(after: .sidebar) {
+            ForEach(Array(AppTab.allCases.enumerated()), id: \.element) { index, tab in
+                Button(tab.rawValue) { router.select(tab) }
+                    .keyboardShortcut(KeyEquivalent(Character(String(index + 1))), modifiers: .command)
+            }
+        }
     }
 }
 
@@ -46,6 +109,8 @@ private struct JohnRootView: View {
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var splitVisibility: NavigationSplitViewVisibility = .all
     @Namespace private var todayZoom
     @Namespace private var readerZoom
 
@@ -56,7 +121,12 @@ private struct JohnRootView: View {
             }
             Group {
                 if runtime.startupComplete && runtime.hasNativeState {
-                    tabShell
+                    // E31: iPad at regular width uses a sidebar. The iPhone, including a landscape Max, keeps the TabView.
+                    if UIDevice.current.userInterfaceIdiom == .pad && horizontalSizeClass == .regular {
+                        splitShell
+                    } else {
+                        tabShell
+                    }
                 } else if runtime.startupComplete {
                     VStack(spacing: 14) {
                         Text("Saved data needs attention")
@@ -158,7 +228,7 @@ private struct JohnRootView: View {
             tab(.pray)
             tab(.settings)
         }
-        // Keep the five-tab bar on iPad. The sidebar style would add a second navigation model.
+        // Compact width keeps the five-tab bar. Regular iPad width uses the split shell (E31).
         .tabViewStyle(.tabBarOnly)
         // Only the Reader is long continuous reading. Other tabs keep the full bar for direct tab changes.
         .tabBarMinimizeBehavior(router.selectedTab == .read ? Self.readerMinimizeBehavior : .never)
@@ -168,22 +238,55 @@ private struct JohnRootView: View {
         .tint(preferences.colors(for: colorScheme).tint)
     }
 
+    /// E31: sidebar (the five tabs) and detail. The detail is the same per-tab NavigationStack as in the TabView,
+    /// so the router paths, the zoom namespaces and the Reader/Saved pushes work in both layouts.
+    private var splitShell: some View {
+        NavigationSplitView(columnVisibility: $splitVisibility) {
+            List(selection: Binding(get: { Optional(router.selectedTab) }, set: { if let tab = $0 { router.selectFromTabBar(tab) } })) {
+                ForEach(AppTab.allCases) { tab in
+                    Label { Text(tab.rawValue) } icon: { tabIcon(tab) }
+                        .tag(tab)
+                        .frame(minHeight: 44)
+                        .hoverEffect()
+                        .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityIdentifier(tab.identifier)
+                }
+            }
+            .navigationTitle("John")
+            .accessibilityIdentifier("ipad-sidebar")
+        } detail: {
+            tabStack(router.selectedTab)
+                .id(router.selectedTab)
+        }
+        .navigationSplitViewStyle(.balanced)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if AudioMiniPlayer.isActive(in: runtime) { AudioMiniPlayer().padding(.horizontal, 12).padding(.bottom, 6) }
+        }
+        .transaction(value: AudioMiniPlayer.isActive(in: runtime)) { $0.disablesAnimations = true }
+        .tint(preferences.colors(for: colorScheme).tint)
+    }
+
+    private func tabStack(_ tab: AppTab) -> some View {
+        NavigationStack(path: Binding(
+            get: { router.path(for: tab) },
+            set: { router.setPath($0, for: tab) }
+        )) {
+            tabRoot(tab)
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationDestination(for: AppRoute.self) { route in
+                    DestinationView(route: route)
+                        .todayZoomDestination(route)
+                }
+        }
+        // Only the Today tab has zoom sources: its art cards open their pages with a zoom (audit B7).
+        .environment(\.todayZoomNamespace, tab == .today ? todayZoom : nil)
+        .environment(\.readerZoomNamespace, readerZoom)
+    }
+
     private func tab(_ tab: AppTab) -> some TabContent<AppTab> {
         Tab(value: tab) {
-            NavigationStack(path: Binding(
-                get: { router.path(for: tab) },
-                set: { router.setPath($0, for: tab) }
-            )) {
-                tabRoot(tab)
-                    .toolbar(.hidden, for: .navigationBar)
-                    .navigationDestination(for: AppRoute.self) { route in
-                        DestinationView(route: route)
-                            .todayZoomDestination(route)
-                    }
-            }
-            // Only the Today tab has zoom sources: its art cards open their pages with a zoom (audit B7).
-            .environment(\.todayZoomNamespace, tab == .today ? todayZoom : nil)
-            .environment(\.readerZoomNamespace, readerZoom)
+            tabStack(tab)
             // Scroll content goes under the floating bar with the default (automatic) bottom scroll edge effect.
         } label: {
             Label {
