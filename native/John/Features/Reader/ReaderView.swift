@@ -33,7 +33,22 @@ struct ReaderView: View {
     @State private var isSelectionMutationRunning = false
     @State private var selectionIdentity = UUID()
 
-    private var model: ReaderScreenModel { runtime.readerScreen }
+    /// Set when a route pushed this Reader (E5). A pushed Reader has its own model, so it never changes the Read tab.
+    private let pushedRequest: ReaderChapterRequest?
+    @State private var pushedModel: ReaderScreenModel?
+
+    init(pushedRequest: ReaderChapterRequest? = nil) {
+        self.pushedRequest = pushedRequest
+        _pushedModel = State(initialValue: pushedRequest == nil ? nil : ReaderScreenModel())
+    }
+
+    private var model: ReaderScreenModel { pushedModel ?? runtime.readerScreen }
+    /// Only the visible Reader presents router sheets. The Read tab root steps aside while another tab or a pushed page shows.
+    private var ownsSheet: Bool {
+        pushedRequest != nil || (router.selectedTab == .read && router.path(for: .read).isEmpty)
+    }
+    /// Back leaves a pushed Reader. In the Read tab root it steps from chapter to chapter list to book list.
+    private var goBack: () -> Void { pushedRequest == nil ? { model.goBack() } : { router.pop() } }
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var systemTextScale: CGFloat {
         switch dynamicTypeSize {
@@ -180,15 +195,22 @@ struct ReaderView: View {
         .background(colors.background)
         .sensoryFeedback(trigger: feedbackHaptic) { _, event in event.feedback }
         .task(id: preferences.translation) {
+            if let pushedRequest {
+                await model.receive(pushedRequest, using: runtime)
+                if let catalog = await runtime.worksCatalog() { workCatalog = catalog }
+                return
+            }
             await model.loadBooks(translation: preferences.translation, using: runtime)
             if let catalog = await runtime.worksCatalog() { workCatalog = catalog }
             if let request = runtime.reader.openRequest { await model.receive(request, using: runtime) }
             else { model.restoreLocation(preferences.readerLocation) }
         }
         .onChange(of: preferences.readerLocation) { _, location in
+            guard pushedRequest == nil else { return }
             model.restoreLocation(location)
         }
         .onChange(of: runtime.reader.openRequest?.id) { _, _ in
+            guard pushedRequest == nil else { return }
             guard let request = runtime.reader.openRequest else { return }
             Task { await model.receive(request, using: runtime) }
         }
@@ -204,14 +226,16 @@ struct ReaderView: View {
             let identity = selectionIdentity
             Task { await loadBookmarkState(passage, chapterRequestID: chapterRequestID, selectionID: identity) }
         }
-        .onAppear { model.prepareVisibleLocationRestore(preferences.readerLocation) }
+        .onAppear {
+            if pushedRequest == nil { model.prepareVisibleLocationRestore(preferences.readerLocation) }
+        }
         .onChange(of: model.chapterScrollResetID) { _, resetID in
             guard resetID != nil,
                   model.pendingRestoreScrollY == nil,
                   model.pendingRestoreAnchor == nil else { return }
             readerScrollPosition.scrollTo(y: 0)
         }
-        .sheet(item: Binding(get: { router.sheet }, set: { router.sheet = $0 })) { sheet in
+        .sheet(item: Binding(get: { ownsSheet ? router.sheet : nil }, set: { router.sheet = $0 })) { sheet in
             switch sheet {
             case .readerAppearance:
                 ReaderTextSettingsSheet { router.sheet = nil }
@@ -435,7 +459,7 @@ struct ReaderView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 ReaderHeader(title: model.book?.name ?? "Read", backLabel: "Back to books",
-                             onBack: model.goBack, onTitlePress: openGoTo, onSearch: openSearch,
+                             onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                              onTextSettings: nil, colors: colors)
                 if let book = model.book {
                     Text("Choose a chapter")
@@ -487,7 +511,7 @@ struct ReaderView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 0) {
                             ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
-                                         onBack: model.goBack, onTitlePress: openGoTo, onSearch: openSearch,
+                                         onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                                          onTextSettings: {
                                              #if DEBUG
                                              NSLog("John Aa action received")
@@ -776,7 +800,7 @@ struct ReaderView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
-                                         onBack: model.goBack, onTitlePress: openGoTo, onSearch: openSearch,
+                                         onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                                          onTextSettings: { router.sheet = .readerAppearance }, colors: colors)
                         .padding(.horizontal, 24)
                                 .padding(.top, 10)
@@ -788,7 +812,7 @@ struct ReaderView: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             ReaderHeader(title: "\(book.name) \(number)", backLabel: "Back to \(book.name) chapters",
-                                         onBack: model.goBack, onTitlePress: openGoTo, onSearch: openSearch,
+                                         onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                                          onTextSettings: { router.sheet = .readerAppearance }, colors: colors)
                         .padding(.horizontal, 24)
                                 .padding(.top, 10)

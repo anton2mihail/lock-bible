@@ -264,6 +264,7 @@ struct SearchView: View {
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("search-result-\(offset + 1)")
                     .accessibilityLabel("\(result.reference). \(result.text)")
+                    .readerZoomSource(id: Self.zoomID(result))
                     .listRowBackground(colors.background)
                 }
             } header: {
@@ -324,14 +325,17 @@ struct SearchView: View {
         }
     }
 
+    private static func zoomID(_ result: BibleSearchResult) -> String { "search-\(result.id)" }
+
     private func open(_ result: BibleSearchResult, translation: TranslationID) {
+        let sourceID = Self.zoomID(result)
         searchFieldFocused = false
         recents = SearchRecents.record(cleanQuery)
         Task {
             guard let passage = await runtime.passage(translation: translation,
                                                        bookCode: result.bookCode, chapter: result.chapter,
                                                        startVerse: result.verse, endVerse: result.verse) else { return }
-            router.openReader(passage: passage)
+            router.pushReader(passage: passage, sourceID: sourceID)
         }
     }
 

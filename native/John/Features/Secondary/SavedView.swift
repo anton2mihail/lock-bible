@@ -223,6 +223,7 @@ struct SavedView: View {
             ForEach(visibleItems, id: \.id) { item in
                 SavedRow(item: item, tags: tags[item.id] ?? [], colors: colors,
                          open: { open(item) }, editNote: { open(item) }, delete: { Task { await delete(item) } })
+                    .readerZoomSource(id: "saved-\(item.id)")
                     .listRowBackground(colors.background)
                     .draggable(item.scriptureText)
                     .swipeActions(edge: .leading, allowsFullSwipe: false) {

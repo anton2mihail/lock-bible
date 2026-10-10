@@ -107,6 +107,14 @@ final class ReaderRegressionUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["reader-selection-summary"].exists,
                        "Opening a saved bookmark must show context, not an active selection")
         NSLog("READER_CONTEXT savedBookmark=web-ce:JHN:3:16:16 createdInUI=true verse=16 request=%@ stableSeconds=2.2 selection=absent", request)
+
+        // B3a (E5): the Reader is a push on the Saved stack. Back returns to the Saved list on the Saved tab.
+        let back = app.buttons["reader-back"]
+        XCTAssertTrue(back.waitForExistence(timeout: 8), "A pushed Reader must have a back control")
+        back.tap()
+        XCTAssertTrue(row.waitForExistence(timeout: 8), "Back must show the same Saved list row")
+        XCTAssertTrue(app.buttons["saved-filter-bookmark"].exists)
+        XCTAssertTrue(app.tabBars.buttons["Saved"].isSelected, "Back must stay on the Saved tab")
     }
 
     func testSavedReaderPositionWinsWhenReturningToReadTab() throws {

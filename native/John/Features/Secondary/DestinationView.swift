@@ -12,6 +12,10 @@ struct DestinationView: View {
     var body: some View {
         Group {
             switch route {
+        case .reader(let request, let sourceID):
+            ReaderView(pushedRequest: request)
+                .toolbar(.hidden, for: .navigationBar)
+                .readerZoomDestination(sourceID: sourceID)
         case .search:
             SearchView()
         case .companion(let route):

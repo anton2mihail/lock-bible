@@ -47,6 +47,7 @@ private struct JohnRootView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.scenePhase) private var scenePhase
     @Namespace private var todayZoom
+    @Namespace private var readerZoom
 
     var body: some View {
         VStack(spacing: 0) {
@@ -179,6 +180,7 @@ private struct JohnRootView: View {
             }
             // Only the Today tab has zoom sources: its art cards open their pages with a zoom (audit B7).
             .environment(\.todayZoomNamespace, tab == .today ? todayZoom : nil)
+            .environment(\.readerZoomNamespace, readerZoom)
             // Scroll content goes under the floating bar with the default (automatic) bottom scroll edge effect.
         } label: {
             Label {

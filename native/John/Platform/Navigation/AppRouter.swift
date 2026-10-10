@@ -57,6 +57,8 @@ enum AppRoute: Hashable, Sendable {
     case workCollection(String)
     case workReader(workID: String, section: Int?)
     case worksChapterCommentary(bookCode: String?, chapter: Int?, bookName: String)
+    /// A Reader pushed on the origin tab's stack (E5). `sourceID` names the list row that zooms into it.
+    case reader(ReaderChapterRequest, sourceID: String?)
 }
 
 struct VerseMomentSelection: Hashable, Sendable {
@@ -170,6 +172,16 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
         NSLog("John Reader request created id=%@ kind=chapter", latestChapterRequest!.id.uuidString)
         #endif
     }
+    /// Pushes a Reader for `passage` on the selected tab's stack. Back returns to the list that opened it.
+    func pushReader(passage: PassageSelection, sourceID: String? = nil) {
+        let request = ReaderChapterRequest(bookCode: passage.bookCode.rawValue, chapter: passage.chapter,
+                                           translationID: passage.translationID,
+                                           verse: passage.startVerse.rawValue, endVerse: passage.endVerse.rawValue)
+        paths[selectedTab, default: []].append(.reader(request, sourceID: sourceID))
+        #if DEBUG
+        NSLog("John Reader pushed id=%@ tab=%@", request.id.uuidString, selectedTab.rawValue)
+        #endif
+    }
     /// Loads the passage that a saved item names, with the item's own edition. Returns nil when it cannot load.
     func savedItemPassage(_ item: SavedItem, using runtime: JohnRuntime) async -> PassageSelection? {
         guard let translation = TranslationID(rawValue: item.translationID) else { return nil }
@@ -181,7 +193,7 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
     @discardableResult
     func openSavedItem(_ item: SavedItem, using runtime: JohnRuntime) async -> Bool {
         guard let passage = await savedItemPassage(item, using: runtime) else { return false }
-        openReader(passage: passage)
+        pushReader(passage: passage, sourceID: "saved-\(item.id)")
         return true
     }
     /// Shows the chapter list of a book. `chapter` 0 is below the valid range, so the Reader model opens the list.
@@ -235,6 +247,36 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
 extension EnvironmentValues {
     /// The Today tab publishes this namespace. Other tabs leave it nil, so their pushes keep the standard transition.
     @Entry var todayZoomNamespace: Namespace.ID?
+}
+
+extension EnvironmentValues {
+    /// Every tab publishes this namespace. Saved and Search rows are sources of the zoom into a pushed Reader.
+    @Entry var readerZoomNamespace: Namespace.ID?
+}
+
+extension View {
+    func readerZoomSource(id: String) -> some View { modifier(ReaderZoomSource(id: id)) }
+    func readerZoomDestination(sourceID: String?) -> some View { modifier(ReaderZoomDestination(sourceID: sourceID)) }
+}
+
+private struct ReaderZoomSource: ViewModifier {
+    let id: String
+    @Environment(\.readerZoomNamespace) private var namespace
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ViewBuilder func body(content: Content) -> some View {
+        if let namespace, !reduceMotion { content.matchedTransitionSource(id: id, in: namespace) } else { content }
+    }
+}
+
+private struct ReaderZoomDestination: ViewModifier {
+    let sourceID: String?
+    @Environment(\.readerZoomNamespace) private var namespace
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ViewBuilder func body(content: Content) -> some View {
+        if let namespace, let sourceID, !reduceMotion {
+            content.navigationTransition(.zoom(sourceID: sourceID, in: namespace))
+        } else { content }
+    }
 }
 
 extension View {
