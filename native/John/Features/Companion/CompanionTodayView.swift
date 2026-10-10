@@ -35,7 +35,8 @@ struct CompanionTodayView: View {
     var body: some View {
         ContentPage(title: "A little closer to God.",
                     eyebrow: "JOHN 1:1  /  \(formattedDate(now, "EEEE, MMMM d"))",
-                    subtitle: "Scripture for your day. Space for your soul.") {
+                    subtitle: "Scripture for your day. Space for your soul.",
+                    meshBackground: true) {
             // Keep the launch smoke-test anchor on the source page title.
             if let snapshot {
                 ContentArtCard(artwork: artworkName(snapshot.season),
@@ -47,6 +48,8 @@ struct CompanionTodayView: View {
                 }
                 .todayZoomSource(.daily(dateKey: dateKey), cornerRadius: 18)
                 ContentMutedText(text: CompanionCalendar.label)
+
+                ReadingTodayCard(now: now, timeZone: timeZone)
 
                 VStack(alignment: .leading, spacing: 16) {
                     ContentSectionTitle(title: "Make room for prayer")

@@ -41,6 +41,10 @@ struct FullSettingsView: View {
                     ReadingSettingsChoices(save: save)
                 }
 
+                section("Reading progress") {
+                    ReadingProgressSettings()
+                }
+
                 section("Read aloud") {
                     ReadAloudSettings(controller: runtime.readAloud)
                 }

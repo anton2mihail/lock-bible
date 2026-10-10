@@ -66,6 +66,10 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     /// Increases after undo, redo, import, or tag changes. Views reload saved data when it changes.
     var savedRevision = 0
     let tagStore: SavedTagStore?
+    /// Reading progress and plan (E7). A separate file keeps older data valid.
+    let progressStore: ReadingProgressStore?
+    /// Increases after any progress change. Views reload progress when it changes.
+    var progressRevision = 0
     private var spotlightRefreshTask: Task<Void, Never>?
     private var spotlightRefreshWanted = false
     private(set) var settingSaveUncertain = false
@@ -121,7 +125,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                 // UI tests pass `-JohnResetNativeState` to start from the default native state (test isolation).
                 if ProcessInfo.processInfo.arguments.contains("-JohnResetNativeState") {
                     let stateDirectory = applicationSupport.appendingPathComponent("John", isDirectory: true)
-                    for name in ["native-state-v1.json", "native-state-v1.previous.json"] {
+                    for name in ["native-state-v1.json", "native-state-v1.previous.json", "reading-progress-v1.json"] {
                         try? FileManager.default.removeItem(at: stateDirectory.appendingPathComponent(name))
                     }
                 }
@@ -134,15 +138,18 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                                               legacyReader: LegacyMMKVReader(rootURL: legacyRoot))
                 library = SQLiteLibraryRepository(databaseURL: libraryURL, recoveryDirectory: recoveryDirectory)
                 tagStore = SavedTagStore(url: applicationSupport.appendingPathComponent("John/saved-tags-v1.json", isDirectory: false))
+                progressStore = ReadingProgressStore(url: applicationSupport.appendingPathComponent("John/reading-progress-v1.json", isDirectory: false))
             } else {
                 stateStore = nil
                 tagStore = nil
+                progressStore = nil
                 library = nil
                 startupStatus = "The app cannot find its saved-data folders."
             }
         } else {
             stateStore = nil
             tagStore = nil
+            progressStore = nil
             library = nil
             searchRepository = nil
             bible = nil
@@ -1047,6 +1054,39 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
 #endif
             throw error
         }
+    }
+
+    // MARK: Reading progress (E7)
+
+    func readingProgress() async -> ReadingProgressData {
+        await progressStore?.data() ?? ReadingProgressData()
+    }
+
+    func setChapterRead(_ isRead: Bool, book: String, chapter: Int) async {
+        guard let progressStore else { return }
+        do { try await progressStore.setRead(isRead, book: book, chapter: chapter) } catch { return }
+        progressRevision += 1
+    }
+
+    func startReadingPlan(_ id: String?, now: Date = Date(), timeZone: TimeZone = .autoupdatingCurrent) async {
+        guard let progressStore else { return }
+        let key = ReadingProgressMath.dayKey(now, timeZone: timeZone)
+        do { try await progressStore.startPlan(id, startKey: key) } catch { return }
+        progressRevision += 1
+    }
+
+    func resetReadingProgress() async {
+        guard let progressStore else { return }
+        do { try await progressStore.reset() } catch { return }
+        progressRevision += 1
+    }
+
+    func saveReadingReminder(_ requested: ReadingReminderSettings) async throws -> ReadingReminderSettings {
+        guard let noticeService, let progressStore else { throw CoreError.missingResource("notification service") }
+        let saved = try await noticeService.saveReadingReminder(requested)
+        try await progressStore.setReminder(saved)
+        progressRevision += 1
+        return saved
     }
 
     func refreshLocalNotifications() async {

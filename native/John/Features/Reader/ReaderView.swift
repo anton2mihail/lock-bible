@@ -16,6 +16,9 @@ struct ReaderView: View {
     @State private var readerScrollPosition = ScrollPosition(idType: String.self)
     @State private var textGeometryProbe = ReaderTextGeometryProbe()
     @State private var readerScrollOffset: CGFloat = 0
+    /// Reading progress (E7). The chapter counts as read when the user scrolls to its end, or taps "Mark read".
+    @State private var progressSnapshot = ReadingProgressSnapshot()
+    @State private var userScrolledChapter = false
     @State private var scriptureOriginY: CGFloat = 0
     @State private var scriptureGlobalY: CGFloat = 0
     @State private var readerViewportTopY: CGFloat = 0
@@ -506,6 +509,21 @@ struct ReaderView: View {
         return .custom(name, size: size, relativeTo: .body)
     }
 
+    @ViewBuilder private func markReadButton(book: BibleBookDescriptor, chapter: Int) -> some View {
+        let isRead = progressSnapshot.data.readChapters(book.code).contains(chapter)
+        Button {
+            Task { await runtime.setChapterRead(!isRead, book: book.code, chapter: chapter) }
+        } label: {
+            Label(isRead ? "Read" : "Mark read", systemImage: isRead ? "checkmark.circle.fill" : "circle")
+                .font(JohnTypography.sans(15, weight: .medium))
+                .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .buttonStyle(.bordered)
+        .accessibilityLabel(isRead ? "Read. Tap to mark unread." : "Mark read")
+        .accessibilityIdentifier("reader-mark-read")
+        .accessibilityValue(isRead ? "Read" : "Unread")
+    }
+
     private var chapterGrid: some View {
         ScrollViewReader { proxy in
         ScrollView {
@@ -514,9 +532,22 @@ struct ReaderView: View {
                              onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
                              onTextSettings: nil, colors: colors)
                 if let book = model.book {
-                    Text("Choose a chapter")
-                        .font(JohnTypography.sans(14))
-                        .foregroundStyle(colors.textDim)
+                    HStack(spacing: 14) {
+                        ProgressRing(fraction: progressSnapshot.fraction(book.code), size: 48, lineWidth: 5, colors: colors)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Choose a chapter")
+                                .font(JohnTypography.sans(14))
+                                .foregroundStyle(colors.textDim)
+                            Text("\(progressSnapshot.readCount(book.code)) of \(book.chapterCount) read")
+                                .font(JohnTypography.sans(12))
+                                .foregroundStyle(colors.textDim)
+                        }
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("\(book.name) reading progress")
+                    .accessibilityValue("\(progressSnapshot.readCount(book.code)) of \(book.chapterCount) chapters read")
+                    .accessibilityIdentifier("reader-book-progress")
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: chapterCellSize, maximum: chapterCellSize), spacing: 12)], spacing: 12) {
                         ForEach(1...book.chapterCount, id: \.self) { number in
                             Button {
@@ -528,9 +559,19 @@ struct ReaderView: View {
                                     .frame(width: chapterCellSize, height: chapterCellSize)
                                     .background(number == model.currentChapterNumber ? colors.tint : colors.card, in: RoundedRectangle(cornerRadius: 12))
                                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(colors.border, lineWidth: 1))
+                                    .overlay(alignment: .topTrailing) {
+                                        if progressSnapshot.data.readChapters(book.code).contains(number) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .font(.system(size: 14))
+                                                .foregroundStyle(number == model.currentChapterNumber ? colors.background : colors.tint)
+                                                .padding(4)
+                                                .accessibilityHidden(true)
+                                        }
+                                    }
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel("\(book.name) chapter \(number)")
+                            .accessibilityValue(progressSnapshot.data.readChapters(book.code).contains(number) ? "Read" : "")
                             .accessibilityIdentifier("reader-chapter-\(number)")
                             .accessibilityAddTraits(number == model.currentChapterNumber ? .isSelected : [])
                             .id("reader-chapter-\(number)")
@@ -546,6 +587,9 @@ struct ReaderView: View {
         }
         .contentMargins(.top, max(0, windowSafeAreaTop), for: .scrollContent)
         .accessibilityIdentifier("reader-chapter-grid-scroll")
+        .task(id: runtime.progressRevision) {
+            progressSnapshot = await loadReadingProgress(runtime: runtime, translation: model.edition)
+        }
         .task(id: model.currentChapterNumber) {
             guard let current = model.currentChapterNumber else { return }
             await Task.yield()
@@ -696,6 +740,7 @@ struct ReaderView: View {
                                     .accessibilityIdentifier("reader-selection-summary")
                             }
                             chapterCommentary(book: book, chapter: number)
+                            markReadButton(book: book, chapter: number)
                             HStack(spacing: 12) {
                                 if model.chapterNumber ?? 1 > 1 || model.adjacentBook(-1) != nil {
                                     let target = model.adjacentChapter(-1)
@@ -769,7 +814,23 @@ struct ReaderView: View {
                             finishProgrammaticRestore()
                         }
                     }
+                    .onScrollGeometryChange(for: Bool.self) { geometry in
+                        let visibleBottom = geometry.contentOffset.y + geometry.containerSize.height
+                        return geometry.contentSize.height > geometry.containerSize.height
+                            && visibleBottom >= geometry.contentSize.height - 24
+                    } action: { _, atEnd in
+                        guard atEnd, userScrolledChapter,
+                              let book = model.book, let number = model.chapterNumber,
+                              model.chapter?.number == number else { return }
+                        Task { await runtime.setChapterRead(true, book: book.code, chapter: number) }
+                    }
+                    .onChange(of: model.chapterNumber) { _, _ in userScrolledChapter = false }
+                    .onChange(of: model.book?.code) { _, _ in userScrolledChapter = false }
+                    .task(id: runtime.progressRevision) {
+                        progressSnapshot = await loadReadingProgress(runtime: runtime, translation: model.edition)
+                    }
                     .onScrollPhaseChange { oldPhase, phase in
+                        if phase == .interacting { userScrolledChapter = true }
                         #if DEBUG
                         NSLog("L08_SCROLL_PHASE old=%@ new=%@ offset=%.1f textOrigin=%.1f",
                               String(describing: oldPhase), String(describing: phase),

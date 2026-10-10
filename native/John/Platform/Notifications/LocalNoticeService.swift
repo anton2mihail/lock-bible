@@ -14,6 +14,7 @@ public final class LocalNoticeService {
 
     public static let calendarPrefix = "john-calendar:"
     public static let rosaryIdentifier = "john-rosary:reminder"
+    public static let readingIdentifier = "john-reading:reminder"
 
     private let center: any NoticeCenter
     private let now: @MainActor () -> Date
@@ -64,6 +65,34 @@ public final class LocalNoticeService {
                 operation: "Calendar notification update",
                 mutation: committed.calendarNotifications == settings ? nil : .setCalendarNotifications(settings)
             )
+            return settings
+        }
+    }
+
+    /// A daily reading reminder (E7). The choice lives in the reading progress file, so no state mutation runs here.
+    public func saveReadingReminder(_ requested: ReadingReminderSettings) async throws -> ReadingReminderSettings {
+        try await withOperationQueue {
+            let settings = ReadingReminderSettings(enabled: requested.enabled,
+                                                   hour: min(23, max(0, requested.hour)),
+                                                   minute: min(59, max(0, requested.minute)))
+            if settings.enabled {
+                try await requirePermission(message: "Notifications are disabled. You can allow them in your device settings.")
+            }
+            let pending = try await center.pendingRequests()
+            let desired = settings.enabled ? [NoticeRequest(
+                identifier: Self.readingIdentifier,
+                title: "Your John reading is ready",
+                body: "Open today’s chapter and read a little.",
+                userInfo: ["url": "/read/john"],
+                trigger: .daily(hour: settings.hour, minute: settings.minute, timeZoneIdentifier: timeZone().identifier))] : []
+            try await reconcileAndCommit(
+                desired: desired,
+                pending: pending,
+                owned: { $0.identifier == Self.readingIdentifier },
+                preserveSameIdentifier: false,
+                restoreOnlyFutureCalendarRequests: false,
+                operation: "Reading reminder update",
+                mutation: nil)
             return settings
         }
     }

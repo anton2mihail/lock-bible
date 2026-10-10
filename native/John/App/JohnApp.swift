@@ -312,6 +312,7 @@ private final class JohnNotificationDelegate: NSObject, UIApplicationDelegate, U
     nonisolated private static func routeURL(_ rawValue: String?) -> URL? {
         guard let rawValue else { return nil }
         if rawValue == "/pray/rosary" { return URL(string: "nrsv://pray/rosary") }
+        if rawValue == "/read/john" { return URL(string: "nrsv://read?book=JHN") }
         guard rawValue.hasPrefix("/daily?date=") else { return nil }
         let query = rawValue.dropFirst("/daily".count)
         guard let url = URL(string: "nrsv://daily\(query)"),

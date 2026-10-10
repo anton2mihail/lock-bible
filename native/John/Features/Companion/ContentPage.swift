@@ -5,6 +5,8 @@ struct ContentPage<Content: View>: View {
     let title: String
     let eyebrow: String?
     let subtitle: String?
+    /// Today sets this to show a static mesh gradient behind the page (E28).
+    var meshBackground = false
     @ViewBuilder var content: Content
 
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -47,7 +49,10 @@ struct ContentPage<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .top)
         }
         .scrollDismissesKeyboard(.interactively)
-        .background(colors.background)
+        .background {
+            if meshBackground { TodayMeshBackground(colors: colors).ignoresSafeArea() }
+            else { colors.background }
+        }
     }
 }
 
