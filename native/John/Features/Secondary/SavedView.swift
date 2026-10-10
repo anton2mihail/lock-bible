@@ -79,6 +79,7 @@ struct SavedView: View {
                 .johnGlassSurface(cornerRadius: 12, colors: colors)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("saved-undo-bar")
             }
         }

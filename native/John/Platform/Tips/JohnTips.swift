@@ -13,8 +13,8 @@ enum JohnTips {
         if arguments.contains("-JohnResetTips") { try? Tips.resetDatastore() }
         if arguments.contains("-JohnTipsShowAll") {
             Tips.showAllTipsForTesting()
-        } else if arguments.contains("-JohnResetNativeState"), !arguments.contains("-JohnShowTips") {
-            // Existing UI tests must not see a tip.
+        } else if !arguments.contains("-JohnShowTips") {
+            // Debug builds show no tip unless a test asks for it. A tip in the Reader content moves the scroll anchor.
             Tips.hideAllTipsForTesting()
         }
         #endif
