@@ -28,8 +28,10 @@ public struct ReadingReminderSettings: Codable, Sendable, Equatable {
     public var enabled: Bool
     public var hour: Int
     public var minute: Int
-    public init(enabled: Bool = false, hour: Int = 8, minute: Int = 0) {
-        self.enabled = enabled; self.hour = hour; self.minute = minute
+    /// Optional so an older file stays valid. `nil` means a normal reminder.
+    public var timeSensitive: Bool?
+    public init(enabled: Bool = false, hour: Int = 8, minute: Int = 0, timeSensitive: Bool? = nil) {
+        self.enabled = enabled; self.hour = hour; self.minute = minute; self.timeSensitive = timeSensitive
     }
 }
 

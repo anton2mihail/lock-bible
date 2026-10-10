@@ -11,6 +11,8 @@ enum ExternalRoute: Sendable {
     /// `nil` when the URL has no date, or a date that fails the source check.
     case daily(String?)
     case rosary
+    /// Opens Lectio divina. The Control Center control uses it.
+    case lectio
     /// Opens the Saved tab. Spotlight uses it for a saved item.
     case saved
     /// Opens the last chapter and starts read aloud. App Intents use it.
@@ -34,6 +36,7 @@ enum ExternalRouteParser {
         if host == "readaloud" { return .readAloud }
         if host == "note" { return .note }
         if host == "pray", components.path == "/rosary" { return .rosary }
+        if host == "pray", components.path == "/lectio" { return .lectio }
         guard host == "read" else { return nil }
         // Old app: ReaderScreen.tsx:84-90 reads book, chapter, verse, endVerse, and contextRequest only.
         // It never reads `translation`, so that value cannot change the route. Native keeps a valid value.

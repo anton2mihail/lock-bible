@@ -15,6 +15,21 @@ public enum NoticeSound: Codable, Sendable, Equatable {
     case custom
 }
 
+public enum NoticeInterruption: String, Codable, Sendable, Equatable {
+    case active
+    case timeSensitive
+}
+
+/// Identifiers for the reading reminder category and its actions (E17).
+public enum ReadingNoticeAction {
+    public static let category = "john.reading"
+    public static let markRead = "john.reading.markRead"
+    public static let snooze = "john.reading.snooze"
+    public static let open = "john.reading.open"
+    public static let snoozeIdentifier = "john-reading:snooze"
+    public static let snoozeSeconds: TimeInterval = 3_600
+}
+
 public enum NoticeTrigger: Codable, Sendable, Equatable {
     case calendarDate(Date, timeZoneIdentifier: String)
     case daily(hour: Int, minute: Int, timeZoneIdentifier: String)
@@ -32,33 +47,45 @@ public struct NoticeRequest: @unchecked Sendable, Equatable {
     public let userInfo: [String: String]
     public let sound: NoticeSound
     public let trigger: NoticeTrigger
+    public let interruption: NoticeInterruption
+    public let category: String?
+    public let thread: String?
     fileprivate let originalSystemRequest: UNNotificationRequest?
 
     public init(identifier: String, title: String, body: String, userInfo: [String: String],
-                sound: NoticeSound = .defaultSound, trigger: NoticeTrigger) {
+                sound: NoticeSound = .defaultSound, trigger: NoticeTrigger,
+                interruption: NoticeInterruption = .active, category: String? = nil, thread: String? = nil) {
         self.identifier = identifier
         self.title = title
         self.body = body
         self.userInfo = userInfo
         self.sound = sound
         self.trigger = trigger
+        self.interruption = interruption
+        self.category = category
+        self.thread = thread
         self.originalSystemRequest = nil
     }
 
     fileprivate init(identifier: String, title: String, body: String, userInfo: [String: String],
-                     sound: NoticeSound, trigger: NoticeTrigger, originalSystemRequest: UNNotificationRequest) {
+                     sound: NoticeSound, trigger: NoticeTrigger, interruption: NoticeInterruption,
+                     category: String?, thread: String?, originalSystemRequest: UNNotificationRequest) {
         self.identifier = identifier
         self.title = title
         self.body = body
         self.userInfo = userInfo
         self.sound = sound
         self.trigger = trigger
+        self.interruption = interruption
+        self.category = category
+        self.thread = thread
         self.originalSystemRequest = originalSystemRequest
     }
 
     public static func == (lhs: NoticeRequest, rhs: NoticeRequest) -> Bool {
         lhs.identifier == rhs.identifier && lhs.title == rhs.title && lhs.body == rhs.body &&
-            lhs.userInfo == rhs.userInfo && lhs.sound == rhs.sound && lhs.trigger == rhs.trigger
+            lhs.userInfo == rhs.userInfo && lhs.sound == rhs.sound && lhs.trigger == rhs.trigger &&
+            lhs.interruption == rhs.interruption && lhs.category == rhs.category && lhs.thread == rhs.thread
     }
 }
 
@@ -109,6 +136,12 @@ public final class SystemNoticeCenter: NoticeCenter {
         case .none: break
         case .custom: throw LocalNoticeError.unsupportedSound
         }
+        switch request.interruption {
+        case .active: break
+        case .timeSensitive: content.interruptionLevel = .timeSensitive
+        }
+        if let category = request.category { content.categoryIdentifier = category }
+        if let thread = request.thread ?? Self.defaultThread(for: request.identifier) { content.threadIdentifier = thread }
         let trigger = try Self.systemTrigger(request.trigger)
         try await center.add(UNNotificationRequest(identifier: request.identifier, content: content, trigger: trigger))
     }
@@ -151,7 +184,18 @@ public final class SystemNoticeCenter: NoticeCenter {
         return NoticeRequest(identifier: request.identifier, title: request.content.title,
             body: request.content.body, userInfo: info,
             sound: Self.noticeSound(request.content.sound), trigger: trigger,
+            interruption: request.content.interruptionLevel == .timeSensitive ? .timeSensitive : .active,
+            category: request.content.categoryIdentifier.isEmpty ? nil : request.content.categoryIdentifier,
+            thread: request.content.threadIdentifier.isEmpty ? nil : request.content.threadIdentifier,
             originalSystemRequest: request)
+    }
+
+    /// Groups the notices by thread when the service gives no thread.
+    private static func defaultThread(for identifier: String) -> String? {
+        if identifier.hasPrefix(LocalNoticeService.calendarPrefix) { return "john.calendar" }
+        if identifier.hasPrefix("john-rosary:") { return "john.rosary" }
+        if identifier.hasPrefix("john-reading:") { return "john.reading" }
+        return nil
     }
 
     private static func noticeSound(_ value: UNNotificationSound?) -> NoticeSound {

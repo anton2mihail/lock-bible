@@ -224,6 +224,10 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             select(.pray)
             paths[.pray] = [.companion(.rosaryHome)]
             markRoutedByCode(.pray)
+        case .lectio:
+            select(.pray)
+            paths[.pray] = [.companion(.lectio(nil))]
+            markRoutedByCode(.pray)
         case .readAloud:
             let location = runtime.preferences.readerLocation
             pendingReadAloud = true

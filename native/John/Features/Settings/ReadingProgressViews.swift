@@ -165,7 +165,7 @@ struct ReadingProgressSettings: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Toggle(isOn: Binding(get: { reminder.enabled },
-                                 set: { save(ReadingReminderSettings(enabled: $0, hour: reminder.hour, minute: reminder.minute)) })) {
+                                 set: { save(ReadingReminderSettings(enabled: $0, hour: reminder.hour, minute: reminder.minute, timeSensitive: reminder.timeSensitive)) })) {
                 Text("Daily reading reminder").font(JohnTypography.sans(16)).foregroundStyle(colors.text)
             }
             .tint(colors.tint).disabled(saving)
@@ -177,6 +177,14 @@ struct ReadingProgressSettings: View {
                     .font(JohnTypography.sans(16)).foregroundStyle(colors.text)
                     .disabled(saving)
                     .accessibilityIdentifier("settings-reading-reminder-time")
+                Toggle(isOn: Binding(get: { reminder.timeSensitive == true },
+                                     set: { save(ReadingReminderSettings(enabled: true, hour: reminder.hour, minute: reminder.minute, timeSensitive: $0)) })) {
+                    Text("Time Sensitive").font(JohnTypography.sans(16)).foregroundStyle(colors.text)
+                }
+                .tint(colors.tint).disabled(saving)
+                .accessibilityIdentifier("settings-reading-reminder-time-sensitive")
+                Text("A Time Sensitive reminder can show while a Focus is on.")
+                    .font(JohnTypography.sans(13)).foregroundStyle(colors.textDim)
             }
             if let message {
                 Text(message).font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
@@ -208,7 +216,7 @@ struct ReadingProgressSettings: View {
     }
     private func settings(from date: Date) -> ReadingReminderSettings {
         let c = reminderCalendar.dateComponents([.hour, .minute], from: date)
-        return ReadingReminderSettings(enabled: true, hour: c.hour ?? 8, minute: c.minute ?? 0)
+        return ReadingReminderSettings(enabled: true, hour: c.hour ?? 8, minute: c.minute ?? 0, timeSensitive: reminder.timeSensitive)
     }
     private func save(_ value: ReadingReminderSettings) {
         saveTask?.cancel()

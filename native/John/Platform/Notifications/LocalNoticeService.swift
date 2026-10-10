@@ -23,6 +23,7 @@ public final class LocalNoticeService {
     private let readCalendars: CalendarReader
     private let commit: StateCommitter
     private let readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)?
+    private let readExcerpt: (@Sendable () async -> String?)?
     private var operationActive = false
     private var operationWaiters: [CheckedContinuation<Void, Never>] = []
 
@@ -32,7 +33,9 @@ public final class LocalNoticeService {
                 readCommitted: @escaping StateReader,
                 readCalendars: @escaping CalendarReader,
                 commit: @escaping StateCommitter,
-                readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)? = nil) {
+                readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)? = nil,
+                readExcerpt: (@Sendable () async -> String?)? = nil) {
+        self.readExcerpt = readExcerpt
         self.readReadingReminder = readReadingReminder
         self.center = center
         self.now = now
@@ -77,17 +80,14 @@ public final class LocalNoticeService {
         try await withOperationQueue {
             let settings = ReadingReminderSettings(enabled: requested.enabled,
                                                    hour: min(23, max(0, requested.hour)),
-                                                   minute: min(59, max(0, requested.minute)))
+                                                   minute: min(59, max(0, requested.minute)),
+                                                   timeSensitive: requested.timeSensitive)
             if settings.enabled {
                 try await requirePermission(message: "Notifications are disabled. You can allow them in your device settings.")
             }
             let pending = try await center.pendingRequests()
-            let desired = settings.enabled ? [NoticeRequest(
-                identifier: Self.readingIdentifier,
-                title: "Your John reading is ready",
-                body: "Open today’s chapter and read a little.",
-                userInfo: ["url": "/read/john"],
-                trigger: .daily(hour: settings.hour, minute: settings.minute, timeZoneIdentifier: timeZone().identifier))] : []
+            let excerpt = await readExcerpt?()
+            let desired = settings.enabled ? [Self.readingRequest(settings, excerpt: excerpt, zone: timeZone())] : []
             try await reconcileAndCommit(
                 desired: desired,
                 pending: pending,
@@ -98,6 +98,21 @@ public final class LocalNoticeService {
                 mutation: nil)
             return settings
         }
+    }
+
+    /// The reading reminder. It has a scripture excerpt, the reading category for the actions, and one thread.
+    static func readingRequest(_ settings: ReadingReminderSettings, excerpt: String?, zone: TimeZone) -> NoticeRequest {
+        let trimmed = excerpt?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let body = trimmed.isEmpty ? "Open today’s chapter and read a little." : String(trimmed.prefix(180))
+        return NoticeRequest(
+            identifier: readingIdentifier,
+            title: "Your John reading is ready",
+            body: body,
+            userInfo: ["url": "/read/john"],
+            trigger: .daily(hour: settings.hour, minute: settings.minute, timeZoneIdentifier: zone.identifier),
+            interruption: settings.timeSensitive == true ? .timeSensitive : .active,
+            category: ReadingNoticeAction.category,
+            thread: "john.reading")
     }
 
     public func saveRosary(_ requested: RosaryReminderSettings) async throws -> RosaryReminderSettings {
@@ -215,13 +230,11 @@ public final class LocalNoticeService {
                     let reading = await readReadingReminder() ?? ReadingReminderSettings()
                     let shouldSchedule = reading.enabled && currentPermission.canDeliver
                     let pending = try await center.pendingRequests()
-                    let desired = shouldSchedule ? [NoticeRequest(
-                        identifier: Self.readingIdentifier,
-                        title: "Your John reading is ready",
-                        body: "Open today’s chapter and read a little.",
-                        userInfo: ["url": "/read/john"],
-                        trigger: .daily(hour: min(23, max(0, reading.hour)), minute: min(59, max(0, reading.minute)),
-                                        timeZoneIdentifier: timeZone().identifier))] : []
+                    let excerpt = await readExcerpt?()
+                    let clamped = ReadingReminderSettings(enabled: reading.enabled, hour: min(23, max(0, reading.hour)),
+                                                          minute: min(59, max(0, reading.minute)),
+                                                          timeSensitive: reading.timeSensitive)
+                    let desired = shouldSchedule ? [Self.readingRequest(clamped, excerpt: excerpt, zone: timeZone())] : []
                     try await reconcileAndCommit(desired: desired, pending: pending,
                         owned: { $0.identifier == Self.readingIdentifier }, preserveSameIdentifier: false,
                         restoreOnlyFutureCalendarRequests: false, operation: "Reading reminder refresh", mutation: nil)

@@ -57,6 +57,29 @@ struct RosaryGuideView: View {
         .task(id: requestedSet ?? "suggested") { await loadSession() }
         // One light tap for each bead the user completes. A step back also taps.
         .sensoryFeedback(.impact(weight: .light), trigger: completedActions)
+        .onChange(of: liveActivityKey, initial: true) { _, _ in syncLiveActivity() }
+        .onDisappear { PrayerActivityController.shared.end() }
+        .background { liveActivityProbe }
+    }
+
+    private var liveActivityKey: String { "\(session?.id ?? "")|\(stepIndex)|\(complete)" }
+
+    /// The Live Activity shows the step. It ends when the prayer is complete or when the user leaves.
+    private func syncLiveActivity() {
+        guard session != nil, let step, !complete else {
+            PrayerActivityController.shared.end()
+            return
+        }
+        PrayerActivityController.shared.startOrUpdate(
+            kind: .rosary, title: "Rosary",
+            state: .init(stepTitle: step.title, stepIndex: stepIndex, stepCount: steps.count, endDate: nil))
+    }
+
+    private var liveActivityProbe: some View {
+        Color.clear.frame(width: 1, height: 1)
+            .accessibilityElement()
+            .accessibilityIdentifier("liveActivityState")
+            .accessibilityLabel(PrayerActivityController.shared.status.rawValue)
     }
 
     private var emptyState: some View {

@@ -163,6 +163,7 @@ private struct JohnRootView: View {
                 runtime.enqueueExternalURL(url, using: router)
             }
             await runtime.start()
+            await runtime.consumeHandoff(using: router)
             await runtime.drainExternalURLs(using: router)
         }
         .task(id: runtime.startupComplete && runtime.hasNativeState ? preferences.translation.rawValue : "") {
@@ -171,6 +172,7 @@ private struct JohnRootView: View {
         }
         .task(id: scenePhase) {
             guard scenePhase == .active else { return }
+            await runtime.consumeHandoff(using: router)
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(3_600)) }
                 catch { return }
@@ -385,6 +387,8 @@ private final class JohnNotificationDelegate: NSObject, UIApplicationDelegate, U
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = Self.shared
+        Self.registerCategories()
+        PrayerActivityController.shared.endStale()
         return true
     }
 
@@ -396,9 +400,56 @@ private final class JohnNotificationDelegate: NSObject, UIApplicationDelegate, U
 
     private static let shared = JohnNotificationDelegate()
 
+    /// The reading reminder has three actions: Mark read, Snooze 1 h, and Open.
+    private static func registerCategories() {
+        let mark = UNNotificationAction(identifier: ReadingNoticeAction.markRead, title: "Mark read", options: [])
+        let snooze = UNNotificationAction(identifier: ReadingNoticeAction.snooze, title: "Snooze 1 h", options: [])
+        let open = UNNotificationAction(identifier: ReadingNoticeAction.open, title: "Open", options: [.foreground])
+        let category = UNNotificationCategory(identifier: ReadingNoticeAction.category, actions: [mark, snooze, open],
+                                              intentIdentifiers: [], options: [])
+        UNUserNotificationCenter.current().setNotificationCategories([category])
+    }
+
+    nonisolated private static func scheduleSnooze(from content: UNNotificationContent) async {
+        let snoozed = UNMutableNotificationContent()
+        snoozed.title = content.title
+        snoozed.body = content.body
+        snoozed.userInfo = content.userInfo
+        snoozed.sound = .default
+        snoozed.categoryIdentifier = ReadingNoticeAction.category
+        snoozed.threadIdentifier = "john.reading"
+        snoozed.interruptionLevel = content.interruptionLevel
+        let request = UNNotificationRequest(
+            identifier: ReadingNoticeAction.snoozeIdentifier, content: snoozed,
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: ReadingNoticeAction.snoozeSeconds, repeats: false))
+        try? await UNUserNotificationCenter.current().add(request)
+    }
+
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
                                             didReceive response: UNNotificationResponse,
                                             withCompletionHandler completionHandler: @escaping () -> Void) {
+        let action = response.actionIdentifier
+        if action == ReadingNoticeAction.snooze {
+            let content = response.notification.request.content
+            nonisolated(unsafe) let finish = completionHandler
+            Task {
+                await Self.scheduleSnooze(from: content)
+                finish()
+            }
+            return
+        }
+        if action == ReadingNoticeAction.markRead {
+            if let defaults = WidgetHandoff.defaults {
+                let today = defaults.array(forKey: WidgetHandoff.todayKey) as? [Int] ?? []
+                let pending = defaults.array(forKey: WidgetHandoff.pendingDoneKey) as? [Int] ?? []
+                defaults.set(Array(Set(pending + today)).sorted(), forKey: WidgetHandoff.pendingDoneKey)
+            }
+            completionHandler()
+            Task { @MainActor in
+                if let runtime = Self.runtime, let router = Self.router { await runtime.consumeHandoff(using: router) }
+            }
+            return
+        }
         let route = Self.routeURL(response.notification.request.content.userInfo["url"] as? String)
         completionHandler()
         guard let route else { return }

@@ -1067,6 +1067,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         guard let progressStore else { return }
         do { try await progressStore.setRead(isRead, book: book, chapter: chapter) } catch { return }
         progressRevision += 1
+        await mirrorProgressToWidgets()
     }
 
     func startReadingPlan(_ id: String?, now: Date = Date(), timeZone: TimeZone = .autoupdatingCurrent) async {
@@ -1074,12 +1075,14 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         let key = ReadingProgressMath.dayKey(now, timeZone: timeZone)
         do { try await progressStore.startPlan(id, startKey: key) } catch { return }
         progressRevision += 1
+        await mirrorProgressToWidgets()
     }
 
     func resetReadingProgress() async {
         guard let progressStore else { return }
         do { try await progressStore.reset() } catch { return }
         progressRevision += 1
+        await mirrorProgressToWidgets()
     }
 
     func saveReadingReminder(_ requested: ReadingReminderSettings) async throws -> ReadingReminderSettings {
@@ -1088,6 +1091,61 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         try await progressStore.setReminder(saved)
         progressRevision += 1
         return saved
+    }
+
+    // MARK: Widget and notification hand-off (B4b)
+
+    private static let progressTotal = 21
+
+    /// The next unread chapters for today. A plan gives the chapters of its day. With no plan, the next unread chapter.
+    private func todayChapters(_ data: ReadingProgressData) -> [Int] {
+        let read = data.readChapters("JHN")
+        if let id = data.planID, let plan = ReadingPlan.plan(id: id), let key = data.planStartKey {
+            let day = ReadingProgressMath.dayIndex(startKey: key, today: featureNow(), timeZone: featureTimeZone)
+            return plan.chapters(forDay: day).filter { !read.contains($0) }
+        }
+        return (1...Self.progressTotal).first { !read.contains($0) }.map { [$0] } ?? []
+    }
+
+    /// A short scripture excerpt for the reading reminder: verse 1 of the first chapter for today.
+    func readingExcerpt() async -> String? {
+        let data = await readingProgress()
+        let chapter = todayChapters(data).first ?? 1
+        guard let passage = await passage(translation: preferences.translation, bookCode: "JHN", chapter: chapter,
+                                          startVerse: "1", endVerse: "1") else { return nil }
+        return "John \(chapter):1 — \(passage.scriptureText)"
+    }
+
+    /// Copies a small summary to the app group. The widgets read it. Old keys stay as they are.
+    func mirrorProgressToWidgets() async {
+        guard let defaults = UserDefaults(suiteName: widgetGroup) else { return }
+        let data = await readingProgress()
+        defaults.set(data.readChapters("JHN").count, forKey: WidgetHandoff.readKey)
+        defaults.set(Self.progressTotal, forKey: WidgetHandoff.totalKey)
+        defaults.set(todayChapters(data), forKey: WidgetHandoff.todayKey)
+        WidgetCenter.shared.reloadTimelines(ofKind: WidgetHandoff.progressWidgetKind)
+    }
+
+    private var widgetGroup: String {
+        Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String ?? "group.com.nrsv.verse"
+    }
+
+    /// Applies what the widget, a control, or a notification action saved while the app was closed.
+    func consumeHandoff(using router: AppRouter) async {
+        if let defaults = UserDefaults(suiteName: widgetGroup) {
+            let done = defaults.array(forKey: WidgetHandoff.pendingDoneKey) as? [Int] ?? []
+            if !done.isEmpty {
+                defaults.removeObject(forKey: WidgetHandoff.pendingDoneKey)
+                for chapter in done where (1...Self.progressTotal).contains(chapter) {
+                    await setChapterRead(true, book: "JHN", chapter: chapter)
+                }
+            }
+            if let route = defaults.string(forKey: WidgetHandoff.pendingRouteKey) {
+                defaults.removeObject(forKey: WidgetHandoff.pendingRouteKey)
+                if let url = URL(string: route) { enqueueExternalURL(url, using: router) }
+            }
+        }
+        await mirrorProgressToWidgets()
     }
 
     func refreshLocalNotifications() async {
@@ -1139,7 +1197,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                     )
                 }
             },
-            readReadingReminder: { [weak self] in await self?.progressStore?.data().reminder }
+            readReadingReminder: { [weak self] in await self?.progressStore?.data().reminder },
+            readExcerpt: { [weak self] in await self?.readingExcerpt() }
         )
     }
 

@@ -392,5 +392,10 @@ private struct VerseTimerWidget: Widget {
 }
 
 @main struct JohnWidgetBundle: WidgetBundle {
-    var body: some Widget { VerseWidget(); DailyReadingWidget(); VerseTimerWidget() }
+    var body: some Widget {
+        VerseWidget(); DailyReadingWidget(); VerseTimerWidget()
+        ReadingProgressWidget()
+        OpenRosaryControl(); StartLectioControl()
+        PrayerLiveActivity()
+    }
 }

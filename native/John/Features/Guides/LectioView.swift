@@ -50,12 +50,32 @@ struct LectioView: View {
         .task(id: initialPassage?.id.legacyKey ?? "current") { await loadPassageIfNeeded() }
         .task(id: deadline) { await runTimer() }
         .sensoryFeedback(.success, trigger: timerFinishCount)
+        .onChange(of: deadline) { _, _ in syncLiveActivity() }
+        .onChange(of: stepIndex) { _, _ in syncLiveActivity() }
+        .background {
+            Color.clear.frame(width: 1, height: 1)
+                .accessibilityElement()
+                .accessibilityIdentifier("liveActivityState")
+                .accessibilityLabel(PrayerActivityController.shared.status.rawValue)
+        }
         .onChange(of: deadline != nil) { _, _ in updateIdleTimer() }
         .onChange(of: scenePhase) { _, _ in updateIdleTimer() }
         .onDisappear {
             deadline = nil
+            PrayerActivityController.shared.end()
             UIApplication.shared.isIdleTimerDisabled = false
         }
+    }
+
+    /// The Live Activity runs during the quiet minute. It ends when the timer ends, finishes, or the user leaves.
+    private func syncLiveActivity() {
+        guard let deadline, passage != nil else {
+            PrayerActivityController.shared.end()
+            return
+        }
+        PrayerActivityController.shared.startOrUpdate(
+            kind: .lectio, title: "Lectio divina",
+            state: .init(stepTitle: step.title, stepIndex: stepIndex, stepCount: Self.steps.count, endDate: deadline))
     }
 
     /// The screen must not lock during the silent minute. Every other state restores the system default.
