@@ -49,6 +49,8 @@ enum RosaryMediaPlaybackState: Equatable {
     func activate() {
         guard !isActive else { return }
         isActive = true
+        // Audio keeps playing with the screen locked (UIBackgroundModes audio).
+        try? AVAudioSession.sharedInstance().setCategory(.playback)
         interruptionObserver = NotificationCenter.default.addObserver(
             forName: AVAudioSession.interruptionNotification,
             object: nil,

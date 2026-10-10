@@ -46,6 +46,10 @@
 		<string>App/Fonts/SpaceGrotesk_600SemiBold.ttf</string>
 		<string>App/Fonts/SpaceGrotesk_700Bold.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

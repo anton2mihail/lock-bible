@@ -49,6 +49,15 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     let preferences = SharedPreferencesModel()
     let reader = ReaderModel()
     let readerScreen = ReaderScreenModel()
+    /// Read-aloud for the Reader (E8). The mini-player (E27) shows its state.
+    let readAloud = ReadAloudController()
+    /// The Media model that keeps playing audio after its page closes.
+    var mediaAudio: RosaryMediaModel?
+    /// Media audio that is loaded and in audio mode. Nil when no audio is active.
+    var activeMediaAudio: RosaryMediaModel? {
+        guard let mediaAudio, mediaAudio.mode == .audio, mediaAudio.state == .ready else { return nil }
+        return mediaAudio
+    }
     let today: TodayModel
     let novenaNames: [String: String] = [:]
     private(set) var startupStatus = "Loading saved data."

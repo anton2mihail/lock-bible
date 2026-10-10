@@ -162,6 +162,9 @@ private struct JohnRootView: View {
         .tabViewStyle(.tabBarOnly)
         // Only the Reader is long continuous reading. Other tabs keep the full bar for direct tab changes.
         .tabBarMinimizeBehavior(router.selectedTab == .read ? Self.readerMinimizeBehavior : .never)
+        // E27: the mini-player shows only while audio is active. It has no entrance animation.
+        .modifier(AudioMiniPlayerAccessory(isActive: AudioMiniPlayer.isActive(in: runtime)))
+        .transaction(value: AudioMiniPlayer.isActive(in: runtime)) { $0.disablesAnimations = true }
         .tint(preferences.colors(for: colorScheme).tint)
     }
 

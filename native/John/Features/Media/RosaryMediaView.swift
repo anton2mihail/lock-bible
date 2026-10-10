@@ -6,6 +6,7 @@ struct RosaryMediaView: View {
     let catalog: RosaryHomeCatalog
     let onOpenURL: (URL) -> Void
 
+    @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.scenePhase) private var scenePhase
@@ -37,16 +38,31 @@ struct RosaryMediaView: View {
                 mediaPage
             }
         }
-        .onAppear { if catalog.isValid { model.activate() } }
+        .onAppear {
+            guard catalog.isValid else { return }
+            if let existing = runtime.mediaAudio, existing !== model {
+                // Audio from an earlier visit keeps playing. Reuse it for the same episode.
+                if existing.episode.id == model.episode.id, existing.mode == .audio { model = existing }
+                else { existing.stopAndRelease() }
+            }
+            runtime.mediaAudio = model
+            model.activate()
+        }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active, catalog.isValid { model.activate() } else { model.pause() }
+            if phase == .active, catalog.isValid { model.activate() }
+            else if model.mode == .video { model.pause() }
         }
         .onChange(of: episodeID) { _, nextID in
             if let next = catalog.mediaEpisodes.first(where: { $0.id == nextID }) ?? catalog.mediaEpisodes.first {
                 model.selectEpisode(next)
             }
         }
-        .onDisappear { model.deactivate() }
+        .onDisappear {
+            // Playing audio stays alive for the mini-player. Video and paused audio stop.
+            if model.mode == .audio, model.isPlaying { return }
+            model.deactivate()
+            if runtime.mediaAudio === model { runtime.mediaAudio = nil }
+        }
     }
 
     private var mediaPage: some View {

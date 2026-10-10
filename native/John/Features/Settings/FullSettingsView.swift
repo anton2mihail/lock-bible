@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 import JohnCore
 
@@ -38,6 +39,10 @@ struct FullSettingsView: View {
 
                 section("Reading") {
                     ReadingSettingsChoices(save: save)
+                }
+
+                section("Read aloud") {
+                    ReadAloudSettings(controller: runtime.readAloud)
                 }
 
                 section("Translation") {
@@ -310,5 +315,39 @@ private struct SettingsListRow: View {
         .accessibilityValue(selected ? "Selected" : "Not selected")
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier(accessibilityID ?? "settings-row-\(title.lowercased().replacingOccurrences(of: " ", with: "-"))")
+    }
+}
+
+/// Rate and voice for read-aloud (E8). The voices are the English system voices.
+private struct ReadAloudSettings: View {
+    @Bindable var controller: ReadAloudController
+    @Environment(SharedPreferencesModel.self) private var preferences
+    @Environment(\.colorScheme) private var colorScheme
+    private var colors: JohnColors { preferences.colors(for: colorScheme) }
+    private let voices = ReadAloudController.availableVoices()
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Speech rate").font(JohnTypography.sans(16)).foregroundStyle(colors.text)
+            Slider(value: $controller.rate,
+                   in: AVSpeechUtteranceMinimumSpeechRate...AVSpeechUtteranceMaximumSpeechRate)
+                .accessibilityLabel("Speech rate")
+                .accessibilityIdentifier("settings-read-aloud-rate")
+            HStack {
+                Text("Voice").font(JohnTypography.sans(16)).foregroundStyle(colors.text)
+                Spacer()
+                Picker("Voice", selection: $controller.voiceID) {
+                    Text("Default").tag(String?.none)
+                    ForEach(voices, id: \.identifier) { voice in
+                        Text("\(voice.name) (\(voice.language))").tag(Optional(voice.identifier))
+                    }
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("settings-read-aloud-voice")
+            }
+            Text("The Reader reads the chapter one verse at a time. Verse numbers are not read.")
+                .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
+        }
+        .padding(.vertical, 12)
     }
 }

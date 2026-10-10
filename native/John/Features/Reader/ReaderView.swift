@@ -42,6 +42,58 @@ struct ReaderView: View {
         _pushedModel = State(initialValue: pushedRequest == nil ? nil : ReaderScreenModel())
     }
 
+    /// The verse that read-aloud speaks in the open chapter. The Reader highlights it.
+    private var spokenIndex: Int? {
+        guard let book = model.book, let number = model.chapterNumber else { return nil }
+        return runtime.readAloud.spokenIndex(bookCode: book.code, chapter: number, translation: model.edition)
+    }
+    private var readAloudState: String {
+        guard let spokenIndex, let label = runtime.readAloud.currentLabel else { return "idle" }
+        _ = spokenIndex
+        return "\(runtime.readAloud.isPlaying ? "playing" : "paused") verse \(label)"
+    }
+
+    private func toggleReadAloud(book: BibleBookDescriptor, number: Int, chapter: BibleChapter) {
+        let reader = runtime.readAloud
+        if reader.isReading(bookCode: book.code, chapter: number, translation: model.edition) {
+            reader.togglePlayback()
+            return
+        }
+        // Another audio source stops first. Reading starts at the selected verse, or at verse 1.
+        runtime.mediaAudio?.pause()
+        let chosen = ReadAloudChapter(bookCode: book.code, bookName: book.name, chapter: number,
+                                      translation: model.edition,
+                                      labels: chapter.verses.map(\.label), texts: chapter.verses.map(\.text))
+        reader.start(chosen, from: model.selectedRange?.lowerBound ?? 0)
+    }
+
+    private var readAloudControls: some View {
+        let reader = runtime.readAloud
+        return HStack(spacing: 8) {
+            Button { reader.previous() } label: { Image(systemName: "backward.fill").frame(width: 44, height: 44) }
+                .disabled(!reader.canGoPrevious)
+                .accessibilityLabel("Previous verse")
+                .accessibilityIdentifier("reader-read-aloud-previous")
+            Button { reader.togglePlayback() } label: {
+                Image(systemName: reader.isPlaying ? "pause.fill" : "play.fill").frame(width: 44, height: 44)
+            }
+            .accessibilityLabel(reader.isPlaying ? "Pause" : "Play")
+            .accessibilityIdentifier("reader-read-aloud-toggle")
+            Button { reader.next() } label: { Image(systemName: "forward.fill").frame(width: 44, height: 44) }
+                .disabled(!reader.canGoNext)
+                .accessibilityLabel("Next verse")
+                .accessibilityIdentifier("reader-read-aloud-next")
+            Button { reader.stop() } label: { Image(systemName: "stop.fill").frame(width: 44, height: 44) }
+                .accessibilityLabel("Stop reading aloud")
+                .accessibilityIdentifier("reader-read-aloud-stop")
+            Spacer(minLength: 0)
+        }
+        .foregroundStyle(colors.tint)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("reader-read-aloud-controls")
+        .accessibilityValue(readAloudState)
+    }
+
     private var model: ReaderScreenModel { pushedModel ?? runtime.readerScreen }
     /// Only the visible Reader presents router sheets. The Read tab root steps aside while another tab or a pushed page shows.
     private var ownsSheet: Bool {
@@ -517,9 +569,13 @@ struct ReaderView: View {
                                              NSLog("John Aa action received")
                                              #endif
                                              router.sheet = .readerAppearance
-                                         }, requestID: readerAccessibilityValue, colors: colors)
+                                         }, requestID: readerAccessibilityValue,
+                                         onReadAloud: { toggleReadAloud(book: book, number: number, chapter: chapter) },
+                                         readAloudPlaying: spokenIndex != nil && runtime.readAloud.isPlaying,
+                                         readAloudValue: readAloudState, colors: colors)
                                 .padding(.top, 8)
                                 .padding(.bottom, 4)
+                            if spokenIndex != nil { readAloudControls }
                             if !preferences.selectionHintDismissed {
                                 Text("Tap a verse to select it. Tap another verse to select a range.")
                                     .font(JohnTypography.sans(12))
@@ -536,7 +592,7 @@ struct ReaderView: View {
                                 readerLayout: voiceOverEnabled ? .verses : preferences.reading.layout,
                                 dynamicTypeScale: systemTextScale,
                                 selectedRange: model.selectedRange,
-                                contextRange: model.contextRange,
+                                contextRange: spokenIndex.map { $0...$0 } ?? model.contextRange,
                                 contextVerseIndex: model.pendingContextIndex,
                                 highlights: model.highlightColors,
                                 anchorCaptureRequest: anchorCaptureRequest,
@@ -959,6 +1015,9 @@ private struct ReaderHeader: View {
     let onSearch: () -> Void
     let onTextSettings: (() -> Void)?
     var requestID: String? = nil
+    var onReadAloud: (() -> Void)? = nil
+    var readAloudPlaying = false
+    var readAloudValue = "idle"
     let colors: JohnColors
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -1006,6 +1065,19 @@ private struct ReaderHeader: View {
                 .accessibilityLabel("Text settings")
                 .accessibilityInputLabels(["Text settings", "Aa", "Text size"])
                 .accessibilityIdentifier("reader-appearance-button")
+            }
+
+            if let onReadAloud {
+                Button(action: onReadAloud) {
+                    Image(systemName: readAloudPlaying ? "pause.circle" : "speaker.wave.2")
+                        .font(.system(size: 20))
+                        .foregroundStyle(colors.tint)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityLabel(readAloudPlaying ? "Pause reading aloud" : "Read aloud")
+                .accessibilityValue(readAloudValue)
+                .accessibilityIdentifier("reader-read-aloud-button")
             }
 
             Button(action: onSearch) {
