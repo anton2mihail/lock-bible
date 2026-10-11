@@ -5,8 +5,9 @@
 import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-RAW = "marketing/screenshots/raw"
-OUTROOT = "marketing/screenshots/framed"
+# Override with RAW_DIR / OUT_DIR, e.g. RAW_DIR=marketing/screenshots/raw-2.0 OUT_DIR=marketing/screenshots/framed-2.0
+RAW = os.environ.get("RAW_DIR", "marketing/screenshots/raw")
+OUTROOT = os.environ.get("OUT_DIR", "marketing/screenshots/framed")
 GOLD = (255, 194, 90); DIM = (181, 172, 166)
 
 DEVICES = {
@@ -18,7 +19,7 @@ DEVICES = {
       ("05-readings","Walk with the Church year","Daily Mass readings and feast days, opened right in the Bible."),
       ("06-pray","Make room for prayer","The Rosary, novenas, everyday prayers, and Lectio Divina."),
       ("02-read","The complete Catholic Bible","Three editions. Every book, chapter, and verse. Free, and fully offline."),
-      ("03-settings","Make it your own","Choose your edition and how often the verse rotates — every 10 minutes to once a day."),
+      ("03-settings","Make it your own","Text size, line spacing, typeface and dark mode. Three editions, and a verse that rotates as often as you like."),
     ],
   },
   "ipad": {
@@ -27,7 +28,7 @@ DEVICES = {
       ("ipad-01-today","Your Catholic day at a glance","Today's readings, the Rosary, and a verse to carry with you."),
       ("ipad-02-read","The complete Catholic Bible","Three editions. Every book, chapter, and verse. Free, and fully offline."),
       ("ipad-04-pray","Make room for prayer","The Rosary, novenas, everyday prayers, and Lectio Divina."),
-      ("ipad-03-settings","Make it your own","Choose your edition and how often the verse rotates."),
+      ("ipad-03-settings","Make it your own","Text size, line spacing, typeface and dark mode."),
     ],
   },
 }

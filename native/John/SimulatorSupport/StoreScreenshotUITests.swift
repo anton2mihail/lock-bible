@@ -1,5 +1,7 @@
 import CryptoKit
 import Foundation
+import ImageIO
+import UniformTypeIdentifiers
 import UIKit
 import XCTest
 
@@ -210,11 +212,22 @@ final class StoreScreenshotUITests: XCTestCase {
         let rawHasAlpha = ![CGImageAlphaInfo.none, .noneSkipFirst, .noneSkipLast].contains(raw.alphaInfo)
 
         // Flatten to an opaque image. App Store Connect rejects an alpha channel.
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = image.scale
-        format.opaque = true
-        let flat = UIGraphicsImageRenderer(size: image.size, format: format).image { _ in image.draw(at: .zero) }
-        guard let png = flat.pngData(), let flatCG = UIImage(data: png)?.cgImage else { XCTFail("PNG encoding failed"); return }
+        // UIImage.pngData() keeps an alpha channel even for an opaque renderer, so
+        // draw into an RGB context with no alpha and encode it with ImageIO.
+        let data = NSMutableData()
+        guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
+                                      space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                      bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else { XCTFail("No bitmap context"); return }
+        context.draw(raw, in: CGRect(x: 0, y: 0, width: width, height: height))
+        guard let opaque = context.makeImage(),
+              let destination = CGImageDestinationCreateWithData(data, UTType.png.identifier as CFString, 1, nil) else {
+            XCTFail("PNG encoding failed"); return
+        }
+        CGImageDestinationAddImage(destination, opaque, nil)
+        guard CGImageDestinationFinalize(destination), let flatCG = UIImage(data: data as Data)?.cgImage else {
+            XCTFail("PNG encoding failed"); return
+        }
+        let png = data as Data
         XCTAssertEqual(flatCG.width, width, "Flattening must keep the pixel width")
         XCTAssertEqual(flatCG.height, height, "Flattening must keep the pixel height")
         let flatHasAlpha = ![CGImageAlphaInfo.none, .noneSkipFirst, .noneSkipLast].contains(flatCG.alphaInfo)
