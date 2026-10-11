@@ -65,6 +65,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     private(set) var libraryCapability: String?
     /// Increases after undo, redo, import, or tag changes. Views reload saved data when it changes.
     var savedRevision = 0
+    /// Optional iCloud sync (E21). Off until the user turns it on in Settings.
+    let cloudSync = CloudSyncModel()
     let tagStore: SavedTagStore?
     /// Reading progress and plan (E7). A separate file keeps older data valid.
     let progressStore: ReadingProgressStore?

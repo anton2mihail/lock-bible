@@ -45,6 +45,10 @@ struct FullSettingsView: View {
                     ReadingProgressSettings()
                 }
 
+                section("iCloud sync") {
+                    CloudSyncSettings()
+                }
+
                 section("Read aloud") {
                     ReadAloudSettings(controller: runtime.readAloud)
                 }

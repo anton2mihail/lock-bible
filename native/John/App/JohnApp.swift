@@ -10,6 +10,7 @@ struct JohnApp: App {
     @UIApplicationDelegateAdaptor(JohnNotificationDelegate.self) private var appDelegate
     @State private var runtime = JohnRuntime()
     @State private var router = AppRouter()
+    @Environment(\.scenePhase) private var scenePhase
 
     init() { JohnTips.configure() }
 
@@ -24,6 +25,15 @@ struct JohnApp: App {
                 .onOpenURL { url in
                     runtime.enqueueExternalURL(url, using: router)
                 }
+                .onContinueUserActivity(JohnActivity.reading) { activity in
+                    if let url = JohnActivity.url(from: activity) { runtime.enqueueExternalURL(url, using: router) }
+                }
+                .onContinueUserActivity(JohnActivity.saved) { activity in
+                    if let url = JohnActivity.url(from: activity) { runtime.enqueueExternalURL(url, using: router) }
+                }
+                .task { runtime.cloudSync.attach(runtime) }
+                .onChange(of: scenePhase) { _, phase in if phase == .active { runtime.cloudSync.syncNow() } }
+                .onChange(of: runtime.savedRevision) { _, _ in runtime.cloudSync.localDataChanged() }
                 .onContinueUserActivity(CSSearchableItemActionType) { activity in
                     guard let identifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
                           let url = SpotlightIndexer.route(forIdentifier: identifier) else { return }

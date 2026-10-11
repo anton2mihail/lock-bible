@@ -249,6 +249,19 @@ struct ReaderView: View {
         return "\(passage.bookName) \(passage.chapter):\(verses)"
     }
 
+    /// The chapter, and the selected verse if one is selected, for Handoff.
+    private var handoffURL: URL? {
+        guard pushedRequest == nil, model.screen == .chapter, let book = model.book,
+              let number = model.currentChapterNumber ?? model.chapterNumber else { return nil }
+        return JohnActivity.readingURL(bookCode: book.code, chapter: number,
+                                       verse: model.selectedPassage?.id.startVerse.rawValue,
+                                       translation: model.edition.rawValue)
+    }
+    private var handoffTitle: String {
+        guard let book = model.book, let number = model.currentChapterNumber ?? model.chapterNumber else { return "Reader" }
+        return "\(book.name) \(number)"
+    }
+
     var body: some View {
         Group {
             Group {
@@ -264,6 +277,7 @@ struct ReaderView: View {
             .focusedSceneValue(\.readerCommands, ownsSheet ? commandActions : nil)
         }
         .background(colors.background)
+        .handoff(type: JohnActivity.reading, title: handoffTitle, url: handoffURL)
         .sensoryFeedback(trigger: feedbackHaptic) { _, event in event.feedback }
         .task(id: preferences.translation) {
             if let pushedRequest {

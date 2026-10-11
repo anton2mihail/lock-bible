@@ -28,6 +28,10 @@ struct SavedView: View {
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     var body: some View {
+        content.handoff(type: JohnActivity.saved, title: "Saved passages", url: JohnActivity.savedURL)
+    }
+
+    private var content: some View {
         VStack(spacing: 0) {
             HStack {
                 Text("Saved")

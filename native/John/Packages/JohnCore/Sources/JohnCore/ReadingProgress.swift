@@ -131,6 +131,15 @@ public actor ReadingProgressStore {
         try write(value)
     }
 
+    /// Adds read chapters from another device. It never removes a chapter.
+    public func mergeRead(_ incoming: [String: [Int]]) throws {
+        var value = try load()
+        let merged = SyncMerge.mergeRead(value.read, incoming)
+        guard merged != value.read else { return }
+        value.read = merged
+        try write(value)
+    }
+
     public func startPlan(_ id: String?, startKey: String?) throws {
         var value = try load()
         value.planID = id
