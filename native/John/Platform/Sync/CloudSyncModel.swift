@@ -5,6 +5,10 @@ import JohnCore
 /// The state of optional iCloud sync. Sync is off by default. The user turns it on in Settings.
 @MainActor @Observable final class CloudSyncModel {
     static let defaultsKey = "JohnCloudSyncEnabled"
+    /// Sync needs the iCloud and push entitlements. A build without them sets
+    /// `JohnCloudSyncAvailable` to false in Info.plist. Then Settings hides sync and
+    /// nothing touches CloudKit, because `CKContainer.default()` traps without the entitlement.
+    static let isAvailable = Bundle.main.object(forInfoDictionaryKey: "JohnCloudSyncAvailable") as? Bool ?? false
 
     private(set) var status: CloudSyncStatus = .off
     private(set) var isEnabled: Bool
@@ -18,7 +22,7 @@ import JohnCore
             UserDefaults.standard.removeObject(forKey: Self.defaultsKey)
         }
         #endif
-        isEnabled = UserDefaults.standard.bool(forKey: Self.defaultsKey)
+        isEnabled = Self.isAvailable && UserDefaults.standard.bool(forKey: Self.defaultsKey)
     }
 
     var statusText: String {
@@ -40,7 +44,7 @@ import JohnCore
     }
 
     func setEnabled(_ on: Bool) {
-        guard on != isEnabled else { return }
+        guard Self.isAvailable, on != isEnabled else { return }
         isEnabled = on
         UserDefaults.standard.set(on, forKey: Self.defaultsKey)
         if on { startService() } else {
@@ -55,6 +59,7 @@ import JohnCore
     func localDataChanged() { if let service { Task { await service.localDataChanged() } } }
 
     private func startService() {
+        guard Self.isAvailable else { return }
         guard let runtime, let directory = runtime.syncDirectory else { status = .failed("Sync cannot find the app data folder."); return }
         let service = CloudSyncEngineService(local: RuntimeSyncStore(runtime: runtime), directory: directory) { [weak self] value in
             Task { @MainActor in self?.status = value }

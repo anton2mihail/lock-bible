@@ -45,8 +45,10 @@ struct FullSettingsView: View {
                     ReadingProgressSettings()
                 }
 
-                section("iCloud sync") {
-                    CloudSyncSettings()
+                if CloudSyncModel.isAvailable {
+                    section("iCloud sync") {
+                        CloudSyncSettings()
+                    }
                 }
 
                 section("Read aloud") {

@@ -24,7 +24,8 @@ final class SyncHandoffB4cUITests: XCTestCase {
         let toggle = app.switches["settings-icloud-sync-toggle"]
         var swipes = 0
         while !toggle.exists && swipes < 8 { app.swipeUp(); swipes += 1 }
-        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        try XCTSkipUnless(toggle.waitForExistence(timeout: 3),
+                          "iCloud sync is hidden: this build sets JohnCloudSyncAvailable to false (no iCloud entitlement)")
         let status = app.staticTexts["settings-icloud-sync-status"]
         XCTAssertEqual(toggle.value as? String, "0")
         XCTAssertTrue(status.label.hasPrefix("Off"))
