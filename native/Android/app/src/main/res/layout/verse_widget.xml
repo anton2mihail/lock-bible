@@ -1,0 +1,5 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="20dp" android:background="@drawable/widget_background">
+<TextView android:id="@+id/widget_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="JOHN 1:1" android:textSize="11sp" android:letterSpacing="0.15" android:textColor="#745439" />
+<TextView android:id="@+id/widget_body" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:paddingTop="12dp" android:paddingBottom="8dp" android:textSize="18sp" android:fontFamily="serif" android:textColor="#191015" android:maxLines="8" android:ellipsize="end" />
+<TextView android:id="@+id/widget_reference" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#564E4A" />
+</LinearLayout>

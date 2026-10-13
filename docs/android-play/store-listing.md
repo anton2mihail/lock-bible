@@ -1,0 +1,129 @@
+# Google Play listing: John 1:1
+
+Prepared for a new app in an organization account. The owner approved a free app,
+with no ads or purchases, and `contact@north.boutique` as the public support email.
+This file contains the English (United States) listing.
+
+## App name
+
+```text
+John 1:1
+```
+
+## Short description
+
+```text
+Offline Catholic Bible, prayer guides, and works of the Fathers and Doctors
+```
+
+## Full description
+
+```text
+John 1:1 brings Scripture, Catholic prayer, and the writings of the Fathers and Doctors into one quiet place for daily reading.
+
+READ SCRIPTURE OFFLINE
+Read all 73 books in three complete editions: the World English Bible, Catholic Edition; the Douay-Rheims; and the Latin Vulgate. Search for a word, phrase, or Bible reference. Open a passage in its chapter and keep track of the chapters you have read.
+
+KEEP WHAT YOU READ
+Save bookmarks and highlights. Add written or drawn notes to a passage. Return to your saved verses in the Library. Share a passage as text or as a Scripture card.
+
+PRAY WITH A GUIDE
+Follow the Rosary one step at a time. Use traditional prayers and prayers of the saints, with their sources. Save favorite prayers. Follow nine-day novenas and record your intention and completed days. Use guides for lectio divina and preparation for confession.
+
+READ THE FATHERS AND DOCTORS
+Explore an offline library of works from 26 authors, including St Augustine, St John Chrysostom, and St Thomas Aquinas. Browse works and sections, save your place, and open the Scripture references you find.
+
+BUILD A DAILY PRACTICE
+Use reading plans, personal reflections, optional reminders, and home screen widgets. Choose light or dark appearance and adjust reading text to suit you. Listen to Bible passages through your device's text-to-speech service when a suitable offline voice is installed.
+
+CALENDAR AND READING REFERENCES
+Browse the United States Roman Rite calendar and the reading references available in the app. Open readings in the offline Bible or use the link to the official readings. Calendar coverage is limited to the dates included in the app. The offline Bible wording and verse divisions can differ from those proclaimed at Mass.
+
+The bundled Bible editions, works, prayers, and prayer guides are available offline. External websites and publisher media links need an internet connection. Read aloud requires an installed offline voice. Voice availability depends on your device.
+
+John 1:1 is free, with no ads or in-app purchases. No app account is required.
+
+Support: contact@north.boutique
+```
+
+## Store settings
+
+| Field | Value |
+| --- | --- |
+| Default language | English (United States), `en-US` |
+| App or game | App |
+| Category | Books & Reference |
+| Price | Free |
+| Contains ads | No |
+| In-app purchases | No |
+| Support email | `contact@north.boutique` |
+| Website | `https://anton2mihail.github.io/lock-bible/` |
+| Privacy policy | `https://anton2mihail.github.io/lock-bible/privacy.html` |
+
+The organization developer name and address come from the verified Play account.
+Do not use the support email as proof of the organization's legal name.
+Select only available Console tags that describe Bible reading and reference.
+
+## First release notes
+
+```text
+Read three complete Catholic Bible editions offline. Save verses and notes, follow prayer guides and novenas, explore the Fathers and Doctors, and use reading plans, reminders, and home screen widgets.
+```
+
+## Graphic assets
+
+Run `python3 scripts/android/store-assets.py` from the repo root.
+The script uses Pillow and the existing Lora and Space Grotesk fonts in
+`node_modules/@expo-google-fonts`. The repo's normal dependency install supplies
+these fonts. The script generates only the icon, feature graphic, listing JSON,
+and their manifest. It does not make or change app screenshots.
+
+| Asset | File | Format |
+| --- | --- | --- |
+| Store icon | `assets/play-store/icon-512.png` | 512 × 512, RGBA PNG |
+| Feature graphic | `assets/play-store/feature-1024x500.png` | 1024 × 500, RGB PNG |
+| Listing fields | `assets/play-store/listing-en-US.json` | JSON with character counts |
+| Source and output hashes | `assets/play-store/manifest.json` | SHA-256 hashes |
+
+The icon is the existing John icon at the Play size. Google applies its corner
+mask and outside shadow. The feature graphic uses the existing Scripture
+illustration, the app fonts, and the app's warm ivory and plum colors. It is
+promotional artwork. It does not show a simulated app screen. The original
+artwork was generated with AI, as recorded in `assets/CREDITS.md`. Answer any
+asset-origin question in Console with this source information.
+
+## Real Android screenshots
+
+Use actual Android app captures in `assets/play-store/screenshots/`.
+Capture the release candidate after the public policy link is in place.
+Use at least two valid screenshots. Prefer four or more 1080 × 1920 portrait
+captures. Do not show iOS controls, unsupported features, test data, or system
+notifications. Do not stretch a capture to another aspect ratio.
+
+Suggested order and alt text, subject to the screens captured:
+
+| Screen | Alt text |
+| --- | --- |
+| Today | Today's Scripture and prayer in John 1:1. |
+| Bible reader | Read a chapter in the offline Catholic Bible. |
+| Prayer | Prayer guides, traditional prayers, and nine-day novenas. |
+| Works | Browse the offline writings of the Fathers and Doctors. |
+| Library | Return to saved Bible passages and personal notes. |
+
+After capture, use `python3 scripts/android/store-assets.py --check-screenshots`
+to check file format, image size, and aspect ratio. The check requires at least
+two screenshots. Check the visible screen content separately before upload.
+
+## Verified Play requirements
+
+The title limit is 30 characters. The short description limit is 80. The full
+description limit is 4000. [Create and set up your app](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en)
+
+The icon must be a 512 × 512, 32-bit PNG under 1024 KB. The feature graphic must
+be a 1024 × 500 JPEG or RGB PNG. Phone screenshots must be JPEG or RGB PNG, with
+each side from 320 to 3840 pixels. The longest side must be no more than twice
+the shortest. Four 1080 × 1920 portrait captures help qualify an app for
+recommendation formats. [Preview asset requirements](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en)
+
+Keep the icon square. Do not add rounded corners or an outside shadow.
+[Google Play icon specifications](https://developer.android.com/distribute/google-play/resources/icon-design-specifications)

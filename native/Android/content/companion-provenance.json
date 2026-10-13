@@ -1,0 +1,104 @@
+{
+  "formatVersion": 1,
+  "capturedAtUtc": "2026-10-13T15:05:29.085494+00:00",
+  "repositoryHead": "48425a2b00e9cbd312916ff6a32dbe56cef661b6",
+  "sourceState": "working-tree",
+  "purpose": "Reviewed Android release snapshot. Source hashes record provenance; staging does not require the working tree to match them.",
+  "exporter": "scripts/native/resources/export-catalogs.ts",
+  "catalog": {
+    "path": "native/Android/content/companion.json",
+    "bytes": 219130,
+    "sha256": "4da66b092ff01d3dd7897425e17ad46cb5d82cf82716946e0e867eb8cfcec484",
+    "counts": {
+      "novenas": 7,
+      "prayers": 28,
+      "teachings": 5
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "scripts/native/resources/export-catalogs.ts",
+      "sha256": "0a6d7d33fbe77b6727465a3b84e1875a64fa6040dcb329a930a53a9f2b808372",
+      "headSha256": "0a6d7d33fbe77b6727465a3b84e1875a64fa6040dcb329a930a53a9f2b808372",
+      "modifiedAgainstHead": false
+    },
+    {
+      "path": "src/services/companion/prayers.ts",
+      "sha256": "2ac711ac264813ac774639369cbd75d9d39511e1a99a02e485ca9aaa5304603f",
+      "headSha256": "6313903ea143455e461aaea6c3de0ea4576ef6493af65dd7c75ab5539d587de5",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/companion/teaching.ts",
+      "sha256": "4c439908f40566a2752de6f04d440d76856a66e28b43426e90239e4a632b0701",
+      "headSha256": "32769c9f9b37fa1aeddff0b96e069b9cac20313a7771bcab62024520bdd9aa74",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/catalog.ts",
+      "sha256": "afb71e1353dab77d49ab163d55492be886a94f374b9ecc6c1b9a8658ba4ef91f",
+      "headSha256": "afb71e1353dab77d49ab163d55492be886a94f374b9ecc6c1b9a8658ba4ef91f",
+      "modifiedAgainstHead": false
+    },
+    {
+      "path": "src/services/novena/expandedNovenas.ts",
+      "sha256": "58b9c94fe0755168453db6db75c85ae8cde4776668625d86fb4955e8f0d1a52c",
+      "headSha256": "0d880032e1000a6e93bd2f8529875e808163301b8730b9cc66d01503ef0b1f4b",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/padrePioNovena.ts",
+      "sha256": "8c67b055c4490b1fe7d2f22069519615e71b6682b0180387c367e8bb520839cb",
+      "headSha256": "cf0a87f8074e88c2e32ef914bc53baeffb5717849e14556895f358302bb270a0",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/perpetualHelpNovena.ts",
+      "sha256": "070273ef9e754901ca8a7492ae343b3db59fe2e3d8eb4dd63a92256e3780e0fc",
+      "headSha256": "418727067b7c3f0e8c49b59a0f911b2a50b3be2e226f77e4922296ce535ba679",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/stJosephNovena.ts",
+      "sha256": "b601ff64d845436474d866ec5c3cb0d1e78b4bb58eca37d70da1a546c84a5c43",
+      "headSha256": "64b25034cfb4916365acd78c7b334b83f9e7a6778ad773564f8bb948c72c2200",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/stJudeNovena.ts",
+      "sha256": "3e089d0166796976e8d0db4a6c2aabcc512feec476967da051cab1a9f04d6517",
+      "headSha256": "39a55e00250f1937e4e6ff784eca4f414aea9d7ea68f2e19ef48349de7642289",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/stPeregrineNovena.ts",
+      "sha256": "9176559c33c0818a16a236422e2aa07d0a62c1bb9b3c65f0e8fb39ac22c42b16",
+      "headSha256": "dc9e48ac4ba37f5fcfd1f0f9057df348c09ff5f3c8e90d8263555edf47343d2d",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/novena/stThereseNovena.ts",
+      "sha256": "a9afa355ae44b21aa8c738d1a13181fc182aee21cd627d24c099735aa28cc6b0",
+      "headSha256": "36b75382658a16b922c3b5e9beeabab9e2ba9d4ad7146b1d443fed816039b1e2",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/rosary/catalog.ts",
+      "sha256": "5a405f5c64da7533d82bacb65af51ce023476b2f8dd60d6814be5d86f3e687bf",
+      "headSha256": "e273b4f72e4423fe279b3114d90e6e4483b7df8e0a031bb557c3bb7ca84b7964",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/rosary/prayers.ts",
+      "sha256": "8267393b543410a9ea7132fa4cc417cf8e11d0c322bf22862fa231ac85ff08c8",
+      "headSha256": "b721fb5aaa2776701e9c48a39dcea6823a0c89f01c387302f6690d9eec992055",
+      "modifiedAgainstHead": true
+    },
+    {
+      "path": "src/services/rosary/types.ts",
+      "sha256": "a0892de622119ec75c1776b14f949c4ad9982f4cb6911bc7fe0326afd5bd1459",
+      "headSha256": "db0cdff33f67903b788e6c73bf05e2ae60d75d1728d5bedfc209a634a5ddfc5a",
+      "modifiedAgainstHead": true
+    }
+  ]
+}

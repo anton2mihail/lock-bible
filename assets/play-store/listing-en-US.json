@@ -1,0 +1,21 @@
+{
+  "language": "en-US",
+  "title": "John 1:1",
+  "shortDescription": "Offline Catholic Bible, prayer guides, and works of the Fathers and Doctors",
+  "fullDescription": "John 1:1 brings Scripture, Catholic prayer, and the writings of the Fathers and Doctors into one quiet place for daily reading.\n\nREAD SCRIPTURE OFFLINE\nRead all 73 books in three complete editions: the World English Bible, Catholic Edition; the Douay-Rheims; and the Latin Vulgate. Search for a word, phrase, or Bible reference. Open a passage in its chapter and keep track of the chapters you have read.\n\nKEEP WHAT YOU READ\nSave bookmarks and highlights. Add written or drawn notes to a passage. Return to your saved verses in the Library. Share a passage as text or as a Scripture card.\n\nPRAY WITH A GUIDE\nFollow the Rosary one step at a time. Use traditional prayers and prayers of the saints, with their sources. Save favorite prayers. Follow nine-day novenas and record your intention and completed days. Use guides for lectio divina and preparation for confession.\n\nREAD THE FATHERS AND DOCTORS\nExplore an offline library of works from 26 authors, including St Augustine, St John Chrysostom, and St Thomas Aquinas. Browse works and sections, save your place, and open the Scripture references you find.\n\nBUILD A DAILY PRACTICE\nUse reading plans, personal reflections, optional reminders, and home screen widgets. Choose light or dark appearance and adjust reading text to suit you. Listen to Bible passages through your device's text-to-speech service when a suitable offline voice is installed.\n\nCALENDAR AND READING REFERENCES\nBrowse the United States Roman Rite calendar and the reading references available in the app. Open readings in the offline Bible or use the link to the official readings. Calendar coverage is limited to the dates included in the app. The offline Bible wording and verse divisions can differ from those proclaimed at Mass.\n\nThe bundled Bible editions, works, prayers, and prayer guides are available offline. External websites and publisher media links need an internet connection. Read aloud requires an installed offline voice. Voice availability depends on your device.\n\nJohn 1:1 is free, with no ads or in-app purchases. No app account is required.\n\nSupport: contact@north.boutique",
+  "releaseNotes": "Read three complete Catholic Bible editions offline. Save verses and notes, follow prayer guides and novenas, explore the Fathers and Doctors, and use reading plans, reminders, and home screen widgets.",
+  "characterCounts": {
+    "title": 8,
+    "shortDescription": 75,
+    "fullDescription": 2119,
+    "releaseNotes": 201
+  },
+  "settings": {
+    "appType": "app",
+    "category": "BOOKS_AND_REFERENCE",
+    "free": true,
+    "containsAds": false,
+    "inAppPurchases": false,
+    "supportEmail": "contact@north.boutique"
+  }
+}

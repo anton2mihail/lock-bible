@@ -1,3 +1,19 @@
+# John 1:1 · Scripture & Prayer
+
+This repo contains both native apps:
+
+- **iOS:** Swift and SwiftUI in [`native/John`](native/John).
+- **Android:** Kotlin and Jetpack Compose in [`native/Android`](native/Android/README.md).
+
+Both apps use the local Bible editions, Church Fathers library, prayer catalogs,
+calendar references, fonts, and artwork from this repo.
+
+To build Android, see the [Android build and test instructions](native/Android/README.md).
+
+---
+
+The sections below describe the earlier Expo app and shared content tools.
+
 # Welcome to your new ignited app!
 
 > The latest and greatest boilerplate for Infinite Red opinions
