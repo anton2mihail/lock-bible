@@ -87,10 +87,19 @@ Test images, test packages, and temporary harness files were removed. The origin
 for this work is stopped. Local Android build output and project caches were
 removed. The six approved screenshot files and their provenance are kept.
 
-## Pending execution
-- Foreground media service declaration video, if requested after bundle upload.
-- Internal test upload and Play pre-launch report.
-- Production submission and Google review.
+## Submission result
+
+All 11 prepared changes were sent to Google. Publishing overview shows
+**Changes in review** for production version 1.0.0 (1), the store listing, country
+availability, and the saved declarations. Google's automatic checks were still
+running when this record was saved. Managed publishing is off. The app is not
+yet approved or live.
+
+Submission proof: `assets/play-store/evidence/submitted-for-review.jpg`.
+
+Google checks and review remain. No internal test track was created. The full
+device suite and TTS playback were not rerun after the final privacy changes.
+No foreground-service declaration video was requested in this submission flow.
 
 Private signing files are outside the repository in
 `~/.local/share/john-android/`. Do not commit or upload them as store assets.
