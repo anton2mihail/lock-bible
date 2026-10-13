@@ -89,18 +89,20 @@ No signing key or store credentials are stored in this repo.
 ## Checks completed
 
 On 2026-10-13, the debug APK passed 14 device tests on the existing API 36
-emulator. These cover all five tabs, passage links, bookmarks, written and drawn
+emulator before the final release privacy changes. These cover all five tabs, passage links, bookmarks, written and drawn
 notes, return from Search, offline editions, Latin and phrase search, saved data,
 reading plans, favorites, novena progress, lectio, and the Rosary.
 All 9 JVM unit tests passed. Debug and release builds passed. Android lint
 reported no errors. Shared resource verification checked all 106,999 verses
 and all 16,146 Works sections.
 
-Phone screenshots were checked for Today, Read, and Prayer. Exact pixel parity
+The signed release produced six verified store screenshots. Dictate Cancel
+passed without launching the recognition provider. Exact pixel parity
 across every iOS and Android screen has not been verified. The platform services
-listed above use Android controls. Release signing and store submission need
-the owner's distribution setup.
+listed above use Android controls. The signed release bundle and current Play
+submission checks are recorded in `docs/android-play/submission-status.md`.
 
-Generated APKs, build files, screenshots, and emulator test installs are removed
-after local validation, as required by the repo rules. Rebuild the APK with the
-command above when you need to install it.
+Temporary APKs, build files, diagnostic screenshots, and emulator test installs
+are removed after local validation, as required by the repo rules. Committed
+store screenshots are kept. Rebuild the APK with the command above when you
+need to install it.

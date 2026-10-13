@@ -1,0 +1,117 @@
+{
+  "capture_method": "Per-image methods recorded below",
+  "screenshots": [
+    {
+      "filename": "01-today.png",
+      "source": "real signed release app on existing layr_api36 emulator",
+      "capture_method": "SDK adb exec-out screencap -p; no SDK UI input",
+      "package": "com.john.bible",
+      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
+      "raw_sha256": "fec4b84be11ca9d1223ba956531600e86780e617e65c28e22537c60654254afe",
+      "sha256": "805cccd98adc845890addd14ee03919e940eb973b63aea440844b379e9fa6ef0",
+      "rgb_pixels_sha256": "dceec94e07548447b8466410afc306d2a79df56608943431de3ed71446e55231",
+      "size": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "bytes": 847690,
+      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change"
+    },
+    {
+      "filename": "02-read.png",
+      "source": "real signed release app on existing layr_api36 emulator",
+      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "package": "com.john.bible",
+      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
+      "raw_sha256": "1e274b5324c168b1faa07033f2227dfe3cd1d6c74f823498f406c01fbd50539e",
+      "sha256": "c9639ce2a77bd11e782b01d082cb61b6ecd7bb26e221c2b61d250f9c62ac7ec1",
+      "rgb_pixels_sha256": "6f0f0dfe0e272e287c1d21d99dfa4abc80d2a39d261ae8c438aa6359981c54a6",
+      "size": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
+      "bytes": 111412,
+      "source_media_uri": "content://media/external/images/media/447",
+      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/02-read.png"
+    },
+    {
+      "filename": "03-scripture.png",
+      "source": "real signed release app on existing layr_api36 emulator",
+      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "package": "com.john.bible",
+      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
+      "raw_sha256": "7fc6f84bbd27decce36840ac4c2aa32a8e9972029fb05c97046f999d7c22333a",
+      "sha256": "f05658925feaf94d9d247251d325ea9310c849b83e8606261bb8e7819a076e8e",
+      "rgb_pixels_sha256": "c5cc3ff74d07977b1a2b82d9475488bc22b9085acde521edcff390f49b104f76",
+      "size": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
+      "bytes": 236267,
+      "source_media_uri": "content://media/external/images/media/448",
+      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/03-scripture.png"
+    },
+    {
+      "filename": "04-prayer.png",
+      "source": "real signed release app on existing layr_api36 emulator",
+      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "package": "com.john.bible",
+      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
+      "raw_sha256": "e72f64216927d965bcd2ce846b73c27c31c82d5e798ad2210a20b4bcd5368efc",
+      "sha256": "cb4da866e2e88277f2f95aa1d3105b25c067775d8611505ab1df88cafc60b511",
+      "rgb_pixels_sha256": "a6195ac7c8c907777d0a9cc75b5b4a0f24afb53c4b4be90d9e3ba66369f5376a",
+      "size": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
+      "bytes": 586531,
+      "source_media_uri": "content://media/external/images/media/449",
+      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/04-prayer.png"
+    },
+    {
+      "filename": "06-saved.png",
+      "source": "real signed release app on existing layr_api36 emulator",
+      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "package": "com.john.bible",
+      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
+      "raw_sha256": "dc2d6dea7d4414feea222d0db8668a1e1d1c4219c74080998f19140df59e3548",
+      "sha256": "4b2ef676211b448425ea1c1bccd2636051c396735fe6b9757381e8e75e24bdcd",
+      "rgb_pixels_sha256": "6d9e5867391762b98ad55173af677777ce80b2d5286da176dda9d8f9d425d18d",
+      "size": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
+      "bytes": 133834,
+      "source_media_uri": "content://media/external/images/media/450",
+      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/06-saved.png"
+    },
+    {
+      "filename": "07-settings.png",
+      "source": "real signed release app on existing layr_api36 emulator",
+      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "package": "com.john.bible",
+      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
+      "raw_sha256": "7c978c4e678c71b4966b30568fa3fbdd4b884d86b0dd980c7f611e75343ff688",
+      "sha256": "dcc1c86ab172d161061e0dfc782b76fdf52a7f4a903e7ba1d86fcbc259e64354",
+      "rgb_pixels_sha256": "152a91c96b5645bdc9352c58ed92c31fd788c6234fe47520766bcbbca0cbb266",
+      "size": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
+      "bytes": 123266,
+      "source_media_uri": "content://media/external/images/media/451",
+      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/07-settings.png"
+    }
+  ]
+}

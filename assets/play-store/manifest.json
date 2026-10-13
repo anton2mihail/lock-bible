@@ -40,5 +40,55 @@
       "bytes": 2866,
       "sha256": "e01a9fa3867714a92c81dc71c65de20944271f74665ac5720f885b3e151195e6"
     }
+  ],
+  "screenshots": [
+    {
+      "path": "screenshots/01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "805cccd98adc845890addd14ee03919e940eb973b63aea440844b379e9fa6ef0"
+    },
+    {
+      "path": "screenshots/02-read.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "c9639ce2a77bd11e782b01d082cb61b6ecd7bb26e221c2b61d250f9c62ac7ec1"
+    },
+    {
+      "path": "screenshots/03-scripture.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "f05658925feaf94d9d247251d325ea9310c849b83e8606261bb8e7819a076e8e"
+    },
+    {
+      "path": "screenshots/04-prayer.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "cb4da866e2e88277f2f95aa1d3105b25c067775d8611505ab1df88cafc60b511"
+    },
+    {
+      "path": "screenshots/06-saved.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "4b2ef676211b448425ea1c1bccd2636051c396735fe6b9757381e8e75e24bdcd"
+    },
+    {
+      "path": "screenshots/07-settings.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "dcc1c86ab172d161061e0dfc782b76fdf52a7f4a903e7ba1d86fcbc259e64354"
+    }
   ]
 }

@@ -31,6 +31,13 @@ class StoreCaptureTest {
     private fun capture(name: String) {
         compose.waitForIdle()
         instrumentation.waitForIdleSync()
+        dismissLauncherAnr()
+        val automation = instrumentation.uiAutomation
+        compose.waitUntil(10000) { automation.rootInActiveWindow?.packageName?.toString() == "com.john.bible" }
+        check(automation.rootInActiveWindow?.packageName?.toString() == "com.john.bible") {
+            "The active window is not John. Do not export this frame."
+        }
+        automation.waitForIdle(250, 3000)
         val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
         try {
             check(image.width == 1080 && image.height == 1920) { "Use a 1080x1920 viewport for Play captures." }
@@ -38,6 +45,31 @@ class StoreCaptureTest {
             check(output.isDirectory || output.mkdirs())
             File(output, "$name.png").outputStream().use { check(image.compress(Bitmap.CompressFormat.PNG, 100, it)) }
         } finally { image.recycle() }
+    }
+
+    private fun dismissLauncherAnr() {
+        val automation = instrumentation.uiAutomation
+        automation.serviceInfo = automation.serviceInfo.apply {
+            flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+        }
+        fun roots() = automation.windows.mapNotNull { it.root } + listOfNotNull(automation.rootInActiveWindow)
+        fun launcherDialog() = roots().firstOrNull { root ->
+            root.findAccessibilityNodeInfosByText("Pixel Launcher").any { it.text?.toString()?.contains("responding") == true }
+        }
+        launcherDialog()?.let { dialog ->
+            var wait = dialog.findAccessibilityNodeInfosByText("Wait").firstOrNull { it.text?.toString() == "Wait" }
+            while (wait != null && !wait.isClickable) wait = wait.parent
+            check(wait?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK) == true) {
+                "Cannot dismiss the launcher ANR with its non-destructive Wait action."
+            }
+            val deadline = android.os.SystemClock.uptimeMillis() + 10000
+            while (launcherDialog() != null && android.os.SystemClock.uptimeMillis() < deadline) android.os.SystemClock.sleep(100)
+            check(launcherDialog() == null) { "The launcher ANR dialog remains visible after Wait." }
+        }
+        check(roots().none { root -> root.findAccessibilityNodeInfosByText("isn't responding").isNotEmpty() }) {
+            "A system ANR dialog is visible. Do not export this frame."
+        }
+        instrumentation.waitForIdleSync()
     }
 
     private fun tab(title: String) = compose.onNodeWithText(title, useUnmergedTree = true).performClick()
