@@ -16,6 +16,7 @@ struct GoToView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var books: [BibleBookDescriptor] = []
     @State private var openBookCode: String?
+    @State private var didScrollToInitialChapter = false
     @ScaledMetric(relativeTo: .body) private var chapterCellSize: CGFloat = 52
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
@@ -95,6 +96,17 @@ struct GoToView: View {
                                             }
                                             .padding(.vertical, 12)
                                             .id("chapters-\(book.code)")
+                                            .onAppear {
+                                                // The first scroll waits for the grid of the open book. A scroll
+                                                // that runs before the grid exists leaves the list at Genesis.
+                                                guard !didScrollToInitialChapter, book.code == initialBookCode else { return }
+                                                didScrollToInitialChapter = true
+                                                let target = "go-to-chapter-\(book.code)-\(initialChapter ?? 1)"
+                                                Task { @MainActor in
+                                                    await Task.yield()
+                                                    withAnimation(.none) { proxy.scrollTo(target, anchor: .center) }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -112,9 +124,6 @@ struct GoToView: View {
                 books = await runtime.books(translation: preferences.translation)
                 if let initialBookCode, books.contains(where: { $0.code == initialBookCode && $0.chapterCount > 1 }) {
                     openBookCode = initialBookCode
-                    await Task.yield()
-                    let selected = initialChapter ?? 1
-                    withAnimation(.none) { proxy.scrollTo("go-to-chapter-\(initialBookCode)-\(selected)", anchor: .center) }
                 }
             }
         }

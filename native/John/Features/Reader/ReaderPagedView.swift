@@ -173,6 +173,12 @@ private struct PrefetchedChapter {
     func settle(_ id: ScripturePageID, reader: ReaderScreenModel, runtime: JohnRuntime) -> Bool {
         if id.key != Self.key(for: reader) {
             guard let data = prefetched[id.key] else { return false }
+            // Keep the chapter that was open, so a turn back into it can adopt it again without a load.
+            if let previousKey = Self.key(for: reader), let book = reader.book, let chapter = reader.chapter,
+               let layout = reader.layout {
+                prefetched[previousKey] = PrefetchedChapter(book: book, chapter: chapter, layout: layout,
+                                                            highlights: reader.highlightColors)
+            }
             reader.adoptPagedChapter(data.book, number: id.key.chapter, chapter: data.chapter, layout: data.layout,
                                      highlights: data.highlights)
             requestID = reader.activeChapterRequestID

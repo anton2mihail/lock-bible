@@ -1087,6 +1087,8 @@ struct ReaderView: View {
         .task(id: runtime.progressRevision) {
             progressSnapshot = await loadReadingProgress(runtime: runtime, translation: model.edition)
         }
+        // A container keeps the identifiers of the controls and the pages inside it.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("reader-paged")
     }
 

@@ -91,13 +91,12 @@ final class ReaderPagesUITests: XCTestCase {
         let title = app.buttons["reader-title"]
         XCTAssertTrue(title.waitForExistence(timeout: 4))
         title.tap()
-        let book = app.buttons["go-to-book-ROM"]
-        XCTAssertTrue(book.waitForExistence(timeout: 8))
-        book.tap()
-        let chapter = app.buttons["go-to-chapter-ROM-8"]
+        XCTAssertTrue(app.staticTexts["Go to"].waitForExistence(timeout: 8))
+        // Go to opens with Psalms expanded and the current chapter in the middle of the list.
+        let chapter = app.buttons["go-to-chapter-PSA-121"]
         XCTAssertTrue(chapter.waitForExistence(timeout: 8))
         chapter.tap()
-        _ = waitForPosition(in: app) { $0.chapter == "Romans 8" && $0.page == 1 }
+        _ = waitForPosition(in: app) { $0.chapter.hasSuffix(" 121") && $0.page == 1 }
         XCTAssertTrue(app.buttons["reader-verse-1"].waitForExistence(timeout: 6))
     }
 
@@ -121,8 +120,9 @@ final class ReaderPagesUITests: XCTestCase {
 
         let gold = app.buttons["reader-highlight-gold"]
         XCTAssertTrue(gold.waitForExistence(timeout: 8))
+        // A tap on the active swatch removes its highlight.
         if gold.value as? String == "Selected" {
-            app.buttons["reader-highlight-clear"].tap()
+            gold.tap()
             waitForValue(gold, equals: "Not selected")
         }
         gold.tap()
@@ -131,7 +131,8 @@ final class ReaderPagesUITests: XCTestCase {
         attachScreenshot(app, name: "pages-highlight")
 
         // Clean up, so a later run starts without the highlight.
-        app.buttons["reader-highlight-clear"].tap()
+        waitForValue(gold, equals: "Selected")
+        gold.tap()
         let cleared = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == nil OR value == ''"),
                                                 object: app.buttons["reader-verse-3"])
         XCTAssertEqual(XCTWaiter.wait(for: [cleared], timeout: 8), .completed)
