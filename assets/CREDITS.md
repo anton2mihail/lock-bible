@@ -2,14 +2,27 @@
 
 ## John 1:1 artwork and icon
 
-The production icon, splash mark, favicon, devotional paintings, saint portraits,
-Rosary mysteries and sharing backgrounds are generated artwork. Prompts are
-recorded in `docs/john/prompts/`. These are devotional illustrations, not
-historical portraits. The current icon is `artwork/john-icon.png`; every other
-icon and splash asset (`john-icon-dark.png`, `john-icon-tinted.png`,
-`john-splash.png`, the `john-adaptive-*.png` Android layers and
-`images/john-favicon.png`) is derived from it by
-`scripts/build-john-icon-variants.py`.
+Every image in `artwork/` is a photograph of a public-domain historical artwork
+from Wikimedia Commons. No artwork in the app or its store graphics is generated
+by AI or drawn by code. `scripts/fetch-artwork.py` downloads each file listed in
+`artwork/sources.json`, checks that both the artwork and the photograph are
+public domain, and only crops and resizes it. The artist and date of each work
+are in `artwork/credits.json`; the full list with Commons file names is in
+`docs/john/artwork-sources.md`.
+
+The app icon (`artwork/john-icon.png`) is a detail of the 6th-century icon of
+Christ Pantocrator at Saint Catherine's Monastery, Sinai (Wikimedia Commons:
+`File:Spas vsederzhitel sinay.jpg`, public domain). The Android launcher layer
+`artwork/john-adaptive-background.png` is a wider crop of the same photograph.
+`scripts/build-john-icon-variants.py` makes the other icon files from the icon
+by resizing only, plus one global colour change for two of them:
+`john-icon-dark.png` (80% brightness), `john-icon-tinted.png` (greyscale),
+`john-splash.png` and `images/john-favicon.png` (resized).
+
+The share-card backgrounds are details of two paintings: `share-ivory.jpg` is
+the plain wall in Johannes Vermeer's *The Milkmaid* (c. 1657–1658), and
+`share-plum.jpg` is the night sky in Jean-François Millet's *Starry Night*
+(c. 1850–1865).
 
 ## Calendar and reading references
 

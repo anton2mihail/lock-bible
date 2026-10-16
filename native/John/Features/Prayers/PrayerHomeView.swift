@@ -309,7 +309,7 @@ private struct NovenaLibraryCard: View {
 
     private func artworkName(_ id: String) -> String {
         let saints: Set<String> = ["st-padre-pio", "st-jude", "st-peregrine", "st-joseph", "st-therese",
-            "st-anthony", "st-anne", "st-rita", "st-monica", "st-michael", "st-benedict", "st-francis-assisi", "st-dymphna"]
+            "st-anthony", "st-anne", "st-monica", "st-benedict", "st-francis-assisi"]
         if saints.contains(id) { return id }
         if id == "holy-spirit" { return "glorious-3" }
         if id == "assumption" { return "glorious-4" }

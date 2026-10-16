@@ -254,5 +254,139 @@
     "year": "1819",
     "top": 0.0,
     "bottom": 1.0
+  },
+  "advent": {
+    "subject": "Advent: Saint John the Baptist in the Wilderness",
+    "file": "File:Geertgen tot Sint Jans - Johannes der Täufer in der Einöde, um 1480-1490, 1631.jpg",
+    "artist": "Geertgen tot Sint Jans",
+    "year": "c. 1480–1490",
+    "top": 0.43,
+    "bottom": 0.865
+  },
+  "joyful-2": {
+    "subject": "The Visitation",
+    "file": "File:La Visitation avec Marie-Jacobie et Marie-Salomé - Domenico Ghirlandaio - Musée du Louvre Peintures INV 297 ; MR 240.jpg",
+    "artist": "Domenico Ghirlandaio",
+    "year": "1491",
+    "top": 0.12,
+    "bottom": 0.77
+  },
+  "luminous-3": {
+    "subject": "The Proclamation of the Kingdom",
+    "file": "File:Bloch-SermonOnTheMount.jpg",
+    "artist": "Carl Bloch",
+    "year": "1877",
+    "top": 0.12,
+    "bottom": 0.714
+  },
+  "glorious-1": {
+    "subject": "The Resurrection",
+    "file": "File:Piero della Francesca - Resurrection - WGA17609.jpg",
+    "artist": "Piero della Francesca",
+    "year": "c. 1463–1465",
+    "top": 0.08,
+    "bottom": 0.62,
+    "left": 0.06,
+    "right": 0.94
+  },
+  "glorious-2": {
+    "subject": "The Ascension",
+    "file": "File:Jesus ascending to heaven.jpg",
+    "artist": "John Singleton Copley",
+    "year": "1775",
+    "top": 0.15,
+    "bottom": 0.746
+  },
+  "st-jude": {
+    "subject": "Saint Jude Thaddeus",
+    "file": "File:Georges de La Tour - Saint Jude Thaddée.jpg",
+    "artist": "Georges de La Tour",
+    "year": "c. 1620",
+    "top": 0.0,
+    "bottom": 0.54
+  },
+  "st-padre-pio": {
+    "subject": "The Sacred Heart of Jesus (Efficacious Novena to the Sacred Heart)",
+    "file": "File:Sacred Heart of Jesus, Gesu Church, Rome.jpg",
+    "artist": "Pompeo Batoni",
+    "year": "1767",
+    "top": 0.22,
+    "bottom": 0.536,
+    "left": 0.15,
+    "right": 0.85
+  },
+  "st-peregrine": {
+    "subject": "Christ Healing the Paralytic at the Pool of Bethesda",
+    "file": "File:Curacion del paralitico Murillo 1670.jpg",
+    "artist": "Bartolomé Esteban Murillo",
+    "year": "1667–1670",
+    "top": 0.12,
+    "bottom": 0.853
+  },
+  "st-therese": {
+    "subject": "The Holy Face (The Veil of Veronica)",
+    "file": "File:Domenico Fetti - The Veil of Veronica.jpg",
+    "artist": "Domenico Fetti",
+    "year": "c. 1618–1622",
+    "top": 0.13,
+    "bottom": 0.684
+  },
+  "share-ivory": {
+    "subject": "Share card background: the plain wall in The Milkmaid",
+    "file": "File:Johannes Vermeer - Het melkmeisje - Google Art Project.jpg",
+    "artist": "Johannes Vermeer",
+    "year": "c. 1657–1658",
+    "top": 0.0,
+    "bottom": 0.348,
+    "left": 0.74,
+    "right": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "share-plum": {
+    "subject": "Share card background: the night sky in Starry Night",
+    "file": "File:Starry Night by Jean-François Millet.jpeg",
+    "artist": "Jean-François Millet",
+    "year": "c. 1850–1865",
+    "top": 0.0,
+    "bottom": 1.0,
+    "left": 0.4,
+    "right": 0.936,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "john-icon": {
+    "subject": "App icon: the face of Christ Pantocrator, Saint Catherine's Monastery, Sinai",
+    "file": "File:Spas vsederzhitel sinay.jpg",
+    "artist": "Unknown Byzantine painter",
+    "year": "6th century",
+    "top": 0.0893,
+    "bottom": 0.4822,
+    "left": 0.0835,
+    "right": 0.8166,
+    "size": [
+      1024,
+      1024
+    ],
+    "output": "john-icon.png"
+  },
+  "john-adaptive-background": {
+    "subject": "Android adaptive icon layer: a wider crop of the same Christ Pantocrator",
+    "file": "File:Spas vsederzhitel sinay.jpg",
+    "artist": "Unknown Byzantine painter",
+    "year": "6th century",
+    "top": 0.0178,
+    "bottom": 0.5538,
+    "left": 0.0,
+    "right": 1.0,
+    "size": [
+      1024,
+      1024
+    ],
+    "output": "john-adaptive-background.png"
   }
 }

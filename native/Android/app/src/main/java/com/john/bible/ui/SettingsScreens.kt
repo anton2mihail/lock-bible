@@ -70,7 +70,7 @@ import com.john.bible.data.*
         JohnPanel {
             JohnText("A little closer to God, every day.")
             JohnText("United States · Roman Rite. Local observances can differ.", size = 14)
-            JohnText("Illustrations created for John 1:1 with AI. Prayers, novenas, and teachings are quoted from the sources named beside them. The app adds no prayers or commentary of its own.", size = 14)
+            JohnText("Paintings are public-domain works from Wikimedia Commons. The app icon is a detail of the 6th-century Christ Pantocrator icon at Sinai. Prayers, novenas, and teachings are quoted from the sources named beside them. The app adds no prayers or commentary of its own.", size = 14)
             JohnText("Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved.", size = 14)
             JohnText("World English Bible Catholic Edition, Douay–Rheims, and Latin Vulgate Scripture texts are in the public domain.", size = 12, dim = true)
         }

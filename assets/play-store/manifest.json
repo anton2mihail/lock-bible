@@ -1,23 +1,15 @@
 {
   "formatVersion": 1,
   "generator": "scripts/android/store-assets.py",
-  "artworkOrigin": "Existing AI-generated John 1:1 artwork; see assets/CREDITS.md",
+  "artworkOrigin": "Public-domain paintings from Wikimedia Commons; see assets/CREDITS.md",
   "sources": [
     {
       "path": "assets/artwork/john-icon.png",
-      "sha256": "884559a8f43b96e4aa59382022433cfa8555b7ca297d362210485f3bc054623b"
+      "sha256": "1cd53fbcda9c4011882f054368b96eb6cb809b17f26734e1283c70aaeac8684b"
     },
     {
       "path": "assets/artwork/scripture.jpg",
       "sha256": "b3d189cb1839bf6b0b9e22f1aae07af675f30b04e1cdea966c4b57c9ab523294"
-    },
-    {
-      "path": "node_modules/@expo-google-fonts/lora/400Regular/Lora_400Regular.ttf",
-      "sha256": "7ed00e7c9cdf16ab7e2fd2361fe45d4f0b61263cd60aae398b27b7ee08108827"
-    },
-    {
-      "path": "node_modules/@expo-google-fonts/space-grotesk/400Regular/SpaceGrotesk_400Regular.ttf",
-      "sha256": "637578d47b0e70e02b3eb5056847dd9add17bd683234d28f5d11a6cf66ff2725"
     },
     {
       "path": "docs/android-play/store-listing.md",
@@ -27,13 +19,13 @@
   "outputs": [
     {
       "path": "icon-512.png",
-      "bytes": 406336,
-      "sha256": "55a1613fb695aa2242f8fc906dbfe9516e21eae054c71e7fd2f426a885a84f6f"
+      "bytes": 614646,
+      "sha256": "fd2141d80f9c1369aad1e69d7021ea326cd941085003eb672594f8edba37a629"
     },
     {
       "path": "feature-1024x500.png",
-      "bytes": 454268,
-      "sha256": "972e8e410170b9634c4c566ba86597e76c1f0f863c0e599fcc1eacaf516fe335"
+      "bytes": 830536,
+      "sha256": "f1c031a2cd03b83e28b321f85b75ed35e2ead642fe776789cbd2722b5fd0535c"
     },
     {
       "path": "listing-en-US.json",

@@ -346,7 +346,7 @@ struct NovenaView: View {
     }
 
     private func artworkName(_ id: String) -> String {
-        if ["st-padre-pio", "st-jude", "st-peregrine", "st-joseph", "st-therese", "st-anthony", "st-anne", "st-rita", "st-monica", "st-michael", "st-benedict", "st-francis-assisi", "st-dymphna"].contains(id) {
+        if ["st-padre-pio", "st-jude", "st-peregrine", "st-joseph", "st-therese", "st-anthony", "st-anne", "st-monica", "st-benedict", "st-francis-assisi"].contains(id) {
             return id
         }
         if id == "holy-spirit" { return "glorious-3" }

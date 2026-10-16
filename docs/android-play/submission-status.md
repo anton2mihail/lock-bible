@@ -21,9 +21,12 @@ as **Ready to send for review**. The screenshot order is Today, Bible library,
 John 1, Prayer, Saved, and Settings. All files passed original-size visual review
 and the RGB PNG 1080 × 1920 format check.
 
-The icon, feature graphic, Today image, and Prayer image are labeled for their
-existing generated artwork. Source: `assets/CREDITS.md`. The other four images
-are unchanged device captures without generated artwork. [Google declaration
+At submission, the icon, feature graphic, Today image, and Prayer image were
+labeled for generated artwork. The repository now has no generated artwork. The
+icon is a public-domain Sinai icon of Christ, and the feature graphic is a plain
+crop of a public-domain painting (see `assets/CREDITS.md`). Upload the new
+`assets/play-store/icon-512.png` and `feature-1024x500.png` and remove the
+generated-artwork labels at the next listing update. [Google declaration
 guidance](https://support.google.com/googleplay/android-developer/answer/17262077?hl=en).
 
 The owner completed the app declarations, content rating, and audience settings.

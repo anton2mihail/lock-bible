@@ -24,6 +24,6 @@ The seven font resource names match `native/John/App/Info.plist`. Feather is sta
 
 The old iOS icon images and current artwork icon variants have different file hashes but identical decoded 1024×1024 RGBA pixels in all three light/dark/tinted pairs. The manifest keeps the old iOS asset-catalog PNG bytes as the release baseline. It does not re-encode or redraw them.
 
-The bundled Bible metadata keeps the exact WEB-CE, Douay–Rheims, and Clementine Vulgate attribution strings. The source declares these editions public domain. The devotional catalog has no separate license file in the repository. This preparation preserves the catalog attribution/credit sources but does not claim a new license for catalog prose or generated artwork.
+The bundled Bible metadata keeps the exact WEB-CE, Douay–Rheims, and Clementine Vulgate attribution strings. The source declares these editions public domain. The devotional catalog has no separate license file in the repository. This preparation preserves the catalog attribution/credit sources but does not claim a new license for catalog prose. All artwork is public domain; see `assets/CREDITS.md`.
 
 The provenance manifest is `Resources/resource-manifest.json`. It covers copied source bytes. Generated privacy and asset metadata are listed with their own output hashes. Main must validate the compiled assets and each target's final privacy report. This preparation does not prove target inclusion, signing, runtime entitlement access, or archive acceptance.

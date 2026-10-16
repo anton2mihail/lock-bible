@@ -121,7 +121,7 @@ export const RosaryGuideScreen: FC<RosaryGuideScreenProps> = function RosaryGuid
     step.prayer || step.mysteryIndex === undefined
       ? undefined
       : mysteryArt[session.id]?.[step.mysteryIndex]
-  // Credited wherever the image is a real painting; the generated art has none.
+  // Every mystery image is a public-domain painting with an artist credit.
   const artCredit =
     step.mysteryIndex === undefined
       ? undefined

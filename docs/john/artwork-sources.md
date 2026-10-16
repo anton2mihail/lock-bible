@@ -1,11 +1,25 @@
 # Artwork provenance
 
-Most of the app's devotional images are now historical paintings in the public
-domain, fetched from Wikimedia Commons by `scripts/fetch-artwork.py` from the
-manifest at `assets/artwork/sources.json`. Twelve images still use the generated
-artwork made from the prompts in `prompts/`, either because no public-domain
-image of the subject exists (Padre Pio died in 1968) or because every candidate
-failed the licence check.
+Every image in `assets/artwork/` is a photograph of a historical artwork in the
+public domain. `scripts/fetch-artwork.py` fetches each one from Wikimedia
+Commons, as listed in the manifest at `assets/artwork/sources.json`. The app has
+no AI-generated images and no images drawn by code. The script only crops and
+resizes the photographs.
+
+Some subjects have no public-domain image that passes the licence check, so the
+app shows a related work in their place:
+
+- **St. Padre Pio Novena.** Padre Pio died in 1968, so no portrait of him is in
+  the public domain. This novena is the Efficacious Novena to the Sacred Heart
+  that he prayed, so the app shows Pompeo Batoni's *Sacred Heart of Jesus*.
+- **St. Peregrine Novena.** Every photograph of a painting of St. Peregrine on
+  Commons carries a Creative Commons claim. St. Peregrine was healed of cancer,
+  so the app shows a Gospel healing: Murillo's *Christ Healing the Paralytic at
+  the Pool of Bethesda*.
+- **St. Thérèse Novena.** The photographs of Thérèse are not public domain in
+  every country (the photographer, Céline Martin, died in 1959). Her religious
+  name is "of the Child Jesus and the Holy Face", so the app shows Domenico
+  Fetti's *The Veil of Veronica*, a painting of the Holy Face.
 
 Nothing here is redistributed under a Creative Commons licence. Every file below
 carries a plain public-domain tag on Commons, which the script re-checks on
@@ -96,20 +110,22 @@ centre crop decapitates altarpieces. Each entry in the script carries its own
   swooning at the right.
 - The rest are wide enough to take the full height.
 
-Output matches the existing artwork: 1200×800 JPEG, quality stepped down until
-the file lands under 360KB, which puts these in the same 210–360KB band as the
-generated set.
+Output is a 1200×800 JPEG, with the quality stepped down until the file is
+under 360KB. An entry can also set `left`/`right` crop fractions, an output
+`size` (the share-card backgrounds are 800×1200), and an `output` name (the app
+icon is a 1024×1024 opaque PNG). The script downloads Wikimedia's standard
+thumbnail widths (3840, 1920, 1280 or 960 px), because Wikimedia refuses
+scripted downloads of original files with HTTP 429.
 
 ## A note on style
 
-These are real paintings across four centuries — Cologne gold ground, Venetian
-Renaissance, High Renaissance Rome, Netherlandish oil, and one Pre-Raphaelite
-canvas. They do not match the single matte-tempera hand of the generated
-artwork, and Holman Hunt's *Finding of the Saviour in the Temple* is the loudest
-of them. It earns its place because no other public-domain work states the third
-sorrow as plainly: Mary with her arms around the boy she had lost. If that
-contrast ever reads as inconsistent, the fix is to swap the entry in
-`scripts/fetch-sorrows-artwork.py` and re-run it, not to hand-edit the JPEG.
+These are real works across fourteen centuries, from a 6th-century Sinai icon
+to 19th-century canvases. They do not share one style. Holman Hunt's *Finding
+of the Saviour in the Temple* is the loudest of them. It earns its place because
+no other public-domain work states the third sorrow as plainly: Mary with her
+arms around the boy she had lost. To change an image, change its entry in
+`assets/artwork/sources.json` and run `scripts/fetch-artwork.py --force --only
+<slug>`. Do not edit the JPEG by hand.
 
 <!-- table:start -->
 
@@ -130,6 +146,7 @@ contrast ever reads as inconsistent, the fix is to swap the entry in
 | Asset | Subject | Commons file | Artist | Date |
 | --- | --- | --- | --- | --- |
 | `joyful-1.jpg` | The Annunciation | Fra Angelico - Annunciation | Fra Angelico | c. 1440–1445 |
+| `joyful-2.jpg` | The Visitation | La Visitation avec Marie-Jacobie et Marie-Salomé - Domenico Ghirlandaio - Musée du Louvre Peintures INV 297 ; MR 240 | Domenico Ghirlandaio | 1491 |
 | `joyful-3.jpg` | The Nativity | Adoration of the Shepherds, Murillo (Prado Museum) | Bartolomé Esteban Murillo | circa 1650 |
 | `joyful-4.jpg` | The Presentation in the Temple | Presentation of Jesus at the Temple by Fra Angelico (San Marco Cell 10) | Fra Angelico | between 1439 and 1443 |
 | `joyful-5.jpg` | The Finding in the Temple | Albrecht Dürer - Jesus among the Doctors - Google Art Project | Albrecht Dürer | 1506 |
@@ -148,6 +165,8 @@ contrast ever reads as inconsistent, the fix is to swap the entry in
 
 | Asset | Subject | Commons file | Artist | Date |
 | --- | --- | --- | --- | --- |
+| `glorious-1.jpg` | The Resurrection | Piero della Francesca - Resurrection - WGA17609 | Piero della Francesca | c. 1463–1465 |
+| `glorious-2.jpg` | The Ascension | Jesus ascending to heaven | John Singleton Copley | 1775 |
 | `glorious-3.jpg` | The Descent of the Holy Spirit | Pentecostés (El Greco, c. 1600) Prado | El Greco | circa 1600 |
 | `glorious-4.jpg` | The Assumption of Mary | Matteo di Giovanni - The Assumption of the Virgin - 1474 | Matteo di Giovanni | 1474 |
 | `glorious-5.jpg` | The Coronation of Mary | Diego Velázquez - Coronation of the Virgin - Prado | Diego Velázquez | c. 1635–1636 |
@@ -158,6 +177,7 @@ contrast ever reads as inconsistent, the fix is to swap the entry in
 | --- | --- | --- | --- | --- |
 | `luminous-1.jpg` | The Baptism of Jesus | Verrocchio, Leonardo da Vinci - Battesimo di Cristo - Google Art Project | Andrea del Verrocchio and Leonardo da Vinci | c. 1475 |
 | `luminous-2.jpg` | The Wedding at Cana | Julius Schnorr von Carolsfeld 002 | Julius Schnorr von Carolsfeld | 1819 |
+| `luminous-3.jpg` | The Proclamation of the Kingdom | Bloch-SermonOnTheMount (The Sermon on the Mount) | Carl Bloch | 1877 |
 | `luminous-4.jpg` | The Transfiguration | Paris 1er - Musée du Louvre - Exposition Naples à Paris - La Transfiguration (Giovanni Bellini) | Giovanni Bellini | c. 1487 |
 | `luminous-5.jpg` | The Institution of the Eucharist | Last Supper by Leonardo da Vinci | Leonardo da Vinci | 1495–1498 |
 
@@ -170,6 +190,10 @@ contrast ever reads as inconsistent, the fix is to swap the entry in
 | `st-benedict.jpg` | Saint Benedict | A Miracle of Saint Benedict A17552 | French 15th Century | circa 1480 |
 | `st-francis-assisi.jpg` | Saint Francis of Assisi | Attributed to Jan van Eyck, Netherlandish (active Bruges), c. 1395 - 1441 - Saint Francis of Assisi Receiving the Stigmata - Google Art Project | Attributed to Jan van Eyck | c. 1430–1432 |
 | `st-joseph.jpg` | Saint Joseph | La Tour | Georges de La Tour | 1640s |
+| `st-jude.jpg` | Saint Jude Thaddeus | Georges de La Tour - Saint Jude Thaddée | Georges de La Tour | c. 1620 |
+| `st-padre-pio.jpg` | The Sacred Heart of Jesus (Efficacious Novena to the Sacred Heart) | Sacred Heart of Jesus, Gesu Church, Rome | Pompeo Batoni | 1767 |
+| `st-peregrine.jpg` | Christ Healing the Paralytic at the Pool of Bethesda | Curacion del paralitico Murillo 1670 | Bartolomé Esteban Murillo | 1667–1670 |
+| `st-therese.jpg` | The Holy Face (The Veil of Veronica) | Domenico Fetti - The Veil of Veronica | Domenico Fetti | c. 1618–1622 |
 | `st-monica.jpg` | Saint Monica | Luis Tristán de Escamilla - St Monica - WGA23069 | Luis Tristán de Escamilla | 1616 |
 
 ### General
@@ -179,5 +203,20 @@ contrast ever reads as inconsistent, the fix is to swap the entry in
 | `mary.jpg` | The Blessed Virgin Mary | Sassoferrato - Jungfrun i bön | Il Sassoferrato | between 1640 and 1650 |
 | `prayer.jpg` | Prayer | JEAN-FRANÇOIS MILLET - El Ángelus (Museo de Orsay, 1857-1859. Óleo sobre lienzo, 55.5 x 66 cm) | Jean-François Millet | from 1857 until 1859 |
 | `scripture.jpg` | Scripture | The Four Evangelists (Abraham Bloemaert) | Abraham Bloemaert | between 1612 and 1615 |
+| `advent.jpg` | Advent: Saint John the Baptist in the Wilderness | Geertgen tot Sint Jans - Johannes der Täufer in der Einöde, um 1480-1490, 1631 | Geertgen tot Sint Jans | c. 1480–1490 |
+
+### Share cards and app icon
+
+| Asset | Subject | Commons file | Artist | Date |
+| --- | --- | --- | --- | --- |
+| `share-ivory.jpg` | The plain wall in The Milkmaid (detail, 800×1200) | Johannes Vermeer - Het melkmeisje - Google Art Project | Johannes Vermeer | c. 1657–1658 |
+| `share-plum.jpg` | The night sky in Starry Night (detail, 800×1200) | Starry Night by Jean-François Millet | Jean-François Millet | c. 1850–1865 |
+| `john-icon.png` | Face of Christ Pantocrator, Saint Catherine's Monastery, Sinai (1024×1024) | Spas vsederzhitel sinay | Unknown Byzantine painter | 6th century |
+| `john-adaptive-background.png` | Wider crop of the same icon for the Android launcher | Spas vsederzhitel sinay | Unknown Byzantine painter | 6th century |
+
+`scripts/build-john-icon-variants.py` makes `john-icon-dark.png` (80%
+brightness), `john-icon-tinted.png` (greyscale), `john-splash.png` and
+`assets/images/john-favicon.png` (resized) from `john-icon.png`. It copies
+`john-adaptive-background.png` to the Android `drawable-nodpi/john_background.png`.
 
 <!-- table:end -->

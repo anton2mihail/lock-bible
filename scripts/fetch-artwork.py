@@ -4,7 +4,8 @@
 Every painting the app shows is a historical work in the public domain. This
 script is the only way they enter the repo: it reads assets/artwork/sources.json,
 confirms each file is cleanly public domain, downloads a rendition, and writes a
-1200x800 JPEG to assets/artwork/.
+1200x800 JPEG to assets/artwork/ (or the entry's own size and file name, for the
+share-card backgrounds and the app icon). It only crops and resizes.
 
     python3 scripts/fetch-artwork.py                 # write any missing art
     python3 scripts/fetch-artwork.py --check         # verify licences only
@@ -86,7 +87,18 @@ def plain(html: str | None) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def lookup(title: str, width: int = 2600) -> dict | None:
+# Wikimedia serves only these thumbnail widths from cache. It refuses scripted
+# downloads of original files and of other widths with HTTP 429, so ask for the
+# largest standard width that is smaller than the original.
+THUMB_STEPS = (3840, 1920, 1280, 960)
+
+
+def lookup(title: str, width: int | None = None) -> dict | None:
+    if width is None:
+        size = lookup(title, 20)
+        if not size:
+            return None
+        width = max([step for step in THUMB_STEPS if step < size["width"]] or [size["width"]])
     data = api(
         {
             "action": "query",
@@ -133,7 +145,13 @@ def licence_problem(title: str, licence: str) -> str | None:
 
 
 def render(entry: dict, source: pathlib.Path, dest: pathlib.Path) -> None:
-    """Crop to the entry's window, then fill a 1200x800 frame under the size cap."""
+    """Crop to the entry's window, then fill the output frame.
+
+    The default frame is a 1200x800 JPEG under the size cap. An entry can ask
+    for another frame with "size" (the share-card backgrounds are 800x1200) and
+    for a PNG with an "output" name ending in .png (the app icon). The script
+    only crops and resizes the photograph; it never draws on it.
+    """
     probe = subprocess.run(
         ["magick", "identify", "-format", "%w %h", f"{source}[0]"],
         capture_output=True,
@@ -143,18 +161,29 @@ def render(entry: dict, source: pathlib.Path, dest: pathlib.Path) -> None:
     width, height = (int(value) for value in probe.stdout.split())
     top = int(height * float(entry.get("top", 0.0)))
     bottom = int(height * float(entry.get("bottom", 1.0)))
-    window = f"{width}x{max(bottom - top, 1)}+0+{top}"
+    left = int(width * float(entry.get("left", 0.0)))
+    right = int(width * float(entry.get("right", 1.0)))
+    window = f"{max(right - left, 1)}x{max(bottom - top, 1)}+{left}+{top}"
+    target_w, target_h = entry.get("size", (TARGET_W, TARGET_H))
+    frame = [
+        "magick", f"{source}[0]",
+        "-crop", window, "+repage",
+        "-colorspace", "sRGB",
+        "-resize", f"{target_w}x{target_h}^",
+        "-gravity", entry.get("gravity", "center"),
+        "-extent", f"{target_w}x{target_h}",
+        "-strip",
+    ]
+
+    if dest.suffix == ".png":
+        # App icons must be opaque: no alpha channel at all.
+        subprocess.run([*frame, "-alpha", "off", f"PNG24:{dest}"], check=True)
+        return
 
     for quality in QUALITY_LADDER:
         subprocess.run(
             [
-                "magick", f"{source}[0]",
-                "-crop", window, "+repage",
-                "-colorspace", "sRGB",
-                "-resize", f"{TARGET_W}x{TARGET_H}^",
-                "-gravity", entry.get("gravity", "center"),
-                "-extent", f"{TARGET_W}x{TARGET_H}",
-                "-strip",
+                *frame,
                 "-quality", str(quality),
                 "-sampling-factor", "4:2:0",
                 "-interlace", "JPEG",
@@ -280,12 +309,12 @@ def main() -> int:
     failures = []
     for slug in slugs:
         entry = manifest[slug]
-        dest = OUT_DIR / f"{slug}.jpg"
+        dest = OUT_DIR / entry.get("output", f"{slug}.jpg")
         if dest.exists() and not args.force and not args.check:
             print(f"  · {slug} already present")
             continue
 
-        info = lookup(entry["file"])
+        info = lookup(entry["file"], 20 if args.check else None)
         if not info:
             failures.append(f"{slug}: {entry['file']} not found on Commons")
             print(f"  ✗ {slug}  not found")
@@ -304,7 +333,8 @@ def main() -> int:
         raw = CACHE / f"{slug}.src"
         if args.force or not raw.exists():
             subprocess.run(
-                ["curl", "-sS", "-L", "--fail", "-A", UA, "-o", str(raw), info["url"]],
+                ["curl", "-sS", "-L", "--fail", "--retry", "6", "--retry-delay", "30",
+                 "-A", UA, "-o", str(raw), info["url"]],
                 check=True,
             )
         render(entry, raw, dest)

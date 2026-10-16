@@ -190,14 +190,18 @@ the clock → choose this app → add **Daily Verse** and/or **Verse Countdown**
 
 ## Branding assets
 
-The production icon is a generated ivory Chi Rho on a plum field
-(`assets/artwork/john-icon.png`). Every other branding asset is derived from it
-by `scripts/build-john-icon-variants.py`: the iOS 18 dark and tinted icon
-variants, the transparent splash mark (shown at 120pt on the icon's own plum
-`#371026`), the Android adaptive foreground/background/monochrome layers, and
-the web favicon. Re-run the script whenever the icon changes; `app.json` already
-points at each output. Provenance and license:
-[`assets/CREDITS.md`](../assets/CREDITS.md).
+The production icon is a detail of the 6th-century Christ Pantocrator icon at
+Saint Catherine's Monastery, Sinai (`assets/artwork/john-icon.png`), a
+public-domain photograph from Wikimedia Commons. `scripts/fetch-artwork.py`
+makes it and the wider Android launcher layer
+(`assets/artwork/john-adaptive-background.png`) by cropping and resizing only.
+`scripts/build-john-icon-variants.py` then makes the iOS 18 dark icon (80%
+brightness) and tinted icon (greyscale), the splash mark (shown at 120pt on plum
+`#371026`), and the web favicon by resizing, and copies the launcher layer into
+the native Android resources. The Android adaptive icon has one opaque
+background layer and a transparent foreground; it has no monochrome layer.
+Re-run both scripts whenever the icon changes; `app.json` already points at each
+output. Provenance and license: [`assets/CREDITS.md`](../assets/CREDITS.md).
 
 ## Tests
 

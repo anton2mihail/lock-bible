@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Make John 1:1 Play listing graphics from existing app artwork and fonts.
+"""Make John 1:1 Play listing graphics from the app's public-domain artwork.
 
-Requires Pillow and the repo's installed @expo-google-fonts dependencies.
-No app screenshots are generated, retouched, or resized by this script.
+Requires Pillow. The graphics are plain crops and resizes of real paintings:
+the script draws no text, shapes, or gradients. No app screenshots are
+generated, retouched, or resized by this script.
 """
 from __future__ import annotations
 
@@ -12,19 +13,13 @@ import json
 import re
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont, ImageOps, PngImagePlugin
+from PIL import Image, ImageOps, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "assets/play-store"
-PLUM = (42, 19, 35)
-IVORY = (246, 242, 234)
-GOLD = (217, 190, 141)
-SCALE = 2
 SOURCE_PATHS = {
     "icon": ROOT / "assets/artwork/john-icon.png",
     "illustration": ROOT / "assets/artwork/scripture.jpg",
-    "serif": ROOT / "node_modules/@expo-google-fonts/lora/400Regular/Lora_400Regular.ttf",
-    "sans": ROOT / "node_modules/@expo-google-fonts/space-grotesk/400Regular/SpaceGrotesk_400Regular.ttf",
     "listing": ROOT / "docs/android-play/store-listing.md",
 }
 
@@ -74,27 +69,11 @@ def make_icon(output: Path) -> None:
 
 
 def make_feature(output: Path) -> None:
-    width, height = 1024 * SCALE, 500 * SCALE
-    canvas = Image.new("RGB", (width, height), PLUM)
+    # A plain crop of Abraham Bloemaert's The Four Evangelists (public domain),
+    # resized to the Play feature-graphic frame. No text or overlay is added.
     with Image.open(SOURCE_PATHS["illustration"]) as source:
-        # Keep the central Gospel writer visible on the right. The art is
-        # decorative; the app name and text stay inside the central safe area.
-        art = ImageOps.fit(source.convert("RGB"), (width, height),
-                           Image.Resampling.LANCZOS, centering=(0.63, 0.5))
-    mask = Image.new("L", (width, 1))
-    mask.putdata([int(255 * max(0.0, min(0.82, (x / width - 0.42) / 0.37)))
-                  for x in range(width)])
-    canvas.paste(art, (0, 0), mask.resize((width, height)))
-    draw = ImageDraw.Draw(canvas)
-    serif = ImageFont.truetype(str(SOURCE_PATHS["serif"]), 76 * SCALE)
-    sans = ImageFont.truetype(str(SOURCE_PATHS["sans"]), 24 * SCALE)
-    small = ImageFont.truetype(str(SOURCE_PATHS["sans"]), 15 * SCALE)
-    x = 100 * SCALE
-    draw.text((x, 145 * SCALE), "SCRIPTURE & PRAYER", font=small, fill=GOLD)
-    draw.text((x - 4 * SCALE, 182 * SCALE), "John 1:1", font=serif, fill=IVORY)
-    draw.line((x, 292 * SCALE, 158 * SCALE, 292 * SCALE), fill=GOLD, width=2 * SCALE)
-    draw.text((x, 314 * SCALE), "Read. Pray. Remember.", font=sans, fill=IVORY)
-    canvas = canvas.resize((1024, 500), Image.Resampling.LANCZOS)
+        canvas = ImageOps.fit(source.convert("RGB"), (1024, 500),
+                              Image.Resampling.LANCZOS, centering=(0.5, 0.45))
     save_png(canvas, output / "feature-1024x500.png", "RGB")
 
 
@@ -152,7 +131,7 @@ def main() -> None:
     manifest = {
         "formatVersion": 1,
         "generator": "scripts/android/store-assets.py",
-        "artworkOrigin": "Existing AI-generated John 1:1 artwork; see assets/CREDITS.md",
+        "artworkOrigin": "Public-domain paintings from Wikimedia Commons; see assets/CREDITS.md",
         "sources": [{"path": str(path.relative_to(ROOT)), "sha256": digest(path)}
                     for path in SOURCE_PATHS.values()],
         "outputs": [{"path": name, "bytes": (output / name).stat().st_size,

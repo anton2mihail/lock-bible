@@ -165,7 +165,7 @@ export const SettingsScreen: FC = function SettingsScreen() {
           style={themed($about)}
         />
         <Text
-          text="Original sacred illustrations created for John 1:1 with AI. Prayer introductions and teaching summaries are editorial guides; source references are provided alongside them."
+          text="Paintings are public-domain works from Wikimedia Commons. Prayer introductions and teaching summaries are editorial guides; source references are provided alongside them."
           size="xs"
           style={themed($about)}
         />

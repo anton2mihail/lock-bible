@@ -1,15 +1,15 @@
 # John 1:1 Catholic companion
 
 The app retains its John 1:1 display name and existing installation identifiers.
-The current icon depicts an ivory Chi Rho Christogram with restrained gold edging on plum. Artwork prompts in
-this directory preserve their original wording, including the earlier proposed
-Vesper name.
+The current icon is a detail of the 6th-century Christ Pantocrator icon at
+Saint Catherine's Monastery, Sinai. All artwork is public domain; see
+`artwork-sources.md`.
 
 Implemented: a liturgical Today page, daily reading references, Sunday preparation
 with locally saved reflections, a five-step Lectio Divina guide, everyday prayers
 and favorites, Scripture and Catechism topics, a guided confession examination,
-and illustrated Scripture sharing cards. Rosary mysteries and novena saints have
-new devotional artwork.
+and illustrated Scripture sharing cards. Rosary mysteries and novena saints show
+public-domain paintings.
 
 The calendar uses the United States Roman Rite (Sunday Ascension); local
 observances can differ. Bundled reading references cover all of 2026 and 2027;
@@ -50,12 +50,13 @@ original notice’s dated readings.
 
 Implementation references: [WidgetKit timelines](https://developer.apple.com/documentation/widgetkit/timeline)
 and [Expo notifications](https://docs.expo.dev/versions/latest/sdk/notifications/).
-The icon was generated with the built-in image tool; its exact prompt is in
-`prompts/john-icon-chi-rho.txt`.
-Run `python3 scripts/build-john-icon-variants.py` (Pillow + numpy) after
-replacing it: the script lifts the Chi Rho off its plum field and regenerates the
-iOS 18 dark and tinted icons, the transparent splash mark, the Android adaptive
-foreground/background/monochrome layers, and the web favicon.
+The icon is a detail of the 6th-century Christ Pantocrator icon at Saint
+Catherine's Monastery, Sinai (public domain, from Wikimedia Commons). Make it
+with `python3 scripts/fetch-artwork.py --force --only john-icon
+john-adaptive-background`. Then run `python3 scripts/build-john-icon-variants.py`
+(Pillow). That script only resizes and copies: it makes the iOS 18 dark icon
+(80% brightness) and tinted icon (greyscale), the splash mark, the web favicon,
+and the Android launcher layer.
 
 ## Store screenshots
 

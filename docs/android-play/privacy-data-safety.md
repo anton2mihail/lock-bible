@@ -123,7 +123,7 @@ This proves that normal staging no longer depends on the uncommitted shared Type
 | Location | No location permission or location API use found. External service network requests can reveal network addresses. |
 | Notification use | Local reading, calendar, and Rosary reminders. Notification permission is optional. Media controls support user-started read aloud. |
 | Full-screen intent | Not used. No `USE_FULL_SCREEN_INTENT` permission declared. |
-| AI content | Static commissioned illustrations are included. The app does not generate prayers, answers, text, or images in response to a user prompt. |
+| AI content | The app has no AI-generated images. All artwork is public-domain paintings from Wikimedia Commons. The app does not generate prayers, answers, text, or images in response to a user prompt. |
 | Target audience/content rating | Complete the actual questionnaire. The full Bible and historical writings can discuss violence, death, sexuality, and other mature topics. Do not prefill “no violence” or a specific rating without reviewing its wording. |
 
 ## Foreground service declaration
