@@ -283,10 +283,13 @@ internal class PagedChrome(
             }
             PagedTopBar(chrome) { 0 }
         } else key(shown.key, shown.config) {
-            val items = buildList {
-                if (previous != null) add(PagerItem(previousPaged, previousPaged?.let { it.pages.indices.chunked(columns).last() } ?: emptyList(), -1))
-                shown.pages.indices.chunked(columns).forEach { add(PagerItem(shown, it, 0)) }
-                if (following != null) add(PagerItem(followingPaged, followingPaged?.let { (0 until min(columns, it.pages.size)).toList() } ?: emptyList(), 1))
+            // The list must keep its identity between compositions. A new list in each pass changes the state below and starts the next pass.
+            val items = remember(shown, columns, previous, following, previousPaged, followingPaged) {
+                buildList {
+                    if (previous != null) add(PagerItem(previousPaged, previousPaged?.let { it.pages.indices.chunked(columns).last() } ?: emptyList(), -1))
+                    shown.pages.indices.chunked(columns).forEach { add(PagerItem(shown, it, 0)) }
+                    if (following != null) add(PagerItem(followingPaged, followingPaged?.let { (0 until min(columns, it.pages.size)).toList() } ?: emptyList(), 1))
+                }
             }
             val itemsState = rememberUpdatedState(items)
             val offset = if (previous != null) 1 else 0
@@ -332,7 +335,7 @@ internal class PagedChrome(
                 return paged.verseAt(at)
             }
             HorizontalPager(pagerState, Modifier.fillMaxSize().testTag("reader-pager"), beyondViewportPageCount = 1) { index ->
-                val item = itemsState.value[index]
+                val item = items[index]
                 PageSpread(item, geometry, store, lower, upper, spoken, turn, tapVerse, holdVerse, { pagerState.currentPageOffsetFraction != 0f },
                     Modifier.pointerInput(item) {
                         detectTapGestures(
@@ -351,7 +354,7 @@ internal class PagedChrome(
                         )
                     })
             }
-            val currentItem = itemsState.value.getOrNull(pagerState.currentPage)
+            val currentItem = items.getOrNull(pagerState.currentPage)
             val page = currentItem?.takeIf { it.role == 0 }?.pages?.first() ?: if (currentItem?.role == 1) shown.pages.lastIndex else 0
             AnimatedVisibility(barsVisible, Modifier.align(Alignment.TopCenter), enter = fadeIn(tween(150)), exit = fadeOut(tween(150))) {
                 PagedTopBar(chrome) { shown.anchorFor(page).let { a -> shown.verses.indexOfFirst { it.label == a.label }.coerceAtLeast(0) } }

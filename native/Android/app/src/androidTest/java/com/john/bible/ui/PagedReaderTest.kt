@@ -59,7 +59,9 @@ class PagedReaderTest {
         pager().performTouchInput { swipeLeft() }; waitFor("reader-page-JHN-1-2")
         tapLeft(); waitFor("reader-page-JHN-1-1")
         pager().performTouchInput { swipeRight() }; waitFor("reader-page-JHN-1-0")
-        // The middle third shows and hides the bars. It does not turn the page.
+        // A page turn hides the bars. The middle third shows and hides them. It does not turn the page.
+        compose.waitUntil(5000) { compose.onAllNodesWithContentDescription("Reading choices").fetchSemanticsNodes().isEmpty() }
+        pager().performTouchInput { click(center) }
         compose.onNodeWithContentDescription("Reading choices").assertExists()
         pager().performTouchInput { click(center) }
         compose.waitUntil(5000) { compose.onAllNodesWithContentDescription("Reading choices").fetchSemanticsNodes().isEmpty() }
@@ -113,8 +115,12 @@ class PagedReaderTest {
         compose.onNodeWithText("Read", useUnmergedTree = true).performClick()
         compose.onNodeWithText("John 3").performClick()
         waitFor("page-verse-3:16")
+        compose.waitForIdle()
+        // The first page saves the verse and offset where it starts. A page turn saves a later position.
+        fun position() = "${prefs.getString("readerVerse", "")}:${prefs.getInt("readerVerseOffset", 0)}"
+        val before = position()
         tapRight()
-        compose.waitUntil(30000) { prefs.getString("readerVerse", "16") != "16" }
+        compose.waitUntil(30000) { position() != before }
         val verse = prefs.getString("readerVerse", "")!!
         assertTrue(displayed("page-verse-3:$verse"))
         // A rotation or other configuration change keeps the page.
