@@ -29,6 +29,13 @@ crop of a public-domain painting (see `assets/CREDITS.md`). Upload the new
 generated-artwork labels at the next listing update. [Google declaration
 guidance](https://support.google.com/googleplay/android-developer/answer/17262077?hl=en).
 
+On 16 October 2026 the six phone screenshots were made again. They show the
+paged Bible reader (Pages mode, the default) and only public-domain paintings.
+The new order is: John 1 first page in Pages mode, Today, Bible library, Prayer,
+Saved, and Settings. Upload the six files in `assets/play-store/screenshots/`
+in that order at the next listing update, and remove the old images.
+`provenance.json` records how each file was made.
+
 The owner completed the app declarations, content rating, and audience settings.
 The saved Data Safety answer is No collection/sharing. Audience and content
 rating are owner-entered settings.

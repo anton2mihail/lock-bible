@@ -1,117 +1,123 @@
 {
+  "capture_date": "2026-10-16",
   "capture_method": "Per-image methods recorded below",
+  "device": {
+    "avd": "layr_api36",
+    "viewport": "wm size 1080x1920, wm density 420 (restored after the run to 1170x2532 and 480)",
+    "status_bar": "System UI demo mode: clock 09:41, battery 100%, Wi-Fi 4 bars, mobile hidden, notifications hidden (demo mode turned off after the run)",
+    "appearance": "light",
+    "reader_mode": "pages",
+    "app_data": "cleared with pm clear before the run"
+  },
+  "artwork": "Only public-domain paintings (see assets/CREDITS.md). No generated artwork.",
   "screenshots": [
     {
-      "filename": "01-today.png",
-      "source": "real signed release app on existing layr_api36 emulator",
-      "capture_method": "SDK adb exec-out screencap -p; no SDK UI input",
+      "filename": "01-reader-pages.png",
+      "shows": "Bible reader in Pages mode (the default), first page of John 1, bars hidden",
+      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
+      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
       "package": "com.john.bible",
-      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
-      "raw_sha256": "fec4b84be11ca9d1223ba956531600e86780e617e65c28e22537c60654254afe",
-      "sha256": "805cccd98adc845890addd14ee03919e940eb973b63aea440844b379e9fa6ef0",
-      "rgb_pixels_sha256": "dceec94e07548447b8466410afc306d2a79df56608943431de3ed71446e55231",
+      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
+      "raw_sha256": "26c5718d10071fb7a3079b56e1bce9fbe80761f76fb1a019b0c43a0a7116b2b9",
+      "sha256": "a65045e869f6d1323286f4c18b2734c16422ee4bbda332123b23249091f92cd0",
+      "rgb_pixels_sha256": "2fd9581ec40b0f12246b0447e584db6cc97340096889e400f4520b62d73bfd44",
       "size": [
         1080,
         1920
       ],
       "mode": "RGB",
-      "bytes": 847690,
-      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change"
+      "bytes": 190426,
+      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
     },
     {
-      "filename": "02-read.png",
-      "source": "real signed release app on existing layr_api36 emulator",
-      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "filename": "02-today.png",
+      "shows": "Today: date, daily readings card with Bloemaert's The Four Evangelists (public domain)",
+      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
+      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
       "package": "com.john.bible",
-      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
-      "raw_sha256": "1e274b5324c168b1faa07033f2227dfe3cd1d6c74f823498f406c01fbd50539e",
-      "sha256": "c9639ce2a77bd11e782b01d082cb61b6ecd7bb26e221c2b61d250f9c62ac7ec1",
-      "rgb_pixels_sha256": "6f0f0dfe0e272e287c1d21d99dfa4abc80d2a39d261ae8c438aa6359981c54a6",
+      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
+      "raw_sha256": "b48c7b996e9d6bcff2d7dc61e6938b5a147e86a23419192277028a08f45136cd",
+      "sha256": "dca2c9521538209c5d9f0620fe5fd7e14b73975aeee130bf0893dbf3bdff322c",
+      "rgb_pixels_sha256": "d87d4f73a0c0d84757cffb9941c3c05199ae8df9355fb9ba03a7e57bbe0f07db",
       "size": [
         1080,
         1920
       ],
       "mode": "RGB",
-      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
-      "bytes": 111412,
-      "source_media_uri": "content://media/external/images/media/447",
-      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/02-read.png"
+      "bytes": 840949,
+      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
     },
     {
-      "filename": "03-scripture.png",
-      "source": "real signed release app on existing layr_api36 emulator",
-      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "filename": "03-read.png",
+      "shows": "Bible library: Continue reading, The Fathers and Doctors, Old Testament",
+      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
+      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
       "package": "com.john.bible",
-      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
-      "raw_sha256": "7fc6f84bbd27decce36840ac4c2aa32a8e9972029fb05c97046f999d7c22333a",
-      "sha256": "f05658925feaf94d9d247251d325ea9310c849b83e8606261bb8e7819a076e8e",
-      "rgb_pixels_sha256": "c5cc3ff74d07977b1a2b82d9475488bc22b9085acde521edcff390f49b104f76",
+      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
+      "raw_sha256": "57cac1b4c28937d9ec3835173950524071eec8a44dab04d02d41a449621f9a24",
+      "sha256": "9e4fb97113380150f626a606491368a1514d25c4ea3f6112073d534d14b69d4b",
+      "rgb_pixels_sha256": "3092071b88d48af174a7d228b561683e82a1cb571e746c2a7d4d2e5d76bdf4cc",
       "size": [
         1080,
         1920
       ],
       "mode": "RGB",
-      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
-      "bytes": 236267,
-      "source_media_uri": "content://media/external/images/media/448",
-      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/03-scripture.png"
+      "bytes": 104973,
+      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
     },
     {
       "filename": "04-prayer.png",
-      "source": "real signed release app on existing layr_api36 emulator",
-      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "shows": "Prayer library: Pray the Rosary card with Sassoferrato's The Virgin in Prayer (public domain)",
+      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
+      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
       "package": "com.john.bible",
-      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
-      "raw_sha256": "e72f64216927d965bcd2ce846b73c27c31c82d5e798ad2210a20b4bcd5368efc",
-      "sha256": "cb4da866e2e88277f2f95aa1d3105b25c067775d8611505ab1df88cafc60b511",
-      "rgb_pixels_sha256": "a6195ac7c8c907777d0a9cc75b5b4a0f24afb53c4b4be90d9e3ba66369f5376a",
+      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
+      "raw_sha256": "35c55434dbc5e810b84405c8d2300ec43c0b9667de17df0ab94ff36645e471af",
+      "sha256": "b8fb8b24ece90189a36d7caf9b95760255ab64e2528befec96d2da2591db14c7",
+      "rgb_pixels_sha256": "fe580f5becd1b2ea0effa2c9ec8a066af21d86f7cf89b47b7e8ce076202f23b5",
       "size": [
         1080,
         1920
       ],
       "mode": "RGB",
-      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
-      "bytes": 586531,
-      "source_media_uri": "content://media/external/images/media/449",
-      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/04-prayer.png"
+      "bytes": 559346,
+      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
     },
     {
-      "filename": "06-saved.png",
-      "source": "real signed release app on existing layr_api36 emulator",
-      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "filename": "05-saved.png",
+      "shows": "Saved: one John 1:1 bookmark made in the paged Reader",
+      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
+      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
       "package": "com.john.bible",
-      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
-      "raw_sha256": "dc2d6dea7d4414feea222d0db8668a1e1d1c4219c74080998f19140df59e3548",
-      "sha256": "4b2ef676211b448425ea1c1bccd2636051c396735fe6b9757381e8e75e24bdcd",
-      "rgb_pixels_sha256": "6d9e5867391762b98ad55173af677777ce80b2d5286da176dda9d8f9d425d18d",
+      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
+      "raw_sha256": "856df98b77dc8fa68ca84d0cb4174e6281cb93d55066393d341362431b5455db",
+      "sha256": "486f627023620639af3a6e2ce21941071a864d33ecd664e55f07ed8a75787136",
+      "rgb_pixels_sha256": "69f1e238c2ae7a5d553f0610fc683befa5e7c4e831bb94e13876557c87335676",
       "size": [
         1080,
         1920
       ],
       "mode": "RGB",
-      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
-      "bytes": 133834,
-      "source_media_uri": "content://media/external/images/media/450",
-      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/06-saved.png"
+      "bytes": 141626,
+      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
     },
     {
-      "filename": "07-settings.png",
-      "source": "real signed release app on existing layr_api36 emulator",
-      "capture_method": "Android framework Instrumentation, UiAutomation, and MediaStore",
+      "filename": "06-settings.png",
+      "shows": "Settings: Reading mode Pages/Scroll, text size, line spacing, typeface",
+      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
+      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
       "package": "com.john.bible",
-      "apk_sha256": "6eaf93e9169919822ad9b50579ac938a949035d4cba60fdc003b60f15efb8f9f",
-      "raw_sha256": "7c978c4e678c71b4966b30568fa3fbdd4b884d86b0dd980c7f611e75343ff688",
-      "sha256": "dcc1c86ab172d161061e0dfc782b76fdf52a7f4a903e7ba1d86fcbc259e64354",
-      "rgb_pixels_sha256": "152a91c96b5645bdc9352c58ed92c31fd788c6234fe47520766bcbbca0cbb266",
+      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
+      "raw_sha256": "1d113aaf28e4dcdde57a2866f3e88caef1bb3211a72f2a08018c47d23e5b3d1c",
+      "sha256": "7900ddf09509ce21b399d3ea93113cdeb0855afa153d25d474955e77aa603f69",
+      "rgb_pixels_sha256": "d4fe7ef7af5d26dd714dc426d08425f44312d2ae92819102a3b121b82e442f1f",
       "size": [
         1080,
         1920
       ],
       "mode": "RGB",
-      "transform": "Lossless removal of fully opaque alpha only; no crop, resize, or pixel change",
-      "bytes": 123266,
-      "source_media_uri": "content://media/external/images/media/451",
-      "source_media_path": "/sdcard/Pictures/JohnStoreCaptures/07-settings.png"
+      "bytes": 119914,
+      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
     }
   ]
 }

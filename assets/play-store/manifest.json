@@ -13,7 +13,7 @@
     },
     {
       "path": "docs/android-play/store-listing.md",
-      "sha256": "3af7f3c4935c6a64e1759ac5022c8e1c20708ebd2a84772bc28badaa13867d12"
+      "sha256": "9436ffb3f935c8f8eae800bf7e8a23fea431207dbc377cf381bbdffd13eae38e"
     }
   ],
   "outputs": [
@@ -35,28 +35,28 @@
   ],
   "screenshots": [
     {
-      "path": "screenshots/01-today.png",
+      "path": "screenshots/01-reader-pages.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "805cccd98adc845890addd14ee03919e940eb973b63aea440844b379e9fa6ef0"
+      "sha256": "a65045e869f6d1323286f4c18b2734c16422ee4bbda332123b23249091f92cd0"
     },
     {
-      "path": "screenshots/02-read.png",
+      "path": "screenshots/02-today.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "c9639ce2a77bd11e782b01d082cb61b6ecd7bb26e221c2b61d250f9c62ac7ec1"
+      "sha256": "dca2c9521538209c5d9f0620fe5fd7e14b73975aeee130bf0893dbf3bdff322c"
     },
     {
-      "path": "screenshots/03-scripture.png",
+      "path": "screenshots/03-read.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "f05658925feaf94d9d247251d325ea9310c849b83e8606261bb8e7819a076e8e"
+      "sha256": "9e4fb97113380150f626a606491368a1514d25c4ea3f6112073d534d14b69d4b"
     },
     {
       "path": "screenshots/04-prayer.png",
@@ -64,23 +64,23 @@
         1080,
         1920
       ],
-      "sha256": "cb4da866e2e88277f2f95aa1d3105b25c067775d8611505ab1df88cafc60b511"
+      "sha256": "b8fb8b24ece90189a36d7caf9b95760255ab64e2528befec96d2da2591db14c7"
     },
     {
-      "path": "screenshots/06-saved.png",
+      "path": "screenshots/05-saved.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "4b2ef676211b448425ea1c1bccd2636051c396735fe6b9757381e8e75e24bdcd"
+      "sha256": "486f627023620639af3a6e2ce21941071a864d33ecd664e55f07ed8a75787136"
     },
     {
-      "path": "screenshots/07-settings.png",
+      "path": "screenshots/06-settings.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "dcc1c86ab172d161061e0dfc782b76fdf52a7f4a903e7ba1d86fcbc259e64354"
+      "sha256": "7900ddf09509ce21b399d3ea93113cdeb0855afa153d25d474955e77aa603f69"
     }
   ]
 }
