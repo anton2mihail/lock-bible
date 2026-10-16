@@ -14,7 +14,7 @@ class MainFlowTest {
     val compose=createAndroidComposeRule<MainActivity>()
     @get:Rule val rule:org.junit.rules.TestRule=org.junit.rules.RuleChain.outerRule(object:org.junit.rules.ExternalResource() {
         override fun before() {
-            androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.getSharedPreferences("john",0).edit().clear().putString("readerLayout","verses").commit()
+            androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.getSharedPreferences("john",0).edit().clear().putString("readerLayout","verses").putString("readerMode","scroll").commit()
         }
         override fun after() {
             androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext.getSharedPreferences("john",0).edit().clear().commit()

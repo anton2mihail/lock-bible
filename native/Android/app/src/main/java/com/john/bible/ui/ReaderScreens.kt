@@ -90,14 +90,15 @@ internal fun shareText(hit: SearchHit) = "${hit.text}\n\n${hit.bookName} ${hit.c
     val chapterScroll = rememberSaveable(edition, bookCode, chapter, saver = ScrollState.Saver) {
         ScrollState(if (initialRoute == null && store.readerBook == bookCode && store.readerChapter == chapter) store.readerScrollIndex else 0)
     }
-    LaunchedEffect(edition, bookCode, chapter, initialRoute) {
-        if (initialRoute == null && bookCode.isNotBlank() && chapter > 0) snapshotFlow { chapterScroll.value }.collectLatest { value ->
+    val scrollMode = store.readerMode == "scroll"
+    LaunchedEffect(edition, bookCode, chapter, initialRoute, scrollMode) {
+        if (scrollMode && initialRoute == null && bookCode.isNotBlank() && chapter > 0) snapshotFlow { chapterScroll.value }.collectLatest { value ->
             delay(300)
             store.saveReaderLocation(bookCode, chapter, value)
         }
     }
-    LaunchedEffect(edition, bookCode, chapter, verses) {
-        if (verses.isNotEmpty()) snapshotFlow { chapterScroll.value to chapterScroll.maxValue }.collect { (value, max) ->
+    LaunchedEffect(edition, bookCode, chapter, verses, scrollMode) {
+        if (scrollMode && verses.isNotEmpty()) snapshotFlow { chapterScroll.value to chapterScroll.maxValue }.collect { (value, max) ->
             if (value > 0 && value == max) store.markChapterRead(edition, bookCode, chapter)
         }
     }
@@ -171,6 +172,35 @@ internal fun shareText(hit: SearchHit) = "${hit.text}\n\n${hit.bookName} ${hit.c
                 }
             }
         }
+    } else if (!scrollMode) {
+        BackHandler(selected != null) { from = null; to = null }
+        val spoken = speech.index.takeIf { currentSpeech && speech.active }
+        PagedReader(
+            repo, store, edition, books, bookCode, chapter,
+            initialAnchor = {
+                when {
+                    contextLabel.isNotBlank() -> PageAnchor(contextLabel)
+                    initialRoute == null && store.readerBook == bookCode && store.readerChapter == chapter && store.readerVerse.isNotBlank() -> PageAnchor(store.readerVerse, store.readerVerseOffset)
+                    else -> PageAnchor.First
+                }
+            },
+            lower = lower, upper = upper, spoken = spoken, selecting = from != null,
+            tapVerse = { index -> if (from == null) { from = index; to = null } else if (to == null && from != index) to = index else { from = null; to = null } },
+            holdVerse = { index -> from = index; to = null },
+            clearSelection = { from = null; to = null },
+            openChapter = { code, number -> bookCode = code; chapter = number; contextLabel = ""; from = null; to = null },
+            savePosition = { key, anchor -> if (initialRoute == null) store.saveReaderAnchor(key.book, key.chapter, anchor.label, anchor.offset) },
+            markRead = { key -> store.markChapterRead(key.edition, key.book, key.chapter) },
+            chrome = PagedChrome(
+                title = "${book?.name ?: bookCode} $chapter", subtitle = editionTitles[edition] ?: edition, back = back,
+                search = { navigate("search") }, goTo = { goTo = true }, appearance = { appearance = true },
+                fathers = { navigate("commentary/$bookCode/$chapter") }, reading = currentSpeech && speech.playing,
+                readAloud = { start -> if (currentSpeech && speech.playing) speech.pause() else if (currentSpeech && speech.active) speech.resume() else speech.start(verses, from ?: start, edition, bookCode, book?.name ?: bookCode, chapter) },
+                isRead = store.isChapterRead(edition, bookCode, chapter), toggleRead = { store.setChapterRead(edition, bookCode, chapter, !store.isChapterRead(edition, bookCode, chapter)) },
+                message = speech.error
+            ),
+            selectionBar = if (selected == null) null else { { PassageToolbar(selected, store, feedback, { feedback = it }, { noteHit = selected }, { from = null; to = null }, navigate) } }
+        )
     } else {
         ReadingPage("${book?.name ?: bookCode} $chapter", eyebrow = editionTitles[edition] ?: edition, back = back, scroll = chapterScroll, footer = if (selected == null) null else { {
             PassageToolbar(selected, store, feedback, { feedback = it }, { noteHit = selected }, { from = null; to = null }, navigate)
@@ -316,7 +346,7 @@ internal class ReaderSpeech private constructor(context: android.content.Context
     }
 }
 
-@Composable private fun PassageToolbar(hit: SearchHit, store: JohnStore, feedback: String, setFeedback: (String) -> Unit, note: () -> Unit, clear: () -> Unit, navigate: (String) -> Unit) {
+@Composable internal fun PassageToolbar(hit: SearchHit, store: JohnStore, feedback: String, setFeedback: (String) -> Unit, note: () -> Unit, clear: () -> Unit, navigate: (String) -> Unit) {
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

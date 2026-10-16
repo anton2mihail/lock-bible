@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.john.bible.data.*
 
 @Composable internal fun ReadingChoices(store: JohnStore) {
+    JohnText("Reading mode", size = 13, dim = true)
+    ChoiceChips(listOf("pages" to "Pages", "scroll" to "Scroll"), store.readerMode) { store.readerMode = it }
     JohnText("Text size", size = 13, dim = true)
     ChoiceChips(listOf("16" to "Small", "18" to "Default", "21" to "Large", "24" to "Extra large"), store.textSize.toInt().toString()) { store.textSize = it.toFloat() }
     JohnText("Line spacing", size = 13, dim = true)

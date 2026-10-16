@@ -21,7 +21,7 @@ class StoreCaptureTest {
     @get:Rule val rule: org.junit.rules.TestRule = org.junit.rules.RuleChain.outerRule(object : org.junit.rules.ExternalResource() {
         override fun before() {
             instrumentation.targetContext.getSharedPreferences("john", 0).edit().clear()
-                .putString("appearance", "light").putString("readerLayout", "verses").commit()
+                .putString("appearance", "light").putString("readerLayout", "verses").putString("readerMode", "scroll").commit()
         }
         override fun after() {
             instrumentation.targetContext.getSharedPreferences("john", 0).edit().clear().commit()

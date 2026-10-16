@@ -65,6 +65,11 @@ class JohnStore(context: Context, preferenceName: String = "john") {
     var readerLayout: String
         get() = layoutState
         set(value) { layoutState = value; write("readerLayout", value) }
+    private var modeState by mutableStateOf(string("readerMode", "pages").takeIf { it in READER_MODES } ?: "pages")
+    /** "pages" turns pages, as in Play Books. "scroll" scrolls each chapter. */
+    var readerMode: String
+        get() = modeState
+        set(value) { if (value in READER_MODES) { modeState = value; write("readerMode", value) } }
     private var aloudRateState by mutableStateOf(prefs.getFloat("readAloudRate", 1f))
     var readAloudRate: Float
         get() = aloudRateState
@@ -76,6 +81,9 @@ class JohnStore(context: Context, preferenceName: String = "john") {
     var readerBook by mutableStateOf(string("readerBook", "JHN")); private set
     var readerChapter by mutableStateOf(prefs.getInt("readerChapter", 1)); private set
     var readerScrollIndex by mutableStateOf(prefs.getInt("readerScrollIndex", 0)); private set
+    /** The verse at the top of the last page read, and the character offset in that verse. */
+    var readerVerse by mutableStateOf(string("readerVerse", "")); private set
+    var readerVerseOffset by mutableStateOf(prefs.getInt("readerVerseOffset", 0)); private set
     var saved by mutableStateOf(readSaved()); private set
     var recentSearches by mutableStateOf(runCatching { JSONArray(string("recentSearches", "[]")).strings() }.getOrDefault(emptyList())); private set
     var favoritePrayerIds by mutableStateOf(prefs.getStringSet("favoritePrayerIds", emptySet())!!.toSet()); private set
@@ -92,8 +100,18 @@ class JohnStore(context: Context, preferenceName: String = "john") {
 
     fun saveReaderLocation(book: String, chapter: Int, scrollIndex: Int = 0) {
         require(chapter > 0)
+        val otherChapter = book != readerBook || chapter != readerChapter
         readerBook = book; readerChapter = chapter; readerScrollIndex = scrollIndex.coerceAtLeast(0)
-        prefs.edit().putString("readerBook", book).putInt("readerChapter", chapter).putInt("readerScrollIndex", readerScrollIndex).apply()
+        val edit = prefs.edit().putString("readerBook", book).putInt("readerChapter", chapter).putInt("readerScrollIndex", readerScrollIndex)
+        if (otherChapter) { readerVerse = ""; readerVerseOffset = 0; edit.remove("readerVerse").remove("readerVerseOffset") }
+        edit.apply()
+    }
+
+    /** Saves the paged reader position. A verse anchor stays correct after a change of text size or screen size. */
+    fun saveReaderAnchor(book: String, chapter: Int, verse: String, offset: Int) {
+        require(chapter > 0)
+        readerBook = book; readerChapter = chapter; readerVerse = verse; readerVerseOffset = offset.coerceAtLeast(0)
+        prefs.edit().putString("readerBook", book).putInt("readerChapter", chapter).putString("readerVerse", verse).putInt("readerVerseOffset", readerVerseOffset).apply()
     }
 
     fun toggleBookmark(hit: SearchHit): Boolean {
@@ -102,6 +120,8 @@ class JohnStore(context: Context, preferenceName: String = "john") {
         putSaved(item("bookmark", hit)); return true
     }
     fun isBookmarked(hit: SearchHit): Boolean = saved.any { it.id == id("bookmark", hit) }
+    /** True when a saved bookmark or note of this kind covers the verse, also as part of a range. */
+    fun coversVerse(kind: String, hit: SearchHit): Boolean = saved.any { it.kind == kind && sameChapter(it, hit) && contains(it, hit.label) }
     fun saveNote(hit: SearchHit, text: String) {
         saveNote(hit, text, noteDrawing(hit))
     }
@@ -271,6 +291,8 @@ class JohnStore(context: Context, preferenceName: String = "john") {
         workOffsets = JSONObject(workOffsets.toString()).put(workId, offset.coerceAtLeast(0))
         write("workOffsets", workOffsets.toString())
     }
+
+    companion object { val READER_MODES = listOf("pages", "scroll") }
 
     private fun labels(hit: SearchHit): Pair<String, String> {
         val parts = hit.label.split(Regex("[-–]"), limit = 2)
