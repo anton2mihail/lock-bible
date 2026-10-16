@@ -261,7 +261,7 @@ internal class PagedChrome(
         val columns = if (maxWidth >= 840.dp && maxWidth > maxHeight) 2 else 1
         val geometry = with(density) {
             val columnWidth = constraints.maxWidth / columns
-            val margin = max(28.dp.roundToPx(), (columnWidth - 620.dp.roundToPx()) / 2)
+            val margin = max(24.dp.roundToPx(), (columnWidth - 620.dp.roundToPx()) / 2)
             val top = 52.dp.roundToPx()
             PageGeometry(columns, columnWidth, margin, top, columnWidth - 2 * margin, (constraints.maxHeight - 2 * top).coerceAtLeast(1))
         }
@@ -428,10 +428,11 @@ private class VerseMark(val fragment: VerseFragment, val hit: SearchHit, val col
     val heading = slice.startOffset == 0
     val pageActions = listOf(CustomAccessibilityAction("Next page") { turn(1); true }, CustomAccessibilityAction("Previous page") { turn(-1); true })
     Box(Modifier.fillMaxSize().testTag("reader-page-${chapter.key.book}-${chapter.key.chapter}-$page")) {
-        if (!heading) Text("${chapter.bookName} ${chapter.key.chapter}".uppercase(), Modifier.align(Alignment.TopCenter).padding(top = 20.dp, start = margin, end = margin),
+        if (!heading) Text((if (chapter.key.book == "PSA") "Psalm ${chapter.key.chapter}" else "${chapter.bookName} ${chapter.key.chapter}").uppercase(), Modifier.align(Alignment.TopCenter).padding(top = 20.dp, start = margin, end = margin),
             fontFamily = SpaceGrotesk, fontSize = 10.sp, letterSpacing = 1.8.sp, color = colors.textDim, maxLines = 1)
         Canvas(Modifier.padding(start = margin, top = top).size(textWidth, textHeight)) {
-            clipRect(0f, 0f, size.width, size.height) {
+            // Clip to the lines of this page. The space under the last line must not show the first line of the next page.
+            clipRect(0f, 0f, size.width, min(size.height, slice.bottom - slice.top)) {
                 translate(0f, -slice.top) {
                     marks.forEach { mark -> if (mark.color != Color.Transparent) drawVerseBand(chapter, mark.fragment.start, mark.fragment.end, mark.color, fontPixels) }
                     drawText(chapter.layout)
