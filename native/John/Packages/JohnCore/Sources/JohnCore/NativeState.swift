@@ -146,18 +146,11 @@ public struct NativePersistentState: Codable, Hashable, Sendable {
         case let .setVerseScope(value): verseScope = value
         case let .setReaderLocation(value): readerLocation = value
         case let .setReadingPreferences(value): readingPreferences = value
-        case let .setReaderTextSize(value):
-            readingPreferences = ReadingPreferences(textSize: value, lineSpacing: readingPreferences.lineSpacing,
-                typeface: readingPreferences.typeface, layout: readingPreferences.layout)
-        case let .setReaderLineSpacing(value):
-            readingPreferences = ReadingPreferences(textSize: readingPreferences.textSize, lineSpacing: value,
-                typeface: readingPreferences.typeface, layout: readingPreferences.layout)
-        case let .setReaderTypeface(value):
-            readingPreferences = ReadingPreferences(textSize: readingPreferences.textSize, lineSpacing: readingPreferences.lineSpacing,
-                typeface: value, layout: readingPreferences.layout)
-        case let .setReaderLayout(value):
-            readingPreferences = ReadingPreferences(textSize: readingPreferences.textSize, lineSpacing: readingPreferences.lineSpacing,
-                typeface: readingPreferences.typeface, layout: value)
+        case let .setReaderTextSize(value): readingPreferences = readingPreferences.with(textSize: value)
+        case let .setReaderLineSpacing(value): readingPreferences = readingPreferences.with(lineSpacing: value)
+        case let .setReaderTypeface(value): readingPreferences = readingPreferences.with(typeface: value)
+        case let .setReaderLayout(value): readingPreferences = readingPreferences.with(layout: value)
+        case let .setReaderMode(value): readingPreferences = readingPreferences.with(mode: value)
         case let .setWidgetGuideDismissed(value): widgetGuideDismissed = value
         case let .setSelectionHintDismissed(value): selectionHintDismissed = value
         case let .setReflection(date, value): reflections[date] = value
@@ -253,6 +246,7 @@ public enum NativeStateMutation: Sendable {
     case setReaderLineSpacing(ReaderLineSpacing)
     case setReaderTypeface(ReaderTypeface)
     case setReaderLayout(ReaderLayout)
+    case setReaderMode(ReaderMode)
     case setWidgetGuideDismissed(Bool)
     case setSelectionHintDismissed(Bool)
     case setReflection(date: String, value: SundayReflection)

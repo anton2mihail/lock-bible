@@ -14,7 +14,7 @@ final class WorksSettingsUITests: XCTestCase {
 
     func testSettingsSaveEditionsRestoreAndReaderAppearanceAgree() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         tabButton(app, "tab-settings").tap()
         XCTAssertTrue(app.staticTexts["settings-title"].waitForExistence(timeout: 10))
@@ -111,7 +111,7 @@ final class WorksSettingsUITests: XCTestCase {
     func testWorksContentsFooterStyleAnchorAndResume() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnResetNativeState"] // test isolation: no saved Works position
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         NSLog("WORKS_EXPECTED workID=%@ collectionID=%@ title=%@ sectionIndex=9 sectionTitle=%@ pageIndex=0 anchor={sectionIndex:9,paragraphIndex:0,utf16Offset:0}",
               worksID, collectionID, worksTitle, sectionTitle)
@@ -174,7 +174,7 @@ final class WorksSettingsUITests: XCTestCase {
 
         app.terminate()
         app.launchArguments.removeAll { $0 == "-JohnResetNativeState" } // keep the state across the relaunch
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         openWorksLibrary(in: app)
         let resumed = app.buttons["works-continue"]
@@ -238,7 +238,7 @@ final class WorksSettingsUITests: XCTestCase {
 
     private func launchWorkReaderForBackCheck() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         openWorksLibrary(in: app)
         tapWhenReady(app.buttons["collection-\(collectionID)"], in: app)

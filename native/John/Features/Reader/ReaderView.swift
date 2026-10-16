@@ -37,6 +37,20 @@ struct ReaderView: View {
     @State private var feedbackHaptic = ReaderFeedbackHaptic()
     @State private var isSelectionMutationRunning = false
     @State private var selectionIdentity = UUID()
+    /// Pages mode: the reader controls show on a middle tap and hide on a page turn, as in Apple Books.
+    @State private var pagesChromeVisible = true
+
+    /// Pages or Scroll. UI tests that were written for the scroll Reader pass `-JohnReaderMode scroll`.
+    private var readerMode: ReaderMode {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: "-JohnReaderMode"), arguments.indices.contains(index + 1),
+           let forced = ReaderMode(rawValue: arguments[index + 1]) {
+            return forced
+        }
+        #endif
+        return preferences.reading.mode
+    }
 
     /// Set when a route pushed this Reader (E5). A pushed Reader has its own model, so it never changes the Read tab.
     private let pushedRequest: ReaderChapterRequest?
@@ -320,6 +334,11 @@ struct ReaderView: View {
                   let chapter = model.chapter, chapter.number == number else { return }
             router.pendingReadAloud = false
             toggleReadAloud(book: book, number: number, chapter: chapter)
+        }
+        .onChange(of: readerMode) { _, _ in
+            // Pages and Scroll open at the saved place of the other mode.
+            pagesChromeVisible = true
+            model.prepareVisibleLocationRestore(preferences.readerLocation)
         }
         .onChange(of: model.chapterScrollResetID) { _, resetID in
             guard resetID != nil,
@@ -643,7 +662,9 @@ struct ReaderView: View {
     private var chapterReader: some View {
         Group {
             if let book = model.book, let number = model.chapterNumber {
-                if let chapter = model.chapter, let layout = model.layout {
+                if readerMode == .pages, let chapter = model.chapter, model.layout != nil {
+                    pagedChapterReader(book: book, number: number, chapter: chapter)
+                } else if let chapter = model.chapter, let layout = model.layout {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 0) {
                             ReaderHeader(title: "\(book.name) \(number)", backLabel: chapterBackLabel(book),
@@ -939,30 +960,7 @@ struct ReaderView: View {
                     // is outside the top mask, so the mask never clips it.
                     .safeAreaInset(edge: .bottom, spacing: 0) {
                     if let passage = model.selectedPassage {
-                        ReaderSelectionToolbar(
-                            passage: passage,
-                            displayReference: reference(for: passage),
-                            bookmarkStateKnown: selectedBookmarkState != nil,
-                            isBookmarked: selectedBookmarkState ?? false,
-                            highlightColor: model.selectedHighlightColor,
-                            hasAnyHighlight: model.selectedHasHighlight,
-                            feedback: selectionFeedback,
-                            isBusy: isSelectionMutationRunning,
-                            onClose: model.clearSelection,
-                            onBookmark: { Task { await toggleSelectedBookmark() } },
-                            onHighlight: { color in
-                                Task { await updateSelectedHighlight(model.selectedHighlightColor == color ? nil : color) }
-                            },
-                            onClearHighlight: { Task { await updateSelectedHighlight(nil) } },
-                            onNote: { router.push(.noteEditor(passage)) },
-                            onCopy: { Task { await copySelectedPassage() } },
-                            onPray: { router.push(.companion(.lectio(passage))) },
-                            onCard: { router.push(.companion(.scriptureCard(passage))) }
-                        )
-                        .frame(maxWidth: readerColumnWidth)
-                        .padding(.horizontal, 8)
-                        .padding(.bottom, 8)
-                        .frame(maxWidth: .infinity)
+                        selectionToolbar(for: passage)
                     }
                     }
                 } else if model.isLoading {
@@ -991,6 +989,191 @@ struct ReaderView: View {
                 }
             }
         }
+    }
+
+    private func selectionToolbar(for passage: PassageSelection) -> some View {
+        ReaderSelectionToolbar(
+            passage: passage,
+            displayReference: reference(for: passage),
+            bookmarkStateKnown: selectedBookmarkState != nil,
+            isBookmarked: selectedBookmarkState ?? false,
+            highlightColor: model.selectedHighlightColor,
+            hasAnyHighlight: model.selectedHasHighlight,
+            feedback: selectionFeedback,
+            isBusy: isSelectionMutationRunning,
+            onClose: model.clearSelection,
+            onBookmark: { Task { await toggleSelectedBookmark() } },
+            onHighlight: { color in
+                Task { await updateSelectedHighlight(model.selectedHighlightColor == color ? nil : color) }
+            },
+            onClearHighlight: { Task { await updateSelectedHighlight(nil) } },
+            onNote: { router.push(.noteEditor(passage)) },
+            onCopy: { Task { await copySelectedPassage() } },
+            onPray: { router.push(.companion(.lectio(passage))) },
+            onCard: { router.push(.companion(.scriptureCard(passage))) }
+        )
+        .frame(maxWidth: readerColumnWidth)
+        .padding(.horizontal, 8)
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity)
+    }
+
+    /// Accessibility only, as in the scroll Reader: VoiceOver reads the selected range, and UI tests read it from
+    /// `reader-selection-summary`. The text is clear and takes no layout height.
+    @ViewBuilder private func selectionSummary(_ chapter: BibleChapter) -> some View {
+        if let range = model.selectedRange, chapter.verses.indices.contains(range.lowerBound),
+           chapter.verses.indices.contains(range.upperBound) {
+            let summary = "Selected: verses \(chapter.verses[range.lowerBound].label)–\(chapter.verses[range.upperBound].label)"
+            Text(summary)
+                .font(JohnTypography.sans(13, weight: .medium))
+                .foregroundStyle(.clear)
+                .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1, alignment: .topLeading)
+                .padding(.bottom, -1)
+                .allowsHitTesting(false)
+                .accessibilityLabel(summary)
+                .accessibilityIdentifier("reader-selection-summary")
+        }
+    }
+
+    // MARK: Pages
+
+    /// The paged Reader (Pages mode). The pages fill the screen. A middle tap shows the controls and the tab bar;
+    /// a page turn hides them, as in Apple Books. With VoiceOver on, the controls stay visible.
+    private func pagedChapterReader(book: BibleBookDescriptor, number: Int, chapter: BibleChapter) -> some View {
+        let chromeShown = pagesChromeVisible || voiceOverEnabled
+        return ReaderPagedView(
+            model: model,
+            // With VoiceOver on, the Reader always goes verse by verse, as in Scroll mode.
+            reading: voiceOverEnabled ? preferences.reading.with(layout: .verses) : preferences.reading,
+            dynamicTypeScale: systemTextScale,
+            isDark: colorScheme == .dark,
+            spokenIndex: spokenIndex,
+            location: pushedRequest == nil ? preferences.readerLocation : nil,
+            savedRevision: runtime.savedRevision,
+            chromeVisible: chromeShown,
+            onToggleChrome: {
+                withAnimation(.easeInOut(duration: 0.2)) { pagesChromeVisible.toggle() }
+            },
+            onHideChrome: {
+                guard pagesChromeVisible else { return }
+                withAnimation(.easeInOut(duration: 0.2)) { pagesChromeVisible = false }
+            },
+            onTapVerse: { index in
+                guard router.sheet == nil else { router.sheet = nil; return }
+                model.selectVerse(index)
+                guard !preferences.selectionHintDismissed else { return }
+                Task { _ = await runtime.applyWithResult(.setSelectionHintDismissed(true)) }
+            },
+            onBackgroundTap: {
+                guard router.sheet != nil else { return false }
+                router.sheet = nil
+                return true
+            },
+            onReachedChapterEnd: markOpenChapterRead,
+            topChrome: { pagesTopChrome(book: book, number: number, chapter: chapter) },
+            bottomContent: {
+                if let passage = model.selectedPassage {
+                    selectionToolbar(for: passage)
+                } else if chromeShown {
+                    pagesBottomBar(book: book, number: number)
+                }
+                selectionSummary(chapter)
+            }
+        )
+        .background(colors.background)
+        .simultaneousGesture(textSizePinch)
+        .onAppear { JohnTips.noteUse() }
+        .toolbar(chromeShown ? .visible : .hidden, for: .tabBar)
+        .task(id: runtime.progressRevision) {
+            progressSnapshot = await loadReadingProgress(runtime: runtime, translation: model.edition)
+        }
+        .accessibilityIdentifier("reader-paged")
+    }
+
+    private func pagesTopChrome(book: BibleBookDescriptor, number: Int, chapter: BibleChapter) -> some View {
+        VStack(spacing: 8) {
+            ReaderHeader(title: "\(book.name) \(number)", backLabel: chapterBackLabel(book),
+                         onBack: goBack, onTitlePress: openGoTo, onSearch: openSearch,
+                         onTextSettings: { router.sheet = .readerAppearance }, requestID: readerAccessibilityValue,
+                         onReadAloud: { toggleReadAloud(book: book, number: number, chapter: chapter) },
+                         readAloudPlaying: spokenIndex != nil && runtime.readAloud.isPlaying,
+                         readAloudValue: readAloudState, colors: colors, compact: true)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .johnGlassSurface(cornerRadius: 26, colors: colors)
+            if spokenIndex != nil {
+                readAloudControls
+                    .padding(.horizontal, 8)
+                    .johnGlassSurface(cornerRadius: 22, colors: colors)
+            }
+            if !preferences.selectionHintDismissed {
+                Text("Touch and hold a verse to select it. Then tap another verse to select a range.")
+                    .font(JohnTypography.sans(12))
+                    .foregroundStyle(colors.textDim)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .johnGlassSurface(cornerRadius: 16, colors: colors)
+                    .accessibilityIdentifier("reader-selection-hint")
+            }
+        }
+        .frame(maxWidth: 640)
+        .padding(.horizontal, 12)
+        .padding(.top, 4)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func pagesBottomBar(book: BibleBookDescriptor, number: Int) -> some View {
+        let commentary = workCatalog?.commentary[book.code]?[String(number)] ?? []
+        return VStack(spacing: 6) {
+            HStack(spacing: 8) {
+                chapterStepButton(-1)
+                markReadButton(book: book, chapter: number)
+                if !commentary.isEmpty {
+                    Button {
+                        router.push(.worksChapterCommentary(bookCode: book.code, chapter: number, bookName: book.name))
+                    } label: {
+                        Label("Fathers", systemImage: "text.book.closed")
+                            .font(JohnTypography.sans(15, weight: .medium))
+                            .frame(minHeight: 44)
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityLabel("The Fathers on this chapter, \(commentary.count) readings")
+                    .accessibilityIdentifier("reader-pages-commentary")
+                }
+                chapterStepButton(1)
+            }
+            if !model.editionAttribution.isEmpty {
+                Text(model.editionAttribution)
+                    .font(JohnTypography.sans(11))
+                    .foregroundStyle(colors.textDim)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .accessibilityIdentifier("reader-edition-attribution")
+            }
+        }
+        .padding(10)
+        .johnGlassSurface(cornerRadius: 24, colors: colors)
+        .frame(maxWidth: 560)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder private func chapterStepButton(_ offset: Int) -> some View {
+        let target = model.adjacentChapter(offset)
+        let name = target.map { "\($0.book.name) chapter \($0.chapter)" } ?? ""
+        Button { Task { await model.moveChapter(offset, using: runtime) } } label: {
+            Image(systemName: offset < 0 ? "chevron.left" : "chevron.right")
+                .font(.system(size: 17, weight: .semibold))
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(target == nil ? colors.border : colors.tint)
+        .disabled(target == nil)
+        .accessibilityLabel(offset < 0 ? "Previous, \(name)" : "Next, \(name)")
+        .accessibilityIdentifier(offset < 0 ? "reader-previous-chapter" : "reader-next-chapter")
     }
 
     private func finishProgrammaticRestore() {
@@ -1144,6 +1327,8 @@ private struct ReaderHeader: View {
     var readAloudPlaying = false
     var readAloudValue = "idle"
     let colors: JohnColors
+    /// The paged Reader shows the header as a small floating bar.
+    var compact = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
@@ -1159,8 +1344,8 @@ private struct ReaderHeader: View {
             Button(action: onTitlePress) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(title)
-                        .font(JohnTypography.sans(36, weight: .bold))
-                        .tracking(-0.7)
+                        .font(JohnTypography.sans(compact ? 19 : 36, weight: .bold))
+                        .tracking(compact ? -0.3 : -0.7)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 1)
                         .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.45)
                         .fixedSize(horizontal: false, vertical: dynamicTypeSize.isAccessibilitySize)

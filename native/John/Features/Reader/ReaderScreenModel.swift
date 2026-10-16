@@ -330,9 +330,44 @@ import JohnCore
 
     func adjacentChapter(_ offset: Int) -> (book: BibleBookDescriptor, chapter: Int)? {
         guard let book, let currentChapterNumber else { return nil }
-        let value = currentChapterNumber + offset
+        return adjacentChapter(from: book.code, chapter: currentChapterNumber, offset: offset)
+    }
+
+    /// The chapter before or after any chapter, across book boundaries. The paged Reader uses it for its neighbors.
+    func adjacentChapter(from bookCode: String, chapter number: Int, offset: Int) -> (book: BibleBookDescriptor, chapter: Int)? {
+        guard let index = books.firstIndex(where: { $0.code == bookCode }) else { return nil }
+        let book = books[index]
+        let value = number + offset
         if (1...book.chapterCount).contains(value) { return (book, value) }
-        guard let adjacent = adjacentBook(offset) else { return nil }
+        let nextIndex = index + (offset > 0 ? 1 : -1)
+        guard books.indices.contains(nextIndex) else { return nil }
+        let adjacent = books[nextIndex]
         return (adjacent, offset > 0 ? 1 : adjacent.chapterCount)
+    }
+
+    /// Makes a chapter that the paged Reader already loaded and paginated the open chapter, after a page turn across
+    /// a chapter boundary. It does the same as `openChapter` without a load, so the turn shows no loading state.
+    /// The caller saves the Reader location for the page that shows.
+    func adoptPagedChapter(_ book: BibleBookDescriptor, number: Int, chapter loaded: BibleChapter,
+                           layout loadedLayout: ChapterLayout, highlights: [Int: HighlightColor]) {
+        let loadID = UUID()
+        chapterLoadID = loadID
+        activeChapterRequestID = loadID
+        manifestLoadID = nil
+        isLoading = false
+        message = nil
+        self.book = book
+        chapterNumber = number
+        currentChapterNumber = number
+        chapter = loaded
+        layout = loadedLayout
+        highlightColors = highlights
+        pendingContextIndex = nil
+        pendingRestoreScrollY = nil
+        pendingRestoreAnchor = nil
+        selectedRange = nil
+        contextRange = nil
+        screen = .chapter
+        lastRead = (book.code, number)
     }
 }

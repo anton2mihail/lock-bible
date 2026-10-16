@@ -9,7 +9,7 @@ final class IPadB3dUITests: XCTestCase {
 
     private func launch() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JohnResetNativeState", "-JohnTabBarMinimize", "never"]
+        app.launchArguments = ["-JohnResetNativeState", "-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 20))
         return app

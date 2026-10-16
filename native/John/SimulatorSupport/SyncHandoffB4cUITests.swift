@@ -7,7 +7,7 @@ final class SyncHandoffB4cUITests: XCTestCase {
 
     private func launch(_ extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnResetNativeState", "-JohnTabBarMinimize", "never"] + extra
+        app.launchArguments += ["-JohnResetNativeState", "-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] + extra
         app.launch()
         return app
     }

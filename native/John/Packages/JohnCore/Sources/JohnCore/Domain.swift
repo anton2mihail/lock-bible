@@ -128,16 +128,42 @@ public enum ReaderTextSize: String, Codable, Sendable { case small, medium, larg
 public enum ReaderLineSpacing: String, Codable, Sendable { case compact, comfortable, relaxed }
 public enum ReaderTypeface: String, Codable, Sendable { case sans, serif }
 public enum ReaderLayout: String, Codable, Sendable { case paragraphs, verses }
+/// How the Reader shows a chapter: horizontal pages (as in Apple Books) or one vertical scroll.
+public enum ReaderMode: String, Codable, Sendable { case pages, scroll }
 
 public struct ReadingPreferences: Codable, Hashable, Sendable {
     public let textSize: ReaderTextSize
     public let lineSpacing: ReaderLineSpacing
     public let typeface: ReaderTypeface
     public let layout: ReaderLayout
-    public static let sourceDefaults = ReadingPreferences(textSize: .medium, lineSpacing: .comfortable, typeface: .serif, layout: .paragraphs)
+    /// Pages is the default. State that was saved before this field existed decodes as pages.
+    public let mode: ReaderMode
+    public static let sourceDefaults = ReadingPreferences(textSize: .medium, lineSpacing: .comfortable, typeface: .serif,
+                                                          layout: .paragraphs, mode: .pages)
     public init(textSize: ReaderTextSize = .medium, lineSpacing: ReaderLineSpacing = .comfortable,
-                typeface: ReaderTypeface = .serif, layout: ReaderLayout = .paragraphs) {
+                typeface: ReaderTypeface = .serif, layout: ReaderLayout = .paragraphs, mode: ReaderMode = .pages) {
         self.textSize = textSize; self.lineSpacing = lineSpacing; self.typeface = typeface; self.layout = layout
+        self.mode = mode
+    }
+
+    private enum CodingKeys: String, CodingKey { case textSize, lineSpacing, typeface, layout, mode }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(textSize: values.decode(ReaderTextSize.self, forKey: .textSize),
+                      lineSpacing: values.decode(ReaderLineSpacing.self, forKey: .lineSpacing),
+                      typeface: values.decode(ReaderTypeface.self, forKey: .typeface),
+                      layout: values.decode(ReaderLayout.self, forKey: .layout),
+                      mode: values.decodeIfPresent(ReaderMode.self, forKey: .mode) ?? .pages)
+    }
+
+    /// A copy with one value changed.
+    public func with(textSize: ReaderTextSize? = nil, lineSpacing: ReaderLineSpacing? = nil,
+                     typeface: ReaderTypeface? = nil, layout: ReaderLayout? = nil,
+                     mode: ReaderMode? = nil) -> ReadingPreferences {
+        ReadingPreferences(textSize: textSize ?? self.textSize, lineSpacing: lineSpacing ?? self.lineSpacing,
+                           typeface: typeface ?? self.typeface, layout: layout ?? self.layout,
+                           mode: mode ?? self.mode)
     }
 }
 
