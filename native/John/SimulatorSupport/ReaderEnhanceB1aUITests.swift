@@ -78,7 +78,7 @@ final class ReaderEnhanceB1aUITests: XCTestCase {
 
     private func launch(reset: Bool) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         if reset { app.launchArguments += ["-JohnResetNativeState"] }
         app.launch()
         return app

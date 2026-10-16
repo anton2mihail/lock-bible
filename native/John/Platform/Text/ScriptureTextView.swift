@@ -68,6 +68,35 @@ struct ReaderRenderSignature: Equatable {
     let chapterRequestID: UUID?
 }
 
+/// The text and heading blocks of one chapter in reading order. The scroll Reader and the paged Reader use the same
+/// blocks. "Verse by verse" puts each verse in its own block.
+enum ScriptureBlocks {
+    static func blocks(layout: ChapterLayout, chapter: BibleChapter, readerLayout: ReaderLayout) -> [ChapterLayoutBlock] {
+        guard readerLayout == .verses else { return layout.blocks }
+        var blocks: [ChapterLayoutBlock] = []
+        for (verseIndex, verseLayout) in layout.verses.enumerated() {
+            for (kind, text) in verseLayout.headings {
+                blocks.append(.heading(kind: kind, text: text, verseIndex: verseIndex))
+            }
+            var hasVerseLabel = false
+            for line in verseLayout.lines {
+                switch line {
+                case let .heading(kind, text):
+                    blocks.append(.heading(kind: kind, text: text, verseIndex: verseIndex))
+                case let .text(kind, stanzaBreak, text):
+                    blocks.append(.text(kind: kind, stanzaBreak: stanzaBreak, segments: [
+                        ChapterLayoutSegment(verseIndex: verseIndex,
+                                             label: hasVerseLabel ? nil : chapter.verses[verseIndex].label,
+                                             text: text)
+                    ]))
+                    hasVerseLabel = true
+                }
+            }
+        }
+        return blocks
+    }
+}
+
 struct ScriptureTextView: UIViewRepresentable {
     let chapter: BibleChapter
     let layout: ChapterLayout
@@ -497,28 +526,7 @@ struct ScriptureTextView: UIViewRepresentable {
     }
 
     private func blocksForCurrentLayout() -> [ChapterLayoutBlock] {
-        guard readerLayout == .verses else { return layout.blocks }
-        var blocks: [ChapterLayoutBlock] = []
-        for (verseIndex, verseLayout) in layout.verses.enumerated() {
-            for (kind, text) in verseLayout.headings {
-                blocks.append(.heading(kind: kind, text: text, verseIndex: verseIndex))
-            }
-            var hasVerseLabel = false
-            for line in verseLayout.lines {
-                switch line {
-                case let .heading(kind, text):
-                    blocks.append(.heading(kind: kind, text: text, verseIndex: verseIndex))
-                case let .text(kind, stanzaBreak, text):
-                    blocks.append(.text(kind: kind, stanzaBreak: stanzaBreak, segments: [
-                        ChapterLayoutSegment(verseIndex: verseIndex,
-                                             label: hasVerseLabel ? nil : chapter.verses[verseIndex].label,
-                                             text: text)
-                    ]))
-                    hasVerseLabel = true
-                }
-            }
-        }
-        return blocks
+        ScriptureBlocks.blocks(layout: layout, chapter: chapter, readerLayout: readerLayout)
     }
 
     private func highlightColor(_ color: HighlightColor) -> UIColor {

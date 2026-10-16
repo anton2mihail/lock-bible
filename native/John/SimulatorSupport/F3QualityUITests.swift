@@ -17,7 +17,7 @@ final class F3QualityUITests: XCTestCase {
         XCUIDevice.shared.orientation = env["F3_LANDSCAPE"] == "1" ? .landscapeLeft : .portrait
 
         let app = XCUIApplication()
-        app.launchArguments = ["-JohnResetNativeState", "-JohnTabBarMinimize", "never",
+        app.launchArguments = ["-JohnResetNativeState", "-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll",
                                "-L14FeatureDate", "2026-09-13T16:00:00Z", "-L14FeatureTimeZone", "America/Toronto"]
         app.launch()
         XCTAssertTrue(tabButton(app, "today").waitForExistence(timeout: 20))

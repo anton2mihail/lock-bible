@@ -14,7 +14,7 @@ final class TabViewRegressionUITests: XCTestCase {
 
     private func launch(minimizeNever: Bool) -> XCUIApplication {
         let app = XCUIApplication()
-        if minimizeNever { app.launchArguments += ["-JohnTabBarMinimize", "never"] }
+        if minimizeNever { app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] }
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         return app

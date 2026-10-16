@@ -182,7 +182,11 @@ struct ReadingSettingsChoices: View {
     @Environment(SharedPreferencesModel.self) private var preferences
 
     var body: some View {
-        SettingsChoiceGroup(label: "Text size", options: [
+        SettingsChoiceGroup(label: "Reading mode", hint: "Pages turn like a book. Scroll shows the chapter in one column.", options: [
+            .init(title: "Pages", selected: preferences.reading.mode == .pages) { save(.setReaderMode(.pages)) },
+            .init(title: "Scroll", selected: preferences.reading.mode == .scroll) { save(.setReaderMode(.scroll)) },
+        ])
+        SettingsChoiceGroup(label: "Text size", topSeparator: true, options: [
             .init(title: "Small", selected: preferences.reading.textSize == .small) { save(.setReaderTextSize(.small)) },
             .init(title: "Default", selected: preferences.reading.textSize == .medium) { save(.setReaderTextSize(.medium)) },
             .init(title: "Large", selected: preferences.reading.textSize == .large) { save(.setReaderTextSize(.large)) },

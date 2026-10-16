@@ -12,7 +12,7 @@ final class SearchNoteUITests: XCTestCase {
 
     func testSearchReferencePhraseCorrectionAndNoResults() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         selectEdition("web-ce", in: app)
         openSearch(in: app)
@@ -39,7 +39,7 @@ final class SearchNoteUITests: XCTestCase {
     func testSearchScopesEditionAndLatinText() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnResetNativeState"] // test isolation: default edition and Reader location
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         selectEdition("web-ce", in: app)
         openSearch(in: app)
@@ -69,7 +69,7 @@ final class SearchNoteUITests: XCTestCase {
 
     func testRapidSearchReplacementCloseAndRepeatResult() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         selectEdition("web-ce", in: app)
         openSearch(in: app)
@@ -107,7 +107,7 @@ final class SearchNoteUITests: XCTestCase {
 
     func testCreateVulgateNoteRetainsOriginalEditionAfterChangeAndRestart() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         selectEdition("vulgate", in: app)
         selectVerseByVerseLayout(in: app)
@@ -159,7 +159,7 @@ final class SearchNoteUITests: XCTestCase {
         XCTAssertTrue(reopenedEditor.waitForNonExistence(timeout: 8))
 
         app.terminate()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         tabButton(app, "tab-saved").tap()
         let relaunchedFilter = app.buttons["saved-filter-note"]

@@ -73,7 +73,7 @@ final class ScriptureCardUITests: XCTestCase {
 
     /// Opens the Scripture card from Today, then Verse Moment. It needs no owned-word point, so it works on every device.
     private func openCardFromVerseMoment(in app: XCUIApplication) {
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         tapWhenReady(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch, in: app)
@@ -225,7 +225,7 @@ final class ScriptureCardUITests: XCTestCase {
         try requireStep7("measure-word-points")
         let extraLarge = ProcessInfo.processInfo.environment["STEP7_TEXT_SIZE"] == "Extra large"
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         setReadingProfile(in: app,
                           textSizeIdentifier: extraLarge ? "settings-text-size-extra-large" : "settings-text-size-default",
@@ -298,7 +298,7 @@ final class ScriptureCardUITests: XCTestCase {
 
     private func openLongWebPassage(in app: XCUIApplication, points: (CGPoint, CGPoint)? = nil,
                                     verifiedPhone: Bool = true) {
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         setReadingProfile(in: app)
         tabButton(app, "tab-read").tap()

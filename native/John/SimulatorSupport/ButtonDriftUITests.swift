@@ -13,7 +13,7 @@ final class ButtonDriftUITests: XCTestCase {
         app.launchArguments = [
             "-L14FeatureDate", "2026-09-13T16:00:00Z",
             "-L14FeatureTimeZone", "America/Toronto",
-            "-JohnTabBarMinimize", "never",
+            "-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll",
         ]
         let launchStart = Date()
         app.launch()

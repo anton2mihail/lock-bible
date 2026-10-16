@@ -15,7 +15,7 @@ final class LiveActivityB4bUITests: XCTestCase {
 
     func testLectioTimerStartsAndEndsLiveActivity() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnResetNativeState", "-JohnTabBarMinimize", "never",
+        app.launchArguments += ["-JohnResetNativeState", "-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll",
                                 "-JohnOpenURL", "nrsv://pray/lectio"]
         app.launch()
         XCTAssertTrue(app.staticTexts["Read slowly"].waitForExistence(timeout: 25))

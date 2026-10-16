@@ -13,7 +13,7 @@ final class LectioTimerUITests: XCTestCase {
             "-L14FeatureDate", "2026-09-13T16:00:00Z",
             "-L14FeatureTimeZone", "America/Toronto",
         ]
-        app.launchArguments += ["-JohnTabBarMinimize", "never"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
 

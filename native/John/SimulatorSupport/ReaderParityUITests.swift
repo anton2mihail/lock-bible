@@ -285,7 +285,7 @@ final class ReaderParityUITests: XCTestCase {
         }
         let app = bundleID == "unprovided" ? XCUIApplication() : XCUIApplication(bundleIdentifier: bundleID)
         // Native only: keep the full tab bar (no Read-tab minimize). Never for the old app (Liquid-glass-tabview-review.md fix 2).
-        if variant == .native { app.launchArguments += ["-JohnTabBarMinimize", "never"] }
+        if variant == .native { app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] }
         app.launch()
         if variant == .native {
             XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))

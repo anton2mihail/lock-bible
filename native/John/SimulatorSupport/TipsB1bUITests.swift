@@ -7,7 +7,7 @@ final class TipsB1bUITests: XCTestCase {
 
     private func launch(_ extra: [String]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnResetNativeState", "-JohnResetTips"] + extra
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll", "-JohnResetNativeState", "-JohnResetTips"] + extra
         app.launch()
         return app
     }

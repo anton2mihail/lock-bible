@@ -10,14 +10,14 @@ final class AccessibilityPerfB1cUITests: XCTestCase {
         options.iterationCount = 3
         measure(metrics: [XCTApplicationLaunchMetric()], options: options) {
             let app = XCUIApplication()
-            app.launchArguments += ["-JohnTabBarMinimize", "never"]
+            app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
             app.launch()
         }
     }
 
     func testReaderScrollPerformance() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnResetNativeState"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll", "-JohnResetNativeState"]
         app.launch()
         openJohnOne(in: app)
         let options = XCTMeasureOptions()
@@ -31,7 +31,7 @@ final class AccessibilityPerfB1cUITests: XCTestCase {
 
     func testReaderHeaderGrowsAtAccessibility5() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnResetNativeState",
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll", "-JohnResetNativeState",
                                 "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
         openJohnOne(in: app)

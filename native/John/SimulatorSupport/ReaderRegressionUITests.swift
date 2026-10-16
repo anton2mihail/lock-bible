@@ -10,7 +10,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testColdURLContextSurvivesLaunchAndSettles() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         app.terminate()
@@ -27,7 +27,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testContextURLFromEachOriginTab() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         let tabs = ["tab-today", "tab-read", "tab-saved", "tab-pray", "tab-settings"]
@@ -51,7 +51,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testSavedBookmarkOpensNonTopContextVerseWithoutSelection() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
 
@@ -119,7 +119,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testSavedReaderPositionWinsWhenReturningToReadTab() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
 
@@ -199,7 +199,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testSavedAnchor50Offset85SurvivesLargeReflowAndRestart() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         // Seed through visible controls. A saved anchor made outside the test is not required.
@@ -279,7 +279,7 @@ final class ReaderRegressionUITests: XCTestCase {
         add(reflowShot)
 
         app.terminate()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         tapTab("tab-read", in: app)
@@ -321,7 +321,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testAaMediumBackgroundVerseTapClosesWithoutSelection() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         tapTab("tab-read", in: app)
@@ -361,7 +361,7 @@ final class ReaderRegressionUITests: XCTestCase {
 
     func testAaReflowKeepsVisibleTopAnchor() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         tapTab("tab-read", in: app)
@@ -426,7 +426,7 @@ final class ReaderRegressionUITests: XCTestCase {
         XCTAssertTrue(verse.isHittable, "Verse 1 must stay visible after Aa closes")
 
         app.terminate()
-        app.launchArguments += ["-JohnTabBarMinimize", "never"]
+        app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         tapTab("tab-read", in: app)
