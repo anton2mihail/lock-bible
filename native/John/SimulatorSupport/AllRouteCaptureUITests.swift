@@ -108,7 +108,7 @@ final class AllRouteCaptureUITests: XCTestCase {
     func testL25Route12PassageContext() throws { try capture("/passage?reference=…", identity: "Caller-supplied L25_READING_REFERENCE") { c in try openConfiguredReading(c) } }
     func testL25Route13Lectio() throws { try capture("/lectio", identity: "WEB-CE JHN 1:1 selected passage") { c in try selectJHN11(c); try tap(button(c, nativeID: "reader-selection-pray", baselineLabel: "Pray John 1:1")); try waitForAny(c.app, ["Read slowly", "Pray with Scripture"]) } }
     func testL25Route14PrayerLibrary() throws { try capture("/prayers", identity: "Prayer library") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "prayer-library", baselineLabel: "Everyday prayers")); try waitForAny(c.app, ["Prayer for every day", "Find a prayer…"]) } }
-    func testL25Route15PrayerDetail() throws { try capture("/prayer?id=…", identity: "Prayer id morning") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "prayer-library", baselineLabel: "Everyday prayers")); try tap(button(c, nativeID: "prayer-morning", baselineLabel: "Morning offering")); try waitForAny(c.app, ["Morning offering"]) } }
+    func testL25Route15PrayerDetail() throws { try capture("/prayer?id=…", identity: "Prayer id morning") { c in try openTab("pray", label: "Pray", context: c); try tap(button(c, nativeID: "prayer-library", baselineLabel: "Everyday prayers")); try tap(button(c, nativeID: "prayer-morning", baselineLabel: "Morning Offering")); try waitForAny(c.app, ["Morning Offering"]) } }
     func testL25Route16TeachingLibrary() throws { try capture("/learn", identity: "Teaching library") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-learn", baselineLabel: "Explore the Catholic faith")); try waitForAny(c.app, ["Faith, rooted in Scripture"]) } }
     func testL25Route17TeachingDetail() throws { try capture("/teaching?id=…", identity: "Teaching id eucharist") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-learn", baselineLabel: "Explore the Catholic faith")); try tap(button(c, nativeID: "teaching-eucharist", baselineLabel: "The Eucharist")); try waitForAny(c.app, ["The Eucharist"]) } }
     func testL25Route18Confession() throws { try capture("/confession", identity: "Confession guide initial step") { c in try openTab("today", label: "Today", context: c); try tap(button(c, nativeID: "today-confession", baselineLabel: "Prepare for Confession")); try waitForAny(c.app, ["Prepare for Confession", "Prepare"]) } }
@@ -1586,7 +1586,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         case "/verse": "Today; tap Verse & lock screen widget"
         case "/daily?date=…", "/sunday": "Today; tap the visible readings or Sunday card"
         case "/passage?reference=…": "Today readings; tap caller-supplied installed reading"
-        case "/prayers", "/prayer?id=…": "Pray; tap Everyday prayers; optional Morning offering"
+        case "/prayers", "/prayer?id=…": "Pray; tap Everyday prayers; optional Morning Offering"
         case "/learn", "/teaching?id=…": "Today; tap Explore the Catholic faith; optional The Eucharist"
         case "/confession": "Today; tap Prepare for Confession"
         case "/pray/[id]": "Pray; tap St. Padre Pio Novena"

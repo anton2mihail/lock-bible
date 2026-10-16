@@ -52,8 +52,6 @@ enum LiturgicalSeason: String, Sendable {
         return "JOHN 1:1  /  \(formatter.string(from: now))"
     }
     var heroTitle: String { season.title }
-    var prayerTitle: String { Calendar.current.component(.hour, from: now) < 17 ? "A morning offering" : "An evening examen" }
-    var prayerSubtitle: String { Calendar.current.component(.hour, from: now) < 17 ? "Offer this day, just as it is" : "Look back with gratitude and honesty" }
     var suggestedRosary: (id: String, title: String) {
         let ids = ["glorious", "joyful", "sorrowful", "glorious", "luminous", "sorrowful", "joyful"]
         let names = ["glorious": "The Glorious Mysteries", "joyful": "The Joyful Mysteries", "sorrowful": "The Sorrowful Mysteries", "luminous": "The Luminous Mysteries"]

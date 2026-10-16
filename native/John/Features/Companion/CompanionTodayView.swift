@@ -103,7 +103,7 @@ struct CompanionTodayView: View {
                         onNavigate(.learn)
                     }
                     ContentActionRow(title: "Prepare for Confession",
-                                     subtitle: "A gentle guide to returning to mercy") {
+                                     subtitle: "The Ten Commandments and the Catechism on Penance") {
                         onNavigate(.confession)
                     }
                 }

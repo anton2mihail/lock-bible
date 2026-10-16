@@ -31,7 +31,6 @@ struct RosaryMysterySet: Decodable, Identifiable, Sendable {
 struct RosaryMystery: Decodable, Sendable {
     let title: String
     let scriptureReference: String
-    let fruit: String
 }
 
 struct RosarySevenSorrows: Decodable, Sendable {

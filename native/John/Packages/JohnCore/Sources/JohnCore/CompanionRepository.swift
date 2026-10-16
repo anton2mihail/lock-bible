@@ -192,8 +192,8 @@ public enum NovenaProgressSelectors {
 
 public enum TodaySelectors {
     public static func prayer(hour: Int) -> (id: String, title: String, subtitle: String) {
-        hour < 17 ? ("morning", "A morning offering", "Offer this day, just as it is")
-                  : ("evening", "An evening examen", "Look back with gratitude and honesty")
+        hour < 17 ? ("morning", "Morning Offering", "Apostleship of Prayer")
+                  : ("evening", "Night Prayer", "The collect of Compline")
     }
 
     public static func prayer(date: Date, timeZone: TimeZone) -> (id: String, title: String, subtitle: String) {

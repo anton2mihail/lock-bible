@@ -121,7 +121,7 @@ struct FullSettingsView: View {
                     Text("A little closer to God, every day.").font(JohnTypography.sans(16)).foregroundStyle(colors.text).padding(.top, 8)
                     Text("United States · Roman Rite. Offline reading references: \(coverage?.label ?? "No offline dates installed"). Local observances can differ.")
                         .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
-                    Text("Original sacred illustrations created for John 1:1 with AI. Prayer introductions and teaching summaries are editorial guides; source references are provided alongside them.")
+                    Text("Illustrations created for John 1:1 with AI. Prayers, novenas, and teachings are quoted from the sources named beside them; the app adds no prayers or commentary of its own.")
                         .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
                     Text("Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved.")
                         .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)

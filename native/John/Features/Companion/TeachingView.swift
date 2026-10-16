@@ -20,7 +20,7 @@ struct TeachingView: View {
         Group {
             if let loadMessage {
                 ContentPage(title: "Faith, rooted in Scripture", eyebrow: "Explore & understand",
-                            subtitle: "Small introductions to Catholic belief, with places to read more.") {
+                            subtitle: "Passages from the Catechism of the Catholic Church, with Scripture to read.") {
                     ContentMutedText(text: loadMessage)
                 }
             } else if let id, catalog != nil, teaching == nil {
@@ -38,7 +38,7 @@ struct TeachingView: View {
 
     private var library: some View {
         ContentPage(title: "Faith, rooted in Scripture", eyebrow: "Explore & understand",
-                    subtitle: "Small introductions to Catholic belief, with places to read more.") {
+                    subtitle: "Passages from the Catechism of the Catholic Church, with Scripture to read.") {
             if let catalog {
                 ForEach(catalog.teachings, id: \.id) { item in
                     ContentArtCard(artwork: item.artwork, title: item.title,
@@ -63,10 +63,11 @@ struct TeachingView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .accessibilityHidden(true)
             Text(item.summary)
-                .font(JohnTypography.sans(17))
-                .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 17, targetLineHeight: 28))
+                .font(JohnTypography.serif(20))
+                .lineSpacing(ContentTypography.additionalSpacing(fontName: "Lora-Regular", size: 20, targetLineHeight: 32))
                 .foregroundStyle(colors.text)
                 .textSelection(.enabled)
+            ContentMutedText(text: "Catechism of the Catholic Church, \(item.catechism.replacingOccurrences(of: "CCC ", with: "§"))")
             ContentPanel {
                 ContentSectionTitle(title: "Read in Scripture")
                 ForEach(item.references, id: \.self) { reference in
@@ -75,14 +76,6 @@ struct TeachingView: View {
                     }
                 }
             }
-            ContentPanel {
-                ContentSectionTitle(title: "Bring it to prayer")
-                Text(item.reflection)
-                    .font(JohnTypography.serif(24))
-                    .lineSpacing(ContentTypography.additionalSpacing(fontName: "Lora-Regular", size: 24, targetLineHeight: 36))
-                    .foregroundStyle(colors.text)
-            }
-            ContentMutedText(text: "John 1:1 introduction · Based on \(item.catechism). This summary is not a quotation from the Catechism.")
             if let linkMessage {
                 ContentMutedText(text: linkMessage)
                     .contentAnnouncement(linkMessage)

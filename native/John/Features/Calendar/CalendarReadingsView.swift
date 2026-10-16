@@ -88,14 +88,6 @@ struct CalendarReadingsView: View {
             }
 
             if sunday {
-                ContentPanel {
-                    ContentSectionTitle(title: "Read them together")
-                    Text(connection(for: readingEntry?.readings.first(where: { $0.label == "Gospel" })?.reference ?? ""))
-                        .font(JohnTypography.sans(17))
-                        .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 17, targetLineHeight: 28))
-                        .foregroundStyle(colors.text)
-                    ContentMutedText(text: "A reading guide from John 1:1")
-                }
                 reflectionPanel
             }
 
@@ -114,12 +106,12 @@ struct CalendarReadingsView: View {
 
     private var reflectionPanel: some View {
         ContentPanel {
-            ContentSectionTitle(title: "Before Mass", detail: "What word, question, or intention will you bring with you?")
-            ContentInputField(placeholder: "Something I want to carry into Mass…", text: $before,
+            ContentSectionTitle(title: "Before Mass")
+            ContentInputField(placeholder: "Your notes before Mass", text: $before,
                               accessibilityLabel: "Before Mass reflection", multiline: true)
                 .onChange(of: before) { _, _ in feedback = "" }
-            ContentSectionTitle(title: "After Mass", detail: "Return to the same Sunday to remember what you heard and how you want to respond.")
-            ContentInputField(placeholder: "A word to remember. A step to take…", text: $after,
+            ContentSectionTitle(title: "After Mass")
+            ContentInputField(placeholder: "Your notes after Mass", text: $after,
                               accessibilityLabel: "After Mass reflection", multiline: true)
                 .onChange(of: after) { _, _ in feedback = "" }
             ContentEmphasisButton(title: saving ? "Saving…" : "Save reflection") { saveReflection() }
@@ -203,18 +195,6 @@ struct CalendarReadingsView: View {
         }
     }
 
-    private func connection(for gospel: String) -> String {
-        if gospel.range(of: #"Matthew 18:21"#, options: .regularExpression) != nil {
-            return "Sirach asks us to set anger aside, and Jesus’ parable presses the question further: can we receive mercy while refusing it to another? Paul reminds us that we belong to the Lord. Read with this question in mind: where is God inviting me to let mercy shape a relationship?"
-        }
-        if gospel.range(of: #"Luke 15:"#, options: .regularExpression) != nil {
-            return "Watch who is lost, who searches, and who rejoices in this Gospel. Then return to the first reading and the psalm: what do they reveal about God’s patience and mercy? Let your prayer include someone who longs for a welcome home."
-        }
-        if gospel.range(of: #"John 6:"#, options: .regularExpression) != nil {
-            return "Listen for what Jesus says about hunger, life, and the gift of himself. Read the first reading beside the Gospel and notice images of food or God’s provision. Bring your own hunger to Christ as you prepare for the Eucharist."
-        }
-        return "Begin with the Gospel: what does Jesus reveal about God, and what response does he invite? Read the first reading alongside it and look for a shared image, promise, or question. Let the psalm become your reply in prayer. Then notice how the second reading speaks to the way a Christian community lives. You do not need to force every reading into a single theme."
-    }
 }
 
 struct ContentArtCard: View {

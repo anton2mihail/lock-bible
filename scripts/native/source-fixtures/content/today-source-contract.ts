@@ -95,7 +95,7 @@ const prayerBoundaries = prayerBoundaryDates.flatMap((key) => [
     localDateTime: `${dateKey(date)}T${String(hour).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`,
     date: dateKey(date),
     localHour: hour,
-    prayerTitle: hour < 17 ? "A morning offering" : "An evening examen",
+    prayerTitle: hour < 17 ? "Morning Offering" : "Night Prayer",
     prayerID: hour < 17 ? "morning" : "evening",
   }
 })

@@ -211,14 +211,6 @@ struct RosaryGuideView: View {
                         .foregroundStyle(colors.text)
                         .textSelection(.enabled)
                 }
-                if step.prayer == nil, step.meditation == nil, currentGroup != nil {
-                    Text("Pause and bring this mystery before God.")
-                        .font(JohnTypography.sans(16))
-                        .foregroundStyle(colors.text)
-                        .textSelection(.enabled)
-                        .padding(.leading, 16)
-                        .overlay(alignment: .leading) { Rectangle().fill(colors.tint).frame(width: 3) }
-                }
             }
             .padding(24)
             .frame(maxWidth: .infinity, minHeight: 360, alignment: .leading)
@@ -259,14 +251,6 @@ struct RosaryGuideView: View {
                     .font(JohnTypography.sans(36, weight: .bold))
                     .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Bold", size: 36, targetLineHeight: 44))
                     .foregroundStyle(colors.text)
-                    .multilineTextAlignment(.center)
-                    .textSelection(.enabled)
-                Text(session.id == "seven-sorrows"
-                    ? "May Our Lady of Sorrows keep you close to her Son through the day."
-                    : "May the mysteries you contemplated remain with you through the day.")
-                    .font(JohnTypography.sans(16))
-                    .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 16, targetLineHeight: 24))
-                    .foregroundStyle(colors.textDim)
                     .multilineTextAlignment(.center)
                     .textSelection(.enabled)
             }

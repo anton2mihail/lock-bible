@@ -12,7 +12,7 @@ struct PrayerLibraryView: View {
     @State private var loadMessage: String?
     @State private var loaded = false
 
-    private let categories = ["Daily rhythm", "Traditional prayers", "In times of need"]
+    private let categories = ["Daily rhythm", "Traditional prayers", "Prayers of the saints", "In times of need"]
     private var favorites: Set<String> { Set(runtime.committedNativeState?.favoritePrayerIDs ?? []) }
     private var normalizedQuery: String { query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
     private var results: [PrayerCatalogItem] {
@@ -24,7 +24,7 @@ struct PrayerLibraryView: View {
 
     var body: some View {
         ContentPage(title: "Prayer for every day", eyebrow: "Keep a little quiet",
-                    subtitle: "Familiar words for ordinary moments, and the difficult ones too.") {
+                    subtitle: "Traditional prayers and prayers of the saints, each with its source.") {
             TextField("Find a prayer…", text: $query)
                 .font(JohnTypography.sans(16))
                 .textInputAutocapitalization(.never)

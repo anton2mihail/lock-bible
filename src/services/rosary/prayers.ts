@@ -46,22 +46,22 @@ export const ROSARY_PRAYERS: Readonly<Record<RosaryPrayerId, RosaryPrayer>> = {
   "closing-prayer": {
     id: "closing-prayer",
     title: "Closing Prayer",
-    text: "O God, whose only-begotten Son, by his life, death and resurrection, has purchased for us the rewards of eternal life, grant, we beseech thee, that meditating upon these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.",
+    text: "O God, whose only-begotten Son, by His life, death and resurrection, has purchased for us the rewards of eternal life; grant, we beseech Thee, that, meditating upon these mysteries of the Most Holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.",
   },
   "sorrows-opening": {
     id: "sorrows-opening",
     title: "Offering of the Rosary",
-    text: "My God, I offer thee this Rosary in honour of the seven principal sorrows of Mary, for thy greatest glory, for my conversion and that of all people, through thy beloved Son Jesus Christ, our salvation and our one way to come to thee, in union with the Holy Ghost, for ever and ever. Amen.",
+    text: "My God, I offer you this Rosary in honour of the seven principal Sorrows of Mary, for your greatest glory, for my conversion and that of all people through your beloved Son, Jesus Christ, our salvation and our unique way to come to you, in union with the Holy Ghost for ever and ever. Amen!",
   },
   "sorrows-versicle": {
     id: "sorrows-versicle",
     title: "Pray for Us",
-    text: "Pray for us, Virgin most sorrowful, that we may be made worthy of the promises of Christ.",
+    text: "Pray for us, O Virgin most sorrowful, that we may be made worthy of the promises of Christ.",
   },
   "sorrows-closing-prayer": {
     id: "sorrows-closing-prayer",
     title: "Closing Prayer",
-    text: "Let intercession be made for us, we beseech thee, O Lord Jesus Christ, now and at the hour of our death, before the throne of thy mercy, by the Blessed Virgin Mary, thy Mother, whose most holy soul was pierced by a sword of sorrow in the hour of thy bitter Passion; through thee, Jesus Christ, Saviour of the world, who with the Father and the Holy Spirit livest and reignest, world without end. Amen.",
+    text: "Let intercession be made for us, we beseech You, O Lord Jesus Christ, now and at the Hour of our death, before the throne of Your mercy, by the Blessed Virgin Mary, Your Mother, whose most holy soul was pierced by a sword of sorrow in the hour of Your bitter Passion. Through You, O Jesus Christ, Savior of the world, Who with the Father and the Holy Spirit lives and reigns world without end. Amen.",
   },
 }
 
@@ -99,7 +99,7 @@ export function buildRosaryGuide(set: RosaryMysterySet): readonly RosaryGuideSte
         id: `mystery-${decade}`,
         eyebrow,
         title: mystery.title,
-        instruction: `${mystery.scriptureReference} · Fruit of the mystery: ${mystery.fruit}`,
+        instruction: mystery.scriptureReference,
         repetitions: 1,
         mysteryIndex: index,
       },

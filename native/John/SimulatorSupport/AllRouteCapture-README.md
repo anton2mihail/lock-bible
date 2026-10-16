@@ -65,7 +65,7 @@ Each method name ends in the route number from `docs/native/inventory/route-stat
 | `testL25Route12PassageContext` | `/passage?reference=…` | Today readings, then the caller-supplied `L25_READING_REFERENCE` row |
 | `testL25Route13Lectio` | `/lectio` | Read JHN 1:1, select verse 1, then Pray with this passage |
 | `testL25Route14PrayerLibrary` | `/prayers` | Pray, then Everyday prayers |
-| `testL25Route15PrayerDetail` | `/prayer?id=…` | Prayer library, then Morning offering (`morning`) |
+| `testL25Route15PrayerDetail` | `/prayer?id=…` | Prayer library, then Morning Offering (`morning`) |
 | `testL25Route16TeachingLibrary` | `/learn` | Today, then Explore the Catholic faith |
 | `testL25Route17TeachingDetail` | `/teaching?id=…` | Teaching library, then The Eucharist (`eucharist`) |
 | `testL25Route18Confession` | `/confession` | Today, then Prepare for Confession |

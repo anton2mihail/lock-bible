@@ -56,7 +56,7 @@ struct RosaryHomeView: View {
                         .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Bold", size: 36, targetLineHeight: 44))
                         .foregroundStyle(colors.text)
                         .accessibilityAddTraits(.isHeader)
-                    Text("A quiet, step-by-step meditation on the life of Christ with Mary. The complete prayer guide works offline.")
+                    Text("A step-by-step guide to the Rosary. The complete prayer guide works offline.")
                         .font(JohnTypography.sans(16))
                         .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 16, targetLineHeight: 24))
                         .foregroundStyle(colors.textDim)
@@ -108,7 +108,7 @@ struct RosaryHomeView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 8) {
                         ContentSectionTitle(title: "Our Lady of Sorrows")
-                        ContentMutedText(text: "A second, older way of praying with Mary")
+                        ContentMutedText(text: "The Servite Rosary")
                     }
                     setCard(title: catalog.sevenSorrows.title,
                             subtitle: catalog.sevenSorrows.customaryDays,

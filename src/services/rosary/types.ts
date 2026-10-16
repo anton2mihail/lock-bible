@@ -3,7 +3,6 @@ export type RosaryMysterySetId = "joyful" | "sorrowful" | "glorious" | "luminous
 export type RosaryMystery = {
   title: string
   scriptureReference: string
-  fruit: string
 }
 
 export type RosaryMysterySet = {

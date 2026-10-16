@@ -48,14 +48,14 @@ struct PrayerHomeView: View {
                     onNavigate(.rosaryGuide(set: "seven-sorrows"))
                 }
                 ContentActionRow(title: "Everyday prayers",
-                                 subtitle: "Morning offerings, the Angelus, and words for difficult days") {
+                                 subtitle: "Traditional prayers and prayers of the saints") {
                     onNavigate(.prayers)
                 }
                 ContentActionRow(title: "Pray with Scripture", subtitle: "A quiet guide to lectio divina") {
                     onNavigate(.lectio(nil))
                 }
                 ContentActionRow(title: "Prepare for Confession",
-                                 subtitle: "Return to mercy, one step at a time") {
+                                 subtitle: "The Ten Commandments and the Catechism on Penance") {
                     onNavigate(.confession)
                 }
                 ContentActionRow(title: "Explore the Catholic faith", subtitle: "Scripture and the Catechism") {

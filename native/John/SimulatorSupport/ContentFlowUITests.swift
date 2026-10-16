@@ -20,10 +20,10 @@ final class ContentFlowUITests: XCTestCase {
         NSLog("L14_EXPECTED prayerID=%@ sundayKey=%@ novenaID=%@ intention=%@ completedDays=[1] selectedDay=2 before=%@ after=%@",
               prayerID, sundayKey, novenaID, intention, beforeReflection, afterReflection)
 
-        let morningPrayer = button(containing: "A morning offering", in: app)
+        let morningPrayer = button(containing: "Morning Offering", in: app)
         tapWhenReady(morningPrayer, in: app)
         XCTAssertTrue(app.staticTexts["content-page-title"].waitForExistence(timeout: 8))
-        XCTAssertEqual(app.staticTexts["content-page-title"].label, "Morning offering")
+        XCTAssertEqual(app.staticTexts["content-page-title"].label, "Morning Offering")
         let favorite = app.buttons["prayer-favorite"]
         XCTAssertEqual(favorite.label, "Keep in favorites", "The fresh seed must not contain this favorite")
         tapWhenReady(favorite, in: app)
@@ -65,8 +65,8 @@ final class ContentFlowUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
 
-        tapWhenReady(button(containing: "A morning offering", in: app), in: app)
-        XCTAssertEqual(waitForPageTitle(app), "Morning offering")
+        tapWhenReady(button(containing: "Morning Offering", in: app), in: app)
+        XCTAssertEqual(waitForPageTitle(app), "Morning Offering")
         XCTAssertEqual(app.buttons["prayer-favorite"].label, "Remove from favorites")
         tapSystemBack(in: app, expecting: app.staticTexts["today-title"])
         tapWhenReady(button(containing: "Come ready for Sunday", in: app), in: app)
@@ -380,7 +380,7 @@ final class ContentFlowUITests: XCTestCase {
 
         tapWhenReady(app.buttons["Continue"], in: app)
         tapWhenReady(app.buttons["Continue"], in: app)
-        XCTAssertEqual(waitForPageTitle(app), "Go in peace")
+        XCTAssertEqual(waitForPageTitle(app), "Absolution")
         tapWhenReady(app.buttons["Finish & clear notes"], in: app)
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 8))
         tapWhenReady(button(containing: "Prepare for Confession", in: app), in: app)

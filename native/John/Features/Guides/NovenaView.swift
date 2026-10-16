@@ -117,10 +117,12 @@ struct NovenaView: View {
                     .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-SemiBold", size: 12, targetLineHeight: 18))
                     .tracking(1.4)
                     .foregroundStyle(colors.tint)
-                Text(item.about)
-                    .font(JohnTypography.sans(16))
-                    .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 16, targetLineHeight: 23))
-                    .foregroundStyle(colors.textDim)
+                if !item.about.isEmpty {
+                    Text(item.about)
+                        .font(JohnTypography.sans(16))
+                        .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 16, targetLineHeight: 23))
+                        .foregroundStyle(colors.textDim)
+                }
                 Text("Patronage · \(item.patronage)")
                     .font(JohnTypography.sans(16, weight: .semibold))
                     .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-SemiBold", size: 16, targetLineHeight: 23))
@@ -164,7 +166,7 @@ struct NovenaView: View {
                     .font(JohnTypography.sans(16, weight: .medium))
                     .foregroundStyle(colors.text)
                 ContentMutedText(text: "Stored privately on this device.")
-                ContentInputField(placeholder: "Name the grace you are asking for…",
+                ContentInputField(placeholder: "Your intention",
                                   text: intentionBinding,
                                   accessibilityLabel: "Your novena intention", multiline: true,
                                   inputAppearance: .novenaIntention)

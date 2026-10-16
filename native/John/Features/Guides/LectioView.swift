@@ -97,6 +97,7 @@ struct LectioView: View {
                     .font(JohnTypography.sans(17))
                     .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 17, targetLineHeight: 28))
                     .foregroundStyle(colors.text)
+                ContentMutedText(text: "Pope Benedict XVI, Verbum Domini, 87")
             }
 
             if stepIndex == 3 {
@@ -200,11 +201,11 @@ struct LectioView: View {
     }
 
     private static let steps = [
-        LectioStep(title: "Read slowly", name: "Lectio", prompt: "Read the passage once, then again. Notice a word or phrase that catches your attention. Let the words arrive without rushing to explain them."),
-        LectioStep(title: "Stay with a word", name: "Meditatio", prompt: "Return to the word or phrase that stayed with you. What does it reveal about God? Where does it meet your life today? You do not need to find a perfect answer."),
-        LectioStep(title: "Speak to God", name: "Oratio", prompt: "Respond in your own words. Offer gratitude, a question, an intention, or something difficult to say. Speak as honestly as you can."),
-        LectioStep(title: "Rest in his presence", name: "Contemplatio", prompt: "Let the words settle. Stay quietly with God. When your attention wanders, gently return. You may use a minute of silence or remain here as long as you wish."),
-        LectioStep(title: "Carry it into your day", name: "Live the Word", prompt: "Choose one small response: a kindness, a conversation, an apology, a moment of trust. Let this time of prayer continue in the way you live."),
+        LectioStep(title: "Read slowly", name: "Lectio", prompt: "It opens with the reading (lectio) of a text, which leads to a desire to understand its true content: what does the biblical text say in itself? Without this, there is always a risk that the text will become a pretext for never moving beyond our own ideas."),
+        LectioStep(title: "Stay with a word", name: "Meditatio", prompt: "Next comes meditation (meditatio), which asks: what does the biblical text say to us? Here, each person, individually but also as a member of the community, must let himself or herself be moved and challenged."),
+        LectioStep(title: "Speak to God", name: "Oratio", prompt: "Following this comes prayer (oratio), which asks the question: what do we say to the Lord in response to his word? Prayer, as petition, intercession, thanksgiving and praise, is the primary way by which the word transforms us."),
+        LectioStep(title: "Rest in his presence", name: "Contemplatio", prompt: "Finally, lectio divina concludes with contemplation (contemplatio), during which we take up, as a gift from God, his own way of seeing and judging reality, and ask ourselves what conversion of mind, heart and life is the Lord asking of us?"),
+        LectioStep(title: "Carry it into your day", name: "Actio", prompt: "We do well also to remember that the process of lectio divina is not concluded until it arrives at action (actio), which moves the believer to make his or her life a gift for others in charity."),
     ]
 }
 

@@ -12,16 +12,15 @@ export const ROSARY_MYSTERY_SETS: readonly RosaryMysterySet[] = [
     shortTitle: "Joyful",
     customaryDays: "Monday & Saturday",
     description:
-      "Meditate on Christ’s hidden life, from the Annunciation to the finding in the Temple.",
+      "“The first five decades, the ‘joyful mysteries’, are marked by the joy radiating from the event of the Incarnation.” — St. John Paul II, Rosarium Virginis Mariae, 20",
     mysteries: [
-      { title: "The Annunciation", scriptureReference: "Luke 1:26–38", fruit: "Humility" },
-      { title: "The Visitation", scriptureReference: "Luke 1:39–56", fruit: "Love of neighbor" },
-      { title: "The Nativity", scriptureReference: "Luke 2:1–20", fruit: "Poverty of spirit" },
-      { title: "The Presentation", scriptureReference: "Luke 2:22–38", fruit: "Obedience" },
+      { title: "The Annunciation", scriptureReference: "Luke 1:26–38" },
+      { title: "The Visitation", scriptureReference: "Luke 1:39–56" },
+      { title: "The Nativity", scriptureReference: "Luke 2:1–20" },
+      { title: "The Presentation", scriptureReference: "Luke 2:22–38" },
       {
         title: "The Finding in the Temple",
         scriptureReference: "Luke 2:41–52",
-        fruit: "Seeking Jesus",
       },
     ],
   },
@@ -31,29 +30,25 @@ export const ROSARY_MYSTERY_SETS: readonly RosaryMysterySet[] = [
     shortTitle: "Sorrowful",
     customaryDays: "Tuesday & Friday",
     description:
-      "Walk with Christ through his Passion and contemplate the depth of his saving love.",
+      "“The Gospels give great prominence to the sorrowful mysteries of Christ.” — St. John Paul II, Rosarium Virginis Mariae, 22",
     mysteries: [
       {
         title: "The Agony in the Garden",
         scriptureReference: "Matthew 26:36–46",
-        fruit: "Trust in God",
       },
       {
         title: "The Scourging at the Pillar",
         scriptureReference: "John 19:1",
-        fruit: "Purity",
       },
       {
         title: "The Crowning with Thorns",
         scriptureReference: "Matthew 27:27–31",
-        fruit: "Moral courage",
       },
       {
         title: "The Carrying of the Cross",
         scriptureReference: "Luke 23:26–32",
-        fruit: "Patience",
       },
-      { title: "The Crucifixion", scriptureReference: "John 19:17–37", fruit: "Self-giving love" },
+      { title: "The Crucifixion", scriptureReference: "John 19:17–37" },
     ],
   },
   {
@@ -61,24 +56,22 @@ export const ROSARY_MYSTERY_SETS: readonly RosaryMysterySet[] = [
     title: "The Glorious Mysteries",
     shortTitle: "Glorious",
     customaryDays: "Wednesday & Sunday",
-    description: "Rejoice in Christ’s victory and the hope promised to the Church.",
+    description:
+      "“The contemplation of Christ’s face cannot stop at the image of the Crucified One. He is the Risen One!” — St. John Paul II, Rosarium Virginis Mariae, 23",
     mysteries: [
-      { title: "The Resurrection", scriptureReference: "Matthew 28:1–10", fruit: "Faith" },
-      { title: "The Ascension", scriptureReference: "Acts 1:6–11", fruit: "Hope" },
+      { title: "The Resurrection", scriptureReference: "Matthew 28:1–10" },
+      { title: "The Ascension", scriptureReference: "Acts 1:6–11" },
       {
         title: "The Descent of the Holy Spirit",
         scriptureReference: "Acts 2:1–13",
-        fruit: "Wisdom",
       },
       {
         title: "The Assumption of Mary",
         scriptureReference: "Revelation 12:1",
-        fruit: "A holy death",
       },
       {
         title: "The Coronation of Mary",
         scriptureReference: "Revelation 12:1",
-        fruit: "Perseverance",
       },
     ],
   },
@@ -87,32 +80,28 @@ export const ROSARY_MYSTERY_SETS: readonly RosaryMysterySet[] = [
     title: "The Luminous Mysteries",
     shortTitle: "Luminous",
     customaryDays: "Thursday",
-    description: "Contemplate the public ministry of Jesus, the Light of the world.",
+    description:
+      "“Certainly the whole mystery of Christ is a mystery of light.” — St. John Paul II, Rosarium Virginis Mariae, 21",
     mysteries: [
       {
         title: "The Baptism of Jesus",
         scriptureReference: "Matthew 3:13–17",
-        fruit: "Openness to the Holy Spirit",
       },
       {
         title: "The Wedding at Cana",
         scriptureReference: "John 2:1–12",
-        fruit: "Trust in Mary’s intercession",
       },
       {
         title: "The Proclamation of the Kingdom",
         scriptureReference: "Mark 1:14–15",
-        fruit: "Conversion",
       },
       {
         title: "The Transfiguration",
         scriptureReference: "Luke 9:28–36",
-        fruit: "Desire for holiness",
       },
       {
         title: "The Institution of the Eucharist",
         scriptureReference: "Luke 22:14–20",
-        fruit: "Eucharistic devotion",
       },
     ],
   },
@@ -129,8 +118,7 @@ export const SEVEN_SORROWS: SevenSorrowsDevotion = {
   title: "The Seven Sorrows of Mary",
   shortTitle: "Seven Sorrows",
   customaryDays: "Fridays, Lent & September 15",
-  description:
-    "The Servite Rosary. Stay beside Our Lady of Sorrows through the seven wounds of her heart, from Simeon’s prophecy to the sealing of the tomb.",
+  description: "The Servite Rosary of the Seven Sorrows of the Blessed Virgin Mary.",
   sorrows: [
     {
       title: "The Prophecy of Simeon",
@@ -158,21 +146,21 @@ export const SEVEN_SORROWS: SevenSorrowsDevotion = {
       scriptureReference: "Luke 23:27–31",
       grace: "Patience",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the consternation of thy heart at meeting Jesus as he carried his cross. Dear Mother, by thy heart so troubled, obtain for me the virtue of patience and the gift of fortitude.",
+        "I grieve for thee, O Mary most sorrowful, in the consternation of thy heart at meeting Jesus as He carried His cross. Dear Mother, by thy heart so troubled, obtain for me the virtue of patience and the gift of fortitude.",
     },
     {
       title: "The Crucifixion and Death of Jesus",
       scriptureReference: "John 19:25–30",
       grace: "Temperance",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the martyrdom which thy generous heart endured in standing near Jesus in his agony. Dear Mother, by thy afflicted heart, obtain for me the virtue of temperance and the gift of counsel.",
+        "I grieve for thee, O Mary most sorrowful, in the martyrdom which thy generous heart endured in standing near Jesus in His agony. Dear Mother, by thy afflicted heart, obtain for me the virtue of temperance and the gift of counsel.",
     },
     {
       title: "Mary Receives the Body of Jesus",
       scriptureReference: "John 19:38–40",
       grace: "Fraternal charity",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the wounding of thy compassionate heart, when the side of Jesus was struck by the lance before his body was removed from the cross. Dear Mother, by thy heart thus transfixed, obtain for me the virtue of fraternal charity and the gift of understanding.",
+        "I grieve for thee, O Mary most sorrowful, in the wounding of thy compassionate heart, when the side of Jesus was struck by the lance and His Heart was pierced before His body was removed from the Cross. Dear Mother, by thy heart thus transfixed, obtain for me the virtue of fraternal charity and the gift of understanding.",
     },
     {
       title: "The Burial of Jesus",

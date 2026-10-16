@@ -8,9 +8,9 @@ public struct DevotionalCatalog: Codable, Sendable {
     public let rosary: JSONValue
 
     public func validate() throws {
-        guard formatVersion == 1, novenas.count == 27, prayers.count == 12, teachings.count == 5,
+        guard formatVersion == 1, novenas.count == 7, prayers.count == 28, teachings.count == 5,
               unique(novenas.map(\.id)), unique(prayers.map(\.id)), unique(teachings.map(\.id)),
-              prayers.allSatisfy({ ["Daily rhythm", "In times of need", "Traditional prayers"].contains($0.category) }),
+              prayers.allSatisfy({ ["Daily rhythm", "In times of need", "Prayers of the saints", "Traditional prayers"].contains($0.category) }),
               teachings.allSatisfy({ ["mary", "prayer", "scripture"].contains($0.artwork) }) else {
             throw CoreError.invalidResource("devotional catalog shape")
         }

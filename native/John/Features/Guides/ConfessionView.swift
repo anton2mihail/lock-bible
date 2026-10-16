@@ -19,14 +19,15 @@ struct ConfessionView: View {
                     eyebrow: "Prepare for Confession / \(index + 1) of \(Self.steps.count)",
                     subtitle: nil) {
             Text(step.body)
-                .font(JohnTypography.sans(17))
-                .lineSpacing(ContentTypography.additionalSpacing(fontName: "SpaceGrotesk-Regular", size: 17, targetLineHeight: 28))
+                .font(JohnTypography.serif(20))
+                .lineSpacing(ContentTypography.additionalSpacing(fontName: "Lora-Regular", size: 20, targetLineHeight: 32))
                 .foregroundStyle(colors.text)
+                .textSelection(.enabled)
+            ContentMutedText(text: step.source)
 
             if index == 0 {
                 ContentPanel {
-                    ContentSectionTitle(title: "An examination of conscience",
-                        detail: "Read slowly, in the light of God’s love. You can use these prompts without writing anything.")
+                    ContentSectionTitle(title: "An examination of conscience")
                     ForEach(Self.examination, id: \.title) { section in
                         VStack(alignment: .leading, spacing: 8) {
                             Text(section.title)
@@ -91,7 +92,7 @@ struct ConfessionView: View {
             if index > 0 {
                 ContentButton(title: "Previous") { index -= 1 }
             }
-            ContentMutedText(text: "Original preparation prompts, informed by the Ten Commandments, the Beatitudes, and USCCB guidance. Your priest can help with questions about your circumstances.")
+            ContentMutedText(text: "Texts are quoted from the Catechism of the Catholic Church and from Scripture (WEB-CE). Your priest can help with questions about your circumstances.")
             ContentButton(title: "USCCB preparation resources ↗") {
                 clearNotes()
                 guard let url = URL(string: Self.source) else { return }
@@ -117,28 +118,50 @@ struct ConfessionView: View {
     private static let actOfContrition = "O my God, I am heartily sorry for having offended Thee, and I detest all my sins because I dread the loss of heaven and the pains of hell, but most of all because they offend Thee, my God, who art all good and deserving of all my love. I firmly resolve, with the help of Thy grace, to confess my sins, to do penance, and to amend my life. Amen."
 
     private static let steps = [
-        ConfessionStep(title: "Prepare", body: "Ask the Holy Spirit for honesty and trust. Reflect on your life since your last confession. These questions are a starting point; a priest can help you with anything you are unsure about."),
-        ConfessionStep(title: "Begin with the priest", body: "Make the Sign of the Cross and say how long it has been since your last confession. If you are new or it has been a long time, say so. You can ask the priest to guide you."),
-        ConfessionStep(title: "Confess your sins", body: "Name your sins simply and honestly. Confess all mortal sins you remember, including their kind and number as best you can. Listen to the priest’s counsel and receive the penance he gives you."),
-        ConfessionStep(title: "Pray and receive absolution", body: "Express sorrow for your sins and your intention to turn away from them. Pray an Act of Contrition when invited. The priest gives absolution; respond Amen."),
-        ConfessionStep(title: "Go in peace", body: "Thank God for his mercy. Complete your penance and take the next practical step toward reconciliation and a changed life."),
+        ConfessionStep(title: "Prepare",
+                       body: "“The reception of this sacrament ought to be prepared for by an examination of conscience made in the light of the Word of God.”",
+                       source: "Catechism of the Catholic Church, §1454"),
+        ConfessionStep(title: "The sacrament of Penance",
+                       body: "“Those who approach the sacrament of Penance obtain pardon from God’s mercy for the offense committed against him, and are, at the same time, reconciled with the Church which they have wounded by their sins and which by charity, by example, and by prayer labors for their conversion.”",
+                       source: "Catechism of the Catholic Church, §1422"),
+        ConfessionStep(title: "Confess your sins",
+                       body: "Confession to a priest is an essential part of the sacrament of Penance: “All mortal sins of which penitents after a diligent self-examination are conscious must be recounted by them in confession, even if they are most secret and have been committed against the last two precepts of the Decalogue; for these sins sometimes wound the soul more grievously and are more dangerous than those which are committed openly.”",
+                       source: "Catechism of the Catholic Church, §1456"),
+        ConfessionStep(title: "Contrition",
+                       body: "Among the penitent’s acts contrition occupies first place. Contrition is “sorrow of the soul and detestation for the sin committed, together with the resolution not to sin again.”",
+                       source: "Catechism of the Catholic Church, §1451"),
+        ConfessionStep(title: "Absolution",
+                       body: "God, the Father of mercies,\nthrough the death and the resurrection of his Son\nhas reconciled the world to himself\nand sent the Holy Spirit among us\nfor the forgiveness of sins;\nthrough the ministry of the Church\nmay God give you pardon and peace,\nand I absolve you from your sins in the name of the Father, and of the Son and of the Holy Spirit.",
+                       source: "The formula of absolution, quoted in the Catechism of the Catholic Church, §1449"),
     ]
 
     private static let examination = [
-        ExaminationSection(title: "Love of God", scripture: "Matthew 22:37–40", questions: [
-            "Have I made space for prayer and worship, including Sunday Mass when I am able?",
-            "Have I treated God’s name, sacred things, and other people’s faith with reverence?",
-            "What has taken the place of God in my decisions?",
+        ExaminationSection(title: "The Ten Commandments",
+                           scripture: "A traditional catechetical formula · Catechism of the Catholic Church", questions: [
+            "I am the LORD your God: you shall not have strange Gods before me.",
+            "You shall not take the name of the LORD your God in vain.",
+            "Remember to keep holy the LORD’S Day.",
+            "Honor your father and your mother.",
+            "You shall not kill.",
+            "You shall not commit adultery.",
+            "You shall not steal.",
+            "You shall not bear false witness against your neighbor.",
+            "You shall not covet your neighbor’s wife.",
+            "You shall not covet your neighbor’s goods.",
         ]),
-        ExaminationSection(title: "Love of neighbor", scripture: "Matthew 25:35–40", questions: [
-            "Have I harmed someone through anger, cruelty, gossip, or indifference?",
-            "Have I been honest and fair in my work, promises, and use of money?",
-            "Have I ignored someone’s need when I could reasonably help?",
+        ExaminationSection(title: "The great commandments", scripture: "Matthew 22:37, 39 · WEB-CE", questions: [
+            "You shall love the Lord your God with all your heart, with all your soul, and with all your mind.",
+            "You shall love your neighbor as yourself.",
         ]),
-        ExaminationSection(title: "Love in daily life", scripture: "Matthew 5:1–12", questions: [
-            "Have I honored the dignity of others in my relationships and sexual choices?",
-            "Have I cared responsibly for the people entrusted to me?",
-            "Where do I need to ask forgiveness, repair harm, or change a habit?",
+        ExaminationSection(title: "The Beatitudes", scripture: "Matthew 5:3–10 · WEB-CE", questions: [
+            "Blessed are the poor in spirit, for theirs is the Kingdom of Heaven.",
+            "Blessed are those who mourn, for they shall be comforted.",
+            "Blessed are the gentle, for they shall inherit the earth.",
+            "Blessed are those who hunger and thirst for righteousness, for they shall be filled.",
+            "Blessed are the merciful, for they shall obtain mercy.",
+            "Blessed are the pure in heart, for they shall see God.",
+            "Blessed are the peacemakers, for they shall be called children of God.",
+            "Blessed are those who have been persecuted for righteousness’ sake, for theirs is the Kingdom of Heaven.",
         ]),
     ]
 }
@@ -146,6 +169,7 @@ struct ConfessionView: View {
 private struct ConfessionStep {
     let title: String
     let body: String
+    let source: String
 }
 
 private struct ExaminationSection: Identifiable {

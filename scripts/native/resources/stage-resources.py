@@ -133,7 +133,7 @@ def main() -> None:
                               "mediaEpisodes": len(catalog_obj["rosary"]["mediaEpisodes"]),
                               "worksCollections": len(json.loads((ROOT / "src/services/works/data/catalog.json").read_text())["collections"])}.items()):
         counts[key] = value
-    expected_catalogs = {"novenas": 27, "prayers": 12, "teachings": 5, "mysterySets": 4, "mediaEpisodes": 6, "worksCollections": 26}
+    expected_catalogs = {"novenas": 7, "prayers": 28, "teachings": 5, "mysterySets": 4, "mediaEpisodes": 6, "worksCollections": 26}
     if any(counts[key] != value for key, value in expected_catalogs.items()):
         raise RuntimeError(f"unexpected source catalog counts: {counts}")
     for p in DEVOTIONAL_SOURCES + ROTATION_SOURCES:

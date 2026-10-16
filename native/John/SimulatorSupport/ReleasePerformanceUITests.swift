@@ -158,8 +158,8 @@ final class ReleasePerformanceUITests: XCTestCase {
         (title: String, readings: String, prayer: String, verse: String, verseVisible: Bool) {
         let title = app.staticTexts["today-title"]
         let readings = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Today’s readings")).firstMatch
-        let morning = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "A morning offering")).firstMatch
-        let evening = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "An evening examen")).firstMatch
+        let morning = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Morning Offering")).firstMatch
+        let evening = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Night Prayer")).firstMatch
         let verse = app.staticTexts["today-verse-card"]
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {

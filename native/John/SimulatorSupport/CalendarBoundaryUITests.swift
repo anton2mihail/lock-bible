@@ -13,17 +13,17 @@ final class CalendarBoundaryUITests: XCTestCase {
     func testPrayerChoiceOnBothSidesOfLocalSeventeenHundred() throws {
         let morning = launch(date: "2026-09-13T20:59:00Z") // 16:59 in Toronto.
         assertTodayDate("Sunday, September 13", in: morning)
-        let morningPrayer = button(containing: "A morning offering", in: morning)
+        let morningPrayer = button(containing: "Morning Offering", in: morning)
         tapWhenReady(morningPrayer, in: morning)
-        assertPageTitle("Morning offering", in: morning)
+        assertPageTitle("Morning Offering", in: morning)
         morning.terminate()
 
         let evening = launch(date: "2026-09-13T21:00:00Z") // 17:00 in Toronto.
         assertTodayDate("Sunday, September 13", in: evening)
-        let eveningPrayer = button(containing: "An evening examen", in: evening)
+        let eveningPrayer = button(containing: "Night Prayer", in: evening)
         tapWhenReady(eveningPrayer, in: evening)
-        assertPageTitle("Evening examen", in: evening)
-        NSLog("CALENDAR_BOUNDARY prayer=16:59/A morning offering,17:00/An evening examen localDate=2026-09-13 zone=%@", zone)
+        assertPageTitle("Night Prayer", in: evening)
+        NSLog("CALENDAR_BOUNDARY prayer=16:59/Morning Offering,17:00/Night Prayer localDate=2026-09-13 zone=%@", zone)
     }
 
     func testOutOfCoverageDateShowsOfflineMissingReadings() throws {
