@@ -5,7 +5,8 @@
 import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-# Override with RAW_DIR / OUT_DIR, e.g. RAW_DIR=marketing/screenshots/raw-2.0 OUT_DIR=marketing/screenshots/framed-2.0
+# Override with RAW_DIR / OUT_DIR, e.g. RAW_DIR=marketing/screenshots/raw-2.0.2 OUT_DIR=marketing/screenshots/framed-2.0.2
+# 2.0.2 order: the paged Reader (John 1, Pages mode) is slide 1.
 RAW = os.environ.get("RAW_DIR", "marketing/screenshots/raw")
 OUTROOT = os.environ.get("OUT_DIR", "marketing/screenshots/framed")
 GOLD = (255, 194, 90); DIM = (181, 172, 166)
@@ -14,21 +15,21 @@ DEVICES = {
   "iphone": {
     "sizes": [(1284,2778,"iphone-6.7_1284x2778"),(1242,2688,"iphone-6.5_1242x2688"),(1320,2868,"iphone-6.9_1320x2868")],
     "slides": [
+      ("02-read","Turn the page, like a book","The complete Catholic Bible, page by page. Three editions. Free, and fully offline."),
       ("04-lockscreen","Scripture on your Lock Screen","A fresh verse every day — and all day long."),
       ("01-today","Your Catholic day at a glance","Today's readings, the Rosary, and a verse to carry with you."),
       ("05-readings","Walk with the Church year","Daily Mass readings and feast days, opened right in the Bible."),
       ("06-pray","Make room for prayer","The Rosary, novenas, everyday prayers, and Lectio Divina."),
-      ("02-read","The complete Catholic Bible","Three editions. Every book, chapter, and verse. Free, and fully offline."),
-      ("03-settings","Make it your own","Text size, line spacing, typeface and dark mode. Three editions, and a verse that rotates as often as you like."),
+      ("03-settings","Make it your own","Pages or scroll, text size, typeface and dark mode."),
     ],
   },
   "ipad": {
     "sizes": [(2048,2732,"ipad-13_2048x2732"),(2064,2752,"ipad-13_2064x2752")],
     "slides": [
+      ("ipad-02-read","Turn the page, like a book","The complete Catholic Bible, page by page. Three editions. Free, and fully offline."),
       ("ipad-01-today","Your Catholic day at a glance","Today's readings, the Rosary, and a verse to carry with you."),
-      ("ipad-02-read","The complete Catholic Bible","Three editions. Every book, chapter, and verse. Free, and fully offline."),
       ("ipad-04-pray","Make room for prayer","The Rosary, novenas, everyday prayers, and Lectio Divina."),
-      ("ipad-03-settings","Make it your own","Text size, line spacing, typeface and dark mode."),
+      ("ipad-03-settings","Make it your own","Pages or scroll, text size, typeface and dark mode."),
     ],
   },
 }

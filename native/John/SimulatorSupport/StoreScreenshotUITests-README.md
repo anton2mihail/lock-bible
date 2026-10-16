@@ -16,6 +16,10 @@ Each case is one test method. It skips unless `STORE_CASES` lists it (comma list
 
 Number 01 is free for the lock-screen widget slide. The user sets that slide up by hand. Run `read` last on a fresh seed, so Today shows no Continue reading card.
 
+The `read` case shows the paged Reader. It opens John 1 from the book list, checks that Pages mode is on (no `reader-chapter-scroll`) and that `reader-page-status` reads `John 1, page 1 of N`, and then hides the controls with a middle tap, so the image shows only the page. On iPad it first closes the sidebar with its visible toggle button, because the floating sidebar covers the left edge of the page.
+
+Run the cases in two runs: `today,daily,pray,settings` first, then `read`. In one run with `all`, XCTest runs `read` before `today` (alphabetical order), and Today then shows a Continue reading card.
+
 ## Environment (all are required)
 
 | Name | Rule |

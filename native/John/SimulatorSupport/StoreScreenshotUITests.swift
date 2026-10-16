@@ -137,6 +137,40 @@ final class StoreScreenshotUITests: XCTestCase {
         let verse = app.buttons["reader-verse-1"]
         XCTAssertTrue(verse.waitForExistence(timeout: timeout), "John 1:1 must load")
         XCTAssertTrue(verse.label.contains("In the beginning was the Word"), verse.label)
+
+        // The store slide shows the paged Reader (Pages, the default mode) on the first page of John 1.
+        XCTAssertFalse(app.scrollViews["reader-chapter-scroll"].exists, "The Reader must be in Pages mode, not Scroll")
+        let status = app.staticTexts["reader-page-status"]
+        XCTAssertTrue(status.waitForExistence(timeout: timeout), "Pages mode must show the page position")
+        let firstPage = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label BEGINSWITH %@", "John 1, page 1 of "), object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [firstPage], timeout: timeout), .completed, "Reader must show page 1 of John 1: \(status.label)")
+
+        // iPad: the floating sidebar covers the left edge of the page. Close it with its visible toggle button, so
+        // the page uses the full width, as in Apple Books.
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let sidebar = NSPredicate(format: "label CONTAINS[c] %@ OR identifier CONTAINS[c] %@", "sidebar", "sidebar")
+            let toggle = app.buttons.matching(sidebar).firstMatch
+            XCTAssertTrue(toggle.waitForExistence(timeout: timeout), "iPad: the sidebar button must exist")
+            toggle.tap()
+            let readItem = app.buttons["tab-read"]
+            let closed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false OR hittable == false"), object: readItem)
+            XCTAssertEqual(XCTWaiter.wait(for: [closed], timeout: timeout), .completed, "iPad: the sidebar must close")
+            Thread.sleep(forTimeInterval: 1.5) // The Reader lays the pages out again for the wider page.
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "label BEGINSWITH %@", "John 1, page 1 of "), object: status)], timeout: timeout),
+                .completed, "Reader must stay on page 1 of John 1: \(status.label)")
+        }
+
+        // A middle tap hides the controls and the tab bar, so the slide shows only the page, as in a book.
+        // The status element is centered on the Reader area. On iPad the sidebar moves that center to the right,
+        // so the tap uses its x position, not the window center (which could be in the page-back zone).
+        let window = app.windows.firstMatch
+        let origin = window.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+        origin.withOffset(CGVector(dx: status.frame.midX - window.frame.minX, dy: window.frame.height * 0.5)).tap()
+        let hidden = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: title)
+        XCTAssertEqual(XCTWaiter.wait(for: [hidden], timeout: timeout), .completed, "A middle tap must hide the Reader controls")
+        XCTAssertFalse(app.staticTexts["reader-selection-summary"].exists, "The middle tap must not select a verse")
+        XCTAssertTrue(status.label.hasPrefix("John 1, page 1 of "), "The middle tap must not turn the page: \(status.label)")
     }
 
     private func expectGone(_ element: XCUIElement, _ message: String) {
