@@ -59,7 +59,7 @@ private struct PrefetchedChapter {
 
     /// Brings the pages up to date with the Reader model, the layout, and any pending restore or context verse.
     func sync(reader: ReaderScreenModel, key newPaginationKey: ScripturePaginationKey,
-              location: ReaderLocation?, runtime: JohnRuntime) {
+              location: ReaderLocation?, focusVerse: Int? = nil, runtime: JohnRuntime) {
         guard let book = reader.book, let chapter = reader.chapter, let layout = reader.layout,
               let key = Self.key(for: reader), let activeRequest = reader.activeChapterRequestID else { return }
         var preserved: (key: ScriptureChapterKey, anchor: ReaderAnchor)?
@@ -103,8 +103,13 @@ private struct PrefetchedChapter {
             handledRestoreID = restore.id
             reader.clearPendingRestoreAnchor(restore.id)
         } else if let preserved, preserved.key == key {
-            // Text size, layout, or the page size changed: keep the same verse on screen.
-            page = pagination.page(for: preserved.anchor) ?? page
+            // Text size, layout, or the page size changed: keep the same verse on screen. While read aloud speaks,
+            // the spoken verse is the verse to keep.
+            if let focusVerse, let target = pagination.page(forVerse: focusVerse) {
+                page = target
+            } else {
+                page = pagination.page(for: preserved.anchor) ?? page
+            }
         }
         page = min(max(page, 0), pagination.pageCount - 1)
         let target = ScripturePageID(key: key, page: page)
@@ -222,6 +227,9 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
     let location: ReaderLocation?
     let savedRevision: Int
     let chromeVisible: Bool
+    /// True while the audio mini player shows over the bottom of the page. The pages then keep their text and
+    /// footer above it.
+    let audioBarVisible: Bool
     let onToggleChrome: () -> Void
     let onHideChrome: () -> Void
     /// A tap on a verse while a selection is active, or a VoiceOver activation.
@@ -289,7 +297,8 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
             .onChange(of: SyncState(key: paginationKey, request: model.activeChapterRequestID,
                                     hasChapter: model.chapter != nil, restore: model.pendingRestoreAnchor?.id,
                                     context: model.pendingContextIndex), initial: true) { _, _ in
-                pages.sync(reader: model, key: paginationKey, location: location, runtime: runtime)
+                pages.sync(reader: model, key: paginationKey, location: location, focusVerse: spokenIndex,
+                           runtime: runtime)
             }
         }
         .ignoresSafeArea()
@@ -312,11 +321,26 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
         .onDisappear { pages.cancelPrefetch() }
     }
 
+    /// True when the selection panel would cover the selected verses at the bottom of the page. The panel then
+    /// shows at the top of the page, as the Apple Books menu moves away from the selected text.
+    private var bottomContentAtTop: Bool {
+        guard let range = model.selectedRange, let current = pages.current,
+              current.key == ReaderPagesModel.key(for: model), let pagination = pages.currentPagination,
+              let extent = pagination.verticalExtent(ofVerses: range, onPage: current.page) else { return false }
+        let height = pagination.geometry.size.height
+        return extent.upperBound > height - Self.selectionPanelHeight && extent.lowerBound > Self.selectionPanelHeight + 40
+    }
+
+    /// About the height of the selection panel with its margins.
+    private static var selectionPanelHeight: CGFloat { 220 }
+
     private var chrome: some View {
         VStack(spacing: 0) {
             if chromeVisible { topChrome() }
+            let atTop = bottomContentAtTop
+            if atTop { bottomContent().padding(.top, 8) }
             Spacer(minLength: 0)
-            bottomContent()
+            if !atTop { bottomContent() }
             // The page position for VoiceOver and UI tests. The page footer draws the same text, so this element
             // has no visible text of its own.
             Text(pages.statusLabel)
@@ -348,14 +372,20 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
 
     private func makePaginationKey(size: CGSize) -> ScripturePaginationKey {
         let insets = Self.windowSafeAreaInsets
+        // The mini player floats over the page bottom, also when the tab bar hides. It is about 48 pt high and sits
+        // 36 pt above the bottom safe area line.
+        let bottom = audioBarVisible ? max(insets.bottom + Self.audioBarReserve, 64) : insets.bottom
         let style = ScripturePageStyle(textSize: reading.textSize, lineSpacing: reading.lineSpacing,
                                        typeface: reading.typeface, layout: reading.layout,
                                        dynamicTypeScale: dynamicTypeScale, isDark: isDark,
                                        hyphenates: model.edition != .vulgate)
-        let geometry = ScripturePageGeometry.make(size: size, safeTop: insets.top, safeBottom: insets.bottom,
+        let geometry = ScripturePageGeometry.make(size: size, safeTop: insets.top, safeBottom: bottom,
                                                   safeLeft: insets.left, safeRight: insets.right, style: style)
         return ScripturePaginationKey(style: style, geometry: geometry)
     }
+
+    /// The space that the audio mini player takes above the bottom safe area, with a small gap.
+    private static var audioBarReserve: CGFloat { 40 }
 
     /// The device safe area (status bar, Dynamic Island, home indicator). It does not include the tab bar, so the
     /// pages keep their size when the tab bar hides.

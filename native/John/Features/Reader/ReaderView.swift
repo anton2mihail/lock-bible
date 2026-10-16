@@ -1051,6 +1051,7 @@ struct ReaderView: View {
             location: pushedRequest == nil ? preferences.readerLocation : nil,
             savedRevision: runtime.savedRevision,
             chromeVisible: chromeShown,
+            audioBarVisible: AudioMiniPlayer.isActive(in: runtime),
             onToggleChrome: {
                 withAnimation(.easeInOut(duration: 0.2)) { pagesChromeVisible.toggle() }
             },
@@ -1084,6 +1085,11 @@ struct ReaderView: View {
         .simultaneousGesture(textSizePinch)
         .onAppear { JohnTips.noteUse() }
         .toolbar(chromeShown ? .visible : .hidden, for: .tabBar)
+        // A verse link opens the page of the verse without the controls, so they do not cover the verse.
+        // A middle tap shows them. While read aloud speaks this chapter, the controls stay for read aloud.
+        .onChange(of: model.contextRange, initial: true) { _, range in
+            if range != nil, spokenIndex == nil { pagesChromeVisible = false }
+        }
         .task(id: runtime.progressRevision) {
             progressSnapshot = await loadReadingProgress(runtime: runtime, translation: model.edition)
         }

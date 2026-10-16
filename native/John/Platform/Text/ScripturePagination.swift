@@ -247,6 +247,28 @@ final class ScriptureChapterPagination: @unchecked Sendable {
         return nil
     }
 
+    /// The top and the bottom of the text of some verses on a page, in page coordinates. Nil when none of the
+    /// verses has text on the page.
+    func verticalExtent(ofVerses verses: ClosedRange<Int>, onPage page: Int) -> ClosedRange<CGFloat>? {
+        var top = CGFloat.greatestFiniteMagnitude
+        var bottom = -CGFloat.greatestFiniteMagnitude
+        for band in bands(onPage: page) where band.glyphRange.length > 0 {
+            for verse in verses {
+                for range in verseRanges[verse] ?? [] {
+                    let overlap = NSIntersectionRange(range, band.characterRange)
+                    guard overlap.length > 0 else { continue }
+                    let glyphs = layoutManager.glyphRange(forCharacterRange: overlap, actualCharacterRange: nil)
+                    layoutManager.enumerateLineFragments(forGlyphRange: glyphs) { rect, _, _, _, _ in
+                        top = min(top, rect.minY - band.top)
+                        bottom = max(bottom, rect.maxY - band.top)
+                    }
+                }
+            }
+        }
+        guard top <= bottom else { return nil }
+        return (geometry.textTop + top)...(geometry.textTop + bottom)
+    }
+
     func verseIndex(atCharacter index: Int) -> Int? {
         guard index >= 0, index < storage.length else { return nil }
         return (storage.attribute(.scripturePageVerse, at: index, effectiveRange: nil) as? NSNumber)?.intValue
@@ -359,23 +381,30 @@ enum ScripturePaginator {
             while end < lines.count, lines[end].bottom - top <= height + 0.5 { end += 1 }
             if end == start { end = start + 1 }
             if end < lines.count {
-                var changed = true
-                while changed {
-                    changed = false
-                    // A heading or the chapter title goes to the next page with the text after it.
-                    if end - 1 > start, lines[end - 1].role == .heading || lines[end - 1].role == .title {
-                        end -= 1; changed = true; continue
-                    }
-                    // The first line of a paragraph is not left alone at the bottom of a page.
-                    if end - 1 > start, lines[end - 1].startsParagraph, !lines[end - 1].endsParagraph {
-                        end -= 1; changed = true; continue
+                func keepWithNext() {
+                    var changed = true
+                    while changed {
+                        changed = false
+                        // A heading or the chapter title goes to the next page with the text after it.
+                        if end - 1 > start, lines[end - 1].role == .heading || lines[end - 1].role == .title {
+                            end -= 1; changed = true; continue
+                        }
+                        // A heading has at least two lines of text after it on its page.
+                        if end - 2 > start, lines[end - 2].role == .heading || lines[end - 2].role == .title {
+                            end -= 2; changed = true; continue
+                        }
+                        // The first line of a paragraph is not left alone at the bottom of a page (an orphan).
+                        if end - 1 > start, lines[end - 1].startsParagraph, !lines[end - 1].endsParagraph {
+                            end -= 1; changed = true; continue
+                        }
                     }
                 }
-                // The last line of a paragraph is not left alone at the top of the next page.
-                if end - 1 > start, end < lines.count, lines[end].endsParagraph, !lines[end].startsParagraph,
-                   !lines[end - 1].startsParagraph || end - 2 > start {
-                    let candidate = end - 1
-                    if candidate > start, lines[candidate - 1].role == .body { end = candidate }
+                keepWithNext()
+                // The last line of a paragraph is not left alone at the top of the next page (a widow). The line
+                // before it goes too. If that leaves an orphan or a heading at the bottom, they go as well.
+                if end - 1 > start, end < lines.count, lines[end].endsParagraph, !lines[end].startsParagraph {
+                    end -= 1
+                    keepWithNext()
                 }
             }
             let first = lines[start]
@@ -467,21 +496,22 @@ private struct ScriptureBookTextBuilder {
             return paragraph
         }
 
-        // The chapter opening: the book name on chapter 1, then a large chapter number.
-        if chapter.number == 1 {
-            let size = max(11, (fontSize * 0.7).rounded())
-            let paragraph = lineStyle((size * 1.6).rounded(), alignment: .center)
-            begin(paragraph, gapBefore: 0)
-            let start = output.length
-            output.append(NSAttributedString(string: bookName.uppercased(), attributes: [
-                .font: font("SpaceGrotesk-Medium", size, fallbackWeight: .medium), .kern: size * 0.22,
-                .foregroundColor: colors.textDim, .paragraphStyle: paragraph, .scripturePageRole: role(.title),
-            ]))
-            titles.append((bookName, NSRange(location: start, length: output.length - start)))
-        }
+        // The chapter opening, as in a printed book: the page starts lower (a chapter drop), then the book name in
+        // small capitals and a large chapter number. The running head is not on this page, so the book name is on
+        // the opening page of every chapter.
+        let drop = (lineHeight * 1.5).rounded()
+        let nameSize = max(11, (fontSize * 0.7).rounded())
+        let nameParagraph = lineStyle((nameSize * 1.6).rounded() + drop, alignment: .center)
+        begin(nameParagraph, gapBefore: 0)
+        let nameStart = output.length
+        output.append(NSAttributedString(string: bookName.uppercased(), attributes: [
+            .font: font("SpaceGrotesk-Medium", nameSize, fallbackWeight: .medium), .kern: nameSize * 0.22,
+            .foregroundColor: colors.textDim, .paragraphStyle: nameParagraph, .scripturePageRole: role(.title),
+        ]))
+        titles.append((bookName, NSRange(location: nameStart, length: output.length - nameStart)))
         let numeralSize = min(fontSize * 2.8, max(fontSize * 1.4, 72)).rounded()
         let numeralParagraph = lineStyle((numeralSize * 1.18).rounded(), alignment: .center)
-        begin(numeralParagraph, gapBefore: chapter.number == 1 ? (lineHeight * 0.2).rounded() : 0)
+        begin(numeralParagraph, gapBefore: (lineHeight * 0.2).rounded())
         let numeralStart = output.length
         output.append(NSAttributedString(string: String(chapter.number), attributes: [
             .font: serif ? font("Lora-Regular", numeralSize) : font("SpaceGrotesk-Light", numeralSize, fallbackWeight: .light),

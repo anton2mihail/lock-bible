@@ -87,8 +87,11 @@ final class ReaderPagesUITests: XCTestCase {
         XCTAssertTrue(verse.waitForExistence(timeout: 6))
         XCTAssertTrue(verse.isHittable, "The linked verse must be on the page on screen")
 
-        // Go to a chapter: it opens on its first page.
+        // A verse link opens without the controls, so they do not cover the verse. A middle tap shows them.
         let title = app.buttons["reader-title"]
+        XCTAssertFalse(title.exists, "The controls must not cover the linked verse")
+        tapPage(x: 0.5, y: 0.5, in: app)
+        // Go to a chapter: it opens on its first page.
         XCTAssertTrue(title.waitForExistence(timeout: 4))
         title.tap()
         XCTAssertTrue(app.staticTexts["Go to"].waitForExistence(timeout: 8))
@@ -236,7 +239,18 @@ final class ReaderPagesUITests: XCTestCase {
         toggle.tap()
         for _ in 0..<lastOnFirstPage { next.tap() }
         _ = waitForPosition(in: app) { $0.page == 2 }
-        app.buttons["reader-read-aloud-stop"].tap()
+        // With the controls hidden, the tab bar hides, but the mini player stays. No line of text is under it.
+        if app.buttons["reader-title"].exists { tapPage(x: 0.5, y: 0.5, in: app) }
+        XCTAssertTrue(app.buttons["reader-title"].waitForNonExistence(timeout: 4))
+        let mini = app.descendants(matching: .any).matching(identifier: "audio-mini-player").firstMatch
+        XCTAssertTrue(mini.waitForExistence(timeout: 6))
+        let textBottom = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "reader-verse-"))
+            .allElementsBoundByIndex.filter(\.isHittable).map(\.frame.maxY).max() ?? 0
+        XCTAssertLessThanOrEqual(textBottom, mini.frame.minY, "The page text must end above the mini player")
+        tapPage(x: 0.5, y: 0.5, in: app)
+        let stop = app.buttons["reader-read-aloud-stop"]
+        XCTAssertTrue(stop.waitForExistence(timeout: 4))
+        stop.tap()
     }
 
     // MARK: Helpers
