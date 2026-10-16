@@ -86,7 +86,32 @@ on Android. Automatic cloud backup and device transfer are disabled. Use Saved e
 A release build needs the owner's signing key before store distribution.
 No signing key or store credentials are stored in this repo.
 
-## Checks completed
+## Bible reader pages
+
+The Bible reader turns pages by default, as Google Play Books does.
+Reading choices has a "Reading mode" choice: Pages or Scroll.
+Scroll keeps the earlier chapter scroll view. The app saves the choice
+with the other reading preferences.
+
+In Pages mode, `PagedReader.kt` measures each chapter one time for the current
+page size, text size, line spacing, typeface, verse numbers, and layout.
+Measurement runs off the main thread. The pages draw clipped parts of one text
+layout, so the line breaks are the same on each page. `PageMath.kt` holds the
+page arithmetic. JVM tests check it.
+
+- Tap the left third to go back one page. Tap the right third to go forward.
+- Tap the middle third to show or hide the top and bottom bars.
+- Swipe past the last page to open the next chapter or book. Swipe back to
+  return to the last page of the previous chapter.
+- Touch and hold a verse to select it. While a selection is active, tap a
+  second verse to select a range.
+- The saved position is a verse and a character offset in that verse. Thus a
+  change of text size, screen size, or rotation keeps the same text visible.
+- TalkBack reads each verse part on a page. Each verse has Select, Next page,
+  and Previous page actions.
+- Large landscape screens show two pages side by side.
+
+
 
 On 2026-10-13, the debug APK passed 14 device tests on the existing API 36
 emulator before the final release privacy changes. These cover all five tabs, passage links, bookmarks, written and drawn

@@ -86,10 +86,14 @@ private val tabs=listOf(JohnTab("Today",Icons.Outlined.WbSunny),JohnTab("Read",I
     }
     BackHandler(path.isNotEmpty(),onBack=back)
     val c=LocalJohnColors.current
+    // The paged reader fills the screen, as in Play Books. Back returns to the tabs.
+    val readerChrome=remember { ReaderChrome() }
+    val immersive=readerChrome.immersive
+    CompositionLocalProvider(LocalReaderChrome provides readerChrome) {
     BoxWithConstraints(Modifier.fillMaxSize().background(c.background).windowInsetsPadding(WindowInsets.safeDrawing)) {
         val wide=maxWidth>=840.dp
         Row(Modifier.fillMaxSize()) {
-            if(wide) NavigationRail(containerColor=c.card) {
+            if(wide && !immersive) NavigationRail(containerColor=c.card) {
                 Spacer(Modifier.height(20.dp))
                 tabs.forEachIndexed { index,tab -> NavigationRailItem(selected=selected==index,onClick={if(index==selected)backToRoot(index,paths) { paths=it } else selected=index},icon={Icon(tab.icon,tab.title)},label={Text(tab.title,fontFamily=SpaceGrotesk)}) }
             }
@@ -120,13 +124,14 @@ private val tabs=listOf(JohnTab("Today",Icons.Outlined.WbSunny),JohnTab("Read",I
                     }
                 }
                 ReadAloudMiniPlayer(store,navigate)
-                if(!wide) NavigationBar(containerColor=c.card,tonalElevation=0.dp,windowInsets=WindowInsets(0,0,0,0)) {
+                if(!wide && !immersive) NavigationBar(containerColor=c.card,tonalElevation=0.dp,windowInsets=WindowInsets(0,0,0,0)) {
                     tabs.forEachIndexed { index,tab ->
                         NavigationBarItem(selected=selected==index,onClick={ if(index==selected)backToRoot(index,paths) {paths=it} else selected=index },icon={Icon(tab.icon,tab.title)},label={Text(tab.title,fontFamily=SpaceGrotesk,fontSize=11.sp)},colors=NavigationBarItemDefaults.colors(selectedIconColor=c.tint,selectedTextColor=c.tint,indicatorColor=c.background,unselectedIconColor=c.textDim,unselectedTextColor=c.textDim))
                     }
                 }
             }
         }
+    }
     }
 }
 private fun backToRoot(index:Int,paths:List<List<String>>,set:(List<List<String>>)->Unit) { set(paths.mapIndexed { i,p -> if(i==index)emptyList() else p }) }
