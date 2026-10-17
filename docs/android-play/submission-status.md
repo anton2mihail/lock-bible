@@ -114,3 +114,18 @@ No foreground-service declaration video was requested in this submission flow.
 Private signing files are outside the repository in
 `~/.local/share/john-android/`. Do not commit or upload them as store assets.
 The owner must keep a secure backup of the upload key and its configuration.
+
+## Update 2026-10-17: version 1.0.1 (2)
+
+- Signed bundle: `~/.local/share/john-android/releases/com.john.bible-2-e4cd468a5d0a.aab`
+  (version code 2, version name 1.0.1). `build-bundle.py` verified it.
+- Content: the paged Bible reader (Pages / Scroll choice), real public-domain
+  paintings only, and the new icon (a detail of the 6th-century Christ
+  Pantocrator at Sinai).
+- Store listing: new icon, the plain Bloemaert feature graphic (no text), and the
+  six screenshots in `assets/play-store/screenshots/` in file order (paged reader
+  first). AI asset declaration: "Don't label assets".
+- The owner dragged the bundle into Play Console. Four changes were sent:
+  production 2 (1.0.1) full rollout, app icon, phone screenshots, feature graphic.
+  This restarted the review that started on 2026-10-13, so 1.0.1 replaces 1.0.0.
+- Warning shown (not blocking): no native debug symbols, as for 1.0.0.
