@@ -242,6 +242,8 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
 
     @Environment(JohnRuntime.self) private var runtime
     @State private var pages = ReaderPagesModel()
+    /// The side safe area of this view. On iPad it includes a floating sidebar, which the window insets do not.
+    @State private var sideInsets = EdgeInsets()
 
     private var colors: ScripturePageColors { ScripturePageColors(isDark: isDark) }
 
@@ -261,7 +263,7 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let paginationKey = makePaginationKey(size: proxy.size)
+            let paginationKey = makePaginationKey(size: proxy.size, sideInsets: sideInsets)
             Group {
                 if let current = pages.current, pages.pagination(current.key) != nil {
                     ScripturePageBook(
@@ -302,6 +304,9 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
             }
         }
         .ignoresSafeArea()
+        .background {
+            Color.clear.onGeometryChange(for: EdgeInsets.self, of: { $0.safeAreaInsets }) { sideInsets = $0 }
+        }
         .overlay { chrome }
         .onChange(of: DecorationState(highlights: model.highlightColors, selection: model.selectedRange,
                                       context: spokenIndex.map { $0...$0 } ?? model.contextRange)) { _, _ in
@@ -370,8 +375,10 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
         }
     }
 
-    private func makePaginationKey(size: CGSize) -> ScripturePaginationKey {
+    private func makePaginationKey(size: CGSize, sideInsets: EdgeInsets) -> ScripturePaginationKey {
         let insets = Self.windowSafeAreaInsets
+        let left = max(insets.left, sideInsets.leading)
+        let right = max(insets.right, sideInsets.trailing)
         // The mini player floats over the page bottom, also when the tab bar hides. It is about 48 pt high and sits
         // 36 pt above the bottom safe area line.
         let bottom = audioBarVisible ? max(insets.bottom + Self.audioBarReserve, 64) : insets.bottom
@@ -380,7 +387,7 @@ struct ReaderPagedView<TopChrome: View, BottomContent: View>: View {
                                        dynamicTypeScale: dynamicTypeScale, isDark: isDark,
                                        hyphenates: model.edition != .vulgate)
         let geometry = ScripturePageGeometry.make(size: size, safeTop: insets.top, safeBottom: bottom,
-                                                  safeLeft: insets.left, safeRight: insets.right, style: style)
+                                                  safeLeft: left, safeRight: right, style: style)
         return ScripturePaginationKey(style: style, geometry: geometry)
     }
 
