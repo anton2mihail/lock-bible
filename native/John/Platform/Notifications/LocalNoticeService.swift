@@ -21,6 +21,7 @@ public final class LocalNoticeService {
     private let timeZone: @MainActor () -> TimeZone
     private let readCommitted: StateReader
     private let readCalendars: CalendarReader
+    private let readSaints: @MainActor () async throws -> [SaintsCalendar]
     private let commit: StateCommitter
     private let readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)?
     private let readExcerpt: (@Sendable () async -> String?)?
@@ -34,7 +35,9 @@ public final class LocalNoticeService {
                 readCalendars: @escaping CalendarReader,
                 commit: @escaping StateCommitter,
                 readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)? = nil,
-                readExcerpt: (@Sendable () async -> String?)? = nil) {
+                readExcerpt: (@Sendable () async -> String?)? = nil,
+                readSaints: @escaping @MainActor () async throws -> [SaintsCalendar] = { [] }) {
+        self.readSaints = readSaints
         self.readExcerpt = readExcerpt
         self.readReadingReminder = readReadingReminder
         self.center = center
@@ -57,16 +60,17 @@ public final class LocalNoticeService {
 
             let pending = try await center.pendingRequests()
             let calendars = settings.enabled ? try await readCalendars() : nil
+            let saints = settings.enabled ? try await readSaints() : []
             let zone = timeZone()
             let instant = now()
             guard TimeZone(identifier: zone.identifier) != nil else { throw LocalNoticeError.invalidTimeZone }
-            let plan = try calendars.map { try makeCalendarPlan(settings, calendars: $0, zone: zone, current: instant) }
+            let plan = try calendars.map { try makeCalendarPlan(settings, calendars: $0, saints: saints, zone: zone, current: instant) }
             let desired = try plan.map { try capacityLimited($0, pending: pending, enabled: settings.enabled) } ?? []
             try await reconcileAndCommit(
                 desired: desired,
                 pending: pending,
                 owned: { $0.identifier.hasPrefix(Self.calendarPrefix) },
-                preserveSameIdentifier: true,
+                preserveSameIdentifier: false,
                 restoreOnlyFutureCalendarRequests: true,
                 operation: "Calendar notification update",
                 mutation: committed.calendarNotifications == settings ? nil : .setCalendarNotifications(settings)
@@ -177,17 +181,18 @@ public final class LocalNoticeService {
                         throw LocalNoticeError.permissionDenied("Allow notifications in your device settings to receive calendar events.")
                     }
                     let calendars = try await readCalendars()
+                    let saints = try await readSaints()
                     pending = try await center.pendingRequests()
                     let zone = timeZone()
                     let instant = now()
-                    let plan = try makeCalendarPlan(calendarSettings, calendars: calendars, zone: zone, current: instant)
+                    let plan = try makeCalendarPlan(calendarSettings, calendars: calendars, saints: saints, zone: zone, current: instant)
                     desired = try capacityLimited(plan, pending: pending, enabled: true)
                 } else {
                     pending = try await center.pendingRequests()
                     desired = []
                 }
                 try await reconcileAndCommit(desired: desired, pending: pending,
-                    owned: { $0.identifier.hasPrefix(Self.calendarPrefix) }, preserveSameIdentifier: true,
+                    owned: { $0.identifier.hasPrefix(Self.calendarPrefix) }, preserveSameIdentifier: false,
                     restoreOnlyFutureCalendarRequests: true, operation: "Calendar refresh", mutation: nil)
             } catch {
                 failures.append("Calendar: \(error.localizedDescription)")
@@ -269,6 +274,7 @@ public final class LocalNoticeService {
 
     private func makeCalendarPlan(_ settings: CalendarNotificationSettings,
                                   calendars: (ReadingsCalendar, CelebrationsCalendar),
+                                  saints: [SaintsCalendar],
                                   zone: TimeZone, current: Date) throws -> LocalNoticePlan {
         guard settings.enabled else { return LocalNoticePlan(requests: []) }
         var output: [NoticeRequest] = []
@@ -282,10 +288,14 @@ public final class LocalNoticeService {
             components.timeZone = zone
             guard let date = calendar.date(from: components) else { continue }
             guard date > current else { continue }
-            guard let celebration = CompanionCalendar.celebration(for: date, from: calendars.1, timeZone: zone) else { continue }
+            let celebration = CompanionCalendar.celebration(for: date, from: calendars.1, timeZone: zone)
+            let hasSaints = saints.contains { !$0.entries(on: date, timeZone: zone).isEmpty }
+            guard celebration != nil || hasSaints else { continue }
             let readings = CompanionCalendar.readings(for: date, from: calendars.0, timeZone: zone)
             let gospel = readings?.readings.first(where: { $0.label == "Gospel" })?.reference
-            let body = if let gospel, !gospel.isEmpty {
+            let body = if hasSaints {
+                SaintsNotice.body(calendars: saints, date: date, timeZone: zone, gospel: gospel)
+            } else if let gospel, !gospel.isEmpty {
                 "Today’s Gospel: \(gospel). Open your daily readings."
             } else {
                 "Take a moment with today’s Catholic calendar and readings."
@@ -294,7 +304,7 @@ public final class LocalNoticeService {
             guard milliseconds.isFinite, milliseconds >= Double(Int64.min), milliseconds < Double(Int64.max) else { continue }
             output.append(NoticeRequest(
                 identifier: Self.calendarPrefix + String(Int64(milliseconds)),
-                title: readings?.title ?? celebration.title,
+                title: readings?.title ?? celebration?.title ?? "Today’s saints",
                 body: body,
                 userInfo: ["url": "/daily?date=\(CompanionCalendar.dateKey(date, timeZone: zone))"],
                 trigger: .calendarDate(date, timeZoneIdentifier: zone.identifier)

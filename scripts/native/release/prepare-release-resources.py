@@ -63,8 +63,8 @@ def asset_contents(name: str) -> bytes:
         result = {"images": images, "info": {"author": "xcode", "version": 1}}
     else:
         result = {"images": [
-            {"idiom": "universal", "filename": "image.png", "scale": "1x"},
-            {"idiom": "universal", "filename": "image@2x.png", "scale": "2x"},
+            {"idiom": "universal", "scale": "1x"},
+            {"idiom": "universal", "scale": "2x"},
             {"idiom": "universal", "filename": "image@3x.png", "scale": "3x"},
         ], "info": {"author": "xcode", "version": 1}}
     return (json.dumps(result, indent=2) + "\n").encode()
@@ -100,21 +100,22 @@ def main() -> None:
     ]), "privacy-manifest-widget"))
 
     icon_sources = [
-        ("App-Icon-1024x1024@1x.png", "ios/LockBible/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png"),
-        ("App-Icon-dark-1024x1024@1x.png", "ios/LockBible/Images.xcassets/AppIcon.appiconset/App-Icon-dark-1024x1024@1x.png"),
-        ("App-Icon-tinted-1024x1024@1x.png", "ios/LockBible/Images.xcassets/AppIcon.appiconset/App-Icon-tinted-1024x1024@1x.png"),
+        ("App-Icon-1024x1024@1x.png", "assets/artwork/john-icon.png"),
+        ("App-Icon-dark-1024x1024@1x.png", "assets/artwork/john-icon-dark.png"),
+        ("App-Icon-tinted-1024x1024@1x.png", "assets/artwork/john-icon-tinted.png"),
     ]
     rows.append(write("Assets.xcassets/Contents.json", b'{\n  "info" : { "author" : "xcode", "version" : 1 }\n}\n', "asset-catalog-index"))
     rows.append(write("Assets.xcassets/AppIcon.appiconset/Contents.json", asset_contents("AppIcon"), "asset-catalog-metadata"))
     for basename, source in icon_sources:
         rows.append(copy(source, f"Assets.xcassets/AppIcon.appiconset/{basename}", "canonical-app-icon"))
     rows.append(write("Assets.xcassets/SplashScreenLogo.imageset/Contents.json", asset_contents("SplashScreenLogo"), "asset-catalog-metadata"))
-    for basename in ("image.png", "image@2x.png", "image@3x.png"):
-        rows.append(copy(f"ios/LockBible/Images.xcassets/SplashScreenLogo.imageset/{basename}",
-                         f"Assets.xcassets/SplashScreenLogo.imageset/{basename}", "canonical-launch-mark"))
-    rows.append(copy("ios/LockBible/Images.xcassets/SplashScreenBackground.colorset/Contents.json",
+    # The canonical 360-pixel image is 120 points at 3x. Asset catalogs scale it
+    # for lower-density screens without generated Expo project files.
+    rows.append(copy("assets/artwork/john-splash.png",
+                     "Assets.xcassets/SplashScreenLogo.imageset/image@3x.png", "canonical-launch-mark"))
+    rows.append(copy("native/John/Resources/Launch/SplashScreenBackground.colorset/Contents.json",
                      "Assets.xcassets/SplashScreenBackground.colorset/Contents.json", "canonical-launch-color"))
-    rows.append(copy("ios/LockBible/SplashScreen.storyboard", "Launch/SplashScreen.storyboard", "canonical-launch-layout"))
+    rows.append(copy("native/John/Resources/Launch/SplashScreen.storyboard", "Launch/SplashScreen.storyboard", "canonical-launch-layout"))
 
     font_files = [
         ("Lora_400Regular.ttf", "node_modules/@expo-google-fonts/lora/400Regular/Lora_400Regular.ttf"),

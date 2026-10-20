@@ -69,6 +69,7 @@ struct CalendarReadingsView: View {
                 openOfficialReadings()
             }
             ContentMutedText(text: "USCCB reading selections. Transferred feasts and optional celebrations may differ at your parish.")
+            SaintsDaySection(day: day, timeZone: timeZone) { onNavigate(.saints) }
 
             ContentPanel {
                 ContentSectionTitle(title: "Listen to the Word",

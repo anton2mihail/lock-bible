@@ -83,6 +83,8 @@ struct DestinationView: View {
         case .prayerHome:
             PrayerHomeView(timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
                            onNavigate: navigate)
+        case .saints:
+            SaintsCalendarView()
         case .daily(let dateKey):
             CalendarReadingsView(sunday: false, initialDateKey: dateKey,
                                  timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },

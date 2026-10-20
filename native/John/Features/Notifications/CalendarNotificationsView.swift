@@ -29,7 +29,7 @@ struct CalendarNotificationsView: View {
 
     var body: some View {
         ContentPage(title: "A day in the Church", eyebrow: "Calendar notifications",
-                    subtitle: "A gentle morning notice for today’s saint, feast, or liturgical observance, with the Gospel reference when available.") {
+                    subtitle: "One daily notice with saints from Vatican News and the Ruthenian Byzantine Catholic calendar, plus the Roman Rite Gospel reference when available.") {
             VStack(alignment: .leading, spacing: 24) {
                 Text("Notify me each day").font(JohnTypography.sans(20, weight: .medium)).foregroundStyle(colors.text)
                 Toggle("Enable calendar notifications", isOn: Binding(
@@ -75,7 +75,7 @@ struct CalendarNotificationsView: View {
                         .accessibilityIdentifier("calendar-notifications-time-picker")
                 }
 
-                Text("United States · Roman Rite. Parish calendars and transferred feasts can differ. Each notice opens that date’s readings.")
+                Text("Saints: Vatican News and Ruthenian Byzantine Catholic, United States, Gregorian dates. Readings: United States · Roman Rite. Local calendars and transferred feasts can differ. Each notice opens that date’s saints and readings.")
                     .font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
                 Text("Notices are scheduled on your phone up to a month ahead. Open John 1:1 at least monthly to keep them coming, and after changing time zones to update the delivery time.")
                     .font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)

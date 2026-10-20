@@ -1,0 +1,57 @@
+{
+  "bundle": "com.john.bible-3-fc28d7f79e0d.aab",
+  "sha256": "fc28d7f79e0dda8be84077f3996a7fcd1b1411ac9b76c3faa26d155f13b11530",
+  "sizeBytes": 90571378,
+  "applicationId": "com.john.bible",
+  "versionCode": 3,
+  "versionName": "1.0.2",
+  "minSdk": 26,
+  "targetSdk": 36,
+  "devotionalCatalogSha256": "4da66b092ff01d3dd7897425e17ad46cb5d82cf82716946e0e867eb8cfcec484",
+  "signature": {
+    "verifiedEntries": 492,
+    "certificateSha256": "b26e8a87d19897aebc8f7ec03504f0b7337ae58bc0a3e900cf088e9d4b168e47"
+  },
+  "bundletoolManifest": "passed",
+  "nativeLibraries": [
+    {
+      "entry": "base/lib/arm64-v8a/libandroidx.graphics.path.so",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "requires16k": true
+    },
+    {
+      "entry": "base/lib/armeabi-v7a/libandroidx.graphics.path.so",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "requires16k": false
+    },
+    {
+      "entry": "base/lib/x86/libandroidx.graphics.path.so",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "requires16k": false
+    },
+    {
+      "entry": "base/lib/x86_64/libandroidx.graphics.path.so",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "requires16k": true
+    }
+  ],
+  "nativePageSize": "ELF checks passed",
+  "artifactVerified": true,
+  "storeSubmissionChecksComplete": false
+}

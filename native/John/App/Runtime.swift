@@ -1200,7 +1200,13 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                 }
             },
             readReadingReminder: { [weak self] in await self?.progressStore?.data().reminder },
-            readExcerpt: { [weak self] in await self?.readingExcerpt() }
+            readExcerpt: { [weak self] in await self?.readingExcerpt() },
+            readSaints: { [weak self] in
+                guard let repository = self?.companionRepository else {
+                    throw CoreError.missingResource("saints calendars")
+                }
+                return try await repository.saintsCalendars()
+            }
         )
     }
 

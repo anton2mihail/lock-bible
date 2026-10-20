@@ -51,7 +51,7 @@ def sha256(path: Path) -> str:
 
 
 def relative(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
+    return path.relative_to(ROOT).as_posix() if path.is_relative_to(ROOT) else str(path)
 
 
 def copy_file(source_rel: str, output_rel: str, target: str, records: list[dict]) -> None:
@@ -121,6 +121,8 @@ def main() -> None:
         ("src/services/works/data/catalog.json", "App/Catalogs/works-catalog.json"),
         ("src/services/companion/data/readings-us.json", "App/Calendar/readings-us.json"),
         ("src/services/companion/data/celebrations-us.json", "App/Calendar/celebrations-us.json"),
+        ("src/services/companion/data/saints-vatican.json", "App/Calendar/saints-vatican.json"),
+        ("src/services/companion/data/saints-byzantine.json", "App/Calendar/saints-byzantine.json"),
     ):
         copy_file(source, target, "app", records)
 

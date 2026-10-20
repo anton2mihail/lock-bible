@@ -59,9 +59,16 @@ class JohnReminderReceiver:BroadcastReceiver() {
                 val repo=JohnRepository(context)
                 val store=com.john.bible.data.JohnStore(context)
                 val chapter=store.todayJohnChapters().firstOrNull() ?: 1
-                val title=when(kind) { "calendar-notifications" -> "A day in the Church"; "rosary-reminder" -> "Make room for prayer"; else -> "Your reading for today" }
+                val title=when(kind) { "calendar-notifications" -> repo.celebrations(date)?.optString("title")?.takeIf { it.isNotBlank() } ?: "Today’s saints"; "rosary-reminder" -> "Make room for prayer"; else -> "Your reading for today" }
                 val body=when(kind) {
-                    "calendar-notifications" -> repo.celebrations(date)?.optString("title")?.takeIf { it.isNotBlank() } ?: "Open today’s readings."
+                    "calendar-notifications" -> {
+                        val readings = repo.readings(date)?.optJSONArray("readings")
+                        val gospel = readings?.let { array ->
+                            (0 until array.length()).map { array.getJSONObject(it) }
+                                .firstOrNull { it.optString("label") == "Gospel" }?.optString("reference")
+                        }
+                        com.john.bible.data.saintsNoticeBody(repo.saintsCalendars(), LocalDate.parse(date), gospel)
+                    }
                     "rosary-reminder" -> "Take a little time to pray the Rosary."
                     else -> repo.chapter(store.edition,"JHN",chapter).firstOrNull()?.let { "John $chapter:1 — ${it.text}" } ?: "Continue reading the Gospel of John."
                 }

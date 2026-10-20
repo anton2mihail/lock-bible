@@ -48,6 +48,11 @@ struct CompanionTodayView: View {
                 }
                 .todayZoomSource(.daily(dateKey: dateKey), cornerRadius: 18)
                 ContentMutedText(text: CompanionCalendar.label)
+                ContentActionRow(title: "Saints & feast days",
+                                 subtitle: "Vatican News · Byzantine Catholic · Lives of the saints") {
+                    onNavigate(.saints)
+                }
+                .accessibilityIdentifier("today-saints")
 
                 ReadingTodayCard(now: now, timeZone: timeZone)
 

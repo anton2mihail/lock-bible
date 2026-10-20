@@ -1,0 +1,24 @@
+{
+  "archiveSignaturesVerified": true,
+  "targets": [
+    {
+      "bundle": "John.app",
+      "applicationIdentifier": "QZ44N522NQ.com.nrsv.verse",
+      "team": "QZ44N522NQ",
+      "appGroups": [
+        "group.com.nrsv.verse"
+      ]
+    },
+    {
+      "bundle": "PlugIns/JohnWidget.appex",
+      "applicationIdentifier": "QZ44N522NQ.com.nrsv.verse.widget",
+      "team": "QZ44N522NQ",
+      "appGroups": [
+        "group.com.nrsv.verse"
+      ]
+    }
+  ],
+  "appStoreUpload": "succeeded",
+  "version": "2.0.3",
+  "build": "27"
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23501" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="SplashScreenViewController">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23500"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <scene sceneID="SplashScreenScene">
+            <objects>
+                <viewController storyboardIdentifier="SplashScreenViewController" id="SplashScreenViewController" sceneMemberID="viewController">
+                    <view key="view" userInteractionEnabled="NO" contentMode="scaleToFill" id="SplashScreenView">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="SplashScreenLogo" translatesAutoresizingMaskIntoConstraints="NO" id="SplashScreenLogoView">
+                                <rect key="frame" x="136.5" y="366" width="120" height="120"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="SplashLogoWidth"/>
+                                    <constraint firstAttribute="height" constant="120" id="SplashLogoHeight"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="SplashSafeArea"/>
+                        <color key="backgroundColor" name="SplashScreenBackground"/>
+                        <constraints>
+                            <constraint firstItem="SplashScreenLogoView" firstAttribute="centerX" secondItem="SplashScreenView" secondAttribute="centerX" id="SplashLogoCenterX"/>
+                            <constraint firstItem="SplashScreenLogoView" firstAttribute="centerY" secondItem="SplashScreenView" secondAttribute="centerY" id="SplashLogoCenterY"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SplashFirstResponder" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="SplashScreenLogo" width="120" height="120"/>
+        <namedColor name="SplashScreenBackground">
+            <color red="0.2156862745" green="0.06274509804" blue="0.1490196078" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

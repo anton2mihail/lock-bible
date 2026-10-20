@@ -4,6 +4,7 @@ import JohnCore
 enum CompanionRoute: Hashable, Sendable {
     case prayerHome
     case daily(dateKey: String)
+    case saints
     case sunday
     case citationContext(reference: String)
     case prayers

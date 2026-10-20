@@ -101,6 +101,8 @@ def main() -> None:
         ("src/services/works/data/catalog.json", "Catalogs/works-catalog.json"),
         ("src/services/companion/data/readings-us.json", "Calendar/readings-us.json"),
         ("src/services/companion/data/celebrations-us.json", "Calendar/celebrations-us.json"),
+        ("src/services/companion/data/saints-vatican.json", "Calendar/saints-vatican.json"),
+        ("src/services/companion/data/saints-byzantine.json", "Calendar/saints-byzantine.json"),
         ("assets/CREDITS.md", "Credits/CREDITS.md"),
         ("assets/READINGS-LICENSE.txt", "Credits/READINGS-LICENSE.txt"),
         ("assets/ROMCAL-LICENSE.txt", "Credits/ROMCAL-LICENSE.txt"),

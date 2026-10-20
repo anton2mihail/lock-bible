@@ -147,6 +147,26 @@ class JohnRepository(context: Context) : AutoCloseable {
     fun commentary(bookCode: String, chapter: Int): List<JSONObject> = catalog().optJSONObject("commentary")?.optJSONObject(bookCode)?.optJSONArray(chapter.toString())?.objects() ?: emptyList()
     fun readings(date: String): JSONObject? = jsonObject("Calendar/readings-us.json").optJSONObject(date)
     fun celebrations(date: String): JSONObject? = jsonObject("Calendar/celebrations-us.json").optJSONObject(date)
+    @Synchronized
+    fun saintsCalendars(): List<SaintsCalendar> = listOf("vatican", "byzantine").map { tradition ->
+        val data = jsonObject("Calendar/saints-$tradition.json")
+        require(data.getInt("schemaVersion") == 1 && data.getString("tradition") == tradition)
+        val hosts = if (tradition == "vatican") setOf("www.vaticannews.va", "www.vatican.va") else setOf("mci.archpitt.org")
+        val entries = data.getJSONArray("entries").objects().map { entry ->
+            val source = entry.getString("sourceURL")
+            val uri = java.net.URI(source)
+            require(uri.scheme == "https" && uri.host in hosts)
+            SaintCommemoration(entry.getString("id"), entry.getString("monthDay"),
+                entry.getString("name"), entry.getString("excerpt"), source,
+                entry.optString("summary").takeIf { it.isNotBlank() },
+                entry.optString("sourceLanguage").takeIf { it.isNotBlank() },
+                entry.optString("observanceNote").takeIf { it.isNotBlank() }, entry.getString("calendarURL"))
+        }
+        require(entries.map { it.id }.toSet().size == entries.size)
+        require(data.getJSONArray("checkedDates").length() == if (tradition == "vatican") 365 else 366)
+        SaintsCalendar(tradition, data.getString("sourceName"), data.getString("retrievedOn"),
+            data.getString("coverage"), entries)
+    }
     fun calendarCoverage(): Pair<String, String> {
         val keys = jsonObject("Calendar/readings-us.json").keys().asSequence().toList().sorted()
         return keys.first() to keys.last()

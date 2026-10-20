@@ -138,6 +138,7 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
     JohnPage("A little closer to God.", "JOHN 1:1  /  ${dateText(now,"EEEE, MMMM d")}", "Scripture for your day. Space for your soul.") {
         JohnArtCard(seasonArt(season), title, "${seasonName(season)} · Today’s readings") { navigate("daily/$now") }
         JohnText("United States · Roman Rite", dim=true, size=14)
+        JohnRow("Saints & feast days", "Vatican News · Byzantine Catholic · Lives of the saints") { navigate("saints") }
         TodayReadingCard(repo,store,navigate)
         JohnText("Make room for prayer", size=20)
         JohnRow("Pray the Rosary", mysteryTitle(set)) { navigate("rosary/$set") }
@@ -242,6 +243,7 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
     val catalog=remember(repo) { repo.content() }
     val parts=route.split('/')
     when(parts[0]) {
+        "saints" -> SaintsScreen(repo, back)
         "daily", "calendar", "sunday" -> CalendarScreen(parts.getOrNull(1),parts[0]=="sunday",repo,store,navigate,back)
         "prayers" -> PrayerLibrary(catalog,store,navigate,back)
         "prayer" -> PrayerDetail(parts.getOrNull(1).orEmpty(),catalog,store,navigate,back)
@@ -461,6 +463,7 @@ private fun CalendarScreen(initialDate:String?,isSunday:Boolean,repo:JohnReposit
         }
         JohnArtCard(seasonArt(season),entry?.str("title")?.ifBlank { null } ?: celebration?.str("title")?.ifBlank { null } ?: seasonName(season),dateText(day,"EEEE, MMMM d")) { runCatching { uri.openUri(com.john.bible.data.CompanionCalendar.readingsURL(day)) } }
         JohnText("USCCB reading selections. Transferred feasts and optional celebrations may differ at your parish.",dim=true,size=14)
+        SaintsDaySection(repo, day) { navigate("saints") }
         JohnPanel {
             JohnText("Listen to the Word",size=20)
             JohnText("Open each reading in its biblical context. Scripture uses the offline WEB-CE edition; wording and verse divisions may differ from those proclaimed at Mass.",dim=true,size=14)

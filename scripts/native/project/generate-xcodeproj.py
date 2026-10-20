@@ -43,7 +43,7 @@ source_files = {
     "Features/Reader": ["ReaderScreenModel.swift", "ReaderView.swift", "GoToView.swift", "ReaderSelectionToolbar.swift"],
     "Features/Companion": ["CompanionRoute.swift", "ContentPage.swift", "CompanionTodayView.swift", "TeachingView.swift"],
     "Features/Prayers": ["PrayerHomeView.swift", "PrayerLibraryView.swift", "PrayerDetailView.swift"],
-    "Features/Calendar": ["CalendarReadingsView.swift", "CitationContextView.swift"],
+    "Features/Calendar": ["CalendarReadingsView.swift", "CitationContextView.swift", "SaintsCalendarView.swift"],
     "Features/Guides": ["ConfessionView.swift", "LectioView.swift", "NovenaView.swift", "RosaryGuideView.swift", "RosaryHomeView.swift"],
     "Features/Sharing": ["ScriptureCardView.swift"],
     "Features/Works": ["WorksRoute.swift", "WorksSupport.swift", "WorksLibraryView.swift", "WorksCollectionView.swift", "WorkReaderView.swift", "WorksChapterCommentaryView.swift"],

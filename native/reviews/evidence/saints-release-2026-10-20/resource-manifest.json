@@ -1,0 +1,194 @@
+{
+  "formatVersion": 1,
+  "sourceCommit": "2b8de2936d7e74304738ab8f0a1314bd311ab0a9",
+  "generator": "scripts/native/release/prepare-release-resources.py",
+  "generatorSHA256": "eaf0306bbe698486a6983549f22e9699294bc6170496af3b64a5a69e764af5cd",
+  "resources": [
+    {
+      "source": "native/John/Resources/Feather.ttf",
+      "staged": "App/Feather.ttf",
+      "sha256": "02b88ead91ade5710d7ca18edb43a6965a71d93732c06f290cc07a6dd249e987",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/lora/400Regular/Lora_400Regular.ttf",
+      "staged": "App/Fonts/Lora_400Regular.ttf",
+      "sha256": "7ed00e7c9cdf16ab7e2fd2361fe45d4f0b61263cd60aae398b27b7ee08108827",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/lora/500Medium/Lora_500Medium.ttf",
+      "staged": "App/Fonts/Lora_500Medium.ttf",
+      "sha256": "fd57ed9e3945de65de667f1919c2978b79937a13d246508fc4f64bb562e53196",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/space-grotesk/300Light/SpaceGrotesk_300Light.ttf",
+      "staged": "App/Fonts/SpaceGrotesk_300Light.ttf",
+      "sha256": "4ea1b1687f9c1994228e842ef35941c72f125e97da80dacdcbecd9184d0ae185",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/space-grotesk/400Regular/SpaceGrotesk_400Regular.ttf",
+      "staged": "App/Fonts/SpaceGrotesk_400Regular.ttf",
+      "sha256": "637578d47b0e70e02b3eb5056847dd9add17bd683234d28f5d11a6cf66ff2725",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/space-grotesk/500Medium/SpaceGrotesk_500Medium.ttf",
+      "staged": "App/Fonts/SpaceGrotesk_500Medium.ttf",
+      "sha256": "d8135bce6603398f3d0cdb478a018d7fa869b0168d037a9408cad23e030bfa7a",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/space-grotesk/600SemiBold/SpaceGrotesk_600SemiBold.ttf",
+      "staged": "App/Fonts/SpaceGrotesk_600SemiBold.ttf",
+      "sha256": "279a5d22b8ab377f41706af566610667db3941b069b50187b98af09ca3b08f91",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/space-grotesk/700Bold/SpaceGrotesk_700Bold.ttf",
+      "staged": "App/Fonts/SpaceGrotesk_700Bold.ttf",
+      "sha256": "8fb63865c6afd083723dc1775548306b7751f20397bebcb79646032c598c81b9",
+      "kind": "shipped-font"
+    },
+    {
+      "source": "scripts/native/release/prepare-release-resources.py",
+      "staged": "App/PrivacyInfo.xcprivacy",
+      "sha256": "1b857c60b79d63a424a44bbc6401f080d05863a5e669372609dd353ed2de14e7",
+      "kind": "privacy-manifest-app"
+    },
+    {
+      "source": "assets/artwork/john-icon.png",
+      "staged": "Assets.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
+      "sha256": "1cd53fbcda9c4011882f054368b96eb6cb809b17f26734e1283c70aaeac8684b",
+      "kind": "canonical-app-icon"
+    },
+    {
+      "source": "assets/artwork/john-icon-dark.png",
+      "staged": "Assets.xcassets/AppIcon.appiconset/App-Icon-dark-1024x1024@1x.png",
+      "sha256": "c3101b401d36ebd981d9405d1da1e01217c59dfcb2dbc5d6ad7809b9734f5c46",
+      "kind": "canonical-app-icon"
+    },
+    {
+      "source": "assets/artwork/john-icon-tinted.png",
+      "staged": "Assets.xcassets/AppIcon.appiconset/App-Icon-tinted-1024x1024@1x.png",
+      "sha256": "d59d24b1bc2dcc5305cf7012cc28c5d5d4b664e29016c052a93523e4b487c152",
+      "kind": "canonical-app-icon"
+    },
+    {
+      "source": "scripts/native/release/prepare-release-resources.py",
+      "staged": "Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "e6a4017596dd8bdb63d1e3b4c7faea96096871e9f9a555fbe9eebf0ebea2e6f2",
+      "kind": "asset-catalog-metadata"
+    },
+    {
+      "source": "scripts/native/release/prepare-release-resources.py",
+      "staged": "Assets.xcassets/Contents.json",
+      "sha256": "f23266b9672263c92ced1d26fe4dafa75a14d530eb9bc5fc1f599034d597ab48",
+      "kind": "asset-catalog-index"
+    },
+    {
+      "source": "native/John/Resources/Launch/SplashScreenBackground.colorset/Contents.json",
+      "staged": "Assets.xcassets/SplashScreenBackground.colorset/Contents.json",
+      "sha256": "4724bd7596f08bb19e0cceb9343ca96c408f14441c6fd6616ab60bfc16b1d17e",
+      "kind": "canonical-launch-color"
+    },
+    {
+      "source": "scripts/native/release/prepare-release-resources.py",
+      "staged": "Assets.xcassets/SplashScreenLogo.imageset/Contents.json",
+      "sha256": "bb2ceb59b872f51ff2f30869931736b873f195e0f0ee022f29019d50af4f3b56",
+      "kind": "asset-catalog-metadata"
+    },
+    {
+      "source": "assets/artwork/john-splash.png",
+      "staged": "Assets.xcassets/SplashScreenLogo.imageset/image@3x.png",
+      "sha256": "ab6786ad5de75a9371dc0ebc3b1659a3eda0d53c61343e6d490a35728b5897f2",
+      "kind": "canonical-launch-mark"
+    },
+    {
+      "source": "native/John/Resources/Launch/SplashScreen.storyboard",
+      "staged": "Launch/SplashScreen.storyboard",
+      "sha256": "f5448f1e06c3b1fc6ed807bd5f977e1ee52db7ff2bef98f805404152d591c961",
+      "kind": "canonical-launch-layout"
+    },
+    {
+      "source": "assets/artwork/credits.json",
+      "staged": "Legal/Artwork-Credits.json",
+      "sha256": "c92f062bd2efcfd6dfe4452a28e26affa5c05605f52ac7deb17e46bec8949b47",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "assets/CREDITS.md",
+      "staged": "Legal/Artwork-and-Content-Credits.md",
+      "sha256": "db6f00f84718cd3e0756ee88230729e29764ca4c999f6c8004875ff513c04eca",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "assets/READINGS-LICENSE.txt",
+      "staged": "Legal/Catholic-Readings-API-MIT.txt",
+      "sha256": "4aa92919e96d13d1b2e3a0be6e6cd7bf2c85acd7e16d0211b90f4333e7e2084e",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "src/services/bible/data/vulgate/meta.json",
+      "staged": "Legal/Clementine-Vulgate-Attribution.json",
+      "sha256": "eaeb1bad7f5827a3071e5044bfdd66edfbaa61584939f66e5dd8f109a9154410",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "src/services/bible/data/douay-rheims/meta.json",
+      "staged": "Legal/Douay-Rheims-Attribution.json",
+      "sha256": "e986603d0c00f82d71223ec5714bd49ec5c84b37fd832fe4bd7fda268f9be49d",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "scripts/native/release/licenses/feather/LICENSE",
+      "staged": "Legal/Feather-icons-MIT.txt",
+      "sha256": "308028e93fcf84972523cdf6e616f73168546b4953895f516d01287f16fe7bee",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/lora/LICENSE_FONT",
+      "staged": "Legal/Lora-OFL-1.1.txt",
+      "sha256": "1d9a970809ac804b582a6ce7f0ebc4e7fefcbfd7ff6299cad35ee656a21be716",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "native/John/LegacyAdapter/Vendor/MMKVCore/LICENSE.TXT",
+      "staged": "Legal/MMKV-Core-LICENSE.txt",
+      "sha256": "7beb71bc0404734f5126c199f78dc0075421ab740ebcdb01256eca3e9703222f",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "assets/ROMCAL-LICENSE.txt",
+      "staged": "Legal/Romcal-MIT.txt",
+      "sha256": "a347978fd85651fc1265677b0751d35139bd049938084756d698bc09ba1140f0",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "node_modules/@expo-google-fonts/space-grotesk/LICENSE_FONT",
+      "staged": "Legal/Space-Grotesk-OFL-1.1.txt",
+      "sha256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "src/services/bible/data/web-ce/meta.json",
+      "staged": "Legal/WEB-CE-Attribution.json",
+      "sha256": "b603387dd3768411400f26be66853b482d7f3a00ca1fa1c3bd7f141ec8b5a629",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "native/John/Resources/Feather-LICENSE.txt",
+      "staged": "Legal/react-native-feather-wrapper-MIT.txt",
+      "sha256": "0e8926759dccd4a33c555c61610d34dc2f57646aa4ab1f2fcffa83d0fc9fa020",
+      "kind": "license-or-attribution"
+    },
+    {
+      "source": "scripts/native/release/prepare-release-resources.py",
+      "staged": "Widget/PrivacyInfo.xcprivacy",
+      "sha256": "d9b381f55565094453fc62604ee93d90922f339417d063ae5ca3b6dd54a57342",
+      "kind": "privacy-manifest-widget"
+    }
+  ]
+}

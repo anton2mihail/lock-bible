@@ -10,6 +10,29 @@ final class CalendarBoundaryUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testSaintsSearchShowsEnglishSummaryAndBothCalendars() throws {
+        let app = launch(date: "2026-10-20T16:00:00Z")
+        tapWhenReady(button(containing: "Saints & feast days", in: app), in: app)
+        assertPageTitle("Saints & feast days", in: app)
+        let search = app.textFields["Find a saint"]
+        tapWhenReady(search, in: app)
+        search.typeText("Gemma")
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "St. Gemma"))
+            .firstMatch.waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["English summary · Italian Vatican source"].exists)
+        XCTAssertTrue(button(containing: "Read at Vatican News", in: app).exists)
+
+        search.tap()
+        search.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 5))
+        search.typeText("Cassian")
+        tapWhenReady(app.buttons["saints-calendar-choice"], in: app)
+        app.buttons["Byzantine Catholic"].tap()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Our venerable father Cassian"))
+            .firstMatch.waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["February 29"].exists)
+        XCTAssertTrue(button(containing: "Read at Metropolitan Cantor Institute", in: app).exists)
+    }
+
     func testPrayerChoiceOnBothSidesOfLocalSeventeenHundred() throws {
         let morning = launch(date: "2026-09-13T20:59:00Z") // 16:59 in Toronto.
         assertTodayDate("Sunday, September 13", in: morning)
