@@ -1,0 +1,19 @@
+{
+  "John.app": {
+    "signatureVerified": true,
+    "debuggerAllowed": false,
+    "applicationIdentifier": "QZ44N522NQ.com.nrsv.verse",
+    "appGroups": [
+      "group.com.nrsv.verse"
+    ]
+  },
+  "JohnWidget.appex": {
+    "signatureVerified": true,
+    "debuggerAllowed": false,
+    "applicationIdentifier": "QZ44N522NQ.com.nrsv.verse.widget",
+    "appGroups": [
+      "group.com.nrsv.verse"
+    ]
+  },
+  "ipaSHA256": "3533bc3b21109b801c862355d0dc821f973f38e08243865169834103b68509b1"
+}

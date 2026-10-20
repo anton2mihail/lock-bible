@@ -1,0 +1,21 @@
+Meet My Saints: a place for the saints you want to know.
+
+• Save saints and keep private intentions and notes.
+• Add a My Saint widget to your Home Screen or Lock Screen. Choose a saint and an artwork-only option.
+• Prepare for feast days with novena plans and optional reminders.
+• Explore nine personal saint pages with prayers and sourced life accounts.
+• Browse the Vatican News and Ruthenian Byzantine Catholic calendars. Read English life accounts and open their Church sources.
+• Daily reminders include the saints and commemorations for that day.
+
+APP REVIEW NOTES
+WHAT IS NEW IN 2.0.3 (28)
+
+1. Open Today or Pray > My Saints. Choose St. Joseph to test a personal saint page. Save the saint, read His life, open the linked novena, and use My notes to save a private reason, intention, or note of thanks. Notes stay in local app storage and never appear in widgets or notification text.
+
+2. Open My Saints > My Saint widget, choose a saint, and save the widget choice. Add the My Saint widget from the iOS widget gallery under John 1:1. Small and medium Home Screen widgets and a rectangular Lock Screen widget are available. Edit an individual widget to select its saint and display style. Tapping opens that saint. The shared App Group contains only public widget content and widget settings.
+
+3. Open St. Joseph > Prepare for the feast. Plan this novena records the nine-day period before the selected feast. The plan appears on Today when due. Enable Remind me on the feast day and save feast settings to request notification permission. Reminders start off. Changing the selected commemoration cancels an existing plan when saved.
+
+4. Today > Saints & feast days includes the Vatican News Saint of the Day and Ruthenian Byzantine Catholic calendars. Both catalogs are bundled for offline use. Life accounts show their source. English summaries based on Italian sources are labeled and are not presented as official Vatican translations.
+
+No account, purchases, subscriptions, or ads. No new personal data collection. Source links open official websites. Read aloud still uses the audio background mode. Existing user data carries over on update.

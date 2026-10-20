@@ -1,0 +1,594 @@
+{
+  "check": "release-package-read-only-v1",
+  "checkedAtUTC": "2026-10-20T19:00:25.327017+00:00",
+  "compiledAssets": {
+    "catalogNames": [
+      "AppIcon",
+      "SplashScreenBackground",
+      "SplashScreenLogo"
+    ],
+    "expectedStagedIconFiles": [
+      "App-Icon-1024x1024@1x.png",
+      "App-Icon-dark-1024x1024@1x.png",
+      "App-Icon-tinted-1024x1024@1x.png"
+    ],
+    "missingCatalogNames": [],
+    "missingIconVariants": [],
+    "observedIconVariants": {
+      "dark": [
+        {
+          "appearance": "UIAppearanceDark",
+          "pixelHeight": 1024,
+          "pixelWidth": 1024,
+          "renditionName": "App-Icon-dark-1024x1024@1x.png"
+        },
+        {
+          "appearance": "UIAppearanceDark",
+          "pixelHeight": 1024,
+          "pixelWidth": 1024,
+          "renditionName": "App-Icon-dark-1024x1024@1x.png"
+        }
+      ],
+      "light": [
+        {
+          "appearance": null,
+          "pixelHeight": 1024,
+          "pixelWidth": 1024,
+          "renditionName": "App-Icon-1024x1024@1x.png"
+        },
+        {
+          "appearance": null,
+          "pixelHeight": 1024,
+          "pixelWidth": 1024,
+          "renditionName": "App-Icon-1024x1024@1x.png"
+        }
+      ],
+      "tinted": [
+        {
+          "appearance": "ISAppearanceTintable",
+          "pixelHeight": 1024,
+          "pixelWidth": 1024,
+          "renditionName": "App-Icon-tinted-1024x1024@1x.png"
+        },
+        {
+          "appearance": "ISAppearanceTintable",
+          "pixelHeight": 1024,
+          "pixelWidth": 1024,
+          "renditionName": "App-Icon-tinted-1024x1024@1x.png"
+        }
+      ]
+    },
+    "path": "Assets.car",
+    "renditionNameNote": "Compiled rendition names are reported as observed. They are not compared with staged PNG filenames.",
+    "requiredCatalogNames": [
+      "AppIcon",
+      "SplashScreenLogo",
+      "SplashScreenBackground"
+    ],
+    "requiredIconVariants": [
+      "light",
+      "dark",
+      "tinted"
+    ],
+    "status": "verified"
+  },
+  "compiledLaunchStoryboard": {
+    "compiledResources": [
+      "SplashScreen.storyboardc/SplashScreenViewController.nib"
+    ],
+    "expectedControllerNib": "SplashScreen.storyboardc/SplashScreenViewController.nib",
+    "status": "verified"
+  },
+  "errors": [],
+  "formatVersion": 1,
+  "limitations": [
+    "Bundle IDs, versions, deployment floor, URL schemes, and App Group values are observed facts. They are not compared with a production release configuration.",
+    "A passed result is not archive readiness, signing readiness, or release approval.",
+    "Assets.car rendition presence does not prove source PNG byte identity or pixel identity.",
+    "Signed App Group entitlements do not prove effective container access.",
+    "This check does not inspect a live app container or change signing state."
+  ],
+  "manifest": {
+    "path": "/Users/antonlachmaniucu/Documents/lock-bible/native/John/Resources/Release/Resources/resource-manifest.json",
+    "sha256": "8b7fe74d4592b145b255d09b4e8d05b1bd4bde900e0c3a1be8366b9c3d9dca91",
+    "sourceCommit": "358ef75b47c308bef34e3ddd4b4078ccf0f71fa1"
+  },
+  "manifestTargetMap": [
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Feather.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/Lora_400Regular.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/Lora_500Medium.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/SpaceGrotesk_300Light.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/SpaceGrotesk_400Regular.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/SpaceGrotesk_500Medium.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/SpaceGrotesk_600SemiBold.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "shipped-font",
+      "stagedPath": "App/Fonts/SpaceGrotesk_700Bold.ttf",
+      "target": "app"
+    },
+    {
+      "kind": "privacy-manifest-app",
+      "stagedPath": "App/PrivacyInfo.xcprivacy",
+      "target": "app"
+    },
+    {
+      "kind": "canonical-app-icon",
+      "stagedPath": "Assets.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
+      "target": "app"
+    },
+    {
+      "kind": "canonical-app-icon",
+      "stagedPath": "Assets.xcassets/AppIcon.appiconset/App-Icon-dark-1024x1024@1x.png",
+      "target": "app"
+    },
+    {
+      "kind": "canonical-app-icon",
+      "stagedPath": "Assets.xcassets/AppIcon.appiconset/App-Icon-tinted-1024x1024@1x.png",
+      "target": "app"
+    },
+    {
+      "kind": "asset-catalog-metadata",
+      "stagedPath": "Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "target": "app"
+    },
+    {
+      "kind": "asset-catalog-index",
+      "stagedPath": "Assets.xcassets/Contents.json",
+      "target": "app"
+    },
+    {
+      "kind": "canonical-launch-color",
+      "stagedPath": "Assets.xcassets/SplashScreenBackground.colorset/Contents.json",
+      "target": "app"
+    },
+    {
+      "kind": "asset-catalog-metadata",
+      "stagedPath": "Assets.xcassets/SplashScreenLogo.imageset/Contents.json",
+      "target": "app"
+    },
+    {
+      "kind": "canonical-launch-mark",
+      "stagedPath": "Assets.xcassets/SplashScreenLogo.imageset/image@3x.png",
+      "target": "app"
+    },
+    {
+      "kind": "canonical-launch-layout",
+      "stagedPath": "Launch/SplashScreen.storyboard",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Artwork-Credits.json",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Artwork-and-Content-Credits.md",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Catholic-Readings-API-MIT.txt",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Clementine-Vulgate-Attribution.json",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Douay-Rheims-Attribution.json",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Feather-icons-MIT.txt",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Lora-OFL-1.1.txt",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/MMKV-Core-LICENSE.txt",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Romcal-MIT.txt",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/Space-Grotesk-OFL-1.1.txt",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/WEB-CE-Attribution.json",
+      "target": "app"
+    },
+    {
+      "kind": "license-or-attribution",
+      "stagedPath": "Legal/react-native-feather-wrapper-MIT.txt",
+      "target": "app"
+    },
+    {
+      "kind": "privacy-manifest-widget",
+      "stagedPath": "Widget/PrivacyInfo.xcprivacy",
+      "target": "widget"
+    }
+  ],
+  "passScope": "resource presence, manifest hashes, and compiled launch/icon structure only",
+  "passed": true,
+  "resources": [
+    {
+      "expectedSHA256": "02b88ead91ade5710d7ca18edb43a6965a71d93732c06f290cc07a6dd249e987",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "Feather.ttf",
+          "sha256": "02b88ead91ade5710d7ca18edb43a6965a71d93732c06f290cc07a6dd249e987"
+        }
+      ],
+      "stagedPath": "App/Feather.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "7ed00e7c9cdf16ab7e2fd2361fe45d4f0b61263cd60aae398b27b7ee08108827",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/Lora_400Regular.ttf",
+          "sha256": "7ed00e7c9cdf16ab7e2fd2361fe45d4f0b61263cd60aae398b27b7ee08108827"
+        }
+      ],
+      "stagedPath": "App/Fonts/Lora_400Regular.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "fd57ed9e3945de65de667f1919c2978b79937a13d246508fc4f64bb562e53196",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/Lora_500Medium.ttf",
+          "sha256": "fd57ed9e3945de65de667f1919c2978b79937a13d246508fc4f64bb562e53196"
+        }
+      ],
+      "stagedPath": "App/Fonts/Lora_500Medium.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "4ea1b1687f9c1994228e842ef35941c72f125e97da80dacdcbecd9184d0ae185",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/SpaceGrotesk_300Light.ttf",
+          "sha256": "4ea1b1687f9c1994228e842ef35941c72f125e97da80dacdcbecd9184d0ae185"
+        }
+      ],
+      "stagedPath": "App/Fonts/SpaceGrotesk_300Light.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "637578d47b0e70e02b3eb5056847dd9add17bd683234d28f5d11a6cf66ff2725",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/SpaceGrotesk_400Regular.ttf",
+          "sha256": "637578d47b0e70e02b3eb5056847dd9add17bd683234d28f5d11a6cf66ff2725"
+        }
+      ],
+      "stagedPath": "App/Fonts/SpaceGrotesk_400Regular.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "d8135bce6603398f3d0cdb478a018d7fa869b0168d037a9408cad23e030bfa7a",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/SpaceGrotesk_500Medium.ttf",
+          "sha256": "d8135bce6603398f3d0cdb478a018d7fa869b0168d037a9408cad23e030bfa7a"
+        }
+      ],
+      "stagedPath": "App/Fonts/SpaceGrotesk_500Medium.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "279a5d22b8ab377f41706af566610667db3941b069b50187b98af09ca3b08f91",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/SpaceGrotesk_600SemiBold.ttf",
+          "sha256": "279a5d22b8ab377f41706af566610667db3941b069b50187b98af09ca3b08f91"
+        }
+      ],
+      "stagedPath": "App/Fonts/SpaceGrotesk_600SemiBold.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "8fb63865c6afd083723dc1775548306b7751f20397bebcb79646032c598c81b9",
+      "kind": "shipped-font",
+      "matches": [
+        {
+          "path": "App/Fonts/SpaceGrotesk_700Bold.ttf",
+          "sha256": "8fb63865c6afd083723dc1775548306b7751f20397bebcb79646032c598c81b9"
+        }
+      ],
+      "stagedPath": "App/Fonts/SpaceGrotesk_700Bold.ttf",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "1b857c60b79d63a424a44bbc6401f080d05863a5e669372609dd353ed2de14e7",
+      "kind": "privacy-manifest-app",
+      "matches": [
+        {
+          "path": "PrivacyInfo.xcprivacy",
+          "sha256": "1b857c60b79d63a424a44bbc6401f080d05863a5e669372609dd353ed2de14e7"
+        }
+      ],
+      "stagedPath": "App/PrivacyInfo.xcprivacy",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "c92f062bd2efcfd6dfe4452a28e26affa5c05605f52ac7deb17e46bec8949b47",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Artwork-Credits.json",
+          "sha256": "c92f062bd2efcfd6dfe4452a28e26affa5c05605f52ac7deb17e46bec8949b47"
+        }
+      ],
+      "stagedPath": "Legal/Artwork-Credits.json",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "db6f00f84718cd3e0756ee88230729e29764ca4c999f6c8004875ff513c04eca",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Artwork-and-Content-Credits.md",
+          "sha256": "db6f00f84718cd3e0756ee88230729e29764ca4c999f6c8004875ff513c04eca"
+        }
+      ],
+      "stagedPath": "Legal/Artwork-and-Content-Credits.md",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "4aa92919e96d13d1b2e3a0be6e6cd7bf2c85acd7e16d0211b90f4333e7e2084e",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Catholic-Readings-API-MIT.txt",
+          "sha256": "4aa92919e96d13d1b2e3a0be6e6cd7bf2c85acd7e16d0211b90f4333e7e2084e"
+        }
+      ],
+      "stagedPath": "Legal/Catholic-Readings-API-MIT.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "eaeb1bad7f5827a3071e5044bfdd66edfbaa61584939f66e5dd8f109a9154410",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Clementine-Vulgate-Attribution.json",
+          "sha256": "eaeb1bad7f5827a3071e5044bfdd66edfbaa61584939f66e5dd8f109a9154410"
+        }
+      ],
+      "stagedPath": "Legal/Clementine-Vulgate-Attribution.json",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "e986603d0c00f82d71223ec5714bd49ec5c84b37fd832fe4bd7fda268f9be49d",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Douay-Rheims-Attribution.json",
+          "sha256": "e986603d0c00f82d71223ec5714bd49ec5c84b37fd832fe4bd7fda268f9be49d"
+        }
+      ],
+      "stagedPath": "Legal/Douay-Rheims-Attribution.json",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "308028e93fcf84972523cdf6e616f73168546b4953895f516d01287f16fe7bee",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Feather-icons-MIT.txt",
+          "sha256": "308028e93fcf84972523cdf6e616f73168546b4953895f516d01287f16fe7bee"
+        }
+      ],
+      "stagedPath": "Legal/Feather-icons-MIT.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "1d9a970809ac804b582a6ce7f0ebc4e7fefcbfd7ff6299cad35ee656a21be716",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Lora-OFL-1.1.txt",
+          "sha256": "1d9a970809ac804b582a6ce7f0ebc4e7fefcbfd7ff6299cad35ee656a21be716"
+        }
+      ],
+      "stagedPath": "Legal/Lora-OFL-1.1.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "7beb71bc0404734f5126c199f78dc0075421ab740ebcdb01256eca3e9703222f",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/MMKV-Core-LICENSE.txt",
+          "sha256": "7beb71bc0404734f5126c199f78dc0075421ab740ebcdb01256eca3e9703222f"
+        }
+      ],
+      "stagedPath": "Legal/MMKV-Core-LICENSE.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "a347978fd85651fc1265677b0751d35139bd049938084756d698bc09ba1140f0",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Romcal-MIT.txt",
+          "sha256": "a347978fd85651fc1265677b0751d35139bd049938084756d698bc09ba1140f0"
+        }
+      ],
+      "stagedPath": "Legal/Romcal-MIT.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/Space-Grotesk-OFL-1.1.txt",
+          "sha256": "564ce565c371c5e5bbf286006565a7c9aa55a9f56e7ca58d56e05d649dd61a72"
+        }
+      ],
+      "stagedPath": "Legal/Space-Grotesk-OFL-1.1.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "b603387dd3768411400f26be66853b482d7f3a00ca1fa1c3bd7f141ec8b5a629",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/WEB-CE-Attribution.json",
+          "sha256": "b603387dd3768411400f26be66853b482d7f3a00ca1fa1c3bd7f141ec8b5a629"
+        }
+      ],
+      "stagedPath": "Legal/WEB-CE-Attribution.json",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "0e8926759dccd4a33c555c61610d34dc2f57646aa4ab1f2fcffa83d0fc9fa020",
+      "kind": "license-or-attribution",
+      "matches": [
+        {
+          "path": "Legal/react-native-feather-wrapper-MIT.txt",
+          "sha256": "0e8926759dccd4a33c555c61610d34dc2f57646aa4ab1f2fcffa83d0fc9fa020"
+        }
+      ],
+      "stagedPath": "Legal/react-native-feather-wrapper-MIT.txt",
+      "status": "verified",
+      "target": "app"
+    },
+    {
+      "expectedSHA256": "d9b381f55565094453fc62604ee93d90922f339417d063ae5ca3b6dd54a57342",
+      "kind": "privacy-manifest-widget",
+      "matches": [
+        {
+          "path": "PrivacyInfo.xcprivacy",
+          "sha256": "d9b381f55565094453fc62604ee93d90922f339417d063ae5ca3b6dd54a57342"
+        }
+      ],
+      "stagedPath": "Widget/PrivacyInfo.xcprivacy",
+      "status": "verified",
+      "target": "widget"
+    }
+  ],
+  "targets": {
+    "app": {
+      "appGroupIdentifierInfoKey": "group.com.nrsv.verse",
+      "build": "28",
+      "bundleID": "com.nrsv.verse",
+      "bundlePath": "/private/tmp/john-my-saints-release/John.xcarchive/Products/Applications/John.app",
+      "minimumOSVersion": "26.0",
+      "signedEntitlements": {
+        "appGroups": [
+          "group.com.nrsv.verse"
+        ],
+        "status": "observed"
+      },
+      "uiAppFonts": [
+        "Feather.ttf",
+        "App/Fonts/Lora_400Regular.ttf",
+        "App/Fonts/Lora_500Medium.ttf",
+        "App/Fonts/SpaceGrotesk_300Light.ttf",
+        "App/Fonts/SpaceGrotesk_400Regular.ttf",
+        "App/Fonts/SpaceGrotesk_500Medium.ttf",
+        "App/Fonts/SpaceGrotesk_600SemiBold.ttf",
+        "App/Fonts/SpaceGrotesk_700Bold.ttf"
+      ],
+      "uiAppFontsMissing": [],
+      "urlSchemes": [
+        "nrsv"
+      ],
+      "version": "2.0.3"
+    },
+    "widget": {
+      "appGroupIdentifierInfoKey": "group.com.nrsv.verse",
+      "build": "28",
+      "bundleID": "com.nrsv.verse.widget",
+      "bundlePath": "/private/tmp/john-my-saints-release/John.xcarchive/Products/Applications/John.app/PlugIns/JohnWidget.appex",
+      "minimumOSVersion": "26.0",
+      "signedEntitlements": {
+        "appGroups": [
+          "group.com.nrsv.verse"
+        ],
+        "status": "observed"
+      },
+      "uiAppFonts": [],
+      "urlSchemes": [],
+      "version": "2.0.3"
+    }
+  },
+  "toolchain": {
+    "assetutil": "/usr/bin/assetutil",
+    "xcodeBuild": "17F113",
+    "xcodeVersion": "Xcode 26.6"
+  }
+}

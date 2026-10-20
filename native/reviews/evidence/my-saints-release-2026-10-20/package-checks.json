@@ -1,0 +1,46 @@
+{
+  "sourceCommit": "358ef75",
+  "mySaintsSHA256": "bd03c28f0c41fbe6e2d6b0c18bbf0518d5a841888255f4943779c8642e3740fc",
+  "packages": {
+    "John.app": {
+      "bundleID": "com.nrsv.verse",
+      "build": "28",
+      "version": "2.0.3",
+      "catalogMatches": true
+    },
+    "JohnWidget.appex": {
+      "bundleID": "com.nrsv.verse.widget",
+      "build": "28",
+      "version": "2.0.3",
+      "dataSource": "App Group shared widget snapshot"
+    },
+    "android": {
+      "catalogMatches": true,
+      "entries": [
+        "base/assets/Calendar/my-saints.json"
+      ]
+    }
+  },
+  "releaseUnitTests": {
+    "tests": 21,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "androidLint": {
+    "Error": 0,
+    "Fatal": 0,
+    "Warning": 46
+  },
+  "calendarCatalogs": {
+    "saints-vatican.json": {
+      "sha256": "796bc55bd0155569b7a00b55324e2453f37e04db2cd58a82d3abd3b57bfcc740",
+      "bothPackagesMatch": true
+    },
+    "saints-byzantine.json": {
+      "sha256": "2591dd2550d383a13313fa18930a3ba9f32b5103089d71afa63399553d601347",
+      "bothPackagesMatch": true
+    }
+  },
+  "nonExemptEncryption": false
+}
