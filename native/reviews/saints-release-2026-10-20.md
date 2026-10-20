@@ -26,9 +26,11 @@ Public verification reports are in [evidence/saints-release-2026-10-20](evidence
 Both packages uploaded successfully.
 
 - Apple: **Waiting for Review**, submitted October 20, 2026 at 1:38 PM EDT. Version 2.0.3 (27). Submission ID `a228d22e-b26e-4ca2-a6ea-d6b862369bd2`.
-- Google: quick checks are pending. Final submission status will be recorded here after confirmation.
+- Google: all quick checks passed. Version 1.0.2 (3) is uploaded and saved for production. The final confirmation closes without an error, but Publishing overview still reports “Changes not yet submitted for review.” This persists after reload and after keyboard and pointer confirmation. The owner was asked to try the final button in Chrome. Do not report this release as submitted until the console confirms review status.
 
 ![Apple submission receipt](evidence/saints-release-2026-10-20/apple-submitted.png)
+
+![Google confirmation pending](evidence/saints-release-2026-10-20/google-confirmation.png)
 
 ## Release policy
 
