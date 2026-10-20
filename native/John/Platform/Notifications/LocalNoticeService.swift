@@ -13,6 +13,7 @@ public final class LocalNoticeService {
     public typealias StateCommitter = @MainActor (NativeStateMutation) async throws -> Void
 
     public static let calendarPrefix = "john-calendar:"
+    public static let saintPrefix = "john-saint:"
     public static let rosaryIdentifier = "john-rosary:reminder"
     public static let readingIdentifier = "john-reading:reminder"
 
@@ -22,6 +23,7 @@ public final class LocalNoticeService {
     private let readCommitted: StateReader
     private let readCalendars: CalendarReader
     private let readSaints: @MainActor () async throws -> [SaintsCalendar]
+    private let readPersonalSaints: @MainActor () async throws -> [PersonalSaint]
     private let commit: StateCommitter
     private let readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)?
     private let readExcerpt: (@Sendable () async -> String?)?
@@ -36,7 +38,9 @@ public final class LocalNoticeService {
                 commit: @escaping StateCommitter,
                 readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)? = nil,
                 readExcerpt: (@Sendable () async -> String?)? = nil,
-                readSaints: @escaping @MainActor () async throws -> [SaintsCalendar] = { [] }) {
+                readSaints: @escaping @MainActor () async throws -> [SaintsCalendar] = { [] },
+                readPersonalSaints: @escaping @MainActor () async throws -> [PersonalSaint] = { [] }) {
+        self.readPersonalSaints = readPersonalSaints
         self.readSaints = readSaints
         self.readExcerpt = readExcerpt
         self.readReadingReminder = readReadingReminder
@@ -59,17 +63,11 @@ public final class LocalNoticeService {
             if settings.enabled { try await requirePermission(message: "Allow notifications in your device settings to receive calendar events.") }
 
             let pending = try await center.pendingRequests()
-            let calendars = settings.enabled ? try await readCalendars() : nil
-            let saints = settings.enabled ? try await readSaints() : []
-            let zone = timeZone()
-            let instant = now()
-            guard TimeZone(identifier: zone.identifier) != nil else { throw LocalNoticeError.invalidTimeZone }
-            let plan = try calendars.map { try makeCalendarPlan(settings, calendars: $0, saints: saints, zone: zone, current: instant) }
-            let desired = try plan.map { try capacityLimited($0, pending: pending, enabled: settings.enabled) } ?? []
+            let desired = try await devotionalDesired(settings: settings, saints: committed.mySaints, pending: pending)
             try await reconcileAndCommit(
                 desired: desired,
                 pending: pending,
-                owned: { $0.identifier.hasPrefix(Self.calendarPrefix) },
+                owned: Self.ownsDevotional,
                 preserveSameIdentifier: false,
                 restoreOnlyFutureCalendarRequests: true,
                 operation: "Calendar notification update",
@@ -175,24 +173,13 @@ public final class LocalNoticeService {
             let calendarSettings = committed.calendarNotifications
             do {
                 let pending: [NoticeRequest]
-                let desired: [NoticeRequest]
-                if calendarSettings.enabled {
-                    guard currentPermission.canDeliver else {
-                        throw LocalNoticeError.permissionDenied("Allow notifications in your device settings to receive calendar events.")
-                    }
-                    let calendars = try await readCalendars()
-                    let saints = try await readSaints()
-                    pending = try await center.pendingRequests()
-                    let zone = timeZone()
-                    let instant = now()
-                    let plan = try makeCalendarPlan(calendarSettings, calendars: calendars, saints: saints, zone: zone, current: instant)
-                    desired = try capacityLimited(plan, pending: pending, enabled: true)
-                } else {
-                    pending = try await center.pendingRequests()
-                    desired = []
+                if (calendarSettings.enabled || committed.mySaints.profiles.values.contains { $0.reminderEnabled }), !currentPermission.canDeliver {
+                    throw LocalNoticeError.permissionDenied("Allow notifications in device settings to receive feast reminders.")
                 }
+                pending = try await center.pendingRequests()
+                let desired = try await devotionalDesired(settings: calendarSettings, saints: committed.mySaints, pending: pending)
                 try await reconcileAndCommit(desired: desired, pending: pending,
-                    owned: { $0.identifier.hasPrefix(Self.calendarPrefix) }, preserveSameIdentifier: false,
+                    owned: Self.ownsDevotional, preserveSameIdentifier: false,
                     restoreOnlyFutureCalendarRequests: true, operation: "Calendar refresh", mutation: nil)
             } catch {
                 failures.append("Calendar: \(error.localizedDescription)")
@@ -249,6 +236,62 @@ public final class LocalNoticeService {
             }
             if !failures.isEmpty { throw LocalNoticeError.refreshFailures(failures) }
         }
+    }
+
+    public func saveSaint(id: String, profile: SaintProfile) async throws {
+        try await withOperationQueue {
+            let state = try readCommitted()
+            if profile.reminderEnabled {
+                try await requirePermission(message: "Allow notifications in device settings to receive feast reminders.")
+            }
+            var saints = state.mySaints
+            saints.profiles[id] = profile
+            let pending = try await center.pendingRequests()
+            let desired = try await devotionalDesired(settings: state.calendarNotifications, saints: saints, pending: pending)
+            try await reconcileAndCommit(desired: desired, pending: pending, owned: Self.ownsDevotional,
+                preserveSameIdentifier: false, restoreOnlyFutureCalendarRequests: true,
+                operation: "Feast reminder update", mutation: .setSaintProfile(id: id, value: profile))
+        }
+    }
+
+    private static func ownsDevotional(_ request: NoticeRequest) -> Bool {
+        request.identifier.hasPrefix(calendarPrefix) || request.identifier.hasPrefix(saintPrefix)
+    }
+
+    /// Reserve every explicitly chosen feast before filling the rolling daily calendar.
+    /// At an identical time, the personal feast replaces the general calendar alert.
+    private func devotionalDesired(settings: CalendarNotificationSettings, saints: MySaintsState,
+                                   pending: [NoticeRequest]) async throws -> [NoticeRequest] {
+        let zone = timeZone(), instant = now()
+        var personal: [NoticeRequest] = []
+        if saints.profiles.values.contains(where: { $0.reminderEnabled }) {
+            for saint in try await readPersonalSaints() {
+                guard let profile = saints.profiles[saint.id], profile.reminderEnabled,
+                      let observance = saint.observance(for: profile),
+                      let date = SaintDates.reminderDate(monthDay: observance.monthDay, hour: profile.reminderHour,
+                        minute: profile.reminderMinute, after: instant, timeZone: zone) else { continue }
+                personal.append(NoticeRequest(identifier: Self.saintPrefix + saint.id,
+                    title: "Remember \(saint.name) today",
+                    body: "\(observance.calendarName) commemoration. Open prayers and the saint’s life.",
+                    userInfo: ["url": "nrsv://saint?id=\(saint.id)&feast=1"],
+                    trigger: .calendarDate(date, timeZoneIdentifier: zone.identifier)))
+            }
+        }
+        let capacity = max(0, 62 - pending.filter { !Self.ownsDevotional($0) }.count)
+        guard personal.count <= capacity else { throw LocalNoticeError.scheduleFull }
+        var daily: [NoticeRequest] = []
+        if settings.enabled {
+            let calendars = try await readCalendars()
+            let catalogs = try await readSaints()
+            daily = try makeCalendarPlan(settings, calendars: calendars, saints: catalogs, zone: zone, current: instant).requests
+            let times = Set(personal.compactMap { request -> Date? in
+                if case let .calendarDate(date, _) = request.trigger { return date }; return nil
+            })
+            daily.removeAll { if case let .calendarDate(date, _) = $0.trigger { return times.contains(date) }; return false }
+            guard capacity > personal.count || !personal.isEmpty else { throw LocalNoticeError.scheduleFull }
+            if daily.isEmpty && personal.isEmpty { throw LocalNoticeError.noCalendarDates }
+        }
+        return personal + daily.prefix(min(30, max(0, capacity - personal.count)))
     }
 
     public static func normalize(_ value: CalendarNotificationSettings) -> CalendarNotificationSettings {
@@ -311,17 +354,6 @@ public final class LocalNoticeService {
             ))
         }
         return LocalNoticePlan(requests: Array(output.prefix(30)))
-    }
-
-    private func capacityLimited(_ plan: LocalNoticePlan, pending: [NoticeRequest], enabled: Bool) throws -> [NoticeRequest] {
-        guard enabled else { return [] }
-        let calendarOwned = pending.filter { $0.identifier.hasPrefix(Self.calendarPrefix) }.count
-        let unrelated = pending.count - calendarOwned
-        let capacity = max(0, min(30, 62 - unrelated))
-        guard capacity > 0 else { throw LocalNoticeError.scheduleFull }
-        let limited = Array(plan.requests.prefix(capacity))
-        guard !limited.isEmpty else { throw LocalNoticeError.noCalendarDates }
-        return limited
     }
 
     private func reconcileAndCommit(desired: [NoticeRequest], pending: [NoticeRequest],
@@ -435,6 +467,16 @@ public final class LocalNoticeService {
     }
 
     private func isFutureCalendarRequest(_ request: NoticeRequest, after instant: Date) -> Bool {
+        if request.identifier.hasPrefix(Self.saintPrefix) {
+            switch request.trigger {
+            case let .calendarDate(date, _): return date > instant
+            case let .calendarComponents(parts, false):
+                var calendar = parts.calendar ?? Calendar(identifier: .gregorian)
+                calendar.timeZone = parts.timeZone ?? timeZone()
+                return calendar.date(from: parts).map { $0 > instant } ?? false
+            default: return false
+            }
+        }
         guard request.identifier.hasPrefix(Self.calendarPrefix),
               let milliseconds = Int64(request.identifier.dropFirst(Self.calendarPrefix.count)) else { return false }
         return Date(timeIntervalSince1970: Double(milliseconds) / 1_000) > instant

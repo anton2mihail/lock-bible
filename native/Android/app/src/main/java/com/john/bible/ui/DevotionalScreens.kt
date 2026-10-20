@@ -139,6 +139,7 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
         JohnArtCard(seasonArt(season), title, "${seasonName(season)} · Today’s readings") { navigate("daily/$now") }
         JohnText("United States · Roman Rite", dim=true, size=14)
         JohnRow("Saints & feast days", "Vatican News · Byzantine Catholic · Lives of the saints") { navigate("saints") }
+        MySaintsTodaySection(repo,store,navigate)
         TodayReadingCard(repo,store,navigate)
         JohnText("Make room for prayer", size=20)
         JohnRow("Pray the Rosary", mysteryTitle(set)) { navigate("rosary/$set") }
@@ -221,6 +222,7 @@ fun PrayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit)
     JohnPage("Prayer","PRAYER LIBRARY","Everyday prayer, the Rosary, and Catholic novenas. A little space to be with God.",sansTitle=true) {
         JohnArtCard("mary","Pray the Rosary","${mysteryTitle(com.john.bible.data.CompanionCalendar.rosarySet(LocalDate.now()))} · $reminder") { navigate("rosary") }
         JohnRow("Our Lady of Sorrows","The Servite Rosary of the Seven Sorrows") { navigate("rosary/seven-sorrows") }
+        JohnRow("My Saints","Your saints, prayers, and feast days") { navigate("my-saints") }
         JohnRow("Everyday prayers","Traditional prayers and prayers of the saints") { navigate("prayers") }
         JohnRow("Pray with Scripture","A quiet guide to lectio divina") { navigate("lectio") }
         JohnRow("Prepare for Confession","The Ten Commandments and the Catechism on Penance") { navigate("confession") }
@@ -243,7 +245,11 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
     val catalog=remember(repo) { repo.content() }
     val parts=route.split('/')
     when(parts[0]) {
-        "saints" -> SaintsScreen(repo, back)
+        "my-saints" -> MySaintsScreen(repo,store,navigate,back)
+        "saint" -> PersonalSaintScreen(parts.getOrNull(1).orEmpty(),repo,store,navigate,back)
+        "saint-feast" -> SaintFeastScreen(parts.getOrNull(1).orEmpty(),repo,store,navigate,back)
+        "saint-widget" -> SaintWidgetSetupScreen(repo,store,back)
+        "saints" -> SaintsScreen(repo, back, navigate)
         "daily", "calendar", "sunday" -> CalendarScreen(parts.getOrNull(1),parts[0]=="sunday",repo,store,navigate,back)
         "prayers" -> PrayerLibrary(catalog,store,navigate,back)
         "prayer" -> PrayerDetail(parts.getOrNull(1).orEmpty(),catalog,store,navigate,back)

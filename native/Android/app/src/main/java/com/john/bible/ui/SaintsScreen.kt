@@ -21,7 +21,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun SaintsScreen(repo: JohnRepository, back: () -> Unit) {
+fun SaintsScreen(repo: JohnRepository, back: () -> Unit, navigate: (String) -> Unit) {
+    val personal = remember(repo) { runCatching { repo.personalSaints() }.getOrDefault(emptyList()) }
     var date by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
     var query by rememberSaveable { mutableStateOf("") }
     var tradition by rememberSaveable { mutableStateOf("vatican") }
@@ -59,7 +60,12 @@ fun SaintsScreen(repo: JohnRepository, back: () -> Unit) {
             JohnText(catalog.coverage, size = 14, dim = true)
             if (results.isEmpty()) JohnText(if (query.isBlank()) "This source has no entry for this date."
                 else "No saints match this name. Try another name.", dim = true)
-            results.take(limit).forEach { SaintLifeCard(it, catalog.sourceName, showDate = true) }
+            results.take(limit).forEach { entry ->
+                SaintLifeCard(entry, catalog.sourceName, showDate = true)
+                personal.firstOrNull { saint -> saint.commemorations.any { it.entryID == entry.id } }?.let { saint ->
+                    JohnRow("Open personal saint page", saint.name) { navigate("saint/${saint.id}") }
+                }
+            }
             if (results.size > limit) JohnButton("Show more saints") { limit += 50 }
             JohnText("Source checked ${catalog.retrievedOn}. Accounts use short excerpts or English summaries. Summaries are not official translations. Open the source for the full account.", size = 14, dim = true)
         } else if (failed) {

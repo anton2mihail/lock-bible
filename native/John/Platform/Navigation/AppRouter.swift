@@ -210,6 +210,10 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
     func receive(_ url: URL, using runtime: JohnRuntime) async {
         guard let external = ExternalRouteParser.parse(url) else { return }
         switch external {
+        case let .saint(id, feast):
+            select(.today)
+            paths[.today] = [.companion(id.map { feast ? .saintFeast(id: $0) : .saint(id: $0) } ?? .mySaints)]
+            markRoutedByCode(.today)
         case let .daily(date):
             // Old app: a missing or bad date shows today's readings (src/services/companion/calendar.ts:13-18).
             let key = date ?? CompanionCalendar.dateKey(runtime.featureNow(), timeZone: runtime.featureTimeZone)

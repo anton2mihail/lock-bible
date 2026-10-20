@@ -121,6 +121,9 @@ public struct NativePersistentState: Codable, Hashable, Sendable {
     public private(set) var rosaryReminder: RosaryReminderSettings
     public private(set) var worksPositions: [String: WorkReadingPosition]
     public private(set) var novenaProgress: [String: NovenaProgress]
+    // Optional for decoding state written before My Saints existed.
+    public private(set) var saints: MySaintsState?
+    public var mySaints: MySaintsState { saints ?? MySaintsState() }
 
     public init(themeScheme: String? = nil, translationID: String = "web-ce", rotationIntervalMinutes: Int = 1440,
                 verseScope: RotationScope = .full, readerLocation: ReaderLocation? = nil,
@@ -128,7 +131,7 @@ public struct NativePersistentState: Codable, Hashable, Sendable {
                 selectionHintDismissed: Bool = false, reflections: [String: SundayReflection] = [:],
                 favoritePrayerIDs: [String] = [], calendarNotifications: CalendarNotificationSettings = .init(),
                 rosaryReminder: RosaryReminderSettings = .init(), worksPositions: [String: WorkReadingPosition] = [:],
-                novenaProgress: [String: NovenaProgress] = [:]) {
+                novenaProgress: [String: NovenaProgress] = [:], saints: MySaintsState? = nil) {
         self.themeScheme = themeScheme; self.translationID = translationID
         self.rotationIntervalMinutes = rotationIntervalMinutes; self.verseScope = verseScope
         self.readerLocation = readerLocation; self.readingPreferences = readingPreferences
@@ -136,6 +139,7 @@ public struct NativePersistentState: Codable, Hashable, Sendable {
         self.reflections = reflections; self.favoritePrayerIDs = favoritePrayerIDs
         self.calendarNotifications = calendarNotifications; self.rosaryReminder = rosaryReminder
         self.worksPositions = worksPositions; self.novenaProgress = novenaProgress
+        self.saints = saints
     }
 
     mutating func apply(_ mutation: NativeStateMutation) {
@@ -160,10 +164,20 @@ public struct NativePersistentState: Codable, Hashable, Sendable {
         case let .setWorksPosition(workID, value):
             if let value { worksPositions[workID] = value } else { worksPositions.removeValue(forKey: workID) }
         case let .setNovenaProgress(id, value): novenaProgress[id] = value
+        case let .setSaintProfile(id, value):
+            var next = mySaints; next.profiles[id] = value; saints = next
+        case let .setSaintWidget(id, quiet):
+            var next = mySaints; next.widgetSaintID = id; next.widgetQuiet = quiet; saints = next
         }
     }
 
     func validate() throws {
+        for profile in mySaints.profiles.values {
+            guard (0...23).contains(profile.reminderHour), (0...59).contains(profile.reminderMinute),
+                  Set(profile.notes.map(\.id)).count == profile.notes.count else {
+                throw CoreError.invalidResource("invalid saint profile")
+            }
+        }
         let validTranslations: Set<String> = ["web-ce", "douay-rheims", "vulgate"]
         let validIntervals: Set<Int> = [10, 15, 30, 60, 180, 360, 720, 1440]
         guard validTranslations.contains(translationID) else {
@@ -236,6 +250,8 @@ public struct StartupState: Sendable {
 }
 
 public enum NativeStateMutation: Sendable {
+    case setSaintProfile(id: String, value: SaintProfile)
+    case setSaintWidget(id: String?, quiet: Bool)
     case setThemeScheme(String?)
     case setTranslationID(String)
     case setRotationInterval(Int)

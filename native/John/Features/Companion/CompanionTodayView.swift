@@ -54,6 +54,8 @@ struct CompanionTodayView: View {
                 }
                 .accessibilityIdentifier("today-saints")
 
+                MySaintsTodaySection(onNavigate: onNavigate)
+
                 ReadingTodayCard(now: now, timeZone: timeZone)
 
                 VStack(alignment: .leading, spacing: 16) {

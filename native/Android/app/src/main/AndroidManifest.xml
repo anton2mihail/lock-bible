@@ -16,6 +16,14 @@
                 <data android:scheme="nrsv" /><data android:scheme="john" /><data android:scheme="john11" />
             </intent-filter>
         </activity>
+        <activity android:name=".platform.SaintWidgetConfigurationActivity" android:exported="true">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" /></intent-filter>
+        </activity>
+        <receiver android:name=".platform.SaintReminderReceiver" android:exported="false" />
+        <receiver android:name=".platform.MySaintWidget" android:label="My Saint" android:exported="false">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/saint_widget" />
+        </receiver>
         <service android:name=".platform.JohnPlaybackService" android:exported="false" android:foregroundServiceType="mediaPlayback" />
         <receiver android:name=".platform.JohnWidgetRefreshReceiver" android:exported="false" />
         <receiver android:name=".platform.JohnReminderReceiver" android:exported="false" />

@@ -21,8 +21,8 @@ open class JohnVerseWidget:AppWidgetProvider() {
             val manager=AppWidgetManager.getInstance(context)
             val tasks=listOf(JohnVerseWidget::class.java to "verse",JohnDailyWidget::class.java to "daily",JohnProgressWidget::class.java to "progress").map { (type,kind) -> manager.getAppWidgetIds(ComponentName(context,type)) to kind }.filter { it.first.isNotEmpty() }
             JohnWidgetSchedule.refresh(context)
-            if(tasks.isEmpty()) { complete();return }
-            val remaining=java.util.concurrent.atomic.AtomicInteger(tasks.size)
+            val remaining=java.util.concurrent.atomic.AtomicInteger(tasks.size + 1)
+            MySaintWidget.refreshAll(context) { if(remaining.decrementAndGet()==0)complete() }
             tasks.forEach { (ids,kind) -> update(context,manager,ids,kind) { if(remaining.decrementAndGet()==0)complete() } }
         }
         private fun update(context:Context,manager:AppWidgetManager,ids:IntArray,kind:String,complete:()->Unit={}) {
@@ -72,7 +72,7 @@ class JohnWidgetRefreshReceiver:BroadcastReceiver() {
 object JohnWidgetSchedule {
     fun refresh(context:Context) {
         val manager=AppWidgetManager.getInstance(context)
-        val count=listOf(JohnVerseWidget::class.java,JohnDailyWidget::class.java,JohnProgressWidget::class.java).sumOf { manager.getAppWidgetIds(ComponentName(context,it)).size }
+        val count=listOf(JohnVerseWidget::class.java,JohnDailyWidget::class.java,JohnProgressWidget::class.java,MySaintWidget::class.java).sumOf { manager.getAppWidgetIds(ComponentName(context,it)).size }
         val alarm=context.getSystemService(android.app.AlarmManager::class.java)
         val pending=android.app.PendingIntent.getBroadcast(context,400,Intent(context,JohnWidgetRefreshReceiver::class.java).setAction("com.john.bible.REFRESH_WIDGETS"),android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE)
         alarm.cancel(pending)

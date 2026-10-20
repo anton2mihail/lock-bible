@@ -98,6 +98,22 @@ class JohnStore(context: Context, preferenceName: String = "john") {
     private var workOffsets by mutableStateOf(json("workOffsets"))
     var lastWorkId by mutableStateOf(string("lastWorkId", "")); private set
 
+    private var saintProfiles by mutableStateOf(json("mySaintProfiles"))
+    var widgetSaintID by mutableStateOf(string("widgetSaintID", "")); private set
+    var widgetSaintQuiet by mutableStateOf(prefs.getBoolean("widgetSaintQuiet", false)); private set
+    fun saintProfile(id: String): SaintProfile = SaintProfile.parse(saintProfiles.optJSONObject(id))
+    fun saveSaintProfile(id: String, profile: SaintProfile): Boolean {
+        val next = JSONObject(saintProfiles.toString()).put(id, profile.json())
+        val saved = prefs.edit().putString("mySaintProfiles", next.toString()).commit()
+        if (saved) { saintProfiles = next; com.john.bible.platform.MySaintWidget.refreshAll(context) }
+        return saved
+    }
+    fun saveSaintWidget(id: String, quiet: Boolean): Boolean {
+        val saved = prefs.edit().putString("widgetSaintID", id).putBoolean("widgetSaintQuiet", quiet).commit()
+        if (saved) { widgetSaintID = id; widgetSaintQuiet = quiet; com.john.bible.platform.MySaintWidget.refreshAll(context) }
+        return saved
+    }
+
     fun saveReaderLocation(book: String, chapter: Int, scrollIndex: Int = 0) {
         require(chapter > 0)
         val otherChapter = book != readerBook || chapter != readerChapter

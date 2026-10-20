@@ -1,0 +1,8 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/saint_widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:background="@drawable/saint_widget_background" android:clipToOutline="true">
+    <ImageView android:id="@+id/saint_widget_art" android:layout_width="110dp" android:layout_height="match_parent" android:scaleType="centerCrop" android:importantForAccessibility="no" />
+    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp">
+        <TextView android:id="@+id/saint_widget_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/lora_regular" android:textSize="22sp" android:textColor="@color/saint_widget_text" android:maxLines="2" android:ellipsize="end" android:text="My Saints" />
+        <TextView android:id="@+id/saint_widget_prayer" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="6dp" android:fontFamily="@font/lora_regular" android:textSize="14sp" android:textColor="@color/saint_widget_text" android:maxLines="5" android:ellipsize="end" />
+        <TextView android:id="@+id/saint_widget_caption" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:fontFamily="@font/space_grotesk_regular" android:textSize="11sp" android:textColor="@color/saint_widget_secondary" android:maxLines="2" android:ellipsize="end" android:text="Choose a saint" />
+    </LinearLayout>
+</LinearLayout>

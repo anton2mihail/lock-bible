@@ -110,6 +110,9 @@ private struct SaintLifeCard: View {
     let saint: SaintCommemoration
     let sourceName: String
     let showDate: Bool
+    @Environment(JohnRuntime.self) private var runtime
+    @Environment(AppRouter.self) private var router
+    @State private var personalID: String?
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
@@ -141,6 +144,9 @@ private struct SaintLifeCard: View {
             } else {
                 ContentMutedText(text: "The source lists this commemoration without a short life account.")
             }
+            if let personalID {
+                ContentButton(title: "Open personal saint page") { router.push(.companion(.saint(id: personalID))) }
+            }
             if let note = saint.observanceNote { ContentMutedText(text: note) }
             if let url = URL(string: saint.sourceURL) {
                 Link("Read at \(url.host == "www.vatican.va" ? "The Holy See" : sourceName) ↗", destination: url)
@@ -153,6 +159,10 @@ private struct SaintLifeCard: View {
                     .font(JohnTypography.sans(14)).foregroundStyle(colors.tint)
                     .frame(minHeight: 44, alignment: .leading)
             }
+        }.task(id: saint.id) {
+            personalID = (try? await runtime.companionRepository?.personalSaints())?.first { profile in
+                profile.commemorations.contains { $0.entryID == saint.id }
+            }?.id
         }
     }
 

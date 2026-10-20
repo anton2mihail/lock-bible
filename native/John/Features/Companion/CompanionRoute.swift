@@ -5,6 +5,10 @@ enum CompanionRoute: Hashable, Sendable {
     case prayerHome
     case daily(dateKey: String)
     case saints
+    case mySaints
+    case saint(id: String)
+    case saintFeast(id: String)
+    case saintWidget
     case sunday
     case citationContext(reference: String)
     case prayers

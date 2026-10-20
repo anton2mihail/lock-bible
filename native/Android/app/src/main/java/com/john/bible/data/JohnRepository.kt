@@ -148,6 +148,8 @@ class JohnRepository(context: Context) : AutoCloseable {
     fun readings(date: String): JSONObject? = jsonObject("Calendar/readings-us.json").optJSONObject(date)
     fun celebrations(date: String): JSONObject? = jsonObject("Calendar/celebrations-us.json").optJSONObject(date)
     @Synchronized
+    fun personalSaints(): List<PersonalSaint> = personalSaintsFromJSON(jsonArray("Calendar/my-saints.json"))
+
     fun saintsCalendars(): List<SaintsCalendar> = listOf("vatican", "byzantine").map { tradition ->
         val data = jsonObject("Calendar/saints-$tradition.json")
         require(data.getInt("schemaVersion") == 1 && data.getString("tradition") == tradition)

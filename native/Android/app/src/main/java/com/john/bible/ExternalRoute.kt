@@ -20,6 +20,7 @@ fun externalRoute(value:String?,defaultEdition:String="web-ce"):String? {
                 "reader/$edition/$book/$chapter"+(verse?.let { "/$it" } ?: "")
             }
             "daily" -> "daily/"+runCatching { LocalDate.parse(query["date"]).toString() }.getOrElse { LocalDate.now().toString() }
+            "saint" -> query["id"]?.takeIf { it.matches(Regex("st-[a-z-]+")) }?.let { (if(query["feast"]=="1")"saint-feast/" else "saint/")+it } ?: "my-saints"
             "saved" -> "saved"
             "pray" -> when(uri.path) { "/lectio"->"lectio"; "/rosary"->"rosary"; else->null }
             "lectio" -> "lectio"

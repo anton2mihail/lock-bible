@@ -395,6 +395,7 @@ private struct VerseTimerWidget: Widget {
     var body: some Widget {
         VerseWidget(); DailyReadingWidget(); VerseTimerWidget()
         ReadingProgressWidget()
+        MySaintWidget()
         OpenRosaryControl(); StartLectioControl()
         PrayerLiveActivity()
     }

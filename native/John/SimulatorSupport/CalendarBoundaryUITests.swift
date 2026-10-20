@@ -10,6 +10,39 @@ final class CalendarBoundaryUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testMySaintNotesAndFeastPlanPersistAcrossLaunches() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-JohnResetNativeState", "-JohnOpenURL", "nrsv://saint?id=st-joseph",
+                               "-L14FeatureDate", "2027-03-09T17:00:00Z", "-L14FeatureTimeZone", zone]
+        app.launch()
+        XCTAssertTrue(app.buttons["saint-save"].waitForExistence(timeout: 15))
+        app.buttons["saint-save"].tap()
+        tapWhenReady(app.buttons["My notes"], in: app)
+        tapWhenReady(button(containing: "Add a private note", in: app), in: app)
+        let note = app.textViews["saint-note-input"]
+        XCTAssertTrue(note.waitForExistence(timeout: 8))
+        note.tap()
+        note.typeText("Patience with my family.")
+        app.buttons["Save"].tap()
+        XCTAssertTrue(app.staticTexts["Patience with my family."].waitForExistence(timeout: 8))
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "-JohnResetNativeState" }
+        app.launch()
+        XCTAssertTrue(app.buttons["saint-save"].waitForExistence(timeout: 15))
+        XCTAssertEqual(app.buttons["saint-save"].label, "Remove from My Saints")
+        tapWhenReady(app.buttons["My notes"], in: app)
+        XCTAssertTrue(app.staticTexts["Patience with my family."].waitForExistence(timeout: 8))
+        app.terminate()
+        app.launchArguments = ["-JohnOpenURL", "nrsv://saint?id=st-joseph&feast=1",
+                               "-L14FeatureDate", "2027-03-09T17:00:00Z", "-L14FeatureTimeZone", zone]
+        app.launch()
+        tapWhenReady(button(containing: "Plan this novena", in: app), in: app)
+        XCTAssertTrue(app.staticTexts["This novena will appear on Today when it is due."].waitForExistence(timeout: 8))
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(button(containing: "Cancel novena plan", in: app).waitForExistence(timeout: 15))
+    }
+
     func testSaintsSearchShowsEnglishSummaryAndBothCalendars() throws {
         let app = launch(date: "2026-10-20T16:00:00Z")
         tapWhenReady(button(containing: "Saints & feast days", in: app), in: app)

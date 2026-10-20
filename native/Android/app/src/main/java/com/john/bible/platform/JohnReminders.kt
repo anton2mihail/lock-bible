@@ -26,7 +26,7 @@ object JohnReminders {
         if(saved) schedule(context,kind)
         return saved
     }
-    fun scheduleAll(context:Context) { kinds.forEach { schedule(context,it) } }
+    fun scheduleAll(context:Context) { kinds.forEach { schedule(context,it) }; SaintReminders.scheduleAll(context) }
     fun schedule(context:Context,kind:String) {
         val s=read(context,kind)
         val alarm=context.getSystemService(AlarmManager::class.java)
@@ -54,6 +54,7 @@ class JohnReminderReceiver:BroadcastReceiver() {
             try {
                 JohnReminders.schedule(context,kind)
                 if(Build.VERSION.SDK_INT>=33 && ContextCompat.checkSelfPermission(context,Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) return@thread
+                if(kind=="calendar-notifications" && SaintReminders.replacesCalendar(context,LocalDate.now())) return@thread
                 JohnReminders.channel(context)
                 val date=LocalDate.now().toString()
                 val repo=JohnRepository(context)

@@ -9,6 +9,7 @@ import JohnCore
 /// book and chapter against the edition.
 enum ExternalRoute: Sendable {
     /// `nil` when the URL has no date, or a date that fails the source check.
+    case saint(id: String?, feast: Bool)
     case daily(String?)
     case rosary
     /// Opens Lectio divina. The Control Center control uses it.
@@ -28,6 +29,9 @@ enum ExternalRouteParser {
               let host = url.host?.lowercased(),
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         let values = Dictionary(components.queryItems?.map { ($0.name, $0.value ?? "") } ?? [], uniquingKeysWith: { first, _ in first })
+        if host == "saint" {
+            return .saint(id: values["id"].flatMap { $0.range(of: #"^st-[a-z-]+$"#, options: .regularExpression) == nil ? nil : $0 }, feast: values["feast"] == "1")
+        }
         if host == "daily" {
             // Old app: `parseDate` (src/services/companion/calendar.ts:13-18) uses today for a missing or bad date.
             return .daily(values["date"].flatMap { isValidDateKey($0) ? $0 : nil })

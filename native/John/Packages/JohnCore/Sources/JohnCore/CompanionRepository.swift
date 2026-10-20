@@ -7,8 +7,21 @@ public actor BundledCompanionRepository {
     private var readingsCache: ReadingsCalendar?
     private var celebrationsCache: CelebrationsCalendar?
     private var saintsCache: [SaintsCalendar]?
+    private var personalSaintsCache: [PersonalSaint]?
 
     public init(roots: ResourceRoots) { self.roots = roots }
+
+    public func personalSaints() throws -> [PersonalSaint] {
+        if let personalSaintsCache { return personalSaintsCache }
+        let url = try roots.appResource("Calendar", "my-saints.json")
+        let values = try JSONDecoder().decode([PersonalSaint].self, from: Data(contentsOf: url))
+        guard !values.isEmpty, Set(values.map(\.id)).count == values.count,
+              values.allSatisfy({ !$0.commemorations.isEmpty }) else {
+            throw CoreError.invalidResource("My Saints catalog")
+        }
+        personalSaintsCache = values
+        return values
+    }
 
     public func saintsCalendars() throws -> [SaintsCalendar] {
         if let saintsCache { return saintsCache }

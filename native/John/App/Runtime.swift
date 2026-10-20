@@ -281,7 +281,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                     reload: previousState.map {
                         $0.translationID != projectionState.translationID ||
                         $0.verseScope != projectionState.verseScope ||
-                        $0.rotationIntervalMinutes != projectionState.rotationIntervalMinutes
+                        $0.rotationIntervalMinutes != projectionState.rotationIntervalMinutes ||
+                        $0.mySaints != projectionState.mySaints
                     } ?? true
                 )
             }
@@ -1027,6 +1028,11 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         return (try? await bible.metadata(for: translation).abbreviation) ?? ""
     }
 
+    func saveSaintReminder(id: String, profile: SaintProfile) async throws {
+        guard let noticeService else { throw CoreError.missingResource("notification service") }
+        try await noticeService.saveSaint(id: id, profile: profile)
+    }
+
     func saveCalendarNotifications(_ requested: CalendarNotificationSettings) async throws -> CalendarNotificationSettings {
         guard let noticeService else { throw CoreError.missingResource("notification service") }
         do {
@@ -1206,6 +1212,10 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
                     throw CoreError.missingResource("saints calendars")
                 }
                 return try await repository.saintsCalendars()
+            },
+            readPersonalSaints: { [weak self] in
+                guard let repository = self?.companionRepository else { throw CoreError.missingResource("My Saints") }
+                return try await repository.personalSaints()
             }
         )
     }
@@ -1236,6 +1246,31 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         defaults.set(state.translationID, forKey: "translationId")
         defaults.set(abbreviation, forKey: "abbreviation")
         defaults.set(attribution, forKey: "attribution")
+        if let saints = try? await companionRepository?.personalSaints() {
+            let content = saints.compactMap { saint -> SaintWidgetContent? in
+                guard let observance = saint.observance(for: state.mySaints.profiles[saint.id] ?? SaintProfile()) else { return nil }
+                return SaintWidgetContent(saint: saint, observance: observance)
+            }
+            if let data = try? JSONEncoder().encode(content) { defaults.set(data, forKey: "saintWidgetCatalog") }
+            defaults.set(state.mySaints.widgetSaintID, forKey: "saintWidgetSelected")
+            defaults.set(state.mySaints.widgetQuiet, forKey: "saintWidgetQuiet")
+            // Only public artwork enters the shared widget container.
+            if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+                for font in ["Lora_400Regular.ttf", "SpaceGrotesk_400Regular.ttf", "SpaceGrotesk_700Bold.ttf"] {
+                    if let source = Bundle.main.resourceURL?.appendingPathComponent("App/Fonts/\(font)") {
+                        let target = container.appendingPathComponent(font)
+                        if !FileManager.default.fileExists(atPath: target.path) { try? FileManager.default.copyItem(at: source, to: target) }
+                    }
+                }
+                for saint in saints {
+                    guard let artwork = saint.artwork,
+                          let source = Bundle.main.resourceURL?.appendingPathComponent("App/Artwork/\(artwork).jpg") else { continue }
+                    let target = container.appendingPathComponent("\(artwork).jpg")
+                    if !FileManager.default.fileExists(atPath: target.path) { try? FileManager.default.copyItem(at: source, to: target) }
+                }
+            }
+        }
+        if reload { WidgetCenter.shared.reloadTimelines(ofKind: "MySaintWidget") }
         guard reload else { return }
         WidgetCenter.shared.reloadTimelines(ofKind: "VerseWidget")
         WidgetCenter.shared.reloadTimelines(ofKind: "VerseTimerWidget")

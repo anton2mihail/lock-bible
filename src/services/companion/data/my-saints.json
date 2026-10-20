@@ -1,0 +1,288 @@
+[
+  {
+    "id": "st-joseph",
+    "name": "St. Joseph",
+    "subtitle": "Spouse of the Blessed Virgin Mary",
+    "artwork": "st-joseph",
+    "artworkCredit": "Georges de La Tour, 1640s",
+    "novenaID": "st-joseph",
+    "commemorations": [
+      {
+        "id": "vatican:03-19-65609c6c9774",
+        "tradition": "vatican",
+        "entryID": "03-19-65609c6c9774",
+        "monthDay": "03-19",
+        "name": "St. Joseph, Spouse of the Blessed Virgin Mary, Patron of the Universal Church",
+        "sourceURL": "https://www.vaticannews.va/en/saints/03/19/st--joseph--groom-of-b--mary--patron-of-the-univeral-church.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/03/19.html",
+        "account": "In his Gospel, Matthew describes St Joseph as \"just\". Mary’s future husband, faced with the inexplicable pregnancy of his fiancé, does not consider his…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null,
+        "reviewedSummary": "Joseph cared for Mary and Jesus. He took his family to safety in Egypt and later made their home in Nazareth."
+      },
+      {
+        "id": "vatican:05-01-b32635a237ef",
+        "tradition": "vatican",
+        "entryID": "05-01-b32635a237ef",
+        "monthDay": "05-01",
+        "name": "St Joseph the Worker, Spouse of the Blessed Virgin Mary, Patron of Workers",
+        "sourceURL": "https://www.vaticannews.va/en/saints/05/01/st-joseph--the-worker--spouse-of-the-blessede-virigin-mary---pat.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/05/01.html",
+        "account": "In addition to being the spouse of the Blessed Virgin Mary, and the foster-father of Jesus, St Joseph was a carpenter. Through his work…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-therese",
+    "name": "St. Thérèse of Lisieux",
+    "subtitle": "Carmelite and Doctor of the Church",
+    "artwork": null,
+    "artworkCredit": null,
+    "novenaID": "st-therese",
+    "commemorations": [
+      {
+        "id": "vatican:10-01-6b145bf4dee0",
+        "tradition": "vatican",
+        "entryID": "10-01-6b145bf4dee0",
+        "monthDay": "10-01",
+        "name": "St. Therese of the Child Jesus, Carmelite, Virgin Doctor of the Church, Patron of the Missions",
+        "sourceURL": "https://www.vaticannews.va/en/saints/10/01/st--therese-of-the-child-jesus--carmelite---virgin-doctor-of-the.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/10/01.html",
+        "account": "Thérèse Françoise Marie Martin Alençon was born on January 2, 1873 to a couple of jewelers and watchmakers. They were deeply devout believers, “Worthy…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      },
+      {
+        "id": "byzantine:10-01-95060bb5b390",
+        "tradition": "byzantine",
+        "entryID": "10-01-95060bb5b390",
+        "monthDay": "10-01",
+        "name": "Our venerable mother Therese of the Child Jesus",
+        "sourceURL": "https://mci.archpitt.org/menaion/10-01.html",
+        "calendarURL": "https://mci.archpitt.org/menaion/10-01.html",
+        "account": "who entered the Carmelite monastery of…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-jude",
+    "name": "St. Jude",
+    "subtitle": "Apostle",
+    "artwork": "st-jude",
+    "artworkCredit": "Georges de La Tour, c. 1620",
+    "novenaID": "st-jude",
+    "commemorations": [
+      {
+        "id": "vatican:10-28-349835288d2c",
+        "tradition": "vatican",
+        "entryID": "10-28-349835288d2c",
+        "monthDay": "10-28",
+        "name": "Sts. Simon and Jude (Taddeo), Apostles",
+        "sourceURL": "https://www.vaticannews.va/en/saints/10/28/sts--simon-and-jude--taddeo---apostles.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/10/28.html",
+        "account": "St. Jude Thaddeus and St. Simon, two of the least known Apostles, are paradoxically among the closest to their Master, two of his cousins.…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      },
+      {
+        "id": "byzantine:06-19-47edae15af75",
+        "tradition": "byzantine",
+        "entryID": "06-19-47edae15af75",
+        "monthDay": "06-19",
+        "name": "The holy apostle Jude, brother of the Lord",
+        "sourceURL": "https://mci.archpitt.org/menaion/06-19.html",
+        "calendarURL": "https://mci.archpitt.org/menaion/06-19.html",
+        "account": "also called Thaddeus, the brother of James. He asked the Lord at the mystical supper about his appearing, The Lord said, \"Whoever loves me,…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-benedict",
+    "name": "St. Benedict",
+    "subtitle": "Abbot and patron of Europe",
+    "artwork": "st-benedict",
+    "artworkCredit": "French 15th Century, circa 1480",
+    "novenaID": null,
+    "commemorations": [
+      {
+        "id": "vatican:07-11-04ee3706a874",
+        "tradition": "vatican",
+        "entryID": "07-11-04ee3706a874",
+        "monthDay": "07-11",
+        "name": "St. Benedict, Abbot, Patron of Europe",
+        "sourceURL": "https://www.vaticannews.va/en/saints/07/11/st--benedict--abbot--patron-of-europe.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/07/11.html",
+        "account": "Born in the central Italian mountain town of Norcia (Nursia) around AD 480, St. Benedict became one of the most important catalysts for the…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      },
+      {
+        "id": "byzantine:03-14-720db4fae7f5",
+        "tradition": "byzantine",
+        "entryID": "03-14-720db4fae7f5",
+        "monthDay": "03-14",
+        "name": "Our venerable father Benedict",
+        "sourceURL": "https://mci.archpitt.org/menaion/03-14.html",
+        "calendarURL": "https://mci.archpitt.org/menaion/03-14.html",
+        "account": "Born in Nursia in Umbria and educated in Rome, he began a hermit’s life in the Subiaco region. He gathered many disciples around himself,…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      },
+      {
+        "id": "byzantine:07-11-2f9ed7d5da77",
+        "tradition": "byzantine",
+        "entryID": "07-11-2f9ed7d5da77",
+        "monthDay": "07-11",
+        "name": "In Benedictine communities: the translation of the relics of our holy father Benedict",
+        "sourceURL": "https://mci.archpitt.org/menaion/07-11.html",
+        "calendarURL": "https://mci.archpitt.org/menaion/07-11.html",
+        "account": "",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-monica",
+    "name": "St. Monica",
+    "subtitle": "Mother of St. Augustine",
+    "artwork": "st-monica",
+    "artworkCredit": "Luis Tristán de Escamilla, 1616",
+    "novenaID": null,
+    "commemorations": [
+      {
+        "id": "vatican:08-27-05ceaf9581ed",
+        "tradition": "vatican",
+        "entryID": "08-27-05ceaf9581ed",
+        "monthDay": "08-27",
+        "name": "St. Monica, Mother of St. Augustine, Bishop",
+        "sourceURL": "https://www.vaticannews.va/en/saints/08/27/st--monica--mother-of--st--augustine--bishop.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/08/27.html",
+        "account": "Of Berber stock, Monica was born in northern Africa in 331, in the town of Thagaste, to a wealthy family with strong Christian traditions.…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-francis-assisi",
+    "name": "St. Francis of Assisi",
+    "subtitle": "Founder of the Franciscan Order",
+    "artwork": "st-francis-assisi",
+    "artworkCredit": "Attributed to Jan van Eyck, c. 1430–1432",
+    "novenaID": null,
+    "commemorations": [
+      {
+        "id": "vatican:10-04-74973d9446b0",
+        "tradition": "vatican",
+        "entryID": "10-04-74973d9446b0",
+        "monthDay": "10-04",
+        "name": "St. Francis of Assisi, Founder of the Franciscan Order, Patron of Italy",
+        "sourceURL": "https://www.vaticannews.va/en/saints/10/04/st--francis-of-assisi--founder-of-the-franciscan--order--patron-.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/10/04.html",
+        "account": "A young man with great aspirations Small in stature and having an extrovert personality, Francis always had in his heart the desire to do…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      },
+      {
+        "id": "byzantine:10-04-7ba9340466f6",
+        "tradition": "byzantine",
+        "entryID": "10-04-7ba9340466f6",
+        "monthDay": "10-04",
+        "name": "In Franciscan and Poor Clare communities: Our venerable father Francis of Assisi",
+        "sourceURL": "https://mci.archpitt.org/menaion/10-04.html",
+        "calendarURL": "https://mci.archpitt.org/menaion/10-04.html",
+        "account": "deacon and founder of the Three Orders. He was converted after an…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-anthony",
+    "name": "St. Anthony of Padua",
+    "subtitle": "Franciscan priest and Doctor of the Church",
+    "artwork": "st-anthony",
+    "artworkCredit": "Francisco de Zurbarán, from 1627 until 1630",
+    "novenaID": null,
+    "commemorations": [
+      {
+        "id": "vatican:06-13-8a8a40d1da56",
+        "tradition": "vatican",
+        "entryID": "06-13-8a8a40d1da56",
+        "monthDay": "06-13",
+        "name": "Saint Anthony of Padua",
+        "sourceURL": "https://www.vaticannews.va/en/saints/06/13/saint-anthony-of-padua.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/06/13.html",
+        "account": "Born into a noble family at Lisbon, Portugal, in 1195 (on August 15, it is believed), and baptized Fernando, the man we would come…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-anne",
+    "name": "St. Anne",
+    "subtitle": "Mother of the Blessed Virgin Mary",
+    "artwork": "st-anne",
+    "artworkCredit": "Unknown, 17th century",
+    "novenaID": null,
+    "commemorations": [
+      {
+        "id": "vatican:07-26-e4ab5e9a6da1",
+        "tradition": "vatican",
+        "entryID": "07-26-e4ab5e9a6da1",
+        "monthDay": "07-26",
+        "name": "Sts. Joachim and Anne, parents of B. V. Mary",
+        "sourceURL": "https://www.vaticannews.va/it/santo-del-giorno/07/26.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/07/26.html",
+        "account": "Joachim and Anne are remembered as Mary's parents and Jesus's grandparents. Their names come from ancient Christian tradition rather than Scripture.",
+        "isSummary": true,
+        "sourceLanguage": "it",
+        "observanceNote": null
+      }
+    ]
+  },
+  {
+    "id": "st-padre-pio",
+    "name": "St. Pio of Pietrelcina",
+    "subtitle": "Capuchin priest",
+    "artwork": null,
+    "artworkCredit": null,
+    "novenaID": "st-padre-pio",
+    "commemorations": [
+      {
+        "id": "vatican:09-23-01d3773917a3",
+        "tradition": "vatican",
+        "entryID": "09-23-01d3773917a3",
+        "monthDay": "09-23",
+        "name": "St. Pius of Pietrelcina, priest",
+        "sourceURL": "https://www.vaticannews.va/en/saints/09/23/st--pius-of-pietrelcina--priest-.html",
+        "calendarURL": "https://www.vaticannews.va/en/saints/09/23.html",
+        "account": "Born into a poor Italian farm family, from a young age Francesco Forgione desired to be a friar. When he was sixteen, he entered…",
+        "isSummary": false,
+        "sourceLanguage": "en",
+        "observanceNote": null
+      }
+    ]
+  }
+]

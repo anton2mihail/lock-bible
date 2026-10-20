@@ -41,6 +41,7 @@ struct PrayerHomeView: View {
                            subtitle: "\(mysteryTitle(suggestedSet)) · \(reminderSummary(currentState?.rosaryReminder))") {
                 onNavigate(.rosaryHome)
             }
+            ContentActionRow(title: "My Saints", subtitle: "Your saints, prayers, and feast days") { onNavigate(.mySaints) }
             VStack(alignment: .leading, spacing: 0) {
                 ContentActionRow(title: "Our Lady of Sorrows",
                                  subtitle: "The Servite Rosary of the Seven Sorrows",
