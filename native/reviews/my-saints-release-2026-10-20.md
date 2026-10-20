@@ -25,11 +25,18 @@ Public verification reports are in [evidence/my-saints-release-2026-10-20](evide
 ## Store status
 
 - Apple: **Waiting for Review**, submitted October 20, 2026 at 3:09 PM EDT. Version **2.0.3 (28)**. Submission ID `464849be-b351-4f5b-b5d4-b3e7f1083eac`. This replaces the earlier build 27 submission.
-- Google: version **1.0.3 (4)** is uploaded and saved for production. Automatic quick checks are still running. Review submission is not yet confirmed.
+- Google: version **1.0.3 (4)** is uploaded and saved for production. Automatic quick checks passed. The final confirmation closes without an error, but Publishing overview still reports “Changes not yet submitted for review.” This persists after reload and both browser control and pointer confirmation. Submission activity confirms no new submission. The owner must complete the final step in the prepared Chrome tab. Do not report Android as submitted.
+- The older Google submission 3 was withdrawn to replace it with version 1.0.3 (4). Submission activity shows it as canceled. The live release is unchanged.
 - Google reports one non-blocking warning for missing native debug symbols in the bundled third-party library. Its device support is unchanged.
 
 ![Apple submission receipt](evidence/my-saints-release-2026-10-20/apple-submitted.jpg)
 
+![Google confirmation pending](evidence/my-saints-release-2026-10-20/google-confirmation.jpg)
+
 ## Release policy
 
 Keep the existing store settings: manual release after Apple approval; full Android rollout after Google approval, with managed publishing off.
+
+## Cleanup
+
+Temporary archives, exports, build outputs, resource stages, and distribution logs were removed after the uploads. No test devices or build processes remain. Source and verification evidence are committed on `codex/saints-store-release`.
