@@ -23,7 +23,12 @@ Public verification reports are in [evidence/saints-release-2026-10-20](evidence
 
 ## Store status
 
-Both packages uploaded successfully. Apple build processing and Google quick checks are pending. Final submission status will be recorded here after confirmation.
+Both packages uploaded successfully.
+
+- Apple: **Waiting for Review**, submitted October 20, 2026 at 1:38 PM EDT. Version 2.0.3 (27). Submission ID `a228d22e-b26e-4ca2-a6ea-d6b862369bd2`.
+- Google: quick checks are pending. Final submission status will be recorded here after confirmation.
+
+![Apple submission receipt](evidence/saints-release-2026-10-20/apple-submitted.png)
 
 ## Release policy
 
