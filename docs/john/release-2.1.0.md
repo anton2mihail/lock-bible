@@ -1,6 +1,6 @@
 # 2.1.0 — The Fathers and Doctors unlock
 
-**Status: build 29 uploaded and the 2.1.0 version, in-app purchase and store page prepared in App Store Connect on 23 October 2026. Not submitted for review.** Branch `release/2.1.0`.
+**Status: SUBMITTED for App Review on 23 October 2026 (version 2.1.0 build 29 + in-app purchase com.nrsv.verse.fathers, 2 items). Waiting for Review. Release: manual, to all users at once, existing rating kept.** Branch `release/2.1.0`.
 Plan: [`../store-conversion-and-first-unlock-plan.md`](../store-conversion-and-first-unlock-plan.md). Store text: [`../store-text-2026-10-23.md`](../store-text-2026-10-23.md).
 
 ## What changed
@@ -59,7 +59,7 @@ Left for Anton:
 
 1. Done 23 October 2026, 9:22 PM: version 2.1.0 (29) added to the draft submission with the in-app purchase. The draft shows "Items Ready to Submit (2)"; the version status is Ready for Review.
 2. Optional: test buying and restoring on a device with TestFlight and a sandbox account.
-3. Submit for Review when ready.
+3. Submitted 23 October 2026 on Anton's ask. After approval, release 2.1.0 by hand (manual release is set).
 
 ## Not in 2.1.0
 
