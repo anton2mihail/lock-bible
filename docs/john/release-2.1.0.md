@@ -1,6 +1,6 @@
 # 2.1.0 — The Fathers and Doctors unlock
 
-**Status: build 29 uploaded to App Store Connect on 23 October 2026 (delivery 117f6945), not submitted for review.** Branch `release/2.1.0`.
+**Status: build 29 uploaded and the 2.1.0 version, in-app purchase and store page prepared in App Store Connect on 23 October 2026. Not submitted for review.** Branch `release/2.1.0`.
 Plan: [`../store-conversion-and-first-unlock-plan.md`](../store-conversion-and-first-unlock-plan.md). Store text: [`../store-text-2026-10-23.md`](../store-text-2026-10-23.md).
 
 ## What changed
@@ -45,14 +45,21 @@ Debug-only launch arguments: `-JohnFathersAccess locked|purchased|grandfathered`
 - Purchase end to end: `scripts/native/run-tests.sh FathersUnlockUITests`. It reads section 1, sees the unlock page with the StoreKit price on section 2, buys, reads section 2 in place, relaunches and reads it again.
 - Simulator, by eye: the library card, the locked reader page and the Settings section (light mode, iPhone 17 Pro).
 
-## App Store Connect steps (Anton)
+## App Store Connect state (23 October 2026)
 
-1. Create the in-app purchase: type Non-Consumable, product ID `com.nrsv.verse.fathers`, reference name "The Fathers and Doctors", price US$9.99, Family Sharing on. Display name "The Fathers and Doctors". Description "Every work of the Fathers and Doctors in the app, offline. One payment." Review screenshot: the reader's unlock page.
-2. Upload build 29 (`scripts/native/release-testflight.sh 2.1.0 29`).
-3. Create version 2.1.0, attach build 29, and **add the in-app purchase to the version in the web UI**. The first in-app purchase of an app must ship with a version. The API cannot add it.
-4. Paste the 2.1.0 store text from `docs/store-text-2026-10-23.md`: name, subtitle, keywords, description. Change the primary category to Reference and the secondary to Books.
-5. Review notes: "The app has one optional purchase, The Fathers and Doctors (com.nrsv.verse.fathers). To see it: Read tab › The Church Fathers › any author › any work › the › arrow at the bottom right. It is also in Settings › The Fathers & Doctors. Everything else in the app is free. People who installed before 2.1.0 keep the library free."
-6. Upload the 2.1.0 screenshots from `marketing/screenshots/framed-2.1.0/`.
+Done in App Store Connect:
+
+1. Build 29 processed; it is in TestFlight for the internal group.
+2. In-app purchase created: The Fathers and Doctors, `com.nrsv.verse.fathers`, Non-Consumable, Apple ID 6826456979. US$9.99 base price, Apple's equivalents in all 175 countries and regions, Family Sharing on (permanent). Display name "The Fathers and Doctors", description "All 271 works of the Fathers and Doctors, offline." Review screenshot (reader unlock page) and review notes added. It sits in a draft review submission.
+3. Version 2.1.0 created with build 29. Promotional text, description, What's New, keywords and App Review notes set from `docs/store-text-2026-10-23.md`.
+4. Screenshots replaced in the 2.1.0 draft: 6 iPhone 6.9-inch and 4 iPad 13-inch slides from `marketing/screenshots/framed-2.1.0/`.
+5. App Information (ships with 2.1.0): name "John 1:1 - Catholic Bible", subtitle "Rosary, Mass Readings & Saints", primary category Reference, secondary Books.
+
+Left for Anton:
+
+1. On the 2.1.0 version page, click Add for Review and choose the existing draft submission, so the version joins the in-app purchase.
+2. Optional: test buying and restoring on a device with TestFlight and a sandbox account.
+3. Submit for Review when ready.
 
 ## Not in 2.1.0
 

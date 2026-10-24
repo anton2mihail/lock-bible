@@ -52,7 +52,7 @@ douay,vulgate,novena,chaplet,church fathers,augustine,aquinas,confession,prayer,
 - Dropped from the live set: verse, scripture, search, bookmark, notes, offline, devotional.
 - Before saving, Anton can check popularity of "douay", "novena" and "church fathers" in Apple Search Ads (free to look, spend nothing).
 
-## 4. Description — with 2.1.0 (2,245 / 4,000)
+## 4. Description — with 2.1.0 (2,338 / 4,000)
 
 The first three lines show before "more". They say what the app is.
 
@@ -80,6 +80,7 @@ THE CHURCH YEAR
 THE FATHERS AND DOCTORS
 • 26 authors, 271 works, 15 million words, all offline: Augustine complete, the Summa Theologica of St. Thomas Aquinas, John Chrysostom, Jerome, Ambrose, Athanasius, Gregory the Great and more
 • Open a chapter of Scripture and see which Fathers wrote on it
+• Read the first part of every work free. Unlock the full library once, with no subscription
 
 ON YOUR LOCK SCREEN
 • A verse widget for the Lock Screen and Home Screen that changes as often as you choose, from every 10 minutes to once a day
