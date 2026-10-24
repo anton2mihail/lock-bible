@@ -1,6 +1,6 @@
 # 2.1.1 — Interface polish
 
-**Status: built and checked on the simulator. Not uploaded, not submitted.** Branch `ui/2.1.1`, from `release/2.1.0` (approved by Apple).
+**Status: build 30 uploaded to App Store Connect on 24 October 2026 (delivery 2b6737a9). Not submitted for review.** Branch `ui/2.1.1`, from `release/2.1.0` (approved by Apple).
 
 No behaviour changes: the same content, purchase and data. Version 2.1.1, build 30.
 
@@ -24,5 +24,5 @@ No behaviour changes: the same content, purchase and data. Version 2.1.1, build 
 
 ## To ship (Anton)
 
-1. Upload: `scripts/native/release-testflight.sh 2.1.1 30`.
+1. Done 24 October 2026: `scripts/native/release-testflight.sh 2.1.1 30`.
 2. Create version 2.1.1 in App Store Connect, attach build 30, add What's New, submit.
