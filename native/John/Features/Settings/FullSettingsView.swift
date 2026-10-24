@@ -13,6 +13,7 @@ struct FullSettingsView: View {
     @State private var loadFailed = false
     @State private var saveMessage: String?
     @State private var saveGeneration = 0
+    @State private var unlockPresented = false
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var orderedTranslations: [TranslationID] { [.webCE, .douayRheims, .vulgate] }
@@ -35,6 +36,42 @@ struct FullSettingsView: View {
                 if loadFailed {
                     Text("Some installed reading information could not be opened.")
                         .font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
+                }
+
+                section("The Fathers & Doctors") {
+                    Button { unlockPresented = true } label: {
+                        HStack(spacing: 16) {
+                            Image(systemName: "books.vertical")
+                                .font(.system(size: 20, weight: .regular))
+                                .foregroundStyle(colors.tint)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(fathersTitle).font(JohnTypography.sans(16, weight: .medium)).foregroundStyle(colors.text)
+                                Text(fathersDetail).font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            Spacer(minLength: 0)
+                            Text("›").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
+                        }
+                        .frame(minHeight: 72)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("settings-fathers")
+                    Button {
+                        Task { await runtime.fathers.restore() }
+                    } label: {
+                        Text("Restore Purchases").font(JohnTypography.sans(16)).foregroundStyle(colors.tint)
+                            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                            .overlay(alignment: .top) { Rectangle().fill(colors.separator).frame(height: 1) }
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("settings-restore-purchases")
+                    if let message = runtime.fathers.restoreMessage {
+                        Text(message).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.bottom, 12)
+                            .contentAnnouncement(message)
+                    }
                 }
 
                 section("Reading") {
@@ -139,6 +176,22 @@ struct FullSettingsView: View {
         }
         .background(colors.background)
         .task { await loadInformation() }
+        .sheet(isPresented: $unlockPresented) { FathersUnlockScreen() }
+    }
+
+    private var fathersTitle: String {
+        switch runtime.fathers.access {
+        case .purchased, .grandfathered: "The full library is unlocked"
+        case .checking, .locked: "Unlock the full library"
+        }
+    }
+
+    private var fathersDetail: String {
+        switch runtime.fathers.access {
+        case .grandfathered: "Free for you: you installed before it was sold"
+        case .purchased: "Thank you for your purchase"
+        case .checking, .locked: runtime.fathers.displayPrice.map { "One payment of \($0), no subscription" } ?? "One payment, no subscription"
+        }
     }
 
     private var intervalOptions: [(minutes: Int, title: String)] {

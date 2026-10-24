@@ -17,6 +17,7 @@ final class ReleasePerformanceUITests: XCTestCase {
             let app = application(bundleID: config.bundleID)
             if app.state != .notRunning { app.terminate() }
             let start = ProcessInfo.processInfo.systemUptime
+            app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
             app.launch()
             let labels = try waitForUsefulToday(app)
             let elapsed = ProcessInfo.processInfo.systemUptime - start
@@ -38,6 +39,7 @@ final class ReleasePerformanceUITests: XCTestCase {
         // One untimed chapter and query warm-up is excluded from each distribution.
         for sampleIndex in -1..<config.sampleCount {
             let app = application(bundleID: config.bundleID)
+            app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
             app.launch()
             navigateToChapterList("JHN", in: app)
             let chapterStart = ProcessInfo.processInfo.systemUptime
@@ -83,6 +85,7 @@ final class ReleasePerformanceUITests: XCTestCase {
     func testL26LongReaderScrollAndWorksPageProgression() throws {
         let config = try configuration()
         let app = application(bundleID: config.bundleID)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         openBook("PSA", chapter: 119, in: app)
         let lastPsalmVerse = app.buttons["reader-verse-176"]

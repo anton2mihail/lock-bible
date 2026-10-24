@@ -67,6 +67,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
     var savedRevision = 0
     /// Optional iCloud sync (E21). Off until the user turns it on in Settings.
     let cloudSync = CloudSyncModel()
+    /// The Fathers and Doctors purchase (2.1.0). Every section read goes through `workSection`, which checks it.
+    let fathers = FathersLibraryStore()
     let tagStore: SavedTagStore?
     /// Reading progress and plan (E7). A separate file keeps older data valid.
     let progressStore: ReadingProgressStore?
@@ -884,7 +886,15 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
 
     func workSection(workID: String, index: Int) async throws -> WorkSection {
         guard let works else { throw CoreError.missingResource("Works database") }
+        guard isWorkSectionReadable(workID: workID, index: index) else {
+            throw FathersLibraryLockedError(workID: workID, index: index)
+        }
         return try await works.section(workID: workID, index: index)
+    }
+
+    /// True when the reader may open this section now: the free sample, a purchase, or a grandfathered install.
+    func isWorkSectionReadable(workID: String, index: Int) -> Bool {
+        fathers.isUnlocked || FathersLibraryAccess.isSectionFree(workID: workID, index: index)
     }
 
     func workSectionSummaries(workID: String) async throws -> [WorkSectionSummary] {

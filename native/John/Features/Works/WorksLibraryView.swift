@@ -10,6 +10,7 @@ struct WorksLibraryView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var catalog: WorkCatalog?
     @State private var loadingFailed = false
+    @State private var unlockPresented = false
 
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
     private var totalWords: Int { catalog?.collections.reduce(0) { $0 + $1.words } ?? 0 }
@@ -38,6 +39,25 @@ struct WorksLibraryView: View {
                 Text("\(WorksSourceText.plural(catalog?.collections.count ?? 0, "author")) · \(WorksSourceText.plural(catalog?.works.count ?? 0, "work")) · \(WorksSourceText.corpusSize(totalWords)) · reads offline")
                     .font(JohnTypography.sans(16))
                     .foregroundStyle(colors.textDim)
+            }
+
+            if !runtime.fathers.isUnlocked {
+                Button { unlockPresented = true } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        WorksEyebrow("FREE TO START")
+                        Text("Read the first part of every work, the Apostolic Fathers and the Confessions free. Unlock the whole library once.")
+                            .font(JohnTypography.sans(14)).foregroundStyle(colors.text)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(runtime.fathers.displayPrice.map { "Unlock · \($0)" } ?? "Unlock the library")
+                            .font(JohnTypography.sans(14, weight: .semibold)).foregroundStyle(colors.tint)
+                            .padding(.top, 4)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(20)
+                    .background(colors.card, in: RoundedRectangle(cornerRadius: 18))
+                }
+                .buttonStyle(WorksPressStyle())
+                .accessibilityIdentifier("works-unlock-card")
             }
 
             if let lastRead {
@@ -95,6 +115,7 @@ struct WorksLibraryView: View {
             }
         }
         .task { await loadCatalog() }
+        .sheet(isPresented: $unlockPresented) { FathersUnlockScreen() }
     }
 
     @Environment(\.displayScale) private var displayScale

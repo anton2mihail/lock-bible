@@ -7,6 +7,7 @@ final class NativeSmokeUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnResetNativeState"] // test isolation: default text size and Reader location
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -82,6 +83,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testSavedUndoGeometryProbe() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         resetSavedLibrary(app)
@@ -115,6 +117,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testValidLibrarySavedFiltersNoteEditDeleteAndUndo() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         resetSavedLibrary(app)
@@ -202,6 +205,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testSavedTagsSmartFoldersExportAndUndoManager() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         resetSavedLibrary(app)
@@ -246,6 +250,7 @@ final class NativeSmokeUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnResetNativeState"] // test isolation: default text size and Reader location
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -280,6 +285,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testVerseMomentReaderAndWorksFooter() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -319,6 +325,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testWorksReaderFooter() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(tabButton(app, "tab-read").waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -354,6 +361,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testScriptureCardExportsPNG() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Verse & lock screen widget")).firstMatch.tap()
@@ -374,6 +382,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testReaderSourceNavigationRangeAndVerseLayout() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         tabButton(app, "tab-settings").tap()
         app.buttons["translation-web-ce"].tap()
@@ -479,6 +488,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testReaderRealVisibleVerseTapRange() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -522,6 +532,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testReaderSelectionBookmarkAndAllHighlightColors() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -588,6 +599,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testReaderAnchorReflowRestartAndLowerControls() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -658,6 +670,7 @@ final class NativeSmokeUITests: XCTestCase {
 
         app.terminate()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -677,6 +690,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testReaderTopSafeAreaAndSmallScrollProbe() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-read").tap()
@@ -725,6 +739,7 @@ final class NativeSmokeUITests: XCTestCase {
         try assertSystemXXXLProfile()
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"]
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -799,6 +814,7 @@ final class NativeSmokeUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnResetNativeState"] // test isolation: default Aa values
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
         tabButton(app, "tab-settings").tap()
@@ -843,6 +859,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testPsalmTwoLoadedVerseGeometryDiagnostic() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -883,6 +900,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testPsalmTwoVerseTwelveGeometryDiagnostic() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -1215,6 +1233,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testPrimaryTabsAndSharedReaderAppearance() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 10))
 
@@ -1261,6 +1280,7 @@ final class NativeSmokeUITests: XCTestCase {
         let readURL = URL(string: "nrsv://read?book=JHN&chapter=1&verse=1")!
         app.launchArguments = ["-L04TestStartupDelaySeconds", "5"]
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["Loading saved data."].waitForExistence(timeout: 3))
         app.open(readURL)
@@ -1284,6 +1304,7 @@ final class NativeSmokeUITests: XCTestCase {
         app.terminate()
 
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         settingsTab.tap()
@@ -1296,6 +1317,7 @@ final class NativeSmokeUITests: XCTestCase {
                           "Skipped: this test needs the release build (com.nrsv.verse) installed on the simulator. Run scripts/native/run-tests.sh (see native/reviews/test-runbook.md).")
         let app = XCUIApplication(bundleIdentifier: "com.nrsv.verse")
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         tabButton(app, "tab-settings").tap()
@@ -1311,6 +1333,7 @@ final class NativeSmokeUITests: XCTestCase {
         app.terminate()
 
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         tabButton(app, "tab-settings").tap()
@@ -1322,6 +1345,7 @@ final class NativeSmokeUITests: XCTestCase {
     func testSameProcessRepeatedReadyURLs() throws {
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 15))
         tabButton(app, "tab-settings").tap()

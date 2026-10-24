@@ -92,7 +92,9 @@ def main() -> None:
     OUT = Path(temp_context.name)
     rows: list[dict[str, str]] = []
     rows.append(write("App/PrivacyInfo.xcprivacy", privacy_manifest([
-        ("NSPrivacyAccessedAPICategoryUserDefaults", ["1C8F.1"]),
+        # 1C8F.1: App Group state shared with the widget. CA92.1: the app's own UserDefaults
+        # (purchase cache, rating-prompt counters, search history, sync and read-aloud settings).
+        ("NSPrivacyAccessedAPICategoryUserDefaults", ["1C8F.1", "CA92.1"]),
         ("NSPrivacyAccessedAPICategoryFileTimestamp", ["C617.1"]),
     ]), "privacy-manifest-app"))
     rows.append(write("Widget/PrivacyInfo.xcprivacy", privacy_manifest([

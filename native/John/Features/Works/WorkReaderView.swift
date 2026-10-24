@@ -22,6 +22,8 @@ struct WorkReaderView: View {
     @State private var anchor: WorksAnchor?
     @State private var loading = true
     @State private var failed = false
+    /// The section the purchase gate stopped, if any. The reader shows the unlock panel in its place.
+    @State private var lockedIndex: Int?
     @State private var contentsPresented = false
     @ScaledMetric(relativeTo: .body) private var contentsNumberWidth: CGFloat = 32
     @State private var loadGeneration = 0
@@ -42,7 +44,7 @@ struct WorkReaderView: View {
     private var currentNoun: String { WorksSourceText.sectionNoun(work?.kind ?? "commentary") }
     private var isFirst: Bool { currentSectionIndex <= 0 }
     private var isLast: Bool { currentSectionIndex >= max(0, sectionCount - 1) }
-    private var currentSectionIndex: Int { section?.index ?? requestedSection ?? 0 }
+    private var currentSectionIndex: Int { section?.index ?? lockedIndex ?? requestedSection ?? 0 }
     private var pageCount: Int { pages.count }
     private var currentPageAnchor: WorksAnchor? { pages.indices.contains(pageIndex) ? pages[pageIndex].anchor : nil }
     private var reading: ReadingPreferences { preferences.reading }
@@ -127,6 +129,14 @@ struct WorkReaderView: View {
                     .onChange(of: proxy.size) { _, size in updateViewport(size) }
                 }
                 .id("\(workID ?? ""):\(reading.textSize.rawValue):\(reading.typeface.rawValue):\(reading.lineSpacing.rawValue):\(dynamicTypeSize)")
+            } else if lockedIndex != nil {
+                ScrollView {
+                    FathersUnlockPanel(sampleNotice: "You have read the free part of \(work?.title ?? "this work").")
+                        .frame(maxWidth: 620, alignment: .leading)
+                        .padding(.horizontal, pageInset)
+                        .padding(.vertical, 16)
+                        .frame(maxWidth: .infinity)
+                }
             } else {
                 VStack(spacing: 12) {
                     if loading { ProgressView().tint(colors.tint) }
@@ -157,6 +167,10 @@ struct WorkReaderView: View {
         .onChange(of: dynamicTypeSize) { _, _ in preserveAnchorAndRebuild() }
         .onChange(of: colorScheme) { _, _ in preserveAnchorAndRebuild() }
         .onDisappear { prefetchTask?.cancel() }
+        .onChange(of: runtime.fathers.isUnlocked) { _, unlocked in
+            guard unlocked, let lockedIndex else { return }
+            Task { await loadSection(index: lockedIndex, explicit: true) }
+        }
         .toolbar {
             if !needsExpandedWorkTitle {
                 ToolbarItem(placement: .principal) {
@@ -185,7 +199,7 @@ struct WorkReaderView: View {
                 }
                 .disabled(sectionCount < 2)
                 .accessibilityLabel("Contents, \(currentNoun) \(currentSectionIndex + 1) of \(sectionCount)")
-                Text(pageCount > 0 ? "Page \(pageIndex + 1) of \(pageCount)" : "Loading pages")
+                Text(lockedIndex != nil ? "In the full library" : (pageCount > 0 ? "Page \(pageIndex + 1) of \(pageCount)" : "Loading pages"))
                     .font(JohnTypography.sans(10, weight: .medium).monospacedDigit())
                     .foregroundStyle(colors.textDim)
                     .lineLimit(1)
@@ -248,7 +262,7 @@ struct WorkReaderView: View {
         loadGeneration &+= 1
         positionGeneration &+= 1
         let generation = loadGeneration
-        catalog = nil; work = nil; collection = nil; section = nil; summaries = []; pages = []; anchor = nil; storedAnchor = nil; loading = true; failed = false
+        catalog = nil; work = nil; collection = nil; section = nil; summaries = []; pages = []; anchor = nil; storedAnchor = nil; loading = true; failed = false; lockedIndex = nil
         prefetchTask?.cancel(); sectionCache = [:]; sectionCacheKey = ""
         guard let loadedCatalog = await runtime.worksCatalog(), generation == loadGeneration else {
             if generation == loadGeneration { loading = false; failed = true }
@@ -278,7 +292,7 @@ struct WorkReaderView: View {
         loadGeneration &+= 1
         positionGeneration &+= 1
         let generation = loadGeneration
-        section = nil; pages = []; pageIndex = 0; loading = true; failed = false; saveNotice = nil
+        section = nil; pages = []; pageIndex = 0; loading = true; failed = false; saveNotice = nil; lockedIndex = nil
         anchor = nil
         storedAnchor = nil
         do {
@@ -294,6 +308,9 @@ struct WorkReaderView: View {
                 storedAnchor = nil
             }
             await buildPages()
+        } catch let locked as FathersLibraryLockedError {
+            guard generation == loadGeneration else { return }
+            loading = false; lockedIndex = locked.index
         } catch {
             guard generation == loadGeneration else { return }
             loading = false; failed = true

@@ -62,6 +62,7 @@ final class ContentFlowUITests: XCTestCase {
         app.terminate()
         app.launchArguments.removeAll { $0 == "-JohnResetNativeState" } // keep the state across the relaunch
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
 
@@ -404,6 +405,7 @@ final class ContentFlowUITests: XCTestCase {
         guard ProcessInfo.processInfo.environment["STEP7_REAL_CLOCK"] == "1" else { return launchWithFeatureClock(reset: false) }
         let app = XCUIApplication()
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         return app
@@ -849,6 +851,7 @@ final class ContentFlowUITests: XCTestCase {
                                "-L14FeatureTimeZone", featureZone]
         if reset { app.launchArguments += ["-JohnResetNativeState"] }
         app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] // full tab bar: no Read-tab minimize (Liquid-glass-tabview-review.md fix 2)
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         XCTAssertTrue(app.staticTexts["today-title"].waitForExistence(timeout: 12))
         return app

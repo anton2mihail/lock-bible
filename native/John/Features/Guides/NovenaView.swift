@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import JohnCore
 
 struct NovenaView: View {
@@ -9,6 +10,7 @@ struct NovenaView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
     @Environment(\.openURL) private var openURL
+    @Environment(\.requestReview) private var requestReview
     @ScaledMetric(relativeTo: .caption) private var dayTextHeight = 21.0
     @State private var loadedCatalog: DevotionalCatalog?
     @State private var intentionDraft: String?
@@ -334,7 +336,10 @@ struct NovenaView: View {
             guard routeGeneration == generation else { return }
             if success {
                 saveMessage = nil
-                if completesDay { dayCompleteCount += 1 }
+                if completesDay {
+                    dayCompleteCount += 1
+                    ReviewPrompt.prayerCompleted { requestReview() }
+                }
                 if clearIntentionOnSuccess, intentionRevision == revision {
                     intentionRevision &+= 1
                     intentionDraft = ""

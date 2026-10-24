@@ -32,7 +32,14 @@ struct JohnApp: App {
                     if let url = JohnActivity.url(from: activity) { runtime.enqueueExternalURL(url, using: router) }
                 }
                 .task { runtime.cloudSync.attach(runtime) }
-                .onChange(of: scenePhase) { _, phase in if phase == .active { runtime.cloudSync.syncNow() } }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active {
+                        runtime.cloudSync.syncNow()
+                        ReviewPrompt.recordOpen()
+                        Task { await runtime.fathers.refresh() }
+                    }
+                }
+                .task { ReviewPrompt.recordOpen(); runtime.fathers.start() }
                 .onChange(of: runtime.savedRevision) { _, _ in runtime.cloudSync.localDataChanged() }
                 .onContinueUserActivity(CSSearchableItemActionType) { activity in
                     guard let identifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,

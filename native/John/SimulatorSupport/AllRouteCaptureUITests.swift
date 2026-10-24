@@ -682,6 +682,7 @@ final class AllRouteCaptureUITests: XCTestCase {
         app.launchEnvironment["L25_VARIANT"] = variant.rawValue
         // Native only: keep the full tab bar (no Read-tab minimize). Never for the old app (Liquid-glass-tabview-review.md fix 2).
         if variant == .native { app.launchArguments += ["-JohnTabBarMinimize", "never", "-JohnReaderMode", "scroll"] }
+        app.launchArguments += ["-JohnFathersAccess", "purchased"] // 2.1.0: these checks read past the free Works sample
         app.launch()
         if variant == .baseline {
             // The Expo app can show only its splash color for tens of seconds on a loaded host. Wait for its tab bar.

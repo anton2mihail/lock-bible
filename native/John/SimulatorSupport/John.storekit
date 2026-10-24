@@ -1,0 +1,38 @@
+{
+  "identifier" : "4F1A7C2E",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : true,
+      "internalID" : "6754000001",
+      "localizations" : [
+        {
+          "description" : "Every work of the Fathers and Doctors in the app, offline. One payment.",
+          "displayName" : "The Fathers and Doctors",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.nrsv.verse.fathers",
+      "referenceName" : "The Fathers and Doctors",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

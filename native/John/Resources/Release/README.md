@@ -11,6 +11,7 @@ The generated app target resources are under `Resources/App/PrivacyInfo.xcprivac
 | Target | Source API | Reason | Evidence |
 | --- | --- | --- | --- |
 | App | `UserDefaults(suiteName:)` for App Group state | `1C8F.1` | `native/John/App/Runtime.swift`; Apple states this reason covers preferences shared by members of the same App Group. |
+| App | `UserDefaults.standard` for the app's own settings, the purchase cache and rating-prompt counters | `CA92.1` | `native/John/App/FathersLibraryStore.swift`, `native/John/App/ReviewPrompt.swift`, `native/John/Features/Secondary/SearchView.swift`, `native/John/Platform/Sync/CloudSyncModel.swift`; Apple states this reason covers data that only the app itself reads and writes. |
 | Widget extension | `UserDefaults(suiteName:)` for shared widget state | `1C8F.1` | `native/John/Widget/JohnWidget.swift`; same App Group store. |
 | App | `stat` in Core and MMKV to read app-container file metadata | `C617.1` | `native/John/Packages/JohnCore/Sources/JohnCore/SQLiteSupport.swift`, `native/John/LegacyAdapter/LegacyMMKVAdapter.mm`, and linked `Vendor/MMKVCore/MemoryFile.cpp`. |
 

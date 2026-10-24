@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import JohnCore
 
 struct RosaryGuideView: View {
@@ -12,6 +13,7 @@ struct RosaryGuideView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.requestReview) private var requestReview
     @State private var guide: RosaryGuideSession?
     @State private var loadedCredits: [String: String] = [:]
     @State private var loadFailed = false
@@ -293,6 +295,7 @@ struct RosaryGuideView: View {
             repetitionIndex += 1
         } else if stepIndex + 1 >= steps.count {
             complete = true
+            ReviewPrompt.prayerCompleted { requestReview() }
         } else {
             stepIndex += 1
             repetitionIndex = 0
