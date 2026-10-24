@@ -63,6 +63,7 @@ struct ReadingTodayCard: View {
     private var colors: JohnColors { preferences.colors(for: colorScheme) }
 
     private var plan: ReadingPlan? { snapshot.data.planID.flatMap(ReadingPlan.plan(id:)) }
+    private var showsRings: Bool { plan != nil || snapshot.data.totalRead(counts: snapshot.counts) > 0 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -84,6 +85,8 @@ struct ReadingTodayCard: View {
                     }
                 }
             }
+            // 2.1.1: a new reader sees no empty "0%" rings. They appear once a plan starts or a chapter is read.
+            if showsRings {
             ContentPanel {
                 HStack(spacing: 24) {
                     ringColumn(fraction: snapshot.overall, title: "All books",
@@ -94,6 +97,7 @@ struct ReadingTodayCard: View {
                                id: "progress-ring-john")
                     Spacer(minLength: 0)
                 }
+            }
             }
         }
         .task(id: runtime.progressRevision) {

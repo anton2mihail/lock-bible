@@ -13,6 +13,7 @@ struct ReaderView: View {
     @Environment(\.displayScale) private var displayScale
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var readerScrollPosition = ScrollPosition(idType: String.self)
     @State private var textGeometryProbe = ReaderTextGeometryProbe()
     @State private var readerScrollOffset: CGFloat = 0
@@ -415,6 +416,7 @@ struct ReaderView: View {
     }
 
     private var bookList: some View {
+        ScrollViewReader { proxy in
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 bookListHeader
@@ -438,7 +440,7 @@ struct ReaderView: View {
                                 Text("\(descriptor.name) \(lastRead.chapter)")
                                     .font(.custom("Lora-Regular", size: 20, relativeTo: .body))
                                 Spacer()
-                                FeatherIcon(name: "chevron-right", color: colors.tint)
+                                RowChevron(color: colors.tint)
                             }
                             .foregroundStyle(colors.text)
                             .padding(16)
@@ -460,7 +462,7 @@ struct ReaderView: View {
                             Text(fathersCountLabel)
                                 .font(bookListFont(15, weight: .medium))
                             Spacer()
-                            FeatherIcon(name: "chevron-right", color: colors.tint)
+                            RowChevron(color: colors.tint)
                         }
                         .foregroundStyle(colors.text)
                         .padding(16)
@@ -471,6 +473,9 @@ struct ReaderView: View {
                     .accessibilityIdentifier("reader-works-link")
                 }
                 .padding(.horizontal, 24)
+
+                testamentJumpBar(proxy)
+                    .padding(.horizontal, 24)
 
                 VStack(alignment: .leading, spacing: 24) {
                     ForEach(BookGroupOrder.allCases, id: \.self) { group in
@@ -487,8 +492,10 @@ struct ReaderView: View {
                                             Text(book.name)
                                                 .font(bookListFont(16))
                                                 .foregroundStyle(colors.text)
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.7) // 2.1.1: never break a book name inside a word
                                             Spacer()
-                                            FeatherIcon(name: "chevron-right", color: colors.textDim)
+                                            RowChevron(color: colors.textDim)
                                         }
                                         .frame(minHeight: 52)
                                         .overlay(alignment: .bottom) { Rectangle().fill(colors.separator).frame(height: 1) }
@@ -500,6 +507,7 @@ struct ReaderView: View {
                                     .accessibilityIdentifier("reader-book-\(book.code)")
                                 }
                             }
+                            .id(group)
                         }
                     }
                     if let message = model.message { MutedText(text: message) }
@@ -515,6 +523,50 @@ struct ReaderView: View {
         .contentMargins(.top, max(0, windowSafeAreaTop), for: .scrollContent)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .accessibilityIdentifier("reader-book-list")
+        }
+    }
+
+    /// Jumps to a part of the Bible (2.1.1). The list keeps all 73 books, so search, VoiceOver order and
+    /// links into a book do not change. The scroll answers a tap, so it may animate.
+    private func testamentJumpBar(_ proxy: ScrollViewProxy) -> some View {
+        let parts: [(BookGroupOrder, String)] = [(.ot, "Old Testament"), (.deutero, "Deuterocanon"), (.nt, "New Testament")]
+        return Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 0) {
+                    ForEach(Array(parts.enumerated()), id: \.offset) { index, part in
+                        jumpButton(part.0, part.1, proxy)
+                            .overlay(alignment: .top) { if index > 0 { Rectangle().fill(colors.separator).frame(height: 1) } }
+                    }
+                }
+            } else {
+                HStack(spacing: 0) {
+                    ForEach(Array(parts.enumerated()), id: \.offset) { index, part in
+                        jumpButton(part.0, part.1, proxy)
+                            .overlay(alignment: .leading) { if index > 0 { Rectangle().fill(colors.separator).frame(width: 1, height: 22) } }
+                    }
+                }
+            }
+        }
+        .background(colors.card, in: RoundedRectangle(cornerRadius: 14))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Go to")
+    }
+
+    private func jumpButton(_ group: BookGroupOrder, _ title: String, _ proxy: ScrollViewProxy) -> some View {
+        Button {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.3)) { proxy.scrollTo(group, anchor: .top) }
+        } label: {
+            Text(title)
+                .font(bookListFont(13, weight: .medium))
+                .foregroundStyle(colors.tint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .padding(.horizontal, 6)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("reader-jump-\(group.rawValue)")
     }
 
     private var bookListHeader: some View {
@@ -1248,7 +1300,7 @@ struct ReaderView: View {
                                         .foregroundStyle(colors.textDim)
                                 }
                                 Spacer(minLength: 0)
-                                FeatherIcon(name: "chevron-right", color: colors.tint)
+                                RowChevron(color: colors.tint)
                             }
                             .padding(.vertical, 8)
                             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
@@ -1271,7 +1323,7 @@ struct ReaderView: View {
                             HStack {
                                 Text("All \(entries.count) readings on this chapter")
                                 Spacer()
-                                FeatherIcon(name: "chevron-right", color: colors.tint)
+                                RowChevron(color: colors.tint)
                             }
                             .font(JohnTypography.sans(15, weight: .medium))
                             .foregroundStyle(colors.text)

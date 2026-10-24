@@ -56,7 +56,7 @@ struct WorksCollectionView: View {
                                             .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
                                     }
                                     Spacer(minLength: 0)
-                                    Text("›").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
+                                    RowChevron(color: colors.tint)
                                 }
                                 .frame(minHeight: 68)
                                 .padding(.vertical, 8)

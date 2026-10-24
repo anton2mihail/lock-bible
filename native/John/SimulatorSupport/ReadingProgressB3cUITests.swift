@@ -28,16 +28,17 @@ final class ReadingProgressB3cUITests: XCTestCase {
     func testRingsPlanAndMarkRead() throws {
         let app = launch()
         let overall = app.descendants(matching: .any)["progress-ring-overall"]
-        scrollTo(overall, in: app)
-        // First frame: the ring shows its final value, and it is zero on clean state.
-        XCTAssertTrue((overall.value as? String ?? "").hasPrefix("0 percent"), "\(String(describing: overall.value))")
-
         let start = app.buttons["today-plan-start-john-21"]
         scrollTo(start, in: app)
+        // 2.1.1: on clean state (no plan, nothing read) Today shows no empty rings.
+        XCTAssertFalse(overall.exists, "Rings must stay hidden before a plan starts")
         start.tap()
         let assignment = app.staticTexts["today-plan-assignment"]
         XCTAssertTrue(assignment.waitForExistence(timeout: 5))
         XCTAssertEqual(assignment.label, "Today: John 1")
+        // After the plan starts the rings appear, drawn at their final value: zero.
+        scrollTo(overall, in: app)
+        XCTAssertTrue((overall.value as? String ?? "").hasPrefix("0 percent"), "\(String(describing: overall.value))")
 
         app.buttons["today-plan-open"].tap()
         let mark = app.buttons["reader-mark-read"]
@@ -76,6 +77,9 @@ final class ReadingProgressB3cUITests: XCTestCase {
         start.tap()
         XCTAssertTrue(app.staticTexts["today-plan-assignment"].waitForExistence(timeout: 5))
         tab("settings", in: app).tap()
+        let progressPage = app.buttons["settings-page-progress"]
+        scrollTo(progressPage, in: app)
+        progressPage.tap()
         let reset = app.buttons["settings-reset-progress"]
         scrollTo(reset, in: app)
         XCTAssertTrue(app.switches["settings-reading-reminder"].exists)

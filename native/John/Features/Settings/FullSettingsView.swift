@@ -2,12 +2,30 @@ import AVFoundation
 import SwiftUI
 import JohnCore
 
+/// The Settings pages (2.1.1). The root keeps what people change most: the library purchase, reading look and
+/// translation. Longer, rarely used sections have their own pages, opened from rows on the root.
+enum SettingsPage: String, Hashable, Sendable {
+    case verse, progress, readAloud, about
+
+    var title: String {
+        switch self {
+        case .verse: "Verse & Lock Screen"
+        case .progress: "Reading Progress"
+        case .readAloud: "Read Aloud"
+        case .about: "About John 1:1"
+        }
+    }
+}
+
 struct FullSettingsView: View {
+    var page: SettingsPage? = nil
     let onOpenCalendarNotifications: () -> Void
+    var onOpenPage: (SettingsPage) -> Void = { _ in }
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var metadata: [TranslationID: BibleTranslationMetadata] = [:]
     @State private var coverage: CalendarCoverage?
     @State private var loadFailed = false
@@ -21,13 +39,13 @@ struct FullSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Text("Settings")
+                Text(page?.title ?? "Settings")
                     .font(JohnTypography.sans(36, weight: .bold))
                     .foregroundStyle(colors.text)
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .minimumScaleFactor(0.72)
                     .accessibilityAddTraits(.isHeader)
-                    .accessibilityIdentifier("settings-title")
+                    .accessibilityIdentifier(page == nil ? "settings-title" : "settings-page-title")
 
                 if let saveMessage {
                     Text(saveMessage).font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
@@ -38,134 +56,12 @@ struct FullSettingsView: View {
                         .font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
                 }
 
-                section("The Fathers & Doctors") {
-                    Button { unlockPresented = true } label: {
-                        HStack(spacing: 16) {
-                            Image(systemName: "books.vertical")
-                                .font(.system(size: 20, weight: .regular))
-                                .foregroundStyle(colors.tint)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(fathersTitle).font(JohnTypography.sans(16, weight: .medium)).foregroundStyle(colors.text)
-                                Text(fathersDetail).font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            Spacer(minLength: 0)
-                            Text("›").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
-                        }
-                        .frame(minHeight: 72)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("settings-fathers")
-                    Button {
-                        Task { await runtime.fathers.restore() }
-                    } label: {
-                        Text("Restore Purchases").font(JohnTypography.sans(16)).foregroundStyle(colors.tint)
-                            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
-                            .overlay(alignment: .top) { Rectangle().fill(colors.separator).frame(height: 1) }
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("settings-restore-purchases")
-                    if let message = runtime.fathers.restoreMessage {
-                        Text(message).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.bottom, 12)
-                            .contentAnnouncement(message)
-                    }
-                }
-
-                section("Reading") {
-                    ReadingSettingsChoices(save: save)
-                }
-
-                section("Reading progress") {
-                    ReadingProgressSettings()
-                }
-
-                if CloudSyncModel.isAvailable {
-                    section("iCloud sync") {
-                        CloudSyncSettings()
-                    }
-                }
-
-                section("Read aloud") {
-                    ReadAloudSettings(controller: runtime.readAloud)
-                }
-
-                section("Translation") {
-                    ForEach(Array(orderedTranslations.enumerated()), id: \.element) { index, id in
-                    SettingsListRow(title: metadata[id]?.fullName ?? id.rawValue,
-                                    selected: preferences.translation == id,
-                                    topSeparator: index > 0,
-                                    accessibilityID: "translation-\(id.rawValue)") {
-                            save(.setTranslationID(id.rawValue))
-                        }
-                    }
-                    Text("\(orderedTranslations.count) complete Catholic editions are available offline. Your choice also controls the rotating verse and lock-screen widget.")
-                        .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
-                }
-
-                section("Verse pool") {
-                    SettingsListRow(title: "Full Bible", selected: preferences.scope == .full,
-                                    accessibilityID: "settings-scope-full") { save(.setVerseScope(.full)) }
-                    SettingsListRow(title: "Old Testament", selected: preferences.scope == .ot, topSeparator: true,
-                                    accessibilityID: "settings-scope-ot") { save(.setVerseScope(.ot)) }
-                    SettingsListRow(title: "New Testament", selected: preferences.scope == .nt, topSeparator: true,
-                                    accessibilityID: "settings-scope-nt") { save(.setVerseScope(.nt)) }
-                    Text("Which part of Scripture the rotating verse is drawn from. Old Testament includes the deuterocanonical books.")
-                        .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
-                }
-
-                section("Verse rotation") {
-                    ForEach(Array(intervalOptions.enumerated()), id: \.element.minutes) { index, option in
-                        SettingsListRow(title: option.title, selected: preferences.intervalMinutes == option.minutes,
-                                        topSeparator: index > 0,
-                                        accessibilityID: "settings-interval-\(option.minutes)") {
-                            save(.setRotationInterval(option.minutes))
-                        }
-                    }
-                    Text("How often the Verse of the Moment and your lock screen widget change.")
-                        .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
-                }
-
-                section("Lock screen widgets") {
-                    Text("1. Touch and hold your lock screen, then tap Customize.\n2. Tap the box under the clock and choose this app.\n3. Choose “Daily Verse” for rotating Scripture or “Daily Reading” for today’s Gospel. You can add both. “Verse Countdown” shows time until the next rotating verse.\n4. Pick the rectangular size for full text, or the inline/circular size for a compact view.")
-                        .font(JohnTypography.sans(16)).lineSpacing(4).foregroundStyle(colors.text).padding(.vertical, 12)
-                }
-
-                section("Calendar notifications") {
-                    Button(action: onOpenCalendarNotifications) {
-                        HStack(spacing: 16) {
-                            Image(systemName: "bell")
-                                .font(.system(size: 20, weight: .regular))
-                                .foregroundStyle(colors.tint)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Saints, feasts & daily readings").font(JohnTypography.sans(16, weight: .medium)).foregroundStyle(colors.text)
-                                Text("Choose a delivery time and turn notices on or off")
-                                    .font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
-                            }
-                            Spacer(minLength: 0)
-                            Text("›").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
-                        }
-                        .frame(minHeight: 72)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("settings-calendar-notifications")
-                }
-
-                section("John 1:1 · Scripture & Prayer") {
-                    Text("A little closer to God, every day.").font(JohnTypography.sans(16)).foregroundStyle(colors.text).padding(.top, 8)
-                    Text("United States · Roman Rite. Offline reading references: \(coverage?.label ?? "No offline dates installed"). Local observances can differ.")
-                        .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
-                    Text("Paintings are public-domain works from Wikimedia Commons. The app icon is a detail of the 6th-century Christ Pantocrator icon at Sinai. Prayers, novenas, and teachings are quoted from the sources named beside them; the app adds no prayers or commentary of its own.")
-                        .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
-                    Text("Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved.")
-                        .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
-                    if let selected = metadata[preferences.translation] {
-                        Text(selected.attribution).font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
-                        Text(selected.copyrightNotice).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.top, 8)
-                    }
+                switch page {
+                case nil: rootContent
+                case .verse?: verseContent
+                case .progress?: progressContent
+                case .readAloud?: readAloudContent
+                case .about?: aboutContent
                 }
             }
             .frame(maxWidth: 740, alignment: .leading)
@@ -177,6 +73,209 @@ struct FullSettingsView: View {
         .background(colors.background)
         .task { await loadInformation() }
         .sheet(isPresented: $unlockPresented) { FathersUnlockScreen() }
+    }
+
+    // MARK: Root
+
+    @ViewBuilder private var rootContent: some View {
+        section("The Fathers & Doctors") {
+            Button { unlockPresented = true } label: {
+                navigationRow(symbol: "books.vertical", title: fathersTitle, detail: fathersDetail)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-fathers")
+            Button {
+                Task { await runtime.fathers.restore() }
+            } label: {
+                Text("Restore Purchases").font(JohnTypography.sans(16)).foregroundStyle(colors.tint)
+                    .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                    .overlay(alignment: .top) { Rectangle().fill(colors.separator).frame(height: 1) }
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-restore-purchases")
+            if let message = runtime.fathers.restoreMessage {
+                Text(message).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.bottom, 12)
+                    .contentAnnouncement(message)
+            }
+        }
+
+        section("Reading") {
+            ReadingSettingsChoices(save: save)
+        }
+
+        section("Translation") {
+            ForEach(Array(orderedTranslations.enumerated()), id: \.element) { index, id in
+                SettingsListRow(title: metadata[id]?.fullName ?? id.rawValue,
+                                selected: preferences.translation == id,
+                                topSeparator: index > 0,
+                                accessibilityID: "translation-\(id.rawValue)") {
+                    save(.setTranslationID(id.rawValue))
+                }
+            }
+            Text("\(orderedTranslations.count) complete Catholic editions are available offline. Your choice also controls the rotating verse and lock-screen widget.")
+                .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.top, 12)
+            if let selected = metadata[preferences.translation] {
+                Text(selected.attribution).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.top, 8)
+                Text(selected.copyrightNotice).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 8)
+            }
+        }
+
+        section("More") {
+            Button { onOpenPage(.verse) } label: {
+                navigationRow(symbol: "lock.rectangle", title: SettingsPage.verse.title,
+                              detail: "Verse pool, how often it changes, and widgets")
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-page-verse")
+            Button(action: onOpenCalendarNotifications) {
+                navigationRow(symbol: "bell", title: "Notifications",
+                              detail: "Saints, feasts & daily readings", separator: true)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-calendar-notifications")
+            Button { onOpenPage(.progress) } label: {
+                navigationRow(symbol: "chart.bar", title: CloudSyncModel.isAvailable ? "Reading Progress & iCloud" : SettingsPage.progress.title,
+                              detail: "Chapters read" + (CloudSyncModel.isAvailable ? " and sync" : ""), separator: true)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-page-progress")
+            Button { onOpenPage(.readAloud) } label: {
+                navigationRow(symbol: "speaker.wave.2", title: SettingsPage.readAloud.title,
+                              detail: "Speech rate and voice", separator: true)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-page-read-aloud")
+            Button { onOpenPage(.about) } label: {
+                navigationRow(symbol: "info.circle", title: SettingsPage.about.title,
+                              detail: "Calendar, sources and credits", separator: true)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("settings-page-about")
+        }
+    }
+
+    // MARK: Pages
+
+    @ViewBuilder private var verseContent: some View {
+        section("Verse pool") {
+            SettingsListRow(title: "Full Bible", selected: preferences.scope == .full,
+                            accessibilityID: "settings-scope-full") { save(.setVerseScope(.full)) }
+            SettingsListRow(title: "Old Testament", selected: preferences.scope == .ot, topSeparator: true,
+                            accessibilityID: "settings-scope-ot") { save(.setVerseScope(.ot)) }
+            SettingsListRow(title: "New Testament", selected: preferences.scope == .nt, topSeparator: true,
+                            accessibilityID: "settings-scope-nt") { save(.setVerseScope(.nt)) }
+            Text("Which part of Scripture the rotating verse is drawn from. Old Testament includes the deuterocanonical books.")
+                .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.vertical, 12)
+        }
+
+        section("Verse rotation") {
+            HStack(spacing: 12) {
+                Text("New verse").font(JohnTypography.sans(16)).foregroundStyle(colors.text)
+                Spacer(minLength: 0)
+                Picker("New verse", selection: Binding(
+                    get: { preferences.intervalMinutes },
+                    set: { save(.setRotationInterval($0)) }
+                )) {
+                    ForEach(intervalOptions, id: \.minutes) { option in
+                        Text(option.title).tag(option.minutes)
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(colors.tint)
+                .accessibilityIdentifier("settings-interval")
+            }
+            .frame(minHeight: 56)
+            Text("How often the Verse of the Moment and your lock screen widget change.")
+                .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.bottom, 12)
+        }
+
+        section("Add a Lock Screen widget") {
+            widgetStep(1, symbol: "hand.tap", "Touch and hold your Lock Screen, then tap Customize.")
+            widgetStep(2, symbol: "rectangle.dashed", "Tap the box under the clock and choose John 1:1.")
+            widgetStep(3, symbol: "text.quote", "Choose Daily Verse for rotating Scripture, or Daily Reading for today’s Gospel. You can add both. Verse Countdown shows the time to the next verse.")
+            widgetStep(4, symbol: "rectangle.portrait", "Pick the wide size for full text, or the small size for a short view.")
+        }
+    }
+
+    @ViewBuilder private var progressContent: some View {
+        section("Reading progress") {
+            ReadingProgressSettings()
+        }
+        if CloudSyncModel.isAvailable {
+            section("iCloud sync") {
+                CloudSyncSettings()
+            }
+        }
+    }
+
+    @ViewBuilder private var readAloudContent: some View {
+        section("Read aloud") {
+            ReadAloudSettings(controller: runtime.readAloud)
+        }
+    }
+
+    @ViewBuilder private var aboutContent: some View {
+        section("John 1:1 · Scripture & Prayer") {
+            Text("A little closer to God, every day.").font(JohnTypography.sans(16)).foregroundStyle(colors.text).padding(.top, 8)
+            Text("United States · Roman Rite. Offline reading references: \(coverage?.label ?? "No offline dates installed"). Local observances can differ.")
+                .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
+            Text("Paintings are public-domain works from Wikimedia Commons. The app icon is a detail of the 6th-century Christ Pantocrator icon at Sinai. Prayers, novenas, and teachings are quoted from the sources named beside them; the app adds no prayers or commentary of its own.")
+                .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.top, 8)
+            Text("Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved.")
+                .font(JohnTypography.sans(14)).foregroundStyle(colors.text).padding(.vertical, 8)
+        }
+    }
+
+    // MARK: Rows
+
+    private func navigationRow(symbol: String, title: String, detail: String, separator: Bool = false) -> some View {
+        HStack(spacing: dynamicTypeSize.isAccessibilitySize ? 8 : 16) {
+            // At accessibility sizes the decorative icon goes, so the words keep the full width.
+            if !dynamicTypeSize.isAccessibilitySize {
+                Image(systemName: symbol)
+                    .font(.system(size: 20, weight: .regular))
+                    .foregroundStyle(colors.tint)
+                    .frame(width: 24)
+                    .accessibilityHidden(true)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(JohnTypography.sans(16, weight: .medium)).foregroundStyle(colors.text)
+                Text(detail).font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+            RowChevron(color: colors.tint)
+        }
+        .frame(minHeight: 72)
+        .overlay(alignment: .top) { if separator { Rectangle().fill(colors.separator).frame(height: 1) } }
+        .contentShape(Rectangle())
+    }
+
+    private func widgetStep(_ number: Int, symbol: String, _ text: String) -> some View {
+        HStack(alignment: .top, spacing: 14) {
+            Text("\(number)")
+                .font(JohnTypography.sans(14, weight: .semibold))
+                .foregroundStyle(colors.card)
+                .frame(width: 28, height: 28)
+                .background(colors.tint, in: Circle())
+                .accessibilityHidden(true)
+            Text(text)
+                .font(JohnTypography.sans(15)).lineSpacing(3).foregroundStyle(colors.text)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+            if !dynamicTypeSize.isAccessibilitySize {
+            Image(systemName: symbol)
+                .font(.system(size: 22, weight: .light))
+                .foregroundStyle(colors.textDim)
+                .frame(width: 30)
+                .accessibilityHidden(true)
+            }
+        }
+        .padding(.vertical, 12)
+        .overlay(alignment: .top) { if number > 1 { Rectangle().fill(colors.separator).frame(height: 1) } }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Step \(number). \(text)")
     }
 
     private var fathersTitle: String {

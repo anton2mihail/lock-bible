@@ -49,6 +49,10 @@ struct DestinationView: View {
                 onSave: { try await runtime.saveCalendarNotifications($0) },
                 onOpenSystemSettings: openNotificationSettings
             )
+        case .settingsPage(let page):
+            FullSettingsView(page: page,
+                             onOpenCalendarNotifications: { router.push(.calendarNotifications) },
+                             onOpenPage: { router.push(.settingsPage($0)) })
         case .rosaryReminder:
             RosaryReminderView(
                 initialSettings: runtime.committedNativeState?.rosaryReminder ?? RosaryReminderSettings(),

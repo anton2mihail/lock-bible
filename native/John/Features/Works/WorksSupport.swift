@@ -11,9 +11,12 @@ struct WorksPage<Content: View>: View {
             VStack(alignment: .leading, spacing: 24) {
                 content
             }
+            // 2.1.1: the same readable width as Settings, centred on iPad.
+            .frame(maxWidth: 740, alignment: .leading)
             .padding(.horizontal, 24)
             .padding(.top, 12)
             .padding(.bottom, 32)
+            .frame(maxWidth: .infinity)
         }
         .scrollDismissesKeyboard(.interactively)
         .background(colors.background)

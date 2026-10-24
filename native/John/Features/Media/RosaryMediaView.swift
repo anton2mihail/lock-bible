@@ -208,7 +208,7 @@ struct RosaryMediaView: View {
                     Text(episode.subtitle).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).lineLimit(2)
                 }
                 Spacer(minLength: 0)
-                Text("›").font(JohnTypography.sans(20)).foregroundStyle(colors.tint)
+                RowChevron(color: colors.tint)
             }
             .padding(12).frame(minHeight: 76).background(colors.card, in: RoundedRectangle(cornerRadius: 16))
             .overlay(RoundedRectangle(cornerRadius: 16).stroke(selected ? colors.tint : .clear, lineWidth: 1))

@@ -21,6 +21,10 @@ final class SyncHandoffB4cUITests: XCTestCase {
     func testICloudSyncIsOffByDefaultAndToggleShowsStatus() throws {
         let app = launch()
         openTab(app, "Settings")
+        let progressPage = app.buttons["settings-page-progress"]
+        var pageSwipes = 0
+        while !(progressPage.exists && progressPage.isHittable) && pageSwipes < 8 { app.swipeUp(); pageSwipes += 1 }
+        if progressPage.exists { progressPage.tap() }
         let toggle = app.switches["settings-icloud-sync-toggle"]
         var swipes = 0
         while !toggle.exists && swipes < 8 { app.swipeUp(); swipes += 1 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import JohnCore
 
 /// The one purchase page. The reader shows it in place of a locked section; Settings and the library open it too.
@@ -18,6 +19,7 @@ struct FathersUnlockPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            artwork
             WorksEyebrow("THE FATHERS & DOCTORS")
             if let sampleNotice {
                 Text(sampleNotice)
@@ -57,6 +59,26 @@ struct FathersUnlockPanel: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("fathers-unlock")
+    }
+
+    /// 2.1.1: the bundled public-domain painting, "The Four Evangelists" by Abraham Bloemaert (artwork key
+    /// `scripture`, credited in `assets/artwork/sources.json`). It shows at its final state, with no animation.
+    @ViewBuilder private var artwork: some View {
+        if let url = Bundle.main.resourceURL?.appendingPathComponent("App/Artwork/scripture.jpg"),
+           let image = UIImage(contentsOfFile: url.path) {
+            VStack(alignment: .leading, spacing: 6) {
+                Color.clear
+                    .frame(height: 180)
+                    .frame(maxWidth: .infinity)
+                    .overlay { Image(uiImage: image).resizable().scaledToFill() }
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .accessibilityHidden(true)
+                Text("Abraham Bloemaert, The Four Evangelists, c. 1612–15")
+                    .font(JohnTypography.sans(11))
+                    .foregroundStyle(colors.textDim)
+                    .accessibilityHidden(true)
+            }
+        }
     }
 
     private var summary: String {

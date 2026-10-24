@@ -277,7 +277,7 @@ private struct JohnRootView: View {
                         .accessibilityIdentifier(tab.identifier)
                 }
             }
-            .navigationTitle("John")
+            .navigationTitle("John 1:1")
             .accessibilityIdentifier("ipad-sidebar")
         } detail: {
             tabStack(router.selectedTab)

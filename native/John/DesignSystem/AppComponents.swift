@@ -139,3 +139,12 @@ extension View {
         modifier(JohnGlassSurface(cornerRadius: cornerRadius, colors: colors))
     }
 }
+
+/// The one disclosure chevron for list rows and cards (2.1.1). Every row that opens another screen uses it,
+/// so rows look the same in the Bible, the library, prayers and Settings. Hidden from VoiceOver: the row's
+/// button trait already says it opens something.
+struct RowChevron: View {
+    var color: Color
+    var size: CGFloat = 20
+    var body: some View { FeatherIcon(name: "chevron-right", size: size, color: color) }
+}

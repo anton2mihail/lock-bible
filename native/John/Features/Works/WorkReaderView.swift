@@ -48,7 +48,8 @@ struct WorkReaderView: View {
     private var pageCount: Int { pages.count }
     private var currentPageAnchor: WorksAnchor? { pages.indices.contains(pageIndex) ? pages[pageIndex].anchor : nil }
     private var reading: ReadingPreferences { preferences.reading }
-    private let pageInset: CGFloat = 24
+    /// 2.1.1: at most about 680 pt of text per line. On iPhone this stays 24 pt; on a wide iPad the margins grow.
+    private var pageInset: CGFloat { max(24, (lastViewport.width - 680) / 2) }
     private var needsExpandedWorkTitle: Bool {
         currentTitle.count > 24 || (work?.title.count ?? 0) > 24
     }
@@ -147,15 +148,7 @@ struct WorkReaderView: View {
                 if let saveNotice { Text(saveNotice).font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).contentAnnouncement(saveNotice) }
                 footer
                     .dynamicTypeSize(.xSmall ... .xLarge)
-                if let collection {
-                    Text(collection.translation)
-                        .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
-                        .dynamicTypeSize(.xSmall ... .xLarge)
-                        .frame(maxWidth: .infinity)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityLabel(collection.translation)
-                        .padding(.top, 4)
-                }
+                // 2.1.1: the translation credit is in the Contents sheet, so the footer is one line.
             }
             .padding(.horizontal, pageInset)
         }
@@ -184,23 +177,24 @@ struct WorkReaderView: View {
     private var footer: some View {
         HStack {
             Button { changeSection(currentSectionIndex - 1) } label: {
-                Text("‹").font(JohnTypography.sans(24)).foregroundStyle(isFirst ? colors.border : colors.tint).frame(minWidth: 44, minHeight: 44)
+                FeatherIcon(name: "chevron-left", size: 22, color: isFirst ? colors.border : colors.tint).frame(minWidth: 44, minHeight: 44)
             }
             .disabled(isFirst)
             .accessibilityLabel("Previous \(currentNoun)")
             Spacer()
-            VStack(spacing: 0) {
+            HStack(spacing: 6) {
                 Button { contentsPresented = true } label: {
                     Text("\(currentSectionIndex + 1) of \(sectionCount)")
                         .font(JohnTypography.sans(12, weight: .semibold).monospacedDigit())
                         .foregroundStyle(sectionCount < 2 ? colors.textDim : colors.tint)
                         .frame(minHeight: 44)
-                        .padding(.horizontal, 12)
+                        .padding(.leading, 12)
                 }
                 .disabled(sectionCount < 2)
                 .accessibilityLabel("Contents, \(currentNoun) \(currentSectionIndex + 1) of \(sectionCount)")
+                Text("·").font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).accessibilityHidden(true)
                 Text(lockedIndex != nil ? "In the full library" : (pageCount > 0 ? "Page \(pageIndex + 1) of \(pageCount)" : "Loading pages"))
-                    .font(JohnTypography.sans(10, weight: .medium).monospacedDigit())
+                    .font(JohnTypography.sans(12, weight: .medium).monospacedDigit())
                     .foregroundStyle(colors.textDim)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -210,7 +204,7 @@ struct WorkReaderView: View {
             .frame(minHeight: 44)
             Spacer()
             Button { changeSection(currentSectionIndex + 1) } label: {
-                Text("›").font(JohnTypography.sans(24)).foregroundStyle(isLast ? colors.border : colors.tint).frame(minWidth: 44, minHeight: 44)
+                FeatherIcon(name: "chevron-right", size: 22, color: isLast ? colors.border : colors.tint).frame(minWidth: 44, minHeight: 44)
             }
             .disabled(isLast)
             .accessibilityLabel("Next \(currentNoun)")
@@ -238,6 +232,18 @@ struct WorkReaderView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .safeAreaInset(edge: .bottom) {
+                if let collection {
+                    Text(collection.translation)
+                        .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 24).padding(.vertical, 12)
+                        .background(colors.background)
+                        .accessibilityIdentifier("works-translation-credit")
+                }
+            }
             .onAppear { proxy.scrollTo(currentSectionIndex, anchor: .center) }
           }
             .navigationTitle(work?.title ?? "Contents")

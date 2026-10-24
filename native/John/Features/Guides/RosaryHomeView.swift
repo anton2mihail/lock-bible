@@ -81,7 +81,7 @@ struct RosaryHomeView: View {
                             ContentMutedText(text: "Scheduled privately on this device")
                         }
                         Spacer(minLength: 0)
-                        Text("›").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
+                        RowChevron(color: colors.tint)
                     }
                     .padding(16)
                     .frame(minHeight: 96)
@@ -189,7 +189,7 @@ struct RosaryHomeView: View {
                     Text(detail).font(JohnTypography.sans(14)).foregroundStyle(colors.textDim)
                 }
                 Spacer(minLength: 0)
-                Text("›").font(JohnTypography.sans(24)).foregroundStyle(colors.tint)
+                RowChevron(color: colors.tint)
             }
             .padding(16)
             .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)

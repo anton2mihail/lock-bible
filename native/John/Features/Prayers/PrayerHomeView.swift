@@ -262,10 +262,8 @@ private struct NovenaLibraryCard: View {
                             .padding(.top, 4)
                     }
                     Spacer(minLength: 0)
-                    Text("›")
-                        .font(JohnTypography.sans(24))
-                        .foregroundStyle(colors.tint)
-                        .padding(.top, -5)
+                    RowChevron(color: colors.tint)
+                        .padding(.top, 2)
                 }
                 HStack(spacing: 8) {
                     ForEach(1...9, id: \.self) { day in

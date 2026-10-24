@@ -52,6 +52,7 @@ enum AppRoute: Hashable, Sendable {
     case companion(CompanionRoute)
     case verseMoment(VerseMomentSelection)
     case calendarNotifications
+    case settingsPage(SettingsPage)
     case rosaryReminder
     case rosaryMedia(String)
     case workCollection(String)

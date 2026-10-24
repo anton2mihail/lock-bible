@@ -40,18 +40,22 @@ final class WorksSettingsUITests: XCTestCase {
             tapAndWaitForSelection(target, in: app)
         }
 
+        // 2.1.1: verse pool and rotation live on Settings › Verse & Lock Screen; rotation is one menu picker.
+        tapWhenReady(app.buttons["settings-page-verse"], in: app)
+        XCTAssertTrue(app.staticTexts["settings-page-title"].waitForExistence(timeout: 8))
         let scopeOptions = ["settings-scope-full", "settings-scope-ot", "settings-scope-nt"]
         let originalScopeID = try selectedIdentifier(scopeOptions, in: app)
         let changedScopeID = originalScopeID == "settings-scope-ot" ? "settings-scope-nt" : "settings-scope-ot"
         let originalScope = settingsRowLabel(originalScopeID)
         tapAndWaitForSelection(changedScopeID, in: app)
-
-        let cadenceOptions = ["settings-interval-10", "settings-interval-15", "settings-interval-30", "settings-interval-60",
-                              "settings-interval-180", "settings-interval-360", "settings-interval-720", "settings-interval-1440"]
-        let originalCadenceID = try selectedIdentifier(cadenceOptions, in: app)
-        let changedCadenceID = originalCadenceID == "settings-interval-10" ? "settings-interval-15" : "settings-interval-10"
-        let originalCadence = settingsRowLabel(originalCadenceID)
-        tapAndWaitForSelection(changedCadenceID, in: app)
+        let picker = app.buttons["settings-interval"]
+        XCTAssertTrue(picker.waitForExistence(timeout: 8))
+        let originalCadence = picker.value as? String ?? picker.label
+        let changedCadence = originalCadence.contains("Every 10 minutes") ? "Every 15 minutes" : "Every 10 minutes"
+        chooseCadence(changedCadence, picker: picker, in: app)
+        tapAndWaitForSelection(originalScopeID, in: app)
+        chooseCadence(cadenceTitle(in: originalCadence), picker: picker, in: app)
+        tapSystemBack(in: app, expecting: app.staticTexts["settings-title"])
 
         let editionRows: [(id: String, fullName: String, attribution: String, copyright: String)] = [
             ("web-ce", "World English Bible — Catholic Edition",
@@ -73,17 +77,17 @@ final class WorksSettingsUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts[edition.copyright].exists, "Missing copyright for \(edition.id)")
         }
         tapAndWaitForSelection(initialTranslation, in: app)
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Offline reading references:")).firstMatch.exists)
+        tapWhenReady(app.buttons["settings-page-about"], in: app)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Offline reading references:")).firstMatch.waitForExistence(timeout: 8))
         let metadata = "Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved."
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label == %@", metadata)).firstMatch.exists)
+        tapSystemBack(in: app, expecting: app.staticTexts["settings-title"])
 
         for group in groups.reversed() {
             if let original = originalChoices[group.name] {
                 tapAndWaitForSelection(original, in: app)
             }
         }
-        tapAndWaitForSelection(originalScopeID, in: app)
-        tapAndWaitForSelection(originalCadenceID, in: app)
 
         NSLog("SETTINGS_EXPECTED changed=%@ restored=%@ translation=%@ scope=%@ interval=%@",
               changedChoices.description, originalChoices.description, initialTranslation, originalScope, originalCadence)
@@ -288,6 +292,24 @@ final class WorksSettingsUITests: XCTestCase {
         }
         XCTFail("No selected value in: \(identifiers)")
         throw TestError.noSelection
+    }
+
+    private static let cadenceTitles = ["Every 10 minutes", "Every 15 minutes", "Every 30 minutes", "Every hour",
+                                        "Every 3 hours", "Every 6 hours", "Every 12 hours", "Once a day"]
+
+    private func cadenceTitle(in text: String) -> String {
+        Self.cadenceTitles.first { text.contains($0) } ?? "Once a day"
+    }
+
+    /// Opens the rotation menu picker and chooses one option, then waits until the picker shows it.
+    private func chooseCadence(_ title: String, picker: XCUIElement, in app: XCUIApplication) {
+        tapWhenReady(picker, in: app)
+        let option = app.buttons.matching(NSPredicate(format: "label == %@", title)).firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 5), "Missing rotation option \(title)")
+        option.tap()
+        let shown = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value CONTAINS %@ OR label CONTAINS %@", title, title), object: picker)
+        XCTAssertEqual(XCTWaiter.wait(for: [shown], timeout: 8), .completed, "Rotation did not save: \(title)")
     }
 
     private func tapAndWaitForSelection(_ identifier: String, in app: XCUIApplication) {

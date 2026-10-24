@@ -20,7 +20,8 @@ struct SecondaryRootView: View {
             PrayerHomeView(timeZone: runtime.featureTimeZone, clock: { runtime.featureNow() },
                            onNavigate: { router.push(.companion($0)) })
         case .settings:
-            FullSettingsView(onOpenCalendarNotifications: { router.push(.calendarNotifications) })
+            FullSettingsView(onOpenCalendarNotifications: { router.push(.calendarNotifications) },
+                             onOpenPage: { router.push(.settingsPage($0)) })
         case .today:
             CompanionTodayView(onNavigate: { router.push(.companion($0)) },
                                onOpenVerseMoment: {
@@ -44,7 +45,7 @@ private struct ActionLink: View {
                     Text(subtitle).font(JohnTypography.sans(14)).foregroundStyle(preferences.colors(for: colorScheme).textDim)
                 }
                 Spacer()
-                FeatherIcon(name: "chevron-right", color: preferences.colors(for: colorScheme).tint)
+                RowChevron(color: preferences.colors(for: colorScheme).tint)
             }
             .padding(18)
             .background(preferences.colors(for: colorScheme).card, in: RoundedRectangle(cornerRadius: 14))
