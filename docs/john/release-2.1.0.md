@@ -1,6 +1,6 @@
 # 2.1.0 — The Fathers and Doctors unlock
 
-**Status: built and checked on the simulator, not uploaded, not submitted.** Branch `release/2.1.0`.
+**Status: build 29 uploaded to App Store Connect on 23 October 2026 (delivery 117f6945), not submitted for review.** Branch `release/2.1.0`.
 Plan: [`../store-conversion-and-first-unlock-plan.md`](../store-conversion-and-first-unlock-plan.md). Store text: [`../store-text-2026-10-23.md`](../store-text-2026-10-23.md).
 
 ## What changed
