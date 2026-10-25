@@ -1,4 +1,4 @@
-# Advent 2026 — store setup (state on 25 October 2026)
+# Advent 2026 — store setup (state on 25 October 2026, updated the same day)
 
 Companion to `advent-2026-plan.md`. Nothing here is submitted or published. Each item stops before the submit or
 publish button, which stays with Anton.
@@ -13,18 +13,19 @@ publish button, which stays with Anton.
 Android 1.2.0 contains everything in 1.1.0 (Fathers unlock with Play Billing). The Play in-app product
 `com.nrsv.verse.fathers` still waits for an internal-testing release to be rolled out.
 
-## App Store In-App Event (not created yet: App Store Connect needs a sign-in in Chrome)
+## App Store In-App Event (draft saved 25 Oct, id 6826894210, not submitted)
 
 | Field | Value |
 |---|---|
 | Reference name | Advent 2026 |
 | Event name (≤30) | Advent with the Fathers |
 | Short description (≤50) | Today's Gospel, with the Church Fathers |
-| Long description (≤120) | From the first Sunday of Advent to Christmas Eve: the daily Gospel with the Fathers, and the O Antiphons from 17 December. |
+| Long description (≤120) | From Advent Sunday to Christmas Eve: the daily Gospel with the Fathers, and the O Antiphons from 17 December. (The first draft was 122 characters.) |
 | Badge | Special Event |
-| Event purpose | Attract new users; keep active users informed |
+| Event purpose | Appropriate for all users (App Store Connect allows one choice) |
 | Priority | Normal |
-| Event start / end | 29 Nov 2026 00:00 – 24 Dec 2026 23:59 (local time) |
+| Event access | In-App Purchase Not Required |
+| Event start / end | 29 Nov 2026 00:00 – 24 Dec 2026 23:59 (Toronto time) |
 | Publish start | 15 Nov 2026 |
 | Regions | All regions where the app sells |
 | Deep link | `nrsv://advent` |
@@ -36,10 +37,26 @@ already uses for Advent (`assets/artwork/sources.json`). No text on the images.
 
 The event opens the Advent page, so 2.2.0 must be live before 15 November (the promotion start).
 
-## App Store custom product pages (not created yet: same sign-in)
+## App Store custom product pages (five drafts saved 25 Oct, "Ready to Submit", not submitted)
 
-Five pages. Each uses the framed slides in `marketing/screenshots/framed-cpp/` (iPhone 6.9", 6.7", 6.5";
-iPad 13") as its first screenshot, then the 2.1.0 slides from `marketing/screenshots/framed-2.1.0/`.
+Five pages, each copied from the 2.1.0 product page. Screenshots: iPhone 6.9" set = the page's own slide from
+`marketing/screenshots/framed-cpp/iphone-6.9_1320x2868/`, then the six 2.1.0 slides (7 in all); iPad 13" set = its own
+slide, then the four 2.1.0 iPad slides (5 in all). Smaller sizes scale down from these.
+
+Keywords on a custom product page can only be chosen from the current version's keyword field (douay, vulgate,
+novena, chaplet, church fathers, augustine, aquinas, confession, prayer, widget, lockscreen). The values used:
+
+| Page | Keywords chosen | Deep link |
+|---|---|---|
+| Douay-Rheims | douay | `nrsv://read?book=JHN&chapter=1&translation=douay-rheims` |
+| Latin Vulgate | vulgate | `nrsv://read?book=PSA&chapter=50&translation=vulgate` |
+| Rosary | chaplet, prayer | `nrsv://pray/rosary` |
+| Saints | novena, prayer | none (`nrsv://saint` without an id does not open My Saints on iPad) |
+| Church Fathers | church fathers, augustine, aquinas | none |
+
+To give the Rosary and Saints pages better keywords ("rosary", "saint"), add them to the 2.2.0 keyword field first.
+
+The table below is the original plan (promotional text as entered).
 
 | Page | First slide | Promotional text (≤170) | Keywords (≤100) |
 |---|---|---|---|
@@ -72,6 +89,5 @@ publishing. The Church Fathers draft shows a 1.2.0 screen, so publish it after 1
 
 ## What Anton does
 
-1. Sign in to App Store Connect in Chrome, so the In-App Event and the five product pages can be created as drafts.
-2. Upload the Android 1.2.0 (6) bundle.
-3. Submit 2.2.0, the event and the product pages, and publish the Play drafts, when ready.
+1. Upload the Android 1.2.0 (6) bundle.
+2. Submit 2.2.0, the event and the product pages, and publish the Play drafts, when ready.
