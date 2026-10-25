@@ -44,7 +44,17 @@ public struct ReadingProgressData: Codable, Sendable, Equatable {
     /// The start of day for the plan, as a `yyyy-MM-dd` key in the user's calendar.
     public var planStartKey: String?
     public var reminder: ReadingReminderSettings?
+    /// "A Year with the Fathers": the date of the person's Day 1 (`yyyy-MM-dd`). Read days are in `read`
+    /// under `YearPlanSchedule.progressKey`, so they sync like read chapters.
+    public var yearStartKey: String?
+    /// The date the person started (`yyyy-MM-dd`). With "Join today" it is later than Day 1; days before it are
+    /// open to read but never counted as missed.
+    public var yearJoinedKey: String?
+    /// The daily reminder for the year plan.
+    public var yearReminder: ReadingReminderSettings?
     public init() {}
+
+    public var yearDaysRead: Set<Int> { readChapters(YearPlanSchedule.progressKey) }
 
     public func readChapters(_ book: String) -> Set<Int> { Set(read[book] ?? []) }
     public func totalRead(counts: [String: Int]) -> Int {
@@ -153,10 +163,24 @@ public actor ReadingProgressStore {
         try write(value)
     }
 
-    /// Clears chapters read and the plan. The reminder choice stays.
+    public func startYear(startKey: String?, joinedKey: String? = nil) throws {
+        var value = try load()
+        value.yearStartKey = startKey
+        value.yearJoinedKey = startKey == nil ? nil : (joinedKey ?? startKey)
+        try write(value)
+    }
+
+    public func setYearReminder(_ settings: ReadingReminderSettings) throws {
+        var value = try load()
+        value.yearReminder = settings
+        try write(value)
+    }
+
+    /// Clears chapters read and the plan. The reminder choice and "A Year with the Fathers" stay.
     public func reset() throws {
         var value = try load()
-        value.read = [:]
+        let year = value.read[YearPlanSchedule.progressKey]
+        value.read = year.map { [YearPlanSchedule.progressKey: $0] } ?? [:]
         value.planID = nil
         value.planStartKey = nil
         try write(value)

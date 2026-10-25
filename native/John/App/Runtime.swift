@@ -1127,6 +1127,73 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         return saved
     }
 
+    // MARK: A Year with the Fathers (2.3.0)
+
+    @ObservationIgnored private var loadedYearPlan: YearPlan?
+
+    /// The 2027 plan from `Catalogs/year-plan.json`. Nil when the file is missing or damaged; Today then shows no card.
+    func yearPlan() -> YearPlan? {
+        if let loadedYearPlan { return loadedYearPlan }
+        guard let root = appResourceRoot else { return nil }
+        loadedYearPlan = try? YearPlan.load(from: root.appendingPathComponent("Catalogs/year-plan.json", isDirectory: false))
+        return loadedYearPlan
+    }
+
+    /// Saves the person's Day 1 (`nil` starts over). Read days stay.
+    func startYearPlan(startKey: String?) async {
+        guard let progressStore else { return }
+        // The join date is today, or Day 1 when that is later ("Remind me on 1 January").
+        let today = ReadingProgressMath.dayKey(featureNow(), timeZone: featureTimeZone)
+        let joined = startKey.map { max($0, today) }
+        do { try await progressStore.startYear(startKey: startKey, joinedKey: joined) } catch { return }
+        progressRevision += 1
+        await refreshYearReminders()
+    }
+
+    func setYearDayRead(_ isRead: Bool, day: Int) async {
+        guard let progressStore, (1...YearPlanSchedule.dayCount).contains(day) else { return }
+        do { try await progressStore.setRead(isRead, book: YearPlanSchedule.progressKey, chapter: day) } catch { return }
+        progressRevision += 1
+        await refreshYearReminders()
+    }
+
+    func saveYearReminder(_ requested: ReadingReminderSettings) async throws -> ReadingReminderSettings {
+        guard let noticeService, let progressStore else { throw CoreError.missingResource("notification service") }
+        let settings = ReadingReminderSettings(enabled: requested.enabled, hour: min(23, max(0, requested.hour)),
+                                               minute: min(59, max(0, requested.minute)))
+        try await noticeService.saveYearReminders(await yearReminderRequests(settings: settings), enabled: settings.enabled)
+        try await progressStore.setYearReminder(settings)
+        progressRevision += 1
+        return settings
+    }
+
+    /// The next 14 reminders, one per unread day, each naming its reading. Empty when the reminder is off.
+    func yearReminderRequests(settings: ReadingReminderSettings? = nil) async -> [NoticeRequest] {
+        let data = await readingProgress()
+        guard let reminder = settings ?? data.yearReminder, reminder.enabled,
+              let startKey = data.yearStartKey, let plan = yearPlan() else { return [] }
+        let zone = TimeZone.autoupdatingCurrent
+        let read = data.yearDaysRead
+        return YearPlanSchedule.reminderDates(startKey: startKey, now: Date(), hour: reminder.hour, minute: reminder.minute,
+                                              timeZone: zone, count: 14)
+            .filter { !read.contains($0.day) }
+            .compactMap { item in
+                guard let day = plan.day(item.day) else { return nil }
+                return NoticeRequest(identifier: "\(LocalNoticeService.yearPrefix)\(item.day)",
+                                     title: "A Year with the Fathers · Day \(item.day)",
+                                     body: "\(day.author), \(day.title) · \(day.minutes) min",
+                                     userInfo: ["url": "/year"],
+                                     trigger: .calendarDate(item.date, timeZoneIdentifier: zone.identifier),
+                                     thread: "john.year")
+            }
+    }
+
+    /// Keeps the next reminders current after a day is read or the start changes. Errors leave the old reminders.
+    private func refreshYearReminders() async {
+        guard let noticeService, let reminder = await readingProgress().yearReminder, reminder.enabled else { return }
+        try? await noticeService.saveYearReminders(await yearReminderRequests(), enabled: true)
+    }
+
     // MARK: Widget and notification hand-off (B4b)
 
     private static let progressTotal = 21
@@ -1233,6 +1300,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
             },
             readReadingReminder: { [weak self] in await self?.progressStore?.data().reminder },
             readExcerpt: { [weak self] in await self?.readingExcerpt() },
+            readYearReminders: { [weak self] in await self?.yearReminderRequests() ?? [] },
             readSaints: { [weak self] in
                 guard let repository = self?.companionRepository else {
                     throw CoreError.missingResource("saints calendars")

@@ -18,6 +18,8 @@ enum ExternalRoute: Sendable {
     case saved
     /// Opens the Advent page (2.2.0). The App Store In-App Event "Advent with the Fathers" uses it.
     case advent
+    /// Opens "A Year with the Fathers" (2.3.0). The In-App Event, the product page and the reminders use it.
+    case year
     /// Opens the last chapter and starts read aloud. App Intents use it.
     case readAloud
     /// Opens a new note on John 1:1. App Intents use it.
@@ -40,6 +42,7 @@ enum ExternalRouteParser {
         }
         if host == "saved" { return .saved }
         if host == "advent" { return .advent }
+        if host == "year" { return .year }
         if host == "readaloud" { return .readAloud }
         if host == "note" { return .note }
         if host == "pray", components.path == "/rosary" { return .rosary }

@@ -23,4 +23,8 @@ enum CompanionRoute: Hashable, Sendable {
     case scriptureCard(PassageSelection)
     /// The Advent page (2.2.0); `nrsv://advent` and the Today card open it.
     case advent
+    /// "A Year with the Fathers" (2.3.0): the start screen or the plan; `nrsv://year` and the Today card open it.
+    case yearPlan
+    /// One day's reading of the year plan.
+    case yearDay(Int)
 }

@@ -233,6 +233,10 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             select(.today)
             paths[.today] = [.companion(.advent)]
             markRoutedByCode(.today)
+        case .year:
+            select(.today)
+            paths[.today] = [.companion(.yearPlan)]
+            markRoutedByCode(.today)
         case .lectio:
             select(.pray)
             paths[.pray] = [.companion(.lectio(nil))]

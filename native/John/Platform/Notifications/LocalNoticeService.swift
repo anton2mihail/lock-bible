@@ -16,6 +16,8 @@ public final class LocalNoticeService {
     public static let saintPrefix = "john-saint:"
     public static let rosaryIdentifier = "john-rosary:reminder"
     public static let readingIdentifier = "john-reading:reminder"
+    /// "A Year with the Fathers" reminders, one request per day so each names its reading.
+    public static let yearPrefix = "john-year:"
 
     private let center: any NoticeCenter
     private let now: @MainActor () -> Date
@@ -27,6 +29,7 @@ public final class LocalNoticeService {
     private let commit: StateCommitter
     private let readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)?
     private let readExcerpt: (@Sendable () async -> String?)?
+    private let readYearReminders: (@Sendable () async -> [NoticeRequest])?
     private var operationActive = false
     private var operationWaiters: [CheckedContinuation<Void, Never>] = []
 
@@ -38,11 +41,13 @@ public final class LocalNoticeService {
                 commit: @escaping StateCommitter,
                 readReadingReminder: (@Sendable () async -> ReadingReminderSettings?)? = nil,
                 readExcerpt: (@Sendable () async -> String?)? = nil,
+                readYearReminders: (@Sendable () async -> [NoticeRequest])? = nil,
                 readSaints: @escaping @MainActor () async throws -> [SaintsCalendar] = { [] },
                 readPersonalSaints: @escaping @MainActor () async throws -> [PersonalSaint] = { [] }) {
         self.readPersonalSaints = readPersonalSaints
         self.readSaints = readSaints
         self.readExcerpt = readExcerpt
+        self.readYearReminders = readYearReminders
         self.readReadingReminder = readReadingReminder
         self.center = center
         self.now = now
@@ -99,6 +104,25 @@ public final class LocalNoticeService {
                 operation: "Reading reminder update",
                 mutation: nil)
             return settings
+        }
+    }
+
+    /// The year plan reminders (2.3.0). `desired` is empty when the reminder is off. The choice lives in the reading
+    /// progress file, so no state mutation runs here.
+    public func saveYearReminders(_ desired: [NoticeRequest], enabled: Bool) async throws {
+        try await withOperationQueue {
+            if enabled {
+                try await requirePermission(message: "Notifications are disabled. You can allow them in your device settings.")
+            }
+            let pending = try await center.pendingRequests()
+            try await reconcileAndCommit(
+                desired: enabled ? desired : [],
+                pending: pending,
+                owned: { $0.identifier.hasPrefix(Self.yearPrefix) },
+                preserveSameIdentifier: false,
+                restoreOnlyFutureCalendarRequests: false,
+                operation: "Year plan reminder update",
+                mutation: nil)
         }
     }
 
@@ -232,6 +256,17 @@ public final class LocalNoticeService {
                         restoreOnlyFutureCalendarRequests: false, operation: "Reading reminder refresh", mutation: nil)
                 } catch {
                     failures.append("Reading: \(error.localizedDescription)")
+                }
+            }
+            if let readYearReminders {
+                do {
+                    let desired = currentPermission.canDeliver ? await readYearReminders() : []
+                    let pending = try await center.pendingRequests()
+                    try await reconcileAndCommit(desired: desired, pending: pending,
+                        owned: { $0.identifier.hasPrefix(Self.yearPrefix) }, preserveSameIdentifier: false,
+                        restoreOnlyFutureCalendarRequests: false, operation: "Year plan reminder refresh", mutation: nil)
+                } catch {
+                    failures.append("Year plan: \(error.localizedDescription)")
                 }
             }
             if !failures.isEmpty { throw LocalNoticeError.refreshFailures(failures) }

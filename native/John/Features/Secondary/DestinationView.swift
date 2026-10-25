@@ -132,6 +132,10 @@ struct DestinationView: View {
             ScriptureCardView(passage: passage)
         case .advent:
             AdventView(clock: { runtime.featureNow() }, timeZone: runtime.featureTimeZone)
+        case .yearPlan:
+            YearPlanView(clock: { runtime.featureNow() }, timeZone: runtime.featureTimeZone)
+        case .yearDay(let day):
+            YearDayView(day: day, clock: { runtime.featureNow() }, timeZone: runtime.featureTimeZone)
         }
     }
 

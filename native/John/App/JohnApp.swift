@@ -491,6 +491,7 @@ private final class JohnNotificationDelegate: NSObject, UIApplicationDelegate, U
            case .saint = route { return url }
         if rawValue == "/pray/rosary" { return URL(string: "nrsv://pray/rosary") }
         if rawValue == "/read/john" { return URL(string: "nrsv://read?book=JHN") }
+        if rawValue == "/year" { return URL(string: "nrsv://year") }
         guard rawValue.hasPrefix("/daily?date=") else { return nil }
         let query = rawValue.dropFirst("/daily".count)
         guard let url = URL(string: "nrsv://daily\(query)"),

@@ -119,6 +119,7 @@ def main() -> None:
         ("assets/bible/bible-search.db", "App/Databases/bible-search.db"),
         ("assets/works/works.db", "App/Databases/works.db"),
         ("src/services/works/data/catalog.json", "App/Catalogs/works-catalog.json"),
+        ("src/services/works/data/year-plan.json", "App/Catalogs/year-plan.json"),
         ("src/services/companion/data/readings-us.json", "App/Calendar/readings-us.json"),
         ("src/services/companion/data/celebrations-us.json", "App/Calendar/celebrations-us.json"),
         ("src/services/companion/data/my-saints.json", "App/Calendar/my-saints.json"),
