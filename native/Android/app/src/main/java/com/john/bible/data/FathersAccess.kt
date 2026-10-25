@@ -21,7 +21,7 @@ object FathersAccess {
     val freeCollectionIds = setOf("apostolic-fathers")
     val freeWorkIds = setOf("augustine.the-confessions")
 
-    /** The collection id is the part of a work id before the first dot (true for all 271 works). */
+    /** The collection id is the part of a work id before the first dot (true for all 273 works). */
     fun collectionId(workId: String): String? {
         val dot = workId.indexOf('.')
         return if (dot <= 0) null else workId.substring(0, dot)

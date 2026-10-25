@@ -25,6 +25,7 @@ fun externalRoute(value:String?,defaultEdition:String="web-ce"):String? {
             "pray" -> when(uri.path) { "/lectio"->"lectio"; "/rosary"->"rosary"; else->null }
             "lectio" -> "lectio"
             "rosary" -> "rosary"
+            "advent" -> "advent"
             else -> null
         }
     }.getOrNull()

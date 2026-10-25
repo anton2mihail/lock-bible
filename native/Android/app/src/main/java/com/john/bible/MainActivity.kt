@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
         if(savedInstanceState==null) receiveExternalUrl(intent.dataString)
         // Debug builds only: -e johnFathersAccess locked|purchased|grandfathered fixes the library state for checks.
         if(BuildConfig.DEBUG) FathersBilling.get(applicationContext).force(intent.getStringExtra("johnFathersAccess"))
+        if(BuildConfig.DEBUG) com.john.bible.data.FeatureClock.date=intent.getStringExtra("johnFeatureDate")?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }
         FathersBilling.get(applicationContext).start()
         ReviewPrompt.recordOpen(applicationContext)
         setContent {

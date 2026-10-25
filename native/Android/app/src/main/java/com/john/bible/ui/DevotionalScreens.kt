@@ -125,7 +125,7 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
     var clockTick by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while(true) { delay(60_000); clockTick=System.currentTimeMillis() } }
     val currentTime=java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(clockTick),java.time.ZoneId.systemDefault())
-    val now=currentTime.toLocalDate()
+    val now=com.john.bible.data.FeatureClock.date ?: currentTime.toLocalDate()
     val catalog = remember(repo) { repo.content() }
     val readings = remember(now) { repo.readings(now.toString()) }
     val celebration = remember(now) { repo.celebrations(now.toString()) }
@@ -138,6 +138,8 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
     JohnPage("A little closer to God.", "JOHN 1:1  /  ${dateText(now,"EEEE, MMMM d")}", "Scripture for your day. Space for your soul.") {
         JohnArtCard(seasonArt(season), title, "${seasonName(season)} · Today’s readings") { navigate("daily/$now") }
         JohnText("United States · Roman Rite", dim=true, size=14)
+        AdventTodayRow(now,navigate)
+        GospelFathersPanel(repo,readings,navigate)
         JohnRow("Saints & feast days", "Vatican News · Byzantine Catholic · Lives of the saints") { navigate("saints") }
         MySaintsTodaySection(repo,store,navigate)
         TodayReadingCard(repo,store,navigate)
@@ -262,6 +264,7 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
         "novenas" -> PrayScreen(repo,store,navigate)
         "novena" -> NovenaDetail(parts.getOrNull(1).orEmpty(),catalog,store,back)
         "works" -> WorksLibrary(parts.getOrNull(1),repo,store,navigate,back)
+        "advent" -> AdventScreen(repo,navigate,back)
         "fathers-unlock" -> FathersUnlockScreen(libraryTotals(repo),back)
         "work" -> WorkReader(parts.getOrNull(1).orEmpty(),parts.getOrNull(2)?.toIntOrNull(),repo,store,navigate,back)
         "commentary" -> CommentaryScreen(parts.getOrNull(1).orEmpty(),parts.getOrNull(2)?.toIntOrNull() ?: 1,repo,navigate,back)
