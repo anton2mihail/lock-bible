@@ -38,8 +38,8 @@ commentary has a Father for that chapter, with the same button into it.
 
 - **Advent page** (`nrsv://advent`, also from a Today card from 29 Nov to 24 Dec): the week of Advent, today's
   Gospel with the Fathers, *Rorate caeli* (Isaiah 45:8, Douay-Rheims), and the O Antiphons.
-- **O Antiphons**, 17–23 December, one per evening, Latin and English. English from the Catholic Encyclopedia
-  article "O Antiphons" (1911, public domain). From 17 December the Today card shows that day's antiphon.
+- **O Antiphons**, 17–23 December, one per evening, Latin and English. Text from Dom Prosper Guéranger,
+  *The Liturgical Year: Advent* (Dublin, 1870, public domain). The Catholic Encyclopedia article has no full texts. From 17 December the Today card shows that day's antiphon.
 - **Deep link** `nrsv://advent` for the In-App Event and notifications. Old links keep working.
 - No new prayers written by us: every text is quoted from a named public-domain source.
 
@@ -50,7 +50,8 @@ commentary has a Father for that chapter, with the same button into it.
   and the O Antiphons from 17 December."
 - Badge: Special Event. Event start 29 Nov 2026 00:00, end 24 Dec 2026 23:59, all regions where the app sells.
   Publish (promotion) start 15 Nov 2026. Deep link `nrsv://advent`.
-- Media: event card 1920×1080 and details 1080×1920, made from the bundled Bloemaert painting and app screens.
+- Media: event card 1920×1080 and details 1080×1920, cropped from the bundled Advent painting (Geertgen tot
+  Sint Jans, *Saint John the Baptist in the Wilderness*), no text.
 - Requirement: 2.2.0 must be live before 29 November, because the event opens the Advent page.
 
 ## 4. Custom product pages
@@ -82,6 +83,12 @@ includes everything in 1.1.0.
 - Simulator and emulator: Today on an Advent date (debug date override), the Advent page, 17 Dec antiphon,
   a Luke day fallback, the locked/unlocked library behaviour, dark mode, largest text size.
 - Existing UI test suites that touch Today and Works.
+
+## Status (25 October)
+
+Done: Catena Aurea in the library; Today card, Advent page and `nrsv://advent` on iOS and Android, with tests;
+iOS 2.2.0 (31) on TestFlight; Android 1.2.0 (6) signed bundle; event media; product-page slides; five Play
+custom listing drafts. Details and exact field values: `advent-2026-store-setup.md`.
 
 ## What needs Anton
 
