@@ -65,7 +65,7 @@ private fun dateLabel(value:LocalDate)=value.format(DateTimeFormatter.ofPattern(
     val saints=remember(repo) { runCatching { repo.personalSaints() }.getOrDefault(emptyList()) }
     JohnRow("My Saints","A saint to return to") { navigate("my-saints") }
     saints.filter { store.saintProfile(it.id).saved }.forEach { saint ->
-        JohnRow(saint.name,saint.subtitle) { navigate("saint/${saint.id}") }
+        JohnRow(saint.name,saint.subtitle,image=saint.artwork) { navigate("saint/${saint.id}") }
     }
     saints.filter { SaintDates.planIsDue(store.saintProfile(it.id)) }.forEach { saint ->
         saint.novenaID?.let { JohnRow("Pray with ${saint.name}","Your planned novena is ready") { navigate("novena/$it") } }
@@ -80,11 +80,11 @@ private fun dateLabel(value:LocalDate)=value.format(DateTimeFormatter.ofPattern(
         if(result.isFailure)JohnText("The saints could not be loaded. Open this page again to retry.")
         val saved=saints.filter { store.saintProfile(it.id).saved }
         if(saved.isEmpty())JohnText("Choose a saint you would like to know. Keep their prayers, story, and feast day together.",dim=true)
-        saved.forEach { saint -> JohnRow(saint.name,saint.subtitle) { navigate("saint/${saint.id}") } }
+        saved.forEach { saint -> JohnRow(saint.name,saint.subtitle,image=saint.artwork) { navigate("saint/${saint.id}") } }
         JohnText("Find a saint",size=20)
         OutlinedTextField(query,{query=it},Modifier.fillMaxWidth(),label={Text("Search by name")},singleLine=true)
         saints.filter { query.isBlank() || it.name.contains(query.trim(),true) }.forEach { saint ->
-            JohnRow(saint.name,saint.subtitle) { navigate("saint/${saint.id}") }
+            JohnRow(saint.name,saint.subtitle,image=saint.artwork) { navigate("saint/${saint.id}") }
         }
         JohnText("These personal pages use reviewed links to the existing calendars. More saints are available in Saints & feast days.",size=14,dim=true)
         JohnButton("Browse saints & feast days") { navigate("saints") }

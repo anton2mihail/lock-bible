@@ -1,0 +1,38 @@
+{
+ "capture_date": "2026-10-25",
+ "device": {
+  "avd": "Pixel_8",
+  "viewport": "wm size 1080x1920, wm density 420 (reset after the run)",
+  "status_bar": "System UI demo mode: 09:41, battery 100%, Wi-Fi full, mobile hidden, notifications hidden",
+  "app_data": "pm clear before the run; Debug flags johnFathersAccess=locked, johnFeatureDate=2026-11-22"
+ },
+ "source": "debug build of com.john.bible on branch advent/2.2.0 (Android 1.2.0)",
+ "purpose": "Custom store listings by search keyword (docs/john/advent-2026-plan.md section 4)",
+ "screenshots": [
+  {
+   "filename": "c1-douay.png",
+   "shows": "Douay-Rheims John 1 in Pages mode, bars hidden",
+   "sha256": "3cf4209ac39256e2320de237c0d1310e7ac48b2b2b1fac3333c1395f3b008050"
+  },
+  {
+   "filename": "c2-vulgate.png",
+   "shows": "Clementine Vulgate Psalm 22 in Pages mode, bars hidden",
+   "sha256": "9bed803b1662ff9ee2fe385842558bb0b45db37968649c909a6f809cff1412b1"
+  },
+  {
+   "filename": "c3-rosary.png",
+   "shows": "Rosary home with Sassoferrato's Virgin in Prayer",
+   "sha256": "d5f0a92ba66cd9f8247578c643911e307a7fb594e40781d4e20be3a2dc0d3aa2"
+  },
+  {
+   "filename": "c4-saints.png",
+   "shows": "My Saints list with portraits",
+   "sha256": "6d2f82fb2005e90f4439c2d4e794334d2563d5cbcc7a74df493488e44043f427"
+  },
+  {
+   "filename": "c5-fathers.png",
+   "shows": "Today on 22 Nov 2026 with The Fathers on today's Gospel (Catena Aurea)",
+   "sha256": "649344f32211e988cc4678ed4243043a0a1e4b00c7ede4e257e8c09cef54fae2"
+  }
+ ]
+}
