@@ -1,0 +1,8091 @@
+{
+ "version": 1,
+ "name": "A Year with the Fathers",
+ "year": 2027,
+ "startDate": "2027-01-01",
+ "freeDays": 7,
+ "minWords": 500,
+ "maxWords": 2500,
+ "days": [
+  {
+   "day": 1,
+   "date": "2027-01-01",
+   "season": "christmas",
+   "feast": "Mary, Mother of God",
+   "author": "The Didache",
+   "work": "The Teaching of the Twelve Apostles",
+   "title": "The Teaching of the Twelve Apostles, Chapters I–VI",
+   "words": 1346,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 2,
+   "date": "2027-01-02",
+   "season": "christmas",
+   "author": "The Didache",
+   "work": "The Teaching of the Twelve Apostles",
+   "title": "The Teaching of the Twelve Apostles, Chapters VII–XV",
+   "words": 1405,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 3,
+   "date": "2027-01-03",
+   "season": "christmas",
+   "author": "The Didache; The Letter to Diognetus",
+   "work": "The Teaching of the Twelve Apostles; The Letter to Diognetus",
+   "title": "The Teaching of the Twelve Apostles, Chapter XVI; The Letter to Diognetus, Chapters I–II",
+   "words": 1418,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.the-teaching-of-the-twelve-apostles",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 4,
+   "date": "2027-01-04",
+   "season": "christmas",
+   "author": "The Letter to Diognetus",
+   "work": "The Letter to Diognetus",
+   "title": "The Letter to Diognetus, Chapters III–VII",
+   "words": 1552,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 5,
+   "date": "2027-01-05",
+   "season": "christmas",
+   "author": "The Letter to Diognetus",
+   "work": "The Letter to Diognetus",
+   "title": "The Letter to Diognetus, Chapters VIII–XI",
+   "words": 1490,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 6,
+   "date": "2027-01-06",
+   "season": "christmas",
+   "author": "The Letter to Diognetus; St Polycarp",
+   "work": "The Letter to Diognetus; Letter to the Philippians",
+   "title": "The Letter to Diognetus, Chapter XII; Letter to the Philippians, Chapters I–V",
+   "words": 1298,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.epistle-to-diognetus",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 7,
+   "date": "2027-01-07",
+   "season": "christmas",
+   "author": "St Polycarp",
+   "work": "Letter to the Philippians",
+   "title": "Letter to the Philippians, Chapters VI–XIV",
+   "words": 1292,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "apostolic-fathers.epistle-to-the-philippians",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 8,
+   "date": "2027-01-08",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Epiphany, I",
+   "words": 971,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 187,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 9,
+   "date": "2027-01-09",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Epiphany, III",
+   "words": 1658,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 188,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 10,
+   "date": "2027-01-10",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Epiphany, IV",
+   "words": 2252,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 189,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 11,
+   "date": "2027-01-11",
+   "season": "ordinary",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Epiphany, VI",
+   "words": 1560,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 190,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 12,
+   "date": "2027-01-12",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 1–2",
+   "words": 1128,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 13,
+   "date": "2027-01-13",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 3–4",
+   "words": 1064,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 14,
+   "date": "2027-01-14",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 5–6",
+   "words": 880,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 15,
+   "date": "2027-01-15",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 7–8",
+   "words": 903,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 16,
+   "date": "2027-01-16",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 9–10",
+   "words": 1096,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 17,
+   "date": "2027-01-17",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 11–12",
+   "words": 1052,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 18,
+   "date": "2027-01-18",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 13–14",
+   "words": 1163,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 19,
+   "date": "2027-01-19",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 15–16",
+   "words": 821,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 20,
+   "date": "2027-01-20",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 17–18",
+   "words": 1192,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 21,
+   "date": "2027-01-21",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 19–20",
+   "words": 941,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 22,
+   "date": "2027-01-22",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapter 21",
+   "words": 698,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 23,
+   "date": "2027-01-23",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 22–23",
+   "words": 874,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 24,
+   "date": "2027-01-24",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 24–25",
+   "words": 1057,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 24,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 25,
+   "date": "2027-01-25",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 26–27",
+   "words": 929,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 25,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 26,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 26,
+   "date": "2027-01-26",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 28–29",
+   "words": 917,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 27,
+   "date": "2027-01-27",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 30–31",
+   "words": 1093,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 29,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 30,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 28,
+   "date": "2027-01-28",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 32–33",
+   "words": 934,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 31,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 32,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 29,
+   "date": "2027-01-29",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 34–35",
+   "words": 890,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 33,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 34,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 30,
+   "date": "2027-01-30",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 36–37",
+   "words": 1024,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 35,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 36,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 31,
+   "date": "2027-01-31",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 38–39",
+   "words": 983,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 37,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 38,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 32,
+   "date": "2027-02-01",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 40–41",
+   "words": 1237,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 39,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 40,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 33,
+   "date": "2027-02-02",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 42–43",
+   "words": 1211,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 41,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 42,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 34,
+   "date": "2027-02-03",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapter 44",
+   "words": 791,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 43,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 35,
+   "date": "2027-02-04",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 45–46",
+   "words": 930,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 44,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 45,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 36,
+   "date": "2027-02-05",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 47–48",
+   "words": 1068,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 46,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 47,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 37,
+   "date": "2027-02-06",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 49–50",
+   "words": 822,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 48,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 49,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 38,
+   "date": "2027-02-07",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 51–53",
+   "words": 1105,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 50,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 51,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 52,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 39,
+   "date": "2027-02-08",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 54–55",
+   "words": 947,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 53,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 54,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 40,
+   "date": "2027-02-09",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "On the Incarnation",
+   "title": "On the Incarnation, chapters 56–57",
+   "words": 707,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 55,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.the-incarnation-of-the-word",
+     "section": 56,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 41,
+   "date": "2027-02-10",
+   "season": "lent",
+   "feast": "Ash Wednesday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Lent, I",
+   "words": 1849,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 191,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 42,
+   "date": "2027-02-11",
+   "season": "lent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Lent, II",
+   "words": 1479,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 192,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 43,
+   "date": "2027-02-12",
+   "season": "lent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Lent, IV",
+   "words": 2058,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 193,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 44,
+   "date": "2027-02-13",
+   "season": "lent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Lent, VIII",
+   "words": 1454,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 194,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 45,
+   "date": "2027-02-14",
+   "season": "lent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Lent, XI",
+   "words": 1877,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 195,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 46,
+   "date": "2027-02-15",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Procatechesis (part 1 of 2)",
+   "words": 1817,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 19
+    }
+   ]
+  },
+  {
+   "day": 47,
+   "date": "2027-02-16",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Procatechesis (part 2 of 2)",
+   "words": 1728,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 11,
+     "fromParagraph": 20,
+     "toParagraph": 29
+    }
+   ]
+  },
+  {
+   "day": 48,
+   "date": "2027-02-17",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture I",
+   "words": 1480,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 49,
+   "date": "2027-02-18",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture II, On Repentance (part 1 of 3)",
+   "words": 1340,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 50,
+   "date": "2027-02-19",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture II, On Repentance (part 2 of 3)",
+   "words": 1278,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 13,
+     "fromParagraph": 11,
+     "toParagraph": 16
+    }
+   ]
+  },
+  {
+   "day": 51,
+   "date": "2027-02-20",
+   "season": "lent",
+   "feast": "Saturday before the Second Sunday of Lent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Transfiguration",
+   "words": 2232,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 196,
+     "fromParagraph": 0,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 52,
+   "date": "2027-02-21",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture II, On Repentance (part 3 of 3)",
+   "words": 1412,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 13,
+     "fromParagraph": 17,
+     "toParagraph": 24
+    }
+   ]
+  },
+  {
+   "day": 53,
+   "date": "2027-02-22",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture III, On Baptism (part 1 of 2)",
+   "words": 1833,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 54,
+   "date": "2027-02-23",
+   "season": "lent",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture III, On Baptism (part 2 of 2)",
+   "words": 1643,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 14,
+     "fromParagraph": 13,
+     "toParagraph": 21
+    }
+   ]
+  },
+  {
+   "day": 55,
+   "date": "2027-02-24",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter I",
+   "words": 514,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 56,
+   "date": "2027-02-25",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter II",
+   "words": 787,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 57,
+   "date": "2027-02-26",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter III",
+   "words": 885,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 58,
+   "date": "2027-02-27",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter IV",
+   "words": 629,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 59,
+   "date": "2027-02-28",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter V",
+   "words": 1114,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 60,
+   "date": "2027-03-01",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapters VI–VII",
+   "words": 927,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 61,
+   "date": "2027-03-02",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter VIII",
+   "words": 859,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 62,
+   "date": "2027-03-03",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapters IX–X",
+   "words": 1195,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 63,
+   "date": "2027-03-04",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XI",
+   "words": 799,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 64,
+   "date": "2027-03-05",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XII",
+   "words": 738,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 65,
+   "date": "2027-03-06",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XIII",
+   "words": 1055,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 66,
+   "date": "2027-03-07",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XIV",
+   "words": 1608,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 67,
+   "date": "2027-03-08",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XV",
+   "words": 1074,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 68,
+   "date": "2027-03-09",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XVI",
+   "words": 538,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 69,
+   "date": "2027-03-10",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book I, Chapter XVII – Book II, Chapter I",
+   "words": 1175,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    },
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 70,
+   "date": "2027-03-11",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter II",
+   "words": 1071,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 71,
+   "date": "2027-03-12",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter III",
+   "words": 702,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 72,
+   "date": "2027-03-13",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter IV",
+   "words": 1124,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 73,
+   "date": "2027-03-14",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter V",
+   "words": 1229,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 74,
+   "date": "2027-03-15",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter VI",
+   "words": 1195,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 24,
+     "fromParagraph": 0,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 75,
+   "date": "2027-03-16",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter VII",
+   "words": 1538,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 25,
+     "fromParagraph": 0,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 76,
+   "date": "2027-03-17",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter VIII",
+   "words": 1604,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 26,
+     "fromParagraph": 0,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 77,
+   "date": "2027-03-18",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter IX",
+   "words": 892,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 78,
+   "date": "2027-03-19",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter X",
+   "words": 847,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 79,
+   "date": "2027-03-20",
+   "season": "lent",
+   "author": "St Ambrose of Milan",
+   "work": "Concerning Repentance",
+   "title": "Concerning Repentance, Book II, Chapter XI",
+   "words": 1014,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "ambrose.concerning-repentance",
+     "section": 29,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 80,
+   "date": "2027-03-21",
+   "season": "holy-week",
+   "feast": "Palm Sunday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Passion, III",
+   "words": 1626,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 197,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 81,
+   "date": "2027-03-22",
+   "season": "holy-week",
+   "feast": "Monday of Holy Week",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Passion, VII",
+   "words": 1979,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 199,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 82,
+   "date": "2027-03-23",
+   "season": "holy-week",
+   "feast": "Tuesday of Holy Week",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Passion, XI",
+   "words": 1470,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 201,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 83,
+   "date": "2027-03-24",
+   "season": "holy-week",
+   "feast": "Wednesday of Holy Week",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Lord's Passion IV",
+   "words": 1331,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 198,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 84,
+   "date": "2027-03-25",
+   "season": "holy-week",
+   "feast": "Holy Thursday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Passion, VIII",
+   "words": 2285,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 200,
+     "fromParagraph": 0,
+     "toParagraph": 15
+    }
+   ]
+  },
+  {
+   "day": 85,
+   "date": "2027-03-26",
+   "season": "holy-week",
+   "feast": "Good Friday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Passion, XII",
+   "words": 1828,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 202,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 86,
+   "date": "2027-03-27",
+   "season": "holy-week",
+   "feast": "Holy Saturday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Lord's Resurrection, I",
+   "words": 1774,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 205,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 87,
+   "date": "2027-03-28",
+   "season": "easter",
+   "feast": "Easter Sunday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Lord's Resurrection, II",
+   "words": 2155,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 206,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 88,
+   "date": "2027-03-29",
+   "season": "easter",
+   "feast": "Easter Monday",
+   "author": "St Cyril of Jerusalem",
+   "work": "Lectures on the Mysteries",
+   "title": "Lectures on the Mysteries, I",
+   "words": 1530,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 30,
+     "fromParagraph": 0,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 89,
+   "date": "2027-03-30",
+   "season": "easter",
+   "author": "St Cyril of Jerusalem",
+   "work": "Lectures on the Mysteries",
+   "title": "Lectures on the Mysteries, II, On Baptism",
+   "words": 1207,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 31,
+     "fromParagraph": 0,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 90,
+   "date": "2027-03-31",
+   "season": "easter",
+   "author": "St Cyril of Jerusalem",
+   "work": "Lectures on the Mysteries",
+   "title": "Lectures on the Mysteries, III, On Chrism",
+   "words": 1096,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 32,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 91,
+   "date": "2027-04-01",
+   "season": "easter",
+   "author": "St Cyril of Jerusalem",
+   "work": "Lectures on the Mysteries",
+   "title": "Lectures on the Mysteries, IV, On the Body and Blood of Christ",
+   "words": 1027,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 33,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 92,
+   "date": "2027-04-02",
+   "season": "easter",
+   "author": "St Cyril of Jerusalem",
+   "work": "Lectures on the Mysteries",
+   "title": "Lectures on the Mysteries, V, On the Liturgy (part 1 of 2)",
+   "words": 1185,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 34,
+     "fromParagraph": 0,
+     "toParagraph": 15
+    }
+   ]
+  },
+  {
+   "day": 93,
+   "date": "2027-04-03",
+   "season": "easter",
+   "author": "St Cyril of Jerusalem",
+   "work": "Lectures on the Mysteries",
+   "title": "Lectures on the Mysteries, V, On the Liturgy (part 2 of 2)",
+   "words": 1245,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 34,
+     "fromParagraph": 16,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 94,
+   "date": "2027-04-04",
+   "season": "easter",
+   "feast": "Second Sunday of Easter",
+   "author": "St Gregory Nazianzen",
+   "work": "Oration I",
+   "title": "Oration I, On Easter",
+   "words": 1145,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "gregory-nazianzen.select-orations-of-saint-gregory-nazianzen",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 95,
+   "date": "2027-04-05",
+   "season": "easter",
+   "author": "St Ambrose of Milan",
+   "work": "On the Mysteries",
+   "title": "On the Mysteries, Chapters I–II",
+   "words": 617,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 96,
+   "date": "2027-04-06",
+   "season": "easter",
+   "author": "St Ambrose of Milan",
+   "work": "On the Mysteries",
+   "title": "On the Mysteries, Chapter III",
+   "words": 1221,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 97,
+   "date": "2027-04-07",
+   "season": "easter",
+   "author": "St Ambrose of Milan",
+   "work": "On the Mysteries",
+   "title": "On the Mysteries, Chapters IV–V",
+   "words": 1310,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    },
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 98,
+   "date": "2027-04-08",
+   "season": "easter",
+   "author": "St Ambrose of Milan",
+   "work": "On the Mysteries",
+   "title": "On the Mysteries, Chapters VI–VII",
+   "words": 1471,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    },
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 99,
+   "date": "2027-04-09",
+   "season": "easter",
+   "author": "St Ambrose of Milan",
+   "work": "On the Mysteries",
+   "title": "On the Mysteries, Chapter VIII",
+   "words": 918,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 100,
+   "date": "2027-04-10",
+   "season": "easter",
+   "author": "St Ambrose of Milan",
+   "work": "On the Mysteries",
+   "title": "On the Mysteries, Chapter IX",
+   "words": 1543,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "ambrose.on-the-mysteries",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 101,
+   "date": "2027-04-11",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Prologue – Homily I (part 1 of 4)",
+   "words": 1975,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 102,
+   "date": "2027-04-12",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily I (part 2 of 4)",
+   "words": 1854,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 1,
+     "fromParagraph": 4,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 103,
+   "date": "2027-04-13",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily I (part 3 of 4)",
+   "words": 1559,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 1,
+     "fromParagraph": 7,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 104,
+   "date": "2027-04-14",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily I (part 4 of 4)",
+   "words": 1936,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 1,
+     "fromParagraph": 11,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 105,
+   "date": "2027-04-15",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily II (part 1 of 4)",
+   "words": 1502,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 106,
+   "date": "2027-04-16",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily II (part 2 of 4)",
+   "words": 1621,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 2,
+     "fromParagraph": 3,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 107,
+   "date": "2027-04-17",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily II (part 3 of 4)",
+   "words": 1573,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 2,
+     "fromParagraph": 8,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 108,
+   "date": "2027-04-18",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily II (part 4 of 4)",
+   "words": 1443,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 2,
+     "fromParagraph": 12,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 109,
+   "date": "2027-04-19",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily III (part 1 of 3)",
+   "words": 1464,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 110,
+   "date": "2027-04-20",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily III (part 2 of 3)",
+   "words": 1738,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 3,
+     "fromParagraph": 5,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 111,
+   "date": "2027-04-21",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily III (part 3 of 3)",
+   "words": 1883,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 3,
+     "fromParagraph": 9,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 112,
+   "date": "2027-04-22",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily IV (part 1 of 3)",
+   "words": 1609,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 113,
+   "date": "2027-04-23",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily IV (part 2 of 3)",
+   "words": 1538,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 4,
+     "fromParagraph": 4,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 114,
+   "date": "2027-04-24",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily IV (part 3 of 3)",
+   "words": 1625,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 4,
+     "fromParagraph": 7,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 115,
+   "date": "2027-04-25",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily V (part 1 of 3)",
+   "words": 1584,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 116,
+   "date": "2027-04-26",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily V (part 2 of 3)",
+   "words": 1797,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 5,
+     "fromParagraph": 4,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 117,
+   "date": "2027-04-27",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily V (part 3 of 3)",
+   "words": 1712,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 5,
+     "fromParagraph": 8,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 118,
+   "date": "2027-04-28",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VI (part 1 of 4)",
+   "words": 1668,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 119,
+   "date": "2027-04-29",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VI (part 2 of 4)",
+   "words": 1713,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 6,
+     "fromParagraph": 5,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 120,
+   "date": "2027-04-30",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VI (part 3 of 4)",
+   "words": 2117,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 6,
+     "fromParagraph": 9,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 121,
+   "date": "2027-05-01",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VI (part 4 of 4)",
+   "words": 1561,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 6,
+     "fromParagraph": 13,
+     "toParagraph": 15
+    }
+   ]
+  },
+  {
+   "day": 122,
+   "date": "2027-05-02",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VII (part 1 of 2)",
+   "words": 2160,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 123,
+   "date": "2027-05-03",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VII (part 2 of 2)",
+   "words": 2105,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 7,
+     "fromParagraph": 7,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 124,
+   "date": "2027-05-04",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VIII (part 1 of 4)",
+   "words": 1735,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 125,
+   "date": "2027-05-05",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VIII (part 2 of 4)",
+   "words": 1391,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 8,
+     "fromParagraph": 5,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 126,
+   "date": "2027-05-06",
+   "season": "easter",
+   "feast": "The Ascension",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Lord's Ascension, I",
+   "words": 999,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 207,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 127,
+   "date": "2027-05-07",
+   "season": "easter",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Lord's Ascension, II",
+   "words": 1631,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 208,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 128,
+   "date": "2027-05-08",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VIII (part 3 of 4)",
+   "words": 1610,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 8,
+     "fromParagraph": 8,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 129,
+   "date": "2027-05-09",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily VIII (part 4 of 4)",
+   "words": 1541,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 8,
+     "fromParagraph": 11,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 130,
+   "date": "2027-05-10",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily IX (part 1 of 3)",
+   "words": 1844,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 131,
+   "date": "2027-05-11",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily IX (part 2 of 3)",
+   "words": 1943,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 9,
+     "fromParagraph": 4,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 132,
+   "date": "2027-05-12",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily IX (part 3 of 3)",
+   "words": 2110,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 9,
+     "fromParagraph": 8,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 133,
+   "date": "2027-05-13",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily X (part 1 of 3)",
+   "words": 2220,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 134,
+   "date": "2027-05-14",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily X (part 2 of 3)",
+   "words": 1871,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 10,
+     "fromParagraph": 5,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 135,
+   "date": "2027-05-15",
+   "season": "easter",
+   "author": "St Augustine of Hippo",
+   "work": "Homilies on the First Epistle of John",
+   "title": "Homilies on the First Epistle of John, Homily X (part 3 of 3)",
+   "words": 1758,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "augustine.ten-homilies-on-the-first-epistle-of-john",
+     "section": 10,
+     "fromParagraph": 8,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 136,
+   "date": "2027-05-16",
+   "season": "easter",
+   "feast": "Pentecost",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Whitsuntide, I",
+   "words": 1569,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 209,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 137,
+   "date": "2027-05-17",
+   "season": "ordinary",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On Whitsuntide, III",
+   "words": 1643,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 210,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 138,
+   "date": "2027-05-18",
+   "season": "ordinary",
+   "author": "St Gregory Nazianzen",
+   "work": "Oration XLI, On Pentecost",
+   "title": "Oration XLI, On Pentecost (part 1 of 4)",
+   "words": 1384,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "gregory-nazianzen.select-orations-of-saint-gregory-nazianzen",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 139,
+   "date": "2027-05-19",
+   "season": "ordinary",
+   "author": "St Gregory Nazianzen",
+   "work": "Oration XLI, On Pentecost",
+   "title": "Oration XLI, On Pentecost (part 2 of 4)",
+   "words": 1400,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "gregory-nazianzen.select-orations-of-saint-gregory-nazianzen",
+     "section": 20,
+     "fromParagraph": 11,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 140,
+   "date": "2027-05-20",
+   "season": "ordinary",
+   "author": "St Gregory Nazianzen",
+   "work": "Oration XLI, On Pentecost",
+   "title": "Oration XLI, On Pentecost (part 3 of 4)",
+   "words": 1606,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "gregory-nazianzen.select-orations-of-saint-gregory-nazianzen",
+     "section": 20,
+     "fromParagraph": 15,
+     "toParagraph": 19
+    }
+   ]
+  },
+  {
+   "day": 141,
+   "date": "2027-05-21",
+   "season": "ordinary",
+   "author": "St Gregory Nazianzen",
+   "work": "Oration XLI, On Pentecost",
+   "title": "Oration XLI, On Pentecost (part 4 of 4)",
+   "words": 1386,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "gregory-nazianzen.select-orations-of-saint-gregory-nazianzen",
+     "section": 20,
+     "fromParagraph": 20,
+     "toParagraph": 25
+    }
+   ]
+  },
+  {
+   "day": 142,
+   "date": "2027-05-22",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVI, On the Holy Ghost (part 1 of 5)",
+   "words": 1343,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 143,
+   "date": "2027-05-23",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVI, On the Holy Ghost (part 2 of 5)",
+   "words": 1373,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 27,
+     "fromParagraph": 12,
+     "toParagraph": 16
+    }
+   ]
+  },
+  {
+   "day": 144,
+   "date": "2027-05-24",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVI, On the Holy Ghost (part 3 of 5)",
+   "words": 1292,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 27,
+     "fromParagraph": 17,
+     "toParagraph": 21
+    }
+   ]
+  },
+  {
+   "day": 145,
+   "date": "2027-05-25",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVI, On the Holy Ghost (part 4 of 5)",
+   "words": 1452,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 27,
+     "fromParagraph": 22,
+     "toParagraph": 28
+    }
+   ]
+  },
+  {
+   "day": 146,
+   "date": "2027-05-26",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVI, On the Holy Ghost (part 5 of 5)",
+   "words": 1453,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 27,
+     "fromParagraph": 29,
+     "toParagraph": 35
+    }
+   ]
+  },
+  {
+   "day": 147,
+   "date": "2027-05-27",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 1 of 6)",
+   "words": 1341,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 148,
+   "date": "2027-05-28",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 2 of 6)",
+   "words": 1333,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 28,
+     "fromParagraph": 9,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 149,
+   "date": "2027-05-29",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 3 of 6)",
+   "words": 1293,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 28,
+     "fromParagraph": 15,
+     "toParagraph": 21
+    }
+   ]
+  },
+  {
+   "day": 150,
+   "date": "2027-05-30",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 4 of 6)",
+   "words": 1305,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 28,
+     "fromParagraph": 22,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 151,
+   "date": "2027-05-31",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 5 of 6)",
+   "words": 1292,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 28,
+     "fromParagraph": 28,
+     "toParagraph": 33
+    }
+   ]
+  },
+  {
+   "day": 152,
+   "date": "2027-06-01",
+   "season": "ordinary",
+   "author": "St Cyril of Jerusalem",
+   "work": "Catechetical Lectures",
+   "title": "Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 6 of 6)",
+   "words": 1514,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "cyril-jerusalem.the-catechetical-lectures-of-s-cyril",
+     "section": 28,
+     "fromParagraph": 34,
+     "toParagraph": 41
+    }
+   ]
+  },
+  {
+   "day": 153,
+   "date": "2027-06-02",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Preface – Birth and beginnings of Antony",
+   "words": 891,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 154,
+   "date": "2027-06-03",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His early ascetic life",
+   "words": 555,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 155,
+   "date": "2027-06-04",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Early conflicts with the devil",
+   "words": 729,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 156,
+   "date": "2027-06-05",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Details of his life at this time",
+   "words": 572,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 157,
+   "date": "2027-06-06",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His life in the tombs, and combats with demons there – He goes to the desert and overcomes temptations on the way",
+   "words": 1059,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 158,
+   "date": "2027-06-07",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How Antony took up his abode in a ruined fort across the Nile, and… – How he left the fort, and how monasticism began to flourish in Egypt.…",
+   "words": 956,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 159,
+   "date": "2027-06-08",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 1 of 6)",
+   "words": 1404,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 160,
+   "date": "2027-06-09",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 2 of 6)",
+   "words": 1081,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 10,
+     "fromParagraph": 5,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 161,
+   "date": "2027-06-10",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 3 of 6)",
+   "words": 1124,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 10,
+     "fromParagraph": 9,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 162,
+   "date": "2027-06-11",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 4 of 6)",
+   "words": 1256,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 10,
+     "fromParagraph": 13,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 163,
+   "date": "2027-06-12",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 5 of 6)",
+   "words": 1270,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 10,
+     "fromParagraph": 19,
+     "toParagraph": 23
+    }
+   ]
+  },
+  {
+   "day": 164,
+   "date": "2027-06-13",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 6 of 6)",
+   "words": 1052,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 10,
+     "fromParagraph": 24,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 165,
+   "date": "2027-06-14",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, The growth of the monastic life at this time – How he lived at this time",
+   "words": 951,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 166,
+   "date": "2027-06-15",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How he delivered a woman from an evil spirit – How at this time he betook himself to his 'inner mountain.'",
+   "words": 866,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 167,
+   "date": "2027-06-16",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How he there combated the demons – Of the miraculous spring, and how he edified the monks of the 'outer'…",
+   "words": 799,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 168,
+   "date": "2027-06-17",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How humanely he counselled those who resorted to him",
+   "words": 700,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 169,
+   "date": "2027-06-18",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Of the case of Fronto, healed by faith and prayer – Of the two brethren, and how one perished of thirst",
+   "words": 584,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 170,
+   "date": "2027-06-19",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Of the death of Amun, and Antony's vision thereof – Of Count Archelaus and the virgin Polycration",
+   "words": 708,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 24,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 171,
+   "date": "2027-06-20",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Strange tales of the casting out of demons – Of Antony's vision concerning the forgiveness of his sins",
+   "words": 694,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 25,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 26,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 172,
+   "date": "2027-06-21",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Of the passage of souls, and how some were hindered of Satan – How Antony reverenced all ordained persons",
+   "words": 683,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 173,
+   "date": "2027-06-22",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How he rejected the schism of Meletius and the heresies of Manes and… – How he visited Alexandria, and healed and converted many, and how…",
+   "words": 629,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 29,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 30,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 31,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 174,
+   "date": "2027-06-23",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How he reasoned with divers Greeks and philosophers at the 'outer'…",
+   "words": 1652,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 32,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 175,
+   "date": "2027-06-24",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How he confuted the philosophers by healing certain vexed with demons – How the Emperors wrote to Antony, and of his answer",
+   "words": 548,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 33,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 34,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 176,
+   "date": "2027-06-25",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How he saw in a vision the present doings of the Arians – That his healings were done by Christ alone, through prayer",
+   "words": 870,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 35,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 36,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 177,
+   "date": "2027-06-26",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How wisely he answered a certain duke – Of his discernment, and how he was a counsellor to all",
+   "words": 828,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 37,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 38,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 39,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 40,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 178,
+   "date": "2027-06-27",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, How, when now 105 years old, he counselled the monks, and gave advice… – Of his sickness and his last will",
+   "words": 922,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 41,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 42,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 179,
+   "date": "2027-06-28",
+   "season": "ordinary",
+   "author": "St Athanasius",
+   "work": "Life of St Antony",
+   "title": "Life of St Antony, Of Antony's death – The end",
+   "words": 634,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 43,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 44,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "athanasius.life-of-antony-vita-antoni",
+     "section": 45,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 180,
+   "date": "2027-06-29",
+   "season": "ordinary",
+   "feast": "Ss Peter and Paul",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Apostles Peter and Paul",
+   "words": 1434,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 212,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 181,
+   "date": "2027-06-30",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 1 of 7)",
+   "words": 1028,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 182,
+   "date": "2027-07-01",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 2 of 7)",
+   "words": 1312,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 10,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 183,
+   "date": "2027-07-02",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 3 of 7)",
+   "words": 1550,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 18,
+     "toParagraph": 25
+    }
+   ]
+  },
+  {
+   "day": 184,
+   "date": "2027-07-03",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 4 of 7)",
+   "words": 987,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 26,
+     "toParagraph": 32
+    }
+   ]
+  },
+  {
+   "day": 185,
+   "date": "2027-07-04",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 5 of 7)",
+   "words": 1009,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 33,
+     "toParagraph": 38
+    }
+   ]
+  },
+  {
+   "day": 186,
+   "date": "2027-07-05",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 6 of 7)",
+   "words": 938,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 39,
+     "toParagraph": 57
+    }
+   ]
+  },
+  {
+   "day": 187,
+   "date": "2027-07-06",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book I (part 7 of 7)",
+   "words": 1110,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 0,
+     "fromParagraph": 58,
+     "toParagraph": 63
+    }
+   ]
+  },
+  {
+   "day": 188,
+   "date": "2027-07-07",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book II (part 1 of 4)",
+   "words": 1058,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 189,
+   "date": "2027-07-08",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book II (part 2 of 4)",
+   "words": 1059,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 1,
+     "fromParagraph": 10,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 190,
+   "date": "2027-07-09",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book II (part 3 of 4)",
+   "words": 1534,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 1,
+     "fromParagraph": 15,
+     "toParagraph": 23
+    }
+   ]
+  },
+  {
+   "day": 191,
+   "date": "2027-07-10",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book II (part 4 of 4)",
+   "words": 603,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 1,
+     "fromParagraph": 24,
+     "toParagraph": 30
+    }
+   ]
+  },
+  {
+   "day": 192,
+   "date": "2027-07-11",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book III (part 1 of 6)",
+   "words": 1039,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 193,
+   "date": "2027-07-12",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book III (part 2 of 6)",
+   "words": 836,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 2,
+     "fromParagraph": 8,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 194,
+   "date": "2027-07-13",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book III (part 3 of 6)",
+   "words": 1090,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 2,
+     "fromParagraph": 14,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 195,
+   "date": "2027-07-14",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book III (part 4 of 6)",
+   "words": 841,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 2,
+     "fromParagraph": 19,
+     "toParagraph": 22
+    }
+   ]
+  },
+  {
+   "day": 196,
+   "date": "2027-07-15",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book III (part 5 of 6)",
+   "words": 1066,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 2,
+     "fromParagraph": 23,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 197,
+   "date": "2027-07-16",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book III (part 6 of 6)",
+   "words": 1094,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 2,
+     "fromParagraph": 28,
+     "toParagraph": 35
+    }
+   ]
+  },
+  {
+   "day": 198,
+   "date": "2027-07-17",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IV (part 1 of 6)",
+   "words": 1426,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 199,
+   "date": "2027-07-18",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IV (part 2 of 6)",
+   "words": 1303,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 3,
+     "fromParagraph": 11,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 200,
+   "date": "2027-07-19",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IV (part 3 of 6)",
+   "words": 1264,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 3,
+     "fromParagraph": 19,
+     "toParagraph": 26
+    }
+   ]
+  },
+  {
+   "day": 201,
+   "date": "2027-07-20",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IV (part 4 of 6)",
+   "words": 1148,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 3,
+     "fromParagraph": 27,
+     "toParagraph": 34
+    }
+   ]
+  },
+  {
+   "day": 202,
+   "date": "2027-07-21",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IV (part 5 of 6)",
+   "words": 1489,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 3,
+     "fromParagraph": 35,
+     "toParagraph": 43
+    }
+   ]
+  },
+  {
+   "day": 203,
+   "date": "2027-07-22",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IV (part 6 of 6)",
+   "words": 895,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 3,
+     "fromParagraph": 44,
+     "toParagraph": 48
+    }
+   ]
+  },
+  {
+   "day": 204,
+   "date": "2027-07-23",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book V (part 1 of 6)",
+   "words": 1481,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 205,
+   "date": "2027-07-24",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book V (part 2 of 6)",
+   "words": 815,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 4,
+     "fromParagraph": 11,
+     "toParagraph": 15
+    }
+   ]
+  },
+  {
+   "day": 206,
+   "date": "2027-07-25",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book V (part 3 of 6)",
+   "words": 1238,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 4,
+     "fromParagraph": 16,
+     "toParagraph": 21
+    }
+   ]
+  },
+  {
+   "day": 207,
+   "date": "2027-07-26",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book V (part 4 of 6)",
+   "words": 1453,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 4,
+     "fromParagraph": 22,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 208,
+   "date": "2027-07-27",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book V (part 5 of 6)",
+   "words": 1166,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 4,
+     "fromParagraph": 28,
+     "toParagraph": 33
+    }
+   ]
+  },
+  {
+   "day": 209,
+   "date": "2027-07-28",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book V (part 6 of 6)",
+   "words": 1110,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 4,
+     "fromParagraph": 34,
+     "toParagraph": 41
+    }
+   ]
+  },
+  {
+   "day": 210,
+   "date": "2027-07-29",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 1 of 7)",
+   "words": 1077,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 211,
+   "date": "2027-07-30",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 2 of 7)",
+   "words": 1241,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 6,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 212,
+   "date": "2027-07-31",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 3 of 7)",
+   "words": 1362,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 12,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 213,
+   "date": "2027-08-01",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 4 of 7)",
+   "words": 1241,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 18,
+     "toParagraph": 22
+    }
+   ]
+  },
+  {
+   "day": 214,
+   "date": "2027-08-02",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 5 of 7)",
+   "words": 1234,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 23,
+     "toParagraph": 28
+    }
+   ]
+  },
+  {
+   "day": 215,
+   "date": "2027-08-03",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 6 of 7)",
+   "words": 1337,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 29,
+     "toParagraph": 35
+    }
+   ]
+  },
+  {
+   "day": 216,
+   "date": "2027-08-04",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VI (part 7 of 7)",
+   "words": 1116,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 5,
+     "fromParagraph": 36,
+     "toParagraph": 44
+    }
+   ]
+  },
+  {
+   "day": 217,
+   "date": "2027-08-05",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 1 of 7)",
+   "words": 1124,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 218,
+   "date": "2027-08-06",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 2 of 7)",
+   "words": 1528,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 7,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 219,
+   "date": "2027-08-07",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 3 of 7)",
+   "words": 1137,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 14,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 220,
+   "date": "2027-08-08",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 4 of 7)",
+   "words": 1543,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 18,
+     "toParagraph": 25
+    }
+   ]
+  },
+  {
+   "day": 221,
+   "date": "2027-08-09",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 5 of 7)",
+   "words": 1110,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 26,
+     "toParagraph": 33
+    }
+   ]
+  },
+  {
+   "day": 222,
+   "date": "2027-08-10",
+   "season": "ordinary",
+   "feast": "St Lawrence",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of S. Laurence the Martyr",
+   "words": 909,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 214,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 223,
+   "date": "2027-08-11",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 6 of 7)",
+   "words": 1166,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 34,
+     "toParagraph": 43
+    }
+   ]
+  },
+  {
+   "day": 224,
+   "date": "2027-08-12",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VII (part 7 of 7)",
+   "words": 1436,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 6,
+     "fromParagraph": 44,
+     "toParagraph": 50
+    }
+   ]
+  },
+  {
+   "day": 225,
+   "date": "2027-08-13",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 1 of 7)",
+   "words": 1078,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 226,
+   "date": "2027-08-14",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 2 of 7)",
+   "words": 1319,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 7,
+     "toParagraph": 16
+    }
+   ]
+  },
+  {
+   "day": 227,
+   "date": "2027-08-15",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 3 of 7)",
+   "words": 1195,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 17,
+     "toParagraph": 22
+    }
+   ]
+  },
+  {
+   "day": 228,
+   "date": "2027-08-16",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 4 of 7)",
+   "words": 1201,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 23,
+     "toParagraph": 26
+    }
+   ]
+  },
+  {
+   "day": 229,
+   "date": "2027-08-17",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 5 of 7)",
+   "words": 1222,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 27,
+     "toParagraph": 33
+    }
+   ]
+  },
+  {
+   "day": 230,
+   "date": "2027-08-18",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 6 of 7)",
+   "words": 1197,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 34,
+     "toParagraph": 39
+    }
+   ]
+  },
+  {
+   "day": 231,
+   "date": "2027-08-19",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book VIII (part 7 of 7)",
+   "words": 1563,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 7,
+     "fromParagraph": 40,
+     "toParagraph": 49
+    }
+   ]
+  },
+  {
+   "day": 232,
+   "date": "2027-08-20",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 1 of 8)",
+   "words": 1695,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 233,
+   "date": "2027-08-21",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 2 of 8)",
+   "words": 1615,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 12,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 234,
+   "date": "2027-08-22",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 3 of 8)",
+   "words": 1035,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 18,
+     "toParagraph": 24
+    }
+   ]
+  },
+  {
+   "day": 235,
+   "date": "2027-08-23",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 4 of 8)",
+   "words": 945,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 25,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 236,
+   "date": "2027-08-24",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 5 of 8)",
+   "words": 890,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 28,
+     "toParagraph": 32
+    }
+   ]
+  },
+  {
+   "day": 237,
+   "date": "2027-08-25",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 6 of 8)",
+   "words": 839,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 33,
+     "toParagraph": 37
+    }
+   ]
+  },
+  {
+   "day": 238,
+   "date": "2027-08-26",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 7 of 8)",
+   "words": 1318,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 38,
+     "toParagraph": 45
+    }
+   ]
+  },
+  {
+   "day": 239,
+   "date": "2027-08-27",
+   "season": "ordinary",
+   "feast": "St Monica",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book IX (part 8 of 8)",
+   "words": 1050,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 8,
+     "fromParagraph": 46,
+     "toParagraph": 60
+    }
+   ]
+  },
+  {
+   "day": 240,
+   "date": "2027-08-28",
+   "season": "ordinary",
+   "feast": "St Augustine",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 1 of 18)",
+   "words": 1014,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 241,
+   "date": "2027-08-29",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 2 of 18)",
+   "words": 801,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 9,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 242,
+   "date": "2027-08-30",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 3 of 18)",
+   "words": 1067,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 14,
+     "toParagraph": 19
+    }
+   ]
+  },
+  {
+   "day": 243,
+   "date": "2027-08-31",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 4 of 18)",
+   "words": 1061,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 20,
+     "toParagraph": 24
+    }
+   ]
+  },
+  {
+   "day": 244,
+   "date": "2027-09-01",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 5 of 18)",
+   "words": 898,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 25,
+     "toParagraph": 30
+    }
+   ]
+  },
+  {
+   "day": 245,
+   "date": "2027-09-02",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 6 of 18)",
+   "words": 968,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 31,
+     "toParagraph": 37
+    }
+   ]
+  },
+  {
+   "day": 246,
+   "date": "2027-09-03",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 7 of 18)",
+   "words": 838,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 38,
+     "toParagraph": 42
+    }
+   ]
+  },
+  {
+   "day": 247,
+   "date": "2027-09-04",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 8 of 18)",
+   "words": 948,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 43,
+     "toParagraph": 48
+    }
+   ]
+  },
+  {
+   "day": 248,
+   "date": "2027-09-05",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 9 of 18)",
+   "words": 1199,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 49,
+     "toParagraph": 55
+    }
+   ]
+  },
+  {
+   "day": 249,
+   "date": "2027-09-06",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 10 of 18)",
+   "words": 1146,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 56,
+     "toParagraph": 64
+    }
+   ]
+  },
+  {
+   "day": 250,
+   "date": "2027-09-07",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 11 of 18)",
+   "words": 1125,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 65,
+     "toParagraph": 73
+    }
+   ]
+  },
+  {
+   "day": 251,
+   "date": "2027-09-08",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 12 of 18)",
+   "words": 1238,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 74,
+     "toParagraph": 79
+    }
+   ]
+  },
+  {
+   "day": 252,
+   "date": "2027-09-09",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 13 of 18)",
+   "words": 733,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 80,
+     "toParagraph": 84
+    }
+   ]
+  },
+  {
+   "day": 253,
+   "date": "2027-09-10",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 14 of 18)",
+   "words": 753,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 85,
+     "toParagraph": 88
+    }
+   ]
+  },
+  {
+   "day": 254,
+   "date": "2027-09-11",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 15 of 18)",
+   "words": 1004,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 89,
+     "toParagraph": 93
+    }
+   ]
+  },
+  {
+   "day": 255,
+   "date": "2027-09-12",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 16 of 18)",
+   "words": 1466,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 94,
+     "toParagraph": 100
+    }
+   ]
+  },
+  {
+   "day": 256,
+   "date": "2027-09-13",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 17 of 18)",
+   "words": 812,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 101,
+     "toParagraph": 108
+    }
+   ]
+  },
+  {
+   "day": 257,
+   "date": "2027-09-14",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "Confessions",
+   "title": "Confessions, Book X (part 18 of 18)",
+   "words": 813,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.the-confessions",
+     "section": 9,
+     "fromParagraph": 109,
+     "toParagraph": 115
+    }
+   ]
+  },
+  {
+   "day": 258,
+   "date": "2027-09-15",
+   "season": "ordinary",
+   "feast": "Ember Wednesday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of the Seventh Month, III",
+   "words": 1232,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 215,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 259,
+   "date": "2027-09-16",
+   "season": "ordinary",
+   "feast": "Ss Cornelius and Cyprian",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Lord's Prayer",
+   "title": "On the Lord's Prayer (part 1 of 5)",
+   "words": 1780,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 260,
+   "date": "2027-09-17",
+   "season": "ordinary",
+   "feast": "Ember Friday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of Seventh Month, V",
+   "words": 1360,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 216,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 261,
+   "date": "2027-09-18",
+   "season": "ordinary",
+   "feast": "Ember Saturday",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of the Seventh Month, VI",
+   "words": 885,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 217,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 262,
+   "date": "2027-09-19",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Lord's Prayer",
+   "title": "On the Lord's Prayer (part 2 of 5)",
+   "words": 1878,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 3,
+     "fromParagraph": 12,
+     "toParagraph": 17
+    }
+   ]
+  },
+  {
+   "day": 263,
+   "date": "2027-09-20",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Lord's Prayer",
+   "title": "On the Lord's Prayer (part 3 of 5)",
+   "words": 1811,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 3,
+     "fromParagraph": 18,
+     "toParagraph": 24
+    }
+   ]
+  },
+  {
+   "day": 264,
+   "date": "2027-09-21",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Lord's Prayer",
+   "title": "On the Lord's Prayer (part 4 of 5)",
+   "words": 2042,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 3,
+     "fromParagraph": 25,
+     "toParagraph": 33
+    }
+   ]
+  },
+  {
+   "day": 265,
+   "date": "2027-09-22",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Lord's Prayer",
+   "title": "On the Lord's Prayer (part 5 of 5)",
+   "words": 1855,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 3,
+     "fromParagraph": 34,
+     "toParagraph": 39
+    }
+   ]
+  },
+  {
+   "day": 266,
+   "date": "2027-09-23",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters I–III",
+   "words": 1341,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 267,
+   "date": "2027-09-24",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters IV–V",
+   "words": 1107,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 268,
+   "date": "2027-09-25",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters VI–VII",
+   "words": 1347,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 269,
+   "date": "2027-09-26",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters VIII–X",
+   "words": 1356,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 270,
+   "date": "2027-09-27",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XI–XII",
+   "words": 1525,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 271,
+   "date": "2027-09-28",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XIII–XIV",
+   "words": 1522,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 272,
+   "date": "2027-09-29",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XV–XVI",
+   "words": 970,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 273,
+   "date": "2027-09-30",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XVII–XVIII",
+   "words": 1568,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 274,
+   "date": "2027-10-01",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XIX–XXII",
+   "words": 1577,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 275,
+   "date": "2027-10-02",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XXIII–XXIV",
+   "words": 1881,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 24,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 276,
+   "date": "2027-10-03",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XXV–XXVII",
+   "words": 1592,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 25,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 26,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 277,
+   "date": "2027-10-04",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XXVIII–XXIX",
+   "words": 1726,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 29,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 278,
+   "date": "2027-10-05",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapters XXX–XXXII",
+   "words": 1163,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 30,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 31,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 32,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 279,
+   "date": "2027-10-06",
+   "season": "ordinary",
+   "author": "St Vincent of Lérins",
+   "work": "The Commonitory",
+   "title": "The Commonitory, Chapter XXXIII",
+   "words": 1651,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "vincent-lerins.the-commonitory-of-vincent-of-l-rins-for-the-antiquity-and-u",
+     "section": 33,
+     "fromParagraph": 0,
+     "toParagraph": 38
+    }
+   ]
+  },
+  {
+   "day": 280,
+   "date": "2027-10-07",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 1–7",
+   "words": 1276,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 281,
+   "date": "2027-10-08",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 8–11",
+   "words": 1274,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 282,
+   "date": "2027-10-09",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 12–15",
+   "words": 1386,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 283,
+   "date": "2027-10-10",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 16–18",
+   "words": 1555,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 284,
+   "date": "2027-10-11",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 19–20",
+   "words": 1188,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 285,
+   "date": "2027-10-12",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 21–26",
+   "words": 1396,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 24,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 25,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 26,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 286,
+   "date": "2027-10-13",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 27–31",
+   "words": 1448,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 29,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 30,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 31,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 32,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 287,
+   "date": "2027-10-14",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 32–34",
+   "words": 1294,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 33,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 34,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 35,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 288,
+   "date": "2027-10-15",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 35–38",
+   "words": 1462,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 36,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 37,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 38,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 39,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 289,
+   "date": "2027-10-16",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 39–44",
+   "words": 1278,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 40,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 41,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 42,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 43,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 44,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 45,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 290,
+   "date": "2027-10-17",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 45–50",
+   "words": 1318,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 46,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 47,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 48,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 49,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 50,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 51,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 291,
+   "date": "2027-10-18",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 51–55",
+   "words": 1326,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 52,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 53,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 54,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 55,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 56,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 292,
+   "date": "2027-10-19",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 56–60",
+   "words": 1448,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 57,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 58,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 59,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 60,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 61,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 293,
+   "date": "2027-10-20",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 61–65",
+   "words": 1335,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 62,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 63,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 64,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 65,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 66,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 294,
+   "date": "2027-10-21",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 66–69",
+   "words": 1446,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 67,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 68,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 69,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 70,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 295,
+   "date": "2027-10-22",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 70–75",
+   "words": 1469,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 71,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 72,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 73,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 74,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 75,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 76,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 296,
+   "date": "2027-10-23",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 76–78",
+   "words": 1395,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 77,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 78,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 79,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 297,
+   "date": "2027-10-24",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 79–85",
+   "words": 1383,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 80,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 81,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 82,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 83,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 84,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 85,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 86,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 298,
+   "date": "2027-10-25",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 86–91",
+   "words": 1286,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 87,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 88,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 89,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 90,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 91,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 92,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 299,
+   "date": "2027-10-26",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 92–97",
+   "words": 1266,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 93,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 94,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 95,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 96,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 97,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 98,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 300,
+   "date": "2027-10-27",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 98–100",
+   "words": 1396,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 99,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 100,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 101,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 301,
+   "date": "2027-10-28",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 101–104",
+   "words": 1347,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 102,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 103,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 104,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 105,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 302,
+   "date": "2027-10-29",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 105–110",
+   "words": 1547,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 106,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 107,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 108,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 109,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 110,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 111,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 303,
+   "date": "2027-10-30",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 111–116",
+   "words": 1407,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 112,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 113,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 114,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 115,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 116,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 117,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 304,
+   "date": "2027-10-31",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "The Enchiridion",
+   "title": "The Enchiridion, chapters 117–122",
+   "words": 1506,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 118,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 119,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 120,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 121,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 122,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    },
+    {
+     "workId": "augustine.the-enchiridion",
+     "section": 123,
+     "fromParagraph": 0,
+     "toParagraph": 1
+    }
+   ]
+  },
+  {
+   "day": 305,
+   "date": "2027-11-01",
+   "season": "ordinary",
+   "feast": "All Saints",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Beatitudes",
+   "words": 2306,
+   "minutes": 12,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 218,
+     "fromParagraph": 0,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 306,
+   "date": "2027-11-02",
+   "season": "ordinary",
+   "feast": "All Souls",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 1–2",
+   "words": 652,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 307,
+   "date": "2027-11-03",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 3–4",
+   "words": 1029,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    }
+   ]
+  },
+  {
+   "day": 308,
+   "date": "2027-11-04",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapter 5",
+   "words": 580,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 309,
+   "date": "2027-11-05",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapter 6",
+   "words": 504,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 310,
+   "date": "2027-11-06",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 7–8",
+   "words": 797,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 311,
+   "date": "2027-11-07",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapter 9",
+   "words": 697,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 312,
+   "date": "2027-11-08",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 10–11",
+   "words": 754,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 313,
+   "date": "2027-11-09",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapter 12",
+   "words": 568,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 314,
+   "date": "2027-11-10",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 13–14",
+   "words": 630,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 315,
+   "date": "2027-11-11",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapter 15",
+   "words": 956,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 316,
+   "date": "2027-11-12",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapter 16",
+   "words": 718,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 317,
+   "date": "2027-11-13",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 17–18",
+   "words": 750,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 318,
+   "date": "2027-11-14",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 19–20",
+   "words": 808,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 319,
+   "date": "2027-11-15",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo",
+   "work": "On Care to Be Had for the Dead",
+   "title": "On Care to Be Had for the Dead, chapters 21–22",
+   "words": 1155,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    }
+   ]
+  },
+  {
+   "day": 320,
+   "date": "2027-11-16",
+   "season": "ordinary",
+   "author": "St Augustine of Hippo; St Cyprian of Carthage",
+   "work": "On Care to Be Had for the Dead; On the Mortality",
+   "title": "On Care to Be Had for the Dead, chapter 23; On the Mortality (part 1 of 6)",
+   "words": 1091,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "augustine.on-care-to-be-had-for-the-dead",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 0
+    },
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 321,
+   "date": "2027-11-17",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Mortality",
+   "title": "On the Mortality (part 2 of 6)",
+   "words": 1008,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 6,
+     "fromParagraph": 6,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 322,
+   "date": "2027-11-18",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Mortality",
+   "title": "On the Mortality (part 3 of 6)",
+   "words": 1073,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 6,
+     "fromParagraph": 12,
+     "toParagraph": 15
+    }
+   ]
+  },
+  {
+   "day": 323,
+   "date": "2027-11-19",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Mortality",
+   "title": "On the Mortality (part 4 of 6)",
+   "words": 1093,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 6,
+     "fromParagraph": 16,
+     "toParagraph": 19
+    }
+   ]
+  },
+  {
+   "day": 324,
+   "date": "2027-11-20",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Mortality",
+   "title": "On the Mortality (part 5 of 6)",
+   "words": 1118,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 6,
+     "fromParagraph": 20,
+     "toParagraph": 24
+    }
+   ]
+  },
+  {
+   "day": 325,
+   "date": "2027-11-21",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Mortality",
+   "title": "On the Mortality (part 6 of 6)",
+   "words": 991,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 6,
+     "fromParagraph": 25,
+     "toParagraph": 28
+    }
+   ]
+  },
+  {
+   "day": 326,
+   "date": "2027-11-22",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Advantage of Patience",
+   "title": "On the Advantage of Patience (part 1 of 6)",
+   "words": 1135,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 327,
+   "date": "2027-11-23",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Advantage of Patience",
+   "title": "On the Advantage of Patience (part 2 of 6)",
+   "words": 1099,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 8,
+     "fromParagraph": 7,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 328,
+   "date": "2027-11-24",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Advantage of Patience",
+   "title": "On the Advantage of Patience (part 3 of 6)",
+   "words": 1027,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 8,
+     "fromParagraph": 11,
+     "toParagraph": 14
+    }
+   ]
+  },
+  {
+   "day": 329,
+   "date": "2027-11-25",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Advantage of Patience",
+   "title": "On the Advantage of Patience (part 4 of 6)",
+   "words": 1074,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 8,
+     "fromParagraph": 15,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 330,
+   "date": "2027-11-26",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Advantage of Patience",
+   "title": "On the Advantage of Patience (part 5 of 6)",
+   "words": 1044,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 8,
+     "fromParagraph": 19,
+     "toParagraph": 22
+    }
+   ]
+  },
+  {
+   "day": 331,
+   "date": "2027-11-27",
+   "season": "ordinary",
+   "author": "St Cyprian of Carthage",
+   "work": "On the Advantage of Patience",
+   "title": "On the Advantage of Patience (part 6 of 6)",
+   "words": 1092,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "cyprian.the-treatises-of-cyprian",
+     "section": 8,
+     "fromParagraph": 23,
+     "toParagraph": 26
+    }
+   ]
+  },
+  {
+   "day": 332,
+   "date": "2027-11-28",
+   "season": "advent",
+   "feast": "First Sunday of Advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:1–4",
+   "words": 1596,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 0,
+     "fromParagraph": 0,
+     "toParagraph": 22
+    }
+   ]
+  },
+  {
+   "day": 333,
+   "date": "2027-11-29",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:5–10",
+   "words": 1447,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 1,
+     "fromParagraph": 0,
+     "toParagraph": 12
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 2,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    }
+   ]
+  },
+  {
+   "day": 334,
+   "date": "2027-11-30",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:11–14",
+   "words": 1155,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 3,
+     "fromParagraph": 0,
+     "toParagraph": 19
+    }
+   ]
+  },
+  {
+   "day": 335,
+   "date": "2027-12-01",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:15–17",
+   "words": 1098,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 4,
+     "fromParagraph": 0,
+     "toParagraph": 16
+    }
+   ]
+  },
+  {
+   "day": 336,
+   "date": "2027-12-02",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:18–22",
+   "words": 844,
+   "minutes": 4,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 5,
+     "fromParagraph": 0,
+     "toParagraph": 12
+    }
+   ]
+  },
+  {
+   "day": 337,
+   "date": "2027-12-03",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:23–25",
+   "words": 956,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 6,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 338,
+   "date": "2027-12-04",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:26–29",
+   "words": 1843,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 7,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 339,
+   "date": "2027-12-05",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:30–33",
+   "words": 1463,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 24
+    }
+   ]
+  },
+  {
+   "day": 340,
+   "date": "2027-12-06",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:34–35",
+   "words": 1253,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 15
+    }
+   ]
+  },
+  {
+   "day": 341,
+   "date": "2027-12-07",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:36–38",
+   "words": 927,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 10
+    }
+   ]
+  },
+  {
+   "day": 342,
+   "date": "2027-12-08",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:39–45",
+   "words": 1945,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 27
+    }
+   ]
+  },
+  {
+   "day": 343,
+   "date": "2027-12-09",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:46–49",
+   "words": 1382,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 14,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 15,
+     "fromParagraph": 0,
+     "toParagraph": 8
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 16,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 344,
+   "date": "2027-12-10",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:50–55",
+   "words": 1332,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 17,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 18,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 19,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 20,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 21,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 345,
+   "date": "2027-12-11",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:56–64",
+   "words": 1576,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 22,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 23,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 24,
+     "fromParagraph": 0,
+     "toParagraph": 8
+    }
+   ]
+  },
+  {
+   "day": 346,
+   "date": "2027-12-12",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:65–71",
+   "words": 1098,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 25,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 26,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 27,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 28,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 29,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    }
+   ]
+  },
+  {
+   "day": 347,
+   "date": "2027-12-13",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:72–76",
+   "words": 1314,
+   "minutes": 7,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 30,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 31,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 32,
+     "fromParagraph": 0,
+     "toParagraph": 2
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 33,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 348,
+   "date": "2027-12-14",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Luke 1:77–80",
+   "words": 1165,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 34,
+     "fromParagraph": 0,
+     "toParagraph": 4
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 35,
+     "fromParagraph": 0,
+     "toParagraph": 3
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 36,
+     "fromParagraph": 0,
+     "toParagraph": 8
+    },
+    {
+     "workId": "aquinas.catena-aurea-luke",
+     "section": 37,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 349,
+   "date": "2027-12-15",
+   "season": "advent",
+   "feast": "Ember Wednesday of Advent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of The Tenth Month, I",
+   "words": 1521,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 176,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 350,
+   "date": "2027-12-16",
+   "season": "advent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of the Tenth Month",
+   "words": 1902,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 177,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 351,
+   "date": "2027-12-17",
+   "season": "advent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of the Tenth Month, VI",
+   "words": 1105,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 178,
+     "fromParagraph": 0,
+     "toParagraph": 7
+    }
+   ]
+  },
+  {
+   "day": 352,
+   "date": "2027-12-18",
+   "season": "advent",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Fast of the Ten Month, VIII",
+   "words": 1136,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 179,
+     "fromParagraph": 0,
+     "toParagraph": 5
+    }
+   ]
+  },
+  {
+   "day": 353,
+   "date": "2027-12-19",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Matthew 1:18",
+   "words": 2243,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-matthew",
+     "section": 8,
+     "fromParagraph": 0,
+     "toParagraph": 38
+    }
+   ]
+  },
+  {
+   "day": 354,
+   "date": "2027-12-20",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Matthew 1:19",
+   "words": 900,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-matthew",
+     "section": 9,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    }
+   ]
+  },
+  {
+   "day": 355,
+   "date": "2027-12-21",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Matthew 1:20",
+   "words": 1510,
+   "minutes": 8,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-matthew",
+     "section": 10,
+     "fromParagraph": 0,
+     "toParagraph": 26
+    }
+   ]
+  },
+  {
+   "day": 356,
+   "date": "2027-12-22",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Matthew 1:21",
+   "words": 507,
+   "minutes": 3,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-matthew",
+     "section": 11,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 357,
+   "date": "2027-12-23",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Matthew 1:22–23",
+   "words": 2240,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-matthew",
+     "section": 12,
+     "fromParagraph": 0,
+     "toParagraph": 31
+    }
+   ]
+  },
+  {
+   "day": 358,
+   "date": "2027-12-24",
+   "season": "advent",
+   "author": "St Thomas Aquinas",
+   "work": "Catena Aurea",
+   "title": "Catena Aurea, on Matthew 1:24–25",
+   "words": 1232,
+   "minutes": 6,
+   "readings": [
+    {
+     "workId": "aquinas.catena-aurea-matthew",
+     "section": 13,
+     "fromParagraph": 0,
+     "toParagraph": 18
+    }
+   ]
+  },
+  {
+   "day": 359,
+   "date": "2027-12-25",
+   "season": "christmas",
+   "feast": "Christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Nativity, I",
+   "words": 1047,
+   "minutes": 5,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 180,
+     "fromParagraph": 0,
+     "toParagraph": 6
+    }
+   ]
+  },
+  {
+   "day": 360,
+   "date": "2027-12-26",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Nativity, II",
+   "words": 2154,
+   "minutes": 11,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 181,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 361,
+   "date": "2027-12-27",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Nativity, III",
+   "words": 1708,
+   "minutes": 9,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 182,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 362,
+   "date": "2027-12-28",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Nativity, IV",
+   "words": 1999,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 183,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 363,
+   "date": "2027-12-29",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Nativity, VI",
+   "words": 2048,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 184,
+     "fromParagraph": 0,
+     "toParagraph": 9
+    }
+   ]
+  },
+  {
+   "day": 364,
+   "date": "2027-12-30",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Feast of the Nativity, VII",
+   "words": 1951,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 185,
+     "fromParagraph": 0,
+     "toParagraph": 11
+    }
+   ]
+  },
+  {
+   "day": 365,
+   "date": "2027-12-31",
+   "season": "christmas",
+   "author": "St Leo the Great",
+   "work": "Sermons",
+   "title": "On the Festival of the Nativity, VIII",
+   "words": 2014,
+   "minutes": 10,
+   "readings": [
+    {
+     "workId": "leo-great.the-letters-and-sermons-of-leo-the-great",
+     "section": 186,
+     "fromParagraph": 0,
+     "toParagraph": 13
+    }
+   ]
+  }
+ ]
+}
