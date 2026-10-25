@@ -143,6 +143,9 @@ class JohnRepository(context: Context) : AutoCloseable {
     }
 
     fun content(): JSONObject = jsonObject("Catalogs/devotional-catalogs.json")
+    /** "A Year with the Fathers" (1.3.0). Null when the file is missing or damaged; Today then shows no row. */
+    fun yearPlan(): YearPlan? = yearPlanCache ?: runCatching { YearPlan.parse(jsonObject("Catalogs/year-plan.json", cache = false)) }.getOrNull()?.also { yearPlanCache = it }
+    private var yearPlanCache: YearPlan? = null
     fun resolveReference(reference: String, edition: String = "web-ce"): SearchHit? = search(edition, reference).firstOrNull()
     fun commentary(bookCode: String, chapter: Int): List<JSONObject> = catalog().optJSONObject("commentary")?.optJSONObject(bookCode)?.optJSONArray(chapter.toString())?.objects() ?: emptyList()
     fun readings(date: String): JSONObject? = jsonObject("Calendar/readings-us.json").optJSONObject(date)

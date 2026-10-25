@@ -99,6 +99,7 @@ def main() -> None:
     for source, target in (
         ("assets/works/works.db", "Databases/works.db"),
         ("src/services/works/data/catalog.json", "Catalogs/works-catalog.json"),
+        ("src/services/works/data/year-plan.json", "Catalogs/year-plan.json"),
         ("src/services/companion/data/readings-us.json", "Calendar/readings-us.json"),
         ("src/services/companion/data/celebrations-us.json", "Calendar/celebrations-us.json"),
         ("src/services/companion/data/my-saints.json", "Calendar/my-saints.json"),

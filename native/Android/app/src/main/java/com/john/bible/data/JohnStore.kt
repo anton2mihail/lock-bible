@@ -97,6 +97,10 @@ class JohnStore(context: Context, preferenceName: String = "john") {
     private var workParagraphs by mutableStateOf(json("workParagraphs"))
     private var workOffsets by mutableStateOf(json("workOffsets"))
     var lastWorkId by mutableStateOf(string("lastWorkId", "")); private set
+    /** "A Year with the Fathers": the person's Day 1, the day they started (with "Join today" it is later), and read days. */
+    var yearStartDate by mutableStateOf(string("yearStartDate", "").ifEmpty { null }); private set
+    var yearJoinedDate by mutableStateOf(string("yearJoinedDate", "").ifEmpty { null }); private set
+    var yearDaysRead by mutableStateOf(prefs.getStringSet("yearDaysRead", emptySet())!!.mapNotNull { it.toIntOrNull() }.toSet()); private set
 
     private var saintProfiles by mutableStateOf(json("mySaintProfiles"))
     var widgetSaintID by mutableStateOf(string("widgetSaintID", "")); private set
@@ -260,6 +264,17 @@ class JohnStore(context: Context, preferenceName: String = "john") {
     fun startPlan(id: String?) {
         planId = id; planStartDate = if (id == null) null else LocalDate.now().toString()
         write("planId", id ?: ""); write("planStartDate", planStartDate ?: "")
+    }
+    /** Saves Day 1 (`null` starts over; read days stay). The join date is today, or Day 1 when that is later. */
+    fun startYear(start: LocalDate?, today: LocalDate = FeatureClock.today()) {
+        yearStartDate = start?.toString()
+        yearJoinedDate = start?.let { maxOf(it, today).toString() }
+        write("yearStartDate", yearStartDate ?: ""); write("yearJoinedDate", yearJoinedDate ?: "")
+    }
+    fun setYearDayRead(day: Int, read: Boolean) {
+        if (day !in 1..YearPlanSchedule.DAY_COUNT) return
+        yearDaysRead = if (read) yearDaysRead + day else yearDaysRead - day
+        prefs.edit().putStringSet("yearDaysRead", yearDaysRead.map { it.toString() }.toSet()).apply()
     }
     fun planDay(): Int = planStartDate?.let { runCatching { (java.time.temporal.ChronoUnit.DAYS.between(LocalDate.parse(it), LocalDate.now()).toInt() + 1).coerceAtLeast(1) }.getOrDefault(1) } ?: 1
     fun todayJohnChapters(): List<Int> {

@@ -26,6 +26,7 @@ fun externalRoute(value:String?,defaultEdition:String="web-ce"):String? {
             "lectio" -> "lectio"
             "rosary" -> "rosary"
             "advent" -> "advent"
+            "year" -> "year"
             else -> null
         }
     }.getOrNull()

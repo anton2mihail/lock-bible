@@ -471,9 +471,11 @@ struct YearReadingBlock: Identifiable, Equatable {
     let kind: Kind
     let text: String
 
-    /// A short line without closing punctuation is a heading ("Chapter IV.—Various Precepts" is not, so it reads as text).
+    /// A short line without closing punctuation is a heading, and so are "Chapter …" lines and the editor's numbered
+    /// summaries in St Leo ("I. The benefits of abstinence …").
     static func isHeading(_ text: String) -> Bool {
         let words = text.split(whereSeparator: \.isWhitespace).count
+        if words <= 25, text.range(of: #"^[IVXLC]+\.\s"#, options: .regularExpression) != nil { return true }
         guard words <= 14, let last = text.last else { return false }
         if text.hasPrefix("Chapter") || text.hasPrefix("Book") || text.hasPrefix("Lecture") { return true }
         return !".!?:;”\"’)".contains(last)

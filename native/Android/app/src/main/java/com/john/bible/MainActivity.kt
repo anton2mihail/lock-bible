@@ -112,7 +112,7 @@ private val tabs=listOf(JohnTab("Today",Icons.Outlined.WbSunny),JohnTab("Read",I
                         when {
                             route=="search" -> SearchScreen(repo,store,navigate,back)
                             route=="progress" || route=="reading-progress" -> ReadingProgressScreen(store,navigate,back)
-                            route in listOf("calendar-notifications","rosary-reminder","reading-reminder") -> ReminderScreen(route,back)
+                            route in listOf("calendar-notifications","rosary-reminder","reading-reminder","year-reminder") -> ReminderScreen(route,back)
                             route.startsWith("reader/") -> ReaderScreen(repo,store,navigate,initialRoute=route)
                             route.startsWith("share-card/") -> ScriptureCardScreen(route,repo,store,back)
                             route=="verse" -> VerseScreen(repo,store,navigate,back)

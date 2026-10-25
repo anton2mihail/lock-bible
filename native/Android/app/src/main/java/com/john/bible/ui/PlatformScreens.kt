@@ -32,7 +32,7 @@ import java.util.Locale
     var message by remember { mutableStateOf("") }
     val save:()->Unit={ message=if(JohnReminders.save(context,kind,settings)) if(settings.enabled) "Notifications are on." else "Notifications are off." else "Could not save. Please try again." }
     val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted -> if(granted)save() else message="Allow notifications in device settings to receive reminders." }
-    val title=when(kind) { "calendar-notifications" -> "A day in the Church"; "rosary-reminder" -> "Rosary reminder"; else -> "Reading reminder" }
+    val title=when(kind) { "calendar-notifications" -> "A day in the Church"; "rosary-reminder" -> "Rosary reminder"; "year-reminder" -> "A Year with the Fathers"; else -> "Reading reminder" }
     JohnPage(title,eyebrow=if(kind=="calendar-notifications")"Calendar notifications" else "Prayer rhythm",subtitle=if(kind=="calendar-notifications") "One daily notice with saints from Vatican News and the Ruthenian Byzantine Catholic calendar, plus the Roman Rite Gospel reference when available." else "Your phone schedules this reminder locally. It works without an account, server, or internet connection.",back=back) {
         JohnPanel {
             Row(verticalAlignment=Alignment.CenterVertically) {

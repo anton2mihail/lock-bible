@@ -139,6 +139,7 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
         JohnArtCard(seasonArt(season), title, "${seasonName(season)} · Today’s readings") { navigate("daily/$now") }
         JohnText("United States · Roman Rite", dim=true, size=14)
         AdventTodayRow(now,navigate)
+        YearPlanTodayRow(repo,store,now,navigate)
         GospelFathersPanel(repo,readings,navigate)
         JohnRow("Saints & feast days", "Vatican News · Byzantine Catholic · Lives of the saints") { navigate("saints") }
         MySaintsTodaySection(repo,store,navigate)
@@ -265,6 +266,8 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
         "novena" -> NovenaDetail(parts.getOrNull(1).orEmpty(),catalog,store,back)
         "works" -> WorksLibrary(parts.getOrNull(1),repo,store,navigate,back)
         "advent" -> AdventScreen(repo,navigate,back)
+        "year" -> YearPlanScreen(repo,store,navigate,back)
+        "year-day" -> YearDayScreen(parts.getOrNull(1)?.toIntOrNull() ?: 1,repo,store,navigate,back)
         "fathers-unlock" -> FathersUnlockScreen(libraryTotals(repo),back)
         "work" -> WorkReader(parts.getOrNull(1).orEmpty(),parts.getOrNull(2)?.toIntOrNull(),repo,store,navigate,back)
         "commentary" -> CommentaryScreen(parts.getOrNull(1).orEmpty(),parts.getOrNull(2)?.toIntOrNull() ?: 1,repo,navigate,back)

@@ -15,7 +15,8 @@ import kotlin.concurrent.thread
 
 data class ReminderSettings(val enabled:Boolean=false,val hour:Int=8,val minute:Int=0,val weekly:Boolean=false,val weekday:Int=1)
 object JohnReminders {
-    val kinds=listOf("calendar-notifications","rosary-reminder","reading-reminder")
+    // New kinds go at the end: the index is the alarm request code and notification id.
+    val kinds=listOf("calendar-notifications","rosary-reminder","reading-reminder","year-reminder")
     private fun prefs(context:Context)=context.getSharedPreferences("john_reminders",Context.MODE_PRIVATE)
     fun read(context:Context,kind:String):ReminderSettings {
         val p=prefs(context)
@@ -55,6 +56,7 @@ class JohnReminderReceiver:BroadcastReceiver() {
                 JohnReminders.schedule(context,kind)
                 if(Build.VERSION.SDK_INT>=33 && ContextCompat.checkSelfPermission(context,Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) return@thread
                 if(kind=="calendar-notifications" && SaintReminders.replacesCalendar(context,LocalDate.now())) return@thread
+                if(kind=="year-reminder") { YearPlanReminder.notify(context); return@thread }
                 JohnReminders.channel(context)
                 val date=LocalDate.now().toString()
                 val repo=JohnRepository(context)
