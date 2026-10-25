@@ -139,6 +139,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.3")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.media:media:1.7.0")
+    // 2.1.0 parity (Android 1.1.0): the Fathers and Doctors purchase and the in-app rating sheet.
+    implementation("com.android.billingclient:billing-ktx:8.3.0")
+    implementation("com.google.android.play:review-ktx:2.0.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20250517")

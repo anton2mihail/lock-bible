@@ -262,6 +262,7 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
         "novenas" -> PrayScreen(repo,store,navigate)
         "novena" -> NovenaDetail(parts.getOrNull(1).orEmpty(),catalog,store,back)
         "works" -> WorksLibrary(parts.getOrNull(1),repo,store,navigate,back)
+        "fathers-unlock" -> FathersUnlockScreen(libraryTotals(repo),back)
         "work" -> WorkReader(parts.getOrNull(1).orEmpty(),parts.getOrNull(2)?.toIntOrNull(),repo,store,navigate,back)
         "commentary" -> CommentaryScreen(parts.getOrNull(1).orEmpty(),parts.getOrNull(2)?.toIntOrNull() ?: 1,repo,navigate,back)
         "citation" -> CitationScreen(decoded(parts.drop(1).joinToString("/")),repo,store,navigate,back)
@@ -400,7 +401,12 @@ private fun RosaryGuide(id:String,catalog:JSONObject,back:()->Unit) {
         if(step.str("instruction").isNotBlank()) JohnText(step.str("instruction"),size=17)
         step.optJSONObject("prayer")?.let { SelectionContainer { JohnText(it.str("text"),serif=true,size=24) } }
         if(step.str("meditation").isNotBlank()) SelectionContainer { JohnText(step.str("meditation"),serif=true,size=22) }
-        JohnButton(when { repetitions>1 && repetition+1<repetitions -> "Next prayer"; index==steps.lastIndex -> "Complete the Rosary"; else -> "Continue" }) { if(repetition+1<repetitions) repetition++ else { index++; repetition=0 } }
+        JohnButton(when { repetitions>1 && repetition+1<repetitions -> "Next prayer"; index==steps.lastIndex -> "Complete the Rosary"; else -> "Continue" }) {
+            if(repetition+1<repetitions) repetition++ else {
+                if(index==steps.lastIndex) context.findActivity()?.let { com.john.bible.platform.ReviewPrompt.prayerCompleted(it) }
+                index++; repetition=0
+            }
+        }
         if(index>0 || repetition>0) JohnButton("Previous") { if(repetition>0) repetition-- else { index--; repetition=steps[index].optInt("repetitions",1).coerceAtLeast(1)-1 } }
     }
 }
@@ -411,6 +417,7 @@ private fun NovenaDetail(id:String,catalog:JSONObject,store:JohnStore,back:()->U
     var progress by remember(id) { mutableStateOf(store.novena(id)) }
     var reset by remember { mutableStateOf(false) }
     val uri=LocalUriHandler.current
+    val novenaContext=LocalContext.current
     if(item==null) { JohnPage("Novena not found",subtitle="This prayer is not in your offline library.",back=back) {}; return }
     fun changeDay(day:Int) { store.updateNovena(id,progress.copy(selectedDay=day)); progress=store.novena(id) }
     DevotionHeroPage(novenaArt(id),item.str("title"),"NOVENA · 9 DAYS",item.str("subtitle"),back) {
@@ -444,7 +451,10 @@ private fun NovenaDetail(id:String,catalog:JSONObject,store:JohnStore,back:()->U
         }
         if(progress.completedDays.size==9) JohnButton("Start the novena again") { reset=true }
         else if(progress.selectedDay in progress.completedDays) JohnText("Day ${progress.selectedDay} complete",dim=true)
-        else JohnButton("Mark day ${progress.selectedDay} complete") { store.completeNovenaDay(id); progress=store.novena(id) }
+        else JohnButton("Mark day ${progress.selectedDay} complete") {
+            store.completeNovenaDay(id); progress=store.novena(id)
+            novenaContext.findActivity()?.let { com.john.bible.platform.ReviewPrompt.prayerCompleted(it) }
+        }
         JohnRow("Devotion source · ${item.str("sourceName")}") { runCatching { uri.openUri(item.str("sourceUrl")) } }
     }
     if(reset) AlertDialog(onDismissRequest={reset=false},title={JohnText("Reset this novena?")},text={JohnText("Clears all nine completed days and your intention.")},confirmButton={TextButton(onClick={store.resetNovena(id);progress=store.novena(id);reset=false}) { Text("Reset") }},dismissButton={TextButton(onClick={reset=false}) { Text("Cancel") }})
@@ -498,6 +508,7 @@ private fun WorksLibrary(authorId:String?,repo:JohnRepository,store:JohnStore,na
     val lastWork=works.firstOrNull { it.id==store.lastWorkId }
     JohnPage(author?.author ?: "The Fathers & Doctors",if(author==null) "THE LIBRARY" else "THE COLLECTION",if(author==null) "${authors.size} authors · ${works.size} works · reads offline" else "${author.era.orEmpty()} · ${works.size} works · reads offline",back,sansTitle=true) {
         if(author==null) {
+            FathersLibraryCard { navigate("fathers-unlock") }
             if(lastWork!=null) JohnPanel { JohnText("CONTINUE READING",size=12);JohnRow(lastWork.title,"Section ${store.workLocation(lastWork.id)+1} of ${lastWork.sectionCount}") { navigate("work/${lastWork.id}") } }
             authors.forEach { item -> JohnRow(item.author,"${item.era.orEmpty()} · ${item.workCount} works") { navigate("works/${item.id}") } }
         } else {
@@ -516,11 +527,38 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
     val sections=remember(id) { if(work==null) emptyList() else repo.workSections(id) }
     var section by rememberSaveable(id) { mutableIntStateOf((initialSection ?: store.workLocation(id)).coerceIn(0,(sections.size-1).coerceAtLeast(0))) }
     var contents by remember { mutableStateOf(false) }
-    val selected=remember(id,section) { if(work!=null && sections.isNotEmpty()) repo.workSection(id,section.coerceIn(0,sections.lastIndex)) else null }
+    val workContext=LocalContext.current
+    val billing=remember { com.john.bible.platform.FathersBilling.get(workContext) }
+    LaunchedEffect(Unit) { billing.start() }
+    // 2.1.0 parity: a locked section is never read from the database. The unlock page shows in its place.
+    val locked=work!=null && sections.isNotEmpty() && !billing.isUnlocked && !com.john.bible.data.FathersAccess.isSectionFree(id,section.coerceIn(0,sections.lastIndex))
+    val selected=remember(id,section,locked) { if(work!=null && sections.isNotEmpty() && !locked) repo.workSection(id,section.coerceIn(0,sections.lastIndex)) else null }
     val colors=LocalJohnColors.current
     val density=LocalDensity.current
     val measurer=rememberTextMeasurer()
     var previousSection by remember { mutableStateOf<Int?>(null) }
+    if(work!=null && locked) {
+        Column(Modifier.fillMaxSize().background(LocalJohnColors.current.background).padding(horizontal=24.dp)) {
+            Row(Modifier.fillMaxWidth().heightIn(min=52.dp),horizontalArrangement=Arrangement.SpaceBetween) {
+                TextButton(onClick=back) { Text("Back",fontFamily=SpaceGrotesk) }
+                TextButton(onClick={contents=true}) { Text("Contents",fontFamily=SpaceGrotesk) }
+            }
+            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                JohnText(work.title,size=12,dim=true)
+                Spacer(Modifier.height(12.dp))
+                FathersUnlockPanel(sampleNotice="You have read the free part of ${work.title}.",totals=libraryTotals(repo))
+            }
+            Row(Modifier.fillMaxWidth().height(60.dp),horizontalArrangement=Arrangement.SpaceBetween) {
+                TextButton(onClick={ if(section>0) section-- },enabled=section>0) { Text("Previous") }
+                Box(Modifier.padding(top=18.dp)) { JohnText("${section+1} of ${sections.size} · In the full library",size=12,dim=true) }
+                TextButton(onClick={},enabled=false) { Text("Next") }
+            }
+        }
+        if(contents) AlertDialog(onDismissRequest={contents=false},title={JohnText("Contents",size=20)},text={
+            Column(Modifier.heightIn(max=450.dp).verticalScroll(rememberScrollState())) { sections.forEach { item -> JohnRow(item.title,"Section ${item.index+1}") { section=item.index;contents=false } } }
+        },confirmButton={TextButton(onClick={contents=false}) { Text("Close") }})
+        return
+    }
     if(work==null || selected==null) { JohnPage("Work not found",back=back) { JohnText("This work could not be opened from your offline library.") };return }
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.background)) {
         val font=if(store.fontFamily=="sans") SpaceGrotesk else Lora
@@ -823,3 +861,13 @@ private fun ApprovedAudio(address:String,title:String) {
         JohnButton(if(failed) "Audio unavailable" else if(!ready) "Loading audio…" else if(playing) "Pause audio" else "Play audio") { if(ready && !failed) { if(playing) player.pause() else player.start();playing=!playing } }
     }
 }
+
+
+/** "26 authors, 271 works, 15.1m words" for the unlock page, from the bundled catalogue. */
+internal fun libraryTotals(repo: JohnRepository): String? = runCatching {
+    val authors=repo.workAuthors()
+    val works=repo.works()
+    val words=works.sumOf { it.words.toLong() }
+    "${authors.size} authors, ${works.size} works, ${String.format(java.util.Locale.US,"%.1f",words/1_000_000.0)}m words"
+}.getOrNull()
+

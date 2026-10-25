@@ -36,6 +36,7 @@ import com.john.bible.data.*
 @Composable fun SettingsScreen(repo: JohnRepository, store: JohnStore, navigate: (String) -> Unit) {
     val uri=LocalUriHandler.current
     ReadingPage("Settings") {
+        FathersSettingsSection { navigate("fathers-unlock") }
         JohnText("Reading", size = 16, dim = true)
         JohnPanel { ReadingChoices(store) }
         JohnText("Reading progress", size = 16, dim = true)

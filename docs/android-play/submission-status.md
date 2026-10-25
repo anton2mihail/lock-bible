@@ -129,3 +129,27 @@ The owner must keep a secure backup of the upload key and its configuration.
   production 2 (1.0.1) full rollout, app icon, phone screenshots, feature graphic.
   This restarted the review that started on 2026-10-13, so 1.0.1 replaces 1.0.0.
 - Warning shown (not blocking): no native debug symbols, as for 1.0.0.
+
+## Update 2026-10-25: version 1.1.0 (5) — the Fathers and Doctors unlock
+
+Parity with iOS 2.1.0 (approved by Apple). Branch `android/1.1.0`.
+
+- One Google Play in-app product, non-consumable: `com.nrsv.verse.fathers` (same ID as iOS), US$9.99.
+  Play Billing 8.3.0 (`platform/FathersBilling.kt`): purchase, restore (owned purchases), acknowledgement,
+  price from Play, offline cache. A locked section is never read from the database (`WorkReader`).
+- Free without the purchase: the first section of every work, all of the Apostolic Fathers, and the Confessions.
+- Grandfathering: decided once on first launch of 1.1.0 and stored. If the app was installed before
+  (PackageInfo first install time earlier than last update time), the library stays free. A reinstall loses it.
+- Purchase places: the reader in place of a locked section, the library "Free to start" card, and the top of Settings.
+- Rating prompt: Google Play In-App Review 2.0.2 after a finished Rosary or novena day, same rule as iOS. Off in debug builds.
+- Debug-only switch: `adb shell am start -n com.john.bible/.MainActivity --es johnFathersAccess locked|purchased|grandfathered`.
+- Checks: 36 JVM unit tests pass (15 new, each mapped to a written failure list). Debug lint: 0 errors.
+  Emulator (Pixel 8, Android 16): locked section shows the unlock page; purchased reads section 2; normal launch
+  without Google Play billing shows the locked state and does not crash. A real purchase was not tested:
+  the emulator has no Play account.
+- Signed bundle: `~/.local/share/john-android/releases/com.john.bible-5-64a5ecccedf3.aab` (91,188,242 bytes),
+  verified by `build-bundle.py`. Manifest has `com.android.vending.BILLING`, version code 5, name 1.1.0.
+
+To do in Play Console: upload the bundle (internal testing first), then create the in-app product
+`com.nrsv.verse.fathers` (Play allows products only after a bundle with the billing permission is uploaded),
+test a purchase with a license-tester account, then promote to production.

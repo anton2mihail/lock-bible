@@ -32,6 +32,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if(savedInstanceState==null) receiveExternalUrl(intent.dataString)
+        // Debug builds only: -e johnFathersAccess locked|purchased|grandfathered fixes the library state for checks.
+        if(BuildConfig.DEBUG) FathersBilling.get(applicationContext).force(intent.getStringExtra("johnFathersAccess"))
+        FathersBilling.get(applicationContext).start()
+        ReviewPrompt.recordOpen(applicationContext)
         setContent {
             val store=remember { JohnStore(applicationContext) }
             val repo=remember { JohnRepository(applicationContext) }
