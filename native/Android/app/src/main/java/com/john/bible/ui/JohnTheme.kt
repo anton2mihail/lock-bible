@@ -70,10 +70,12 @@ val SpaceGrotesk = FontFamily(Font(R.font.space_grotesk_regular),Font(R.font.spa
     val c=LocalJohnColors.current
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(c.card).border(0.5.dp,c.separator,RoundedCornerShape(18.dp)).padding(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp),content=content)
 }
-@Composable fun JohnRow(title:String,subtitle:String="",onClick:()->Unit) {
+/** A list row; [image] adds a painting at the start, 64 x 76 like iOS ContentActionRow. */
+@Composable fun JohnRow(title:String,subtitle:String="",image:String?=null,onClick:()->Unit) {
     val c=LocalJohnColors.current
     Column {
         Row(Modifier.fillMaxWidth().clickable(onClick=onClick).heightIn(min=72.dp).padding(vertical=12.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(16.dp)) {
+            if(image!=null) JohnArtwork(image,Modifier.width(64.dp).height(76.dp).clip(RoundedCornerShape(8.dp)))
             Column(Modifier.weight(1f)) {
                 Text(title,fontFamily=SpaceGrotesk,fontWeight=FontWeight.Medium,fontSize=16.sp,lineHeight=24.sp,color=c.text)
                 if(subtitle.isNotEmpty()) JohnText(subtitle,size=14,dim=true)

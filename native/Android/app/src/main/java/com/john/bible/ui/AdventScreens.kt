@@ -3,7 +3,9 @@ package com.john.bible.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.sp
@@ -59,7 +61,7 @@ fun AdventTodayRow(date: LocalDate, navigate: (String)->Unit) {
     val ordinal = listOf("First", "Second", "Third", "Fourth")[(week - 1).coerceIn(0, 3)]
     Box(Modifier.testTag("today-advent")) {
         JohnRow(antiphon?.let { "${it.title}: tonight’s O Antiphon" } ?: "Advent with the Fathers",
-            "$ordinal week of Advent · The Gospel, the Fathers and the O Antiphons") { navigate("advent") }
+            "$ordinal week of Advent · The Gospel, the Fathers and the O Antiphons", image = "joyful-1") { navigate("advent") }
     }
 }
 
@@ -84,8 +86,12 @@ fun AdventScreen(repo: JohnRepository, navigate: (String)->Unit, back: ()->Unit)
         AdventCalendar.antiphons.forEach { antiphon ->
             Box(Modifier.testTag("advent-antiphon-${antiphon.day}")) {
                 JohnPanel {
-                    JohnText(antiphon.title + if (antiphon.day == tonight?.day) " · Tonight" else "", size = 17)
-                    JohnText("${antiphon.day} December", dim = true, size = 12)
+                    val isTonight = antiphon.day == tonight?.day
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                        Text(antiphon.title, Modifier.weight(1f), fontFamily = SpaceGrotesk, fontWeight = FontWeight.SemiBold, fontSize = 17.sp,
+                            color = if (isTonight) LocalJohnColors.current.tint else LocalJohnColors.current.text)
+                        JohnText("${antiphon.day} December" + if (isTonight) " · Tonight" else "", dim = true, size = 12)
+                    }
                     SelectionContainer { JohnText(antiphon.english, serif = true, size = 18) }
                     SelectionContainer { JohnText(antiphon.latin, serif = true, size = 15, dim = true) }
                 }

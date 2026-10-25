@@ -144,8 +144,8 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
         MySaintsTodaySection(repo,store,navigate)
         TodayReadingCard(repo,store,navigate)
         JohnText("Make room for prayer", size=20)
-        JohnRow("Pray the Rosary", mysteryTitle(set)) { navigate("rosary/$set") }
-        prayer?.let { JohnRow(it.str("title"),it.str("subtitle")) { navigate("prayer/${it.str("id")}") } }
+        JohnRow("Pray the Rosary", mysteryTitle(set), image="mary") { navigate("rosary/$set") }
+        prayer?.let { JohnRow(it.str("title"),it.str("subtitle"),image="prayer") { navigate("prayer/${it.str("id")}") } }
         catalog.array("novenas").forEach { item ->
             val progress = store.novena(item.str("id"))
             if((progress.completedDays.isNotEmpty() || progress.intention.isNotBlank()) && progress.completedDays.size<9) JohnRow(item.str("title"), "Continue with day ${(1..9).first { it !in progress.completedDays }}") { navigate("novena/${item.str("id")}") }
@@ -866,7 +866,7 @@ private fun ApprovedAudio(address:String,title:String) {
 }
 
 
-/** "26 authors, 271 works, 15.1m words" for the unlock page, from the bundled catalogue. */
+/** "26 authors, 273 works, 15.7m words" for the unlock page, from the bundled catalogue. */
 internal fun libraryTotals(repo: JohnRepository): String? = runCatching {
     val authors=repo.workAuthors()
     val works=repo.works()

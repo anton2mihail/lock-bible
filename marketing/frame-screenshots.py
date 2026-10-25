@@ -48,6 +48,24 @@ SETS = {
       ("ipad-07-works","26 Fathers and Doctors. 15 million words. Offline.","Augustine, Aquinas, Chrysostom and more. Read the first part of every work free."),
     ],
   },
+  # Custom product pages (2.2.0, docs/john/advent-2026-plan.md section 4): one first slide per search intent.
+  # Each page then repeats the 2.1.0 slides. RELEASE=cpp RAW_DIR=marketing/screenshots/raw-cpp OUT_DIR=marketing/screenshots/framed-cpp
+  "cpp": {
+    "iphone": [
+      ("c1-douay","The Douay-Rheims Bible, page by page","The Challoner text with every deuterocanonical book. Free, and fully offline."),
+      ("c2-vulgate","The Latin Vulgate","The Clementine Vulgate, beside the Douay-Rheims and the WEB Catholic Edition."),
+      ("c3-rosary","Pray the Rosary, step by step","Every set of mysteries, the Seven Sorrows and the chaplets. Offline."),
+      ("c4-saints","Keep your saints close","Their story, their prayers and their feast day, with the saint of the day."),
+      ("c5-fathers","The Fathers on today's Gospel","The Catena Aurea of St Thomas Aquinas, and 26 Fathers and Doctors."),
+    ],
+    "ipad": [
+      ("ipad-c1-douay","The Douay-Rheims Bible, page by page","The Challoner text with every deuterocanonical book. Free, and fully offline."),
+      ("ipad-c2-vulgate","The Latin Vulgate","The Clementine Vulgate, beside the Douay-Rheims and the WEB Catholic Edition."),
+      ("ipad-c3-rosary","Pray the Rosary, step by step","Every set of mysteries, the Seven Sorrows and the chaplets. Offline."),
+      ("ipad-c4-saints","Keep your saints close","Their story, their prayers and their feast day, with the saint of the day."),
+      ("ipad-c5-fathers","The Fathers on today's Gospel","The Catena Aurea of St Thomas Aquinas, and 26 Fathers and Doctors."),
+    ],
+  },
 }
 
 DEVICES = {

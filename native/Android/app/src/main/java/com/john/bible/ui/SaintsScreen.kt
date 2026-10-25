@@ -92,7 +92,7 @@ fun SaintsDaySection(repo: JohnRepository, day: LocalDate, browse: () -> Unit) {
             saints.forEach { SaintLifeCard(it, catalog.sourceName, showDate = false) }
         }
         if (failed) JohnText("The saints calendar could not be loaded. Open the calendar to try again.", dim = true)
-        JohnRow("Browse saints & feast days", "Choose a date or search by name", browse)
+        JohnRow("Browse saints & feast days", "Choose a date or search by name", onClick=browse)
     }
 }
 

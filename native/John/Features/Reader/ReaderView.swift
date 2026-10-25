@@ -1341,7 +1341,7 @@ struct ReaderView: View {
     }
 
     private var fathersCountLabel: String {
-        guard let catalog = workCatalog else { return "26 authors · 271 works" }
+        guard let catalog = workCatalog else { return "26 authors · 273 works" }
         if catalog.collections.count == 1, let collection = catalog.collections.first {
             return "\(collection.author) · \(catalog.works.count) works"
         }
