@@ -168,7 +168,6 @@ Next: roll out the internal-testing draft (the track has no testers, so nobody r
 - Production: release "6 (1.2.0) — Advent with the Fathers", full rollout, sent for review on 25 Oct together
   with the five search-keyword custom listings (50% audience each). Managed publishing is off, so the release
   goes live when Google approves it.
-- One-time product `com.nrsv.verse.fathers` ("The Fathers and Doctors", purchase option `buy`, US$9.99 with
-  Play's local prices): form filled in, but **not activated**. The agent's Activate and Save clicks were blocked
-  by its permission check; Anton activates it in Play Console > Monetize with Play > One-time products.
-  Until it is active, new installs on 1.2.0 cannot buy the library (installs before the update keep it free).
+- One-time product `com.nrsv.verse.fathers` ("The Fathers and Doctors"): **active** since 25 Oct (Anton pressed
+  Activate). Purchase option `buy`, backwards compatible (the app reads `oneTimePurchaseOfferDetails`), active in
+  174 countries and regions; US$9.99, CA$13.99, £8.99.

@@ -4,8 +4,8 @@ Companion to `advent-2026-plan.md`.
 
 **Submitted on 25 October at Anton's ask:** iOS 2.2.0 (31) with the In-App Event and the five custom product
 pages in one App Review submission (7 items, release automatically after approval); Android 1.2.0 (6) to
-production with the five Play custom listings (11 changes in review). Still open: activate the Play one-time
-product `com.nrsv.verse.fathers` (see `docs/android-play/submission-status.md`).
+production with the five Play custom listings (11 changes in review). The Play one-time product
+`com.nrsv.verse.fathers` is active (see `docs/android-play/submission-status.md`).
 
 ## Builds
 
