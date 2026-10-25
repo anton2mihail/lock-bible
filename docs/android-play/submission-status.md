@@ -159,3 +159,16 @@ test a purchase with a license-tester account, then promote to production.
 bundle manifest has `com.android.vending.BILLING`: Play checks only bundles in a rolled-out release.
 Next: roll out the internal-testing draft (the track has no testers, so nobody receives it), then create
 `com.nrsv.verse.fathers` at US$9.99.
+
+## Update 2026-10-25: version 1.2.0 (6) — Advent with the Fathers, sent to production
+
+- Bundle `com.john.bible-6-7d45f92acab3.aab` uploaded by Anton. It includes everything in 1.1.0 (5).
+- Internal testing: the 1.1.0 draft was replaced with 6 (1.2.0) and published, with no testers. This only
+  made Play accept the BILLING permission, so the one-time product could be created.
+- Production: release "6 (1.2.0) — Advent with the Fathers", full rollout, sent for review on 25 Oct together
+  with the five search-keyword custom listings (50% audience each). Managed publishing is off, so the release
+  goes live when Google approves it.
+- One-time product `com.nrsv.verse.fathers` ("The Fathers and Doctors", purchase option `buy`, US$9.99 with
+  Play's local prices): form filled in, but **not activated**. The agent's Activate and Save clicks were blocked
+  by its permission check; Anton activates it in Play Console > Monetize with Play > One-time products.
+  Until it is active, new installs on 1.2.0 cannot buy the library (installs before the update keep it free).
