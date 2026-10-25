@@ -45,9 +45,9 @@ Every replacement text below was checked word for word against the page scan. Ex
 | St Peregrine | No approved novena before 1931; the Collect of his feast from *The Missal* (1926), p. 1207, prayed for nine days | OK |
 | St Thérèse rose novena | Society of the Little Flower | Edition to confirm |
 | Advent wreath | The four Sunday Collects of Advent, *The Missal* (1926), pp. 50, 54, 56, 69 | OK (new) |
-| **Fatima prayer** (Rosary decades) and **Prayers of the Angel of Fatima** | Approved devotion, but no approved English text before 1931 exists (apparitions approved 1930) | **Decide (D7)** |
-| **St Padre Pio novena** | Website, no author. No approved public-domain novena exists (canonized 2002) | **Decide (D7)** |
-| **Divine Mercy novena** | St Faustina's *Diary*; the English text is © Marian Press | **Decide (D7)** |
+| **Fatima prayer** (Rosary decades) and **Prayers of the Angel of Fatima** | Approved devotion, but no approved English text before 1931 exists (apparitions approved 1930) | Kept; licence requested (D7) |
+| **St Padre Pio novena** | Website, no author. No approved public-domain novena exists (canonized 2002) | Kept; licence requested (D7) |
+| **Divine Mercy novena** | St Faustina's *Diary*; the English text is © Marian Press | Kept; licence requested (D7) |
 
 ## Guides and teaching
 
@@ -71,12 +71,10 @@ Every replacement text below was checked word for word against the page scan. Ex
 
 - The App Store description says "27 novenas"; the app has **7**. Fix in the 2.2.1 description.
 
-## Decision still open
+## D7 (Anton, 25 Oct 2026)
 
-- **D7.** The Fatima prayers, the Padre Pio novena and the Divine Mercy novena have no approved English text in
-  the public domain. Options: (a) remove them; (b) keep them with the text of a modern approved edition, under a
-  licence from its publisher (Marian Press for Divine Mercy; a Capuchin or diocesan edition for Padre Pio; the
-  Shrine of Fatima for the Fatima prayers).
+- Keep the Fatima prayers, the Padre Pio novena and the Divine Mercy novena for now, and ask the rights holders
+  for licences: drafts in `prayer-licence-requests.md`. Replace each text with the licensed one when granted.
 
 ## Decisions (Anton, 25 Oct 2026)
 
