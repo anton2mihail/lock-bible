@@ -104,3 +104,7 @@ scripts/.cache/
 
 # Playwright CLI page snapshots and console logs
 .playwright-cli/
+
+# JVM crash logs
+hs_err_pid*.log
+replay_pid*.log
