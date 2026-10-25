@@ -3,6 +3,20 @@
 Goal: add a Church-approved modern English Catholic Bible to John 1:1, offline, beside the Douay-Rheims, the
 Vulgate and the WEB Catholic Edition (study translation).
 
+## Sent (25 October 2026, 5:12 pm Toronto)
+
+Sent from anton@north.boutique (Mail app; replies come to that address; contact@north.boutique is not set up as
+a sending address). Exact texts: `docs/john/outbox/`.
+
+| Request | To | Status |
+|---|---|---|
+| NRSV Catholic Edition | NCCrights@petradirights.com | Sent, waiting |
+| RSV Second Catholic Edition | laurap@ignatius.com | Sent, waiting |
+| Divine Mercy novena | editorial@marian.org | Sent, waiting (address from 2022; if it bounces, call 1-800-462-7426) |
+| St Padre Pio novena | info@padrepio.foundation | Sent, waiting |
+| Fatima prayers | liturgia@fatima.pt, cc reitoria@fatima.pt | Sent, waiting |
+| Catholic American Bible (CCD) | Postal letter, Washington DC | Not sent: Anton posts it later |
+
 ## What is available
 
 | Translation | Church approval | Who licenses it | Status for an app |

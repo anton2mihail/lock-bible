@@ -2,13 +2,27 @@
 
 Decision D7 (Anton): keep the Fatima prayers, the St Padre Pio novena and the Divine Mercy novena in the app for
 now, and ask the rights holders for licences. None of the three has a Church-approved English text in the public
-domain (see `content-sources.md`). Nothing below has been sent.
+domain (see `content-sources.md`). Sent on 25 October 2026; see the table below.
 
 Facts for all three requests: North Boutique Studios Ltd., 846 Roulston St, London, ON N6H 0E4, Canada (Ontario
 for-profit corporation). App: John 1:1 – Catholic Bible, iPhone, iPad and Android; free, no ads, no account; one
 optional purchase unlocks a library of Church Fathers (not the prayers). Prayers are shown offline, unchanged,
 with the source and copyright line beside them. Audience: about 120 new downloads per 90 days on iOS (October 2026)
 and about 330 existing users. Contact: Anton Lachmaniucu, contact@north.boutique.
+
+## Sent (25 October 2026, 5:12 pm Toronto)
+
+Sent from anton@north.boutique (Mail app; replies come to that address; contact@north.boutique is not set up as
+a sending address). Exact texts: `docs/john/outbox/`.
+
+| Request | To | Status |
+|---|---|---|
+| NRSV Catholic Edition | NCCrights@petradirights.com | Sent, waiting |
+| RSV Second Catholic Edition | laurap@ignatius.com | Sent, waiting |
+| Divine Mercy novena | editorial@marian.org | Sent, waiting (address from 2022; if it bounces, call 1-800-462-7426) |
+| St Padre Pio novena | info@padrepio.foundation | Sent, waiting |
+| Fatima prayers | liturgia@fatima.pt, cc reitoria@fatima.pt | Sent, waiting |
+| Catholic American Bible (CCD) | Postal letter, Washington DC | Not sent: Anton posts it later |
 
 | Text | Rights holder | Contact | Notes |
 |---|---|---|---|
