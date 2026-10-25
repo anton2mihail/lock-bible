@@ -130,6 +130,8 @@ struct DestinationView: View {
             ConfessionView(onClose: router.pop)
         case .scriptureCard(let passage):
             ScriptureCardView(passage: passage)
+        case .advent:
+            AdventView(clock: { runtime.featureNow() }, timeZone: runtime.featureTimeZone)
         }
     }
 

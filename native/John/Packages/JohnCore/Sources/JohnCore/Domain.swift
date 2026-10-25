@@ -306,7 +306,14 @@ public struct WorkCatalog: Codable, Hashable, Sendable {
 public struct CommentaryEntry: Codable, Hashable, Sendable {
     public let workID: String; public let workTitle: String; public let sectionIndex: Int
     public let sectionTitle: String; public let collectionID: String
-    private enum CodingKeys: String, CodingKey { case workID = "workId", workTitle, sectionIndex, sectionTitle, collectionID = "collectionId" }
+    /// Verse range, present for verse-by-verse commentary (the Catena Aurea, 2.2.0). Older entries cover a chapter.
+    public let fromVerse: Int?; public let toVerse: Int?
+    private enum CodingKeys: String, CodingKey { case workID = "workId", workTitle, sectionIndex, sectionTitle, collectionID = "collectionId", fromVerse, toVerse }
+    public init(workID: String, workTitle: String, sectionIndex: Int, sectionTitle: String, collectionID: String,
+                fromVerse: Int? = nil, toVerse: Int? = nil) {
+        self.workID = workID; self.workTitle = workTitle; self.sectionIndex = sectionIndex
+        self.sectionTitle = sectionTitle; self.collectionID = collectionID; self.fromVerse = fromVerse; self.toVerse = toVerse
+    }
 }
 public struct WorkSection: Codable, Hashable, Sendable {
     public let index: Int; public let title: String; public let words: Int; public let paragraphs: [String]

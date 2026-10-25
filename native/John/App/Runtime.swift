@@ -892,6 +892,22 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         return try await works.section(workID: workID, index: index)
     }
 
+    /// "The Fathers on today's Gospel" (2.2.0). The excerpt is read directly from the database, so Today shows one
+    /// comment even when the full section is part of the paid library.
+    func gospelFathers(for readings: CalendarReadingsEntry?) async -> GospelFathersCard? {
+        guard let reference = GospelFathers.gospelReference(in: readings),
+              let parsed = GospelFathers.parse(reference),
+              let catalog = await worksCatalog(),
+              let entry = GospelFathers.entry(for: parsed, in: catalog.commentary) else { return nil }
+        var excerpt: GospelFathers.Excerpt?
+        if entry.fromVerse != nil, let works,
+           let section = try? await works.section(workID: entry.workID, index: entry.sectionIndex) {
+            excerpt = GospelFathers.excerpt(from: section.paragraphs)
+        }
+        let author = catalog.collections.first { $0.id == entry.collectionID }?.author ?? "The Fathers"
+        return GospelFathersCard(reference: reference, entry: entry, excerpt: excerpt, author: author)
+    }
+
     /// True when the reader may open this section now: the free sample, a purchase, or a grandfathered install.
     func isWorkSectionReadable(workID: String, index: Int) -> Bool {
         fathers.isUnlocked || FathersLibraryAccess.isSectionFree(workID: workID, index: index)

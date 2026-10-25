@@ -229,6 +229,10 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             select(.pray)
             paths[.pray] = [.companion(.rosaryHome)]
             markRoutedByCode(.pray)
+        case .advent:
+            select(.today)
+            paths[.today] = [.companion(.advent)]
+            markRoutedByCode(.today)
         case .lectio:
             select(.pray)
             paths[.pray] = [.companion(.lectio(nil))]

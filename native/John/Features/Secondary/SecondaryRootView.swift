@@ -23,7 +23,7 @@ struct SecondaryRootView: View {
             FullSettingsView(onOpenCalendarNotifications: { router.push(.calendarNotifications) },
                              onOpenPage: { router.push(.settingsPage($0)) })
         case .today:
-            CompanionTodayView(onNavigate: { router.push(.companion($0)) },
+            CompanionTodayView(clock: { runtime.featureNow() }, onNavigate: { router.push(.companion($0)) },
                                onOpenVerseMoment: {
                                    router.push(.verseMoment(VerseMomentSelection(verse: $0, translation: preferences.translation)))
                                })

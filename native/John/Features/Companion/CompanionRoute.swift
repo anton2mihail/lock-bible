@@ -21,4 +21,6 @@ enum CompanionRoute: Hashable, Sendable {
     case lectio(PassageSelection?)
     case confession
     case scriptureCard(PassageSelection)
+    /// The Advent page (2.2.0); `nrsv://advent` and the Today card open it.
+    case advent
 }
