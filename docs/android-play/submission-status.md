@@ -153,3 +153,9 @@ Parity with iOS 2.1.0 (approved by Apple). Branch `android/1.1.0`.
 To do in Play Console: upload the bundle (internal testing first), then create the in-app product
 `com.nrsv.verse.fathers` (Play allows products only after a bundle with the billing permission is uploaded),
 test a purchase with a license-tester account, then promote to production.
+
+2026-10-25 (later): bundle 5 (1.1.0) is in the bundle library and in a saved internal-testing release draft
+(not rolled out). Play Console still blocks one-time products ("add the BILLING permission") although the
+bundle manifest has `com.android.vending.BILLING`: Play checks only bundles in a rolled-out release.
+Next: roll out the internal-testing draft (the track has no testers, so nobody receives it), then create
+`com.nrsv.verse.fathers` at US$9.99.
