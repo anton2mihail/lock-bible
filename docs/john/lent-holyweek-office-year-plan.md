@@ -40,7 +40,7 @@ links to usccb.org for the fasting and abstinence rules instead of restating the
 ### Text pipeline (shared by Lent, Holy Week and the Little Office)
 
 1. Download the page images for the needed pages only (no full-book downloads kept in the repo).
-2. OCR with `tesseract` (installed; add `lat` for the Latin columns of the Little Office).
+2. OCR with `tesseract` (installed, English data; the Latin is not needed in the first release).
 3. Proofread: every text is compared against the page image by a person or agent reading the image, line by line.
    Psalms of the Little Office are also compared with the app's Douay-Rheims (same Challoner text, same numbering):
    any difference is checked on the scan.
@@ -63,7 +63,8 @@ links to usccb.org for the fasting and abstinence rules instead of restating the
   3. "Today's Gospel, with the Fathers" (exists; the Catena covers all four Gospels).
   4. **The Collect of the day** from the Missal (every weekday of Lent has its own Mass in the Missal).
   5. **St Leo the Great on Lent:** a row into his sermons on Lent (and in Passiontide, on the Passion). These are
-     library sections; see decision L1.
+     library sections 191–204 (14 sermons); they are **free from Ash Wednesday to Easter Sunday** (decision L1)
+     and locked again after Easter for people without the library.
   6. **The Seven Penitential Psalms:** a list of the seven; each opens in the Douay-Rheims reader.
   7. **The Stations of the Cross** row.
   8. A link "Fasting and abstinence (USCCB)" to the bishops' page.
@@ -92,6 +93,9 @@ links to usccb.org for the fasting and abstinence rules instead of restating the
 - L5. Stations: fewer than 14, a station without a painting or source page.
 - L6. The Lent row and the Advent row both show on one day (never; different seasons).
 - L7. Time-zone edge: 23:30 in Toronto on Shrove Tuesday is not Lent.
+- L8. Leo's 14 sermons: locked the day before Ash Wednesday and the Monday after Easter, open on every day between,
+  for a user without the library; never locked for a user with it. In the smaller-download build these 14 sections
+  are in the in-app sample database, not only in the downloaded pack.
 
 ### Store
 
@@ -155,22 +159,21 @@ year) and Matins changes by weekday (three sets of psalms). The 1915 book also h
   until 9:00, Terce 9–12, Sext 12–15, None 15–18, Vespers 18–21, Compline after 21:00; Matins and Prime from the
   hour list).
 - **Hour screen:** the hour, built for today's season and weekday, as one scrolling text: V./R. lines in the tint
-  colour, psalm verses in lines, antiphons marked. "Latin" toggle shows the Latin beside the English on iPad and
-  wide Android screens, under it on phones. Read aloud works as in the reader.
+  colour, psalm verses in lines, antiphons marked. **English only** in the first release (decision O1); the Latin
+  can come in a later update from the same book. Read aloud works as in the reader.
 - **Office of the Dead:** a row in the same section (and featured in November).
 - Free, offline. No new purchase.
 
 ### Data and code
 
 - `src/services/office/data/little-office.json`: parts (hymns, antiphons, psalms, chapters, versicles, prayers) with
-  ids, Latin and English, page references; and `hours`: for each hour, the ordered list of part ids per season and
+  ids, English text and page references (a `latin` field is left empty for a later update); and `hours`: for each hour, the ordered list of part ids per season and
   weekday. One builder function (shared logic in JohnCore and Android) assembles an hour for a date.
 - Season rules (from the book's rubrics, quoted in the source notes): Advent form from the first Sunday of Advent to
   24 Dec; Christmas form from 25 Dec to 2 Feb; ordinary form otherwise. Matins psalms: Sunday, Monday, Thursday;
   Tuesday, Friday; Wednesday, Saturday.
-- Pipeline volume: about 390 pages, two columns (Latin, English). OCR both; proofread English in full against the
-  images; check every psalm against the app's Douay-Rheims; Latin checked against the Clementine Vulgate for the
-  psalms.
+- Pipeline volume: about 390 pages, Latin and English side by side. OCR and
+  proofread only the English pages, in full against the images; check every psalm against the app's Douay-Rheims.
 
 ### Failure list
 
@@ -179,7 +182,7 @@ year) and Matins changes by weekday (three sets of psalms). The 1915 book also h
 - O3. The wrong Matins psalms for a weekday.
 - O4. A psalm differs from the Douay-Rheims without a note that the book differs.
 - O5. "Pray the Hour" picks the wrong hour at the boundaries (8:59, 9:00, 21:00).
-- O6. Latin and English parts are out of step (each part has both, same id).
+- O6. A part has no English text or no page reference.
 
 ---
 
@@ -251,22 +254,21 @@ The text is always the Fathers' own; the app only chooses the order. The choice 
 | 5 | A Year with the Fathers: plan script, plan file review, Today card, plan page, reminder, unlock gate (Y1–Y6) |
 | 6 | UI tests, simulator and emulator checks (Lent dates, Good Friday, Easter, largest text, dark mode), store media, In-App Events and product pages drafted |
 
-### Little Office (2.5.0, about 6 weeks, after Spanish)
+### Little Office (2.5.0, about 5–6 weeks, after Spanish)
 
 | Week | Work |
 |---|---|
-| 1–2 | OCR and proofread the English (390 pages); psalm checks against the Douay-Rheims |
-| 3 | Latin column OCR and check against the Vulgate; JSON structure and builder with tests O1–O6 |
+| 1–2 | OCR and proofread the English pages; psalm checks against the Douay-Rheims |
+| 3 | JSON structure and builder with tests O1–O6 |
 | 4 | Hour screen, Pray tab and Today rows (iOS) |
 | 5 | Android |
 | 6 | Office of the Dead; tests; store text |
 
-## Decisions for Anton
+## Decisions (Anton, 25 October 2026)
 
-- **L1.** St Leo's sermons on Lent and the Passion are paid library sections. Make these 18 sermons free during
-  Lent and Holy Week as a seasonal sample? (Recommended: yes; it shows the library at its best time.)
-- **Y1.** Ship "A Year with the Fathers" in 2.3.0 (January, the natural time to start a year plan, adds a week to a
-  full release) or in 2.4.0 with Spanish? (Recommended: 2.3.0.)
-- **Y2.** Free days for the year plan: 7 (recommended) or 30?
-- **O1.** Little Office: English only at first, Latin in a later update? (Recommended: both at once; the Latin is
-  in the same book and many who pray this office want it.)
+- **L1. Yes.** St Leo's 14 sermons on Lent and the Passion (sections 191–204) are free from Ash Wednesday to
+  Easter Sunday, as a seasonal sample of the library.
+- **Y2. 7 free days** in "A Year with the Fathers"; Day 8 on needs the Fathers library.
+- **O1. English first.** The Little Office ships in English only; the Latin may follow in a later update.
+- **Y1. Open:** ship "A Year with the Fathers" in 2.3.0 (January, adds about a week) or in 2.4.0 with Spanish?
+  (Recommended: 2.3.0.)
