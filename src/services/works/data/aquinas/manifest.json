@@ -38,5 +38,23 @@
     "sectionCount": 547,
     "words": 371460,
     "book": null
+  },
+  {
+    "id": "catena-aurea-matthew",
+    "title": "Catena Aurea: Matthew",
+    "order": 6,
+    "sectionCount": 283,
+    "words": 407416,
+    "book": "MAT",
+    "kind": "commentary"
+  },
+  {
+    "id": "catena-aurea-mark",
+    "title": "Catena Aurea: Mark",
+    "order": 7,
+    "sectionCount": 105,
+    "words": 139536,
+    "book": "MRK",
+    "kind": "commentary"
   }
 ]
