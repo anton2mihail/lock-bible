@@ -10,7 +10,7 @@ Vulgate and the WEB Catholic Edition (study translation).
 | **New American Bible, Revised Edition (NABRE)** | USCCB; the current US Mass readings | Confraternity of Christian Doctrine (CCD), via the USCCB | **Closed.** "Given the anticipated 2027 publication of the Catholic American Bible, digital permissions are no longer being granted for the NABRE." |
 | **Catholic American Bible** | USCCB (approved Nov 2025); out **10 Feb 2027** | CCD | **Not open yet.** "Digital licensing for the Catholic American Bible is not yet open." No date. Apps must have "a license and a royalty payment or permissions fee." The related Liturgy of the Hours text opens for digital licensing in mid-2027, delivered to apps through a secure USCCB service (likely online, not offline). |
 | **NRSV Catholic Edition (NRSV-CE)** | Imprimatur (1991); approved for the Lectionary in Canada | National Council of Churches, via Petradi Rights Management | **Open.** "Except for the NRSV-CE, the NRSV is no longer available for new licenses." Apps always need a licence. |
-| **RSV Second Catholic Edition (RSV-2CE)** | Catholic edition with imprimatur; used by Ignatius and Ascension | Ignatius Press (the NCC refers all RSV-2CE requests to Ignatius) | **Ask.** No public terms or contact found. |
+| **RSV Second Catholic Edition (RSV-2CE)** | Catholic edition with imprimatur; used by Ignatius and Ascension | Ignatius Press (the NCC refers all RSV-2CE requests to Ignatius); permissions: laurap@ignatius.com | **Ask.** No public terms. |
 | ESV Catholic Edition | Approved for the Lectionary in India and the UK | Crossway / Catholic Truth Society | Unlikely: Crossway does not publish it in the US. |
 
 ## Recommendation
@@ -26,15 +26,18 @@ Vulgate and the WEB Catholic Edition (study translation).
 Note: the store rule "never mention NRSV" was written because the app did not contain it. If the NRSV-CE is
 licensed, the store text names it as the licence requires.
 
-## Facts the requests use (to confirm)
+## Facts the requests use (checked 25 Oct 2026)
 
-- Publisher: North Boutique Studios Ltd. — legal address and tax status: **Anton to fill in**.
+- Publisher: North Boutique Studios Ltd., 846 Roulston St, London, ON N6H 0E4, Canada (App Store Connect
+  business entity). Ontario for-profit corporation, registered for GST/HST; W-8BEN-E on file for US income.
 - App: John 1:1 – Catholic Bible (iOS, iPadOS; Android "John 1:1"). Free; one optional purchase that unlocks the
   Fathers and Doctors library (not the Bible). No ads, no account, no subscription.
 - Use: the complete Bible text, displayed in the reader, searchable, offline; daily Mass reading references open in
   it; verse-of-the-day widget. No changes to the text; the copyright line shown in the reader and Settings.
 - Territory: worldwide app stores, English. Launch: as soon as licensed (target spring 2027).
-- Downloads so far: **Anton to fill in** (App Store Connect and Play Console).
+- Downloads so far: iOS, 114 first-time downloads and 7 redownloads in the 90 days to 24 Oct 2026, and 330 updates
+  by existing users; Android, launched October 2026, under 10 installs. Expected: a few thousand downloads a year
+  (estimate).
 - Contact: contact@north.boutique.
 
 ## Draft 1 — NRSV Catholic Edition (email)
@@ -54,10 +57,11 @@ Subject: Licence request: NRSV Catholic Edition in a free Catholic Bible app (Jo
 > - Working title: John 1:1 – Catholic Bible. Not salable: the app is free; one optional in-app purchase unlocks
 >   a separate library of Church Fathers, not the Bible.
 > - Formats and markets: iOS and Android apps, worldwide, English, general adult audience.
-> - Anticipated launch: [date], after the licence is granted.
-> - Downloads to date: [number]; expected lifetime downloads: [estimate].
-> - Organisation: North Boutique Studios Ltd., [legal address], [tax status]. Contact: Anton Lachmaniucu,
->   contact@north.boutique.
+> - Anticipated launch: spring 2027, after the licence is granted.
+> - Audience to date: on iOS, 121 downloads in the last 90 days and about 330 existing users who updated; on
+>   Android, newly launched. We expect a few thousand downloads a year.
+> - Organisation: North Boutique Studios Ltd., 846 Roulston St, London, ON N6H 0E4, Canada; an Ontario for-profit
+>   corporation registered for GST/HST. Contact: Anton Lachmaniucu, contact@north.boutique.
 >
 > We would be grateful for your terms, including any royalty or fee and any requirements for how the text is
 > stored and displayed.
@@ -67,7 +71,7 @@ Subject: Licence request: NRSV Catholic Edition in a free Catholic Bible app (Jo
 
 ## Draft 2 — RSV Second Catholic Edition (email to Ignatius Press)
 
-To: Ignatius Press rights/permissions (address to confirm through Ignatius Press customer service)
+To: laurap@ignatius.com (Ignatius Press, Permissions)
 Subject: Licence request: RSV Second Catholic Edition in a free Catholic Bible app (John 1:1)
 
 > Dear Permissions Department,
