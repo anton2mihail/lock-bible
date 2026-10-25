@@ -186,7 +186,7 @@ year) and Matins changes by weekday (three sets of psalms). The 1915 book also h
 
 ---
 
-## 4. "A Year with the Fathers" (iOS 2.3.0 / Android 1.3.0 if it fits, else 2.4.0 — decision Y1)
+## 4. "A Year with the Fathers" (iOS 2.3.0 / Android 1.3.0, live before 1 January 2027 — decision Y1)
 
 ### What it is
 
@@ -194,11 +194,43 @@ A 365-day reading plan through the Fathers library: one reading a day, 5–10 mi
 order through the year. It turns the library from a shelf into a daily guide and gives Today a reason to open the
 library every day.
 
+It launches for the new year: Day 1 is **Friday 1 January 2027**, the Solemnity of Mary, Mother of God.
+
+### Wording (Anton, 25 Oct 2026)
+
+The year plan is offered as a way to begin the year, but it is **never called a "resolution"**. Also avoid "goal",
+"challenge", "habit", "streak", "new you" and "commit". Use the language of the Church's own practice: a daily
+reading, a year, beginning, persevering.
+
+| Place | Text |
+|---|---|
+| Name | A Year with the Fathers |
+| Short line (Today card, before 1 Jan) | Begin the year with the Fathers. One reading a day, from 1 January. |
+| Today card (from 1 Jan) | Day 12 · St Augustine, *Confessions*, Book I |
+| Start screen | 365 days, one reading a day, 5 to 10 minutes. The Fathers of the Church, in order through the year: in Lent, the Fathers on Lent; in Holy Week, on the Passion. Begin on 1 January, or join on any day. |
+| Behind on days | You missed a few days. Read today's reading, or catch up from Day 9. |
+| Last day | Day 365. You read a year with the Fathers. |
+| In-App Event | "A Year with the Fathers begins" · "One reading from the Fathers each day of 2027, from 1 January." |
+
+Store copy keeps the existing rules (no competitor names, no "#1").
+
 ### How the readings are chosen (no text of our own)
 
 The text is always the Fathers' own; the app only chooses the order. The choice follows the Church where it can:
 
-1. **Seasons:** Advent: the Catena Aurea on the Infancy Gospels; Lent: St Leo's Lenten sermons, then St Augustine,
+1. **Seasons, placed on the 2027 calendar:** Day 1 = 1 Jan 2027, so the seasonal blocks fall in their seasons for
+   anyone who begins on 1 January or joins on the day:
+
+   | Days | Dates in 2027 | Season |
+   |---|---|---|
+   | 41–79 | 10 Feb – 20 Mar | Lent |
+   | 80–86 | 21 – 27 Mar | Holy Week |
+   | 87–135 | 28 Mar – 15 May | Easter |
+   | 136 | 16 May | Pentecost |
+   | 332–358 | 28 Nov – 24 Dec | Advent |
+   | 359–365 | 25 – 31 Dec | Christmas |
+
+   The readings for each block: Advent: the Catena Aurea on the Infancy Gospels; Lent: St Leo's Lenten sermons, then St Augustine,
    *Confessions*; Holy Week: Leo *On the Passion*, Chrysostom on the Passion; Easter: Augustine, *Tractates on John*;
    Pentecost: Basil, *On the Holy Spirit*.
 2. **The rest of the year:** whole classic works read straight through in daily portions: the *Didache* and the
@@ -211,9 +243,12 @@ The text is always the Fathers' own; the app only chooses the order. The choice 
 
 ### What the person sees
 
-- **Start:** "A Year with the Fathers" card in the library and on Today until started. Start any day; the plan
-  counts days from the start date (Day 1 = Didache). Option to start on the first Sunday of Advent to follow the
-  Church's year (then the seasonal blocks fall in their seasons).
+- **Before 1 January (from release to 31 Dec):** the card on Today and in the library says "Begin the year with
+  the Fathers. One reading a day, from 1 January." "Remind me on 1 January" sets the daily reminder. A person can
+  also read Day 1 at once ("Begin now"): then the plan counts from that day.
+- **From 1 January:** two ways to start: **"Join today"** (today's day of 2027, so the seasons match; earlier days
+  stay open to read) or **"Begin at Day 1"** (the plan counts from the start date). Default: "Join today" in January,
+  "Begin at Day 1" from February.
 - **Today:** "Day 37 · St Augustine, Confessions, Book II" with a progress ring; opens the reading at the right
   paragraph in the library reader; "Mark as read".
 - **Plan page:** all 365 days by month, read days ticked, catch-up ("You are 3 days behind: read today's or catch
@@ -222,6 +257,8 @@ The text is always the Fathers' own; the app only chooses the order. The choice 
 - **Price:** the first 7 days are free (they use free sections: Apostolic Fathers, *Confessions* opening). Day 8 on
   needs the Fathers library; Day 8 shows the unlock page with "Continue the year". Grandfathered users have it all.
 - Progress stays on the device (and in iCloud key-value storage on iOS, as reading progress does today).
+- Route: `CompanionRoute.year`; deep link host `year` (`nrsv://year`) on iOS (`ExternalRouteParser`) and Android
+  (`ExternalRoute.kt`), for the In-App Event and the product page.
 
 ### Failure list
 
@@ -231,28 +268,51 @@ The text is always the Fathers' own; the app only chooses the order. The choice 
 - Y4. A locked user can read Day 8 without the purchase; a purchased user sees the unlock page.
 - Y5. The free days use a locked section.
 - Y6. Smaller-download build: the free 7 days must be in the in-app sample database, not the downloaded pack.
+- Y7. "Join today" on 10 Feb 2027 gives Day 41 (Ash Wednesday) in every time zone; 31 Dec 2026 23:30 Toronto is
+  still "before 1 January".
+- Y8. The words "resolution", "goal", "challenge", "habit" and "streak" appear in no string of the feature (a test
+  scans the English strings).
 
 ---
 
 ## Release plan
 
+**Rule (Anton, 25 Oct 2026): 2.3.0 / 1.3.0 is submitted and approved before 1 January 2027.** Apple review is
+slower in the last two weeks of December, so the plan submits on **Friday 4 December** and leaves two weeks for a
+rejection and a second review.
+
 | Release | Submit by | Contents |
 |---|---|---|
 | 2.2.1 / 1.2.1 | 20 Nov 2026 | (in progress) Luke and John Catena, approved prayer texts, Advent wreath |
-| **2.3.0 / 1.3.0** | **8 Jan 2027** | **Lent, Holy Week, Stations of the Cross**; readings data through 2028; "A Year with the Fathers" (if Y1 = early); smaller download; Mac; Android parity |
-| 2.4.0 / 1.4.0 | 22 Feb 2027 | Spanish; "A Year with the Fathers" (if Y1 = later) |
-| **2.5.0 / 1.5.0** | **16 Apr 2027** | **The Little Office and the Office of the Dead** |
+| **2.3.0 / 1.3.0** | **4 Dec 2026** (approved and released by 18 Dec at the latest) | **A Year with the Fathers; Lent, Holy Week, Stations of the Cross**; readings data through 2028; Mac; Android parity |
+| 2.3.1 / 1.3.1 | January 2027 | Smaller download, if it is not ready for 2.3.0 (see below) |
+| 2.4.0 / 1.4.0 | 22 Feb 2027 | Spanish |
+| **2.5.0 / 1.5.0** | **16 Apr 2027** | **The Little Office and the Office of the Dead** (English) |
 
-### Work order for 2.3.0 (about 6 weeks)
+The Lent features go in 2.3.0 too, so they are live before the Lent event's promotion starts on 27 January. The
+smaller download (Background Assets and Play Asset Delivery) goes into 2.3.0 only if it passes all its tests by
+27 November; otherwise it moves to 2.3.1 and does not hold back the date.
+
+### Work order for 2.3.0 (6 weeks, from Monday 26 October)
 
 | Week | Work |
 |---|---|
-| 1 (from 9 Nov) | Missal pages: OCR + proofread 46 Lent collects and the Holy Week texts; Stations text and the 14 paintings; content-sources entries |
-| 2 | LentCalendar (iOS, Android) with tests L1–L7, H1–H4; JSON data; staging |
-| 3 | Lent page, Holy Week page, Stations guide, Today rows, routes, deep links (iOS) |
-| 4 | Same on Android; readings data through 2028 |
-| 5 | A Year with the Fathers: plan script, plan file review, Today card, plan page, reminder, unlock gate (Y1–Y6) |
-| 6 | UI tests, simulator and emulator checks (Lent dates, Good Friday, Easter, largest text, dark mode), store media, In-App Events and product pages drafted |
+| 1 (26 Oct – 1 Nov) | Year plan: script, 365-day plan file placed on the 2027 calendar, tests Y1, Y2, Y5; Anton reviews the plan file. Start the Missal and Stations OCR |
+| 2 (2 – 8 Nov) | Year plan screens on iOS and Android: Today card, start screen, plan page, reminder, unlock at Day 8 (Y3, Y4, Y7, Y8). Proofread the Missal texts and the Stations; content-sources entries |
+| 3 (9 – 15 Nov) | LentCalendar (iOS, Android) with tests L1–L8, H1–H4; Lent JSON data; staging |
+| 4 (16 – 22 Nov) | Lent page, Holy Week page, Stations guide, Today rows, routes, deep links (iOS). **Submit 2.2.1 / 1.2.1 by 20 Nov** |
+| 5 (23 – 29 Nov) | Same on Android; readings data through 2028; Mac check; decide on the smaller download (27 Nov) |
+| 6 (30 Nov – 4 Dec) | UI tests, simulator and emulator checks (1 Jan, Lent dates, Good Friday, Easter, largest text, dark mode); TestFlight and Play internal test; store media; draft the In-App Events and product pages. **Submit Friday 4 Dec** |
+| 7 – 18 Dec | Review. If rejected: fix and resubmit at once. Release when approved (no later than 18 Dec) |
+
+### Store dates for the launch
+
+| What | Dates |
+|---|---|
+| In-App Event "A Year with the Fathers begins" (badge: Special Event), deep link `nrsv://year` | Promotion from 18 Dec 2026; event 1 – 31 Jan 2027 (31 days, the maximum) |
+| Custom product page "A Year with the Fathers" and a Play custom listing | Live with 2.3.0 |
+| Lent event | Promotion from 27 Jan; event 10 Feb – 12 Mar 2027 |
+| Holy Week event | Promotion from 10 Mar; event 21 – 28 Mar 2027 |
 
 ### Little Office (2.5.0, about 5–6 weeks, after Spanish)
 
@@ -270,5 +330,5 @@ The text is always the Fathers' own; the app only chooses the order. The choice 
   Easter Sunday, as a seasonal sample of the library.
 - **Y2. 7 free days** in "A Year with the Fathers"; Day 8 on needs the Fathers library.
 - **O1. English first.** The Little Office ships in English only; the Latin may follow in a later update.
-- **Y1. Open:** ship "A Year with the Fathers" in 2.3.0 (January, adds about a week) or in 2.4.0 with Spanish?
-  (Recommended: 2.3.0.)
+- **Y1. 2.3.0**, submitted and approved before 1 January 2027; Day 1 is 1 January 2027. Offered for the new year,
+  but never called a resolution (see "Wording").

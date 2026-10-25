@@ -36,7 +36,7 @@ Target: about 65–75 MB in the app, down from 147 MB.
 | Release | Submit by | Contents |
 |---|---|---|
 | iOS 2.2.1 / Android 1.2.1 | 20 Nov 2026 | Catena Aurea on Luke and John; Advent wreath prayer (only a Church-approved text); content audit fixes; store text ("7 novenas") |
-| iOS 2.3.0 / Android 1.3.0 | 8 Jan 2027 | Lent; smaller download; Mac; the rest of Android parity |
+| iOS 2.3.0 / Android 1.3.0 | 4 Dec 2026 (approved before 1 Jan 2027) | A Year with the Fathers; Lent, Holy Week, Stations; Mac; the rest of Android parity; smaller download if ready by 27 Nov (else 2.3.1 in January). Details: `lent-holyweek-office-year-plan.md` |
 | iOS 2.4.0 / Android 1.4.0 | 22 Feb 2027 | Spanish, fully |
 
 Advent starts 29 Nov. Luke 1 is the Gospel from 17 to 24 Dec and John 1 on Christmas Day, so Luke and John must
