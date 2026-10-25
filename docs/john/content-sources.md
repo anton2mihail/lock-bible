@@ -16,7 +16,7 @@ current text or translation does not meet the rule. **Decide** = needs Anton.
 |---|---|---|
 | Douay-Rheims (Challoner) | OK | Approved Catholic translation, public domain |
 | Clementine Vulgate | OK | The Church's Latin Bible |
-| World English Bible, Catholic Edition | **Decide (D5)** | Modern public-domain translation by a private editor; **no imprimatur**. It is the default edition and the source of the widget verses |
+| World English Bible, Catholic Edition | Kept, labelled (D5) | Modern public-domain translation by a private editor; **no imprimatur**. Labelled in Settings and in its attribution line as "Study translation without Church approval (no imprimatur)" |
 
 ## Prayers (prayer library, 28)
 
@@ -71,15 +71,13 @@ current text or translation does not meet the rule. **Decide** = needs Anton.
 | Item | Status | Note |
 |---|---|---|
 | Authors | OK | Fathers and Doctors of the Church |
-| Translations | **Decide (D6)** | Most come from the 19th-century *Ante-Nicene* and *Nicene and Post-Nicene Fathers* series (named scholars, many Anglican or Protestant, no imprimatur). Catholic translations with imprimatur exist only for part of the library |
+| Translations | Kept (D6) | Most come from the 19th-century *Ante-Nicene* and *Nicene and Post-Nicene Fathers* series (named scholars, many Anglican or Protestant, no imprimatur). Catholic translations with imprimatur exist only for part of the library |
 
 ## Store text
 
 - The App Store description says "27 novenas"; the app has **7**. Fix in the 2.2.1 description.
 
-## Decisions for Anton
+## Decisions (Anton, 25 Oct 2026)
 
-- **D5.** World English Bible Catholic Edition has no imprimatur. Options: (a) remove it and make the
-  Douay-Rheims the default; (b) keep it, labelled as a study translation without Church approval.
-- **D6.** Fathers library translations. Options: (a) keep, because the texts are the Fathers' own and the
-  translators are named scholars; (b) keep only works with a Catholic translation with imprimatur.
+- **D5.** Keep the World English Bible Catholic Edition, labelled as a study translation without Church approval.
+- **D6.** Keep the Fathers library translations: the texts are the Fathers' own, the translators are named scholars.

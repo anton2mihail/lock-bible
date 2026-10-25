@@ -48,7 +48,7 @@ import com.john.bible.data.*
         JohnPanel { ReadAloudChoices(store) }
         JohnText("Translation", size = 16, dim = true)
         JohnPanel {
-            editionTitles.forEach { (id, title) -> JohnRow(title, if (store.edition == id) "Selected ✓" else "") { store.edition = id } }
+            editionTitles.forEach { (id, title) -> JohnRow(title, listOfNotNull(if (id == "web-ce") "Study translation without Church approval (no imprimatur)" else null, if (store.edition == id) "Selected ✓" else null).joinToString(" · ")) { store.edition = id } }
             JohnText("3 complete Catholic editions are available offline. Your choice also controls the rotating verse and widget.", size = 12, dim = true)
         }
         JohnText("Verse pool", size = 16, dim = true)
@@ -75,7 +75,7 @@ import com.john.bible.data.*
             JohnText("United States · Roman Rite. Local observances can differ.", size = 14)
             JohnText("Paintings are public-domain works from Wikimedia Commons. The app icon is a detail of the 6th-century Christ Pantocrator icon at Sinai. Prayers, novenas, and teachings are quoted from the sources named beside them. The app adds no prayers or commentary of its own.", size = 14)
             JohnText("Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved.", size = 14)
-            JohnText("World English Bible Catholic Edition, Douay–Rheims, and Latin Vulgate Scripture texts are in the public domain.", size = 12, dim = true)
+            JohnText("The Douay–Rheims and the Latin Vulgate are approved Catholic texts. The World English Bible Catholic Edition is a study translation without Church approval (no imprimatur). All three are in the public domain.", size = 12, dim = true)
         }
     }
 }

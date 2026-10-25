@@ -5,6 +5,7 @@
   "abbreviation": "WEB-CE",
   "language": "en",
   "isPublicDomain": true,
-  "attribution": "Scripture quotations are from the World English Bible (Catholic Edition), which is in the public domain.",
-  "copyrightNotice": "Public Domain. “World English Bible” is a trademark of eBible.org."
+  "attribution": "Scripture quotations are from the World English Bible (Catholic Edition), a public-domain study translation. It does not have Church approval (no imprimatur).",
+  "copyrightNotice": "Public Domain. “World English Bible” is a trademark of eBible.org.",
+  "approvalNote": "Study translation without Church approval (no imprimatur)"
 }

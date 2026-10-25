@@ -107,6 +107,7 @@ struct FullSettingsView: View {
         section("Translation") {
             ForEach(Array(orderedTranslations.enumerated()), id: \.element) { index, id in
                 SettingsListRow(title: metadata[id]?.fullName ?? id.rawValue,
+                                subtitle: id == .webCE ? "Study translation without Church approval (no imprimatur)" : nil,
                                 selected: preferences.translation == id,
                                 topSeparator: index > 0,
                                 accessibilityID: "translation-\(id.rawValue)") {
@@ -457,6 +458,7 @@ private struct IntrinsicWrappingLayout: Layout {
 
 private struct SettingsListRow: View {
     let title: String
+    var subtitle: String? = nil
     let selected: Bool
     var topSeparator = false
     var accessibilityID: String? = nil
@@ -468,16 +470,20 @@ private struct SettingsListRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Text(title).font(JohnTypography.sans(16)).foregroundStyle(colors.text)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(JohnTypography.sans(16)).foregroundStyle(colors.text)
+                    if let subtitle { Text(subtitle).font(JohnTypography.sans(13)).foregroundStyle(colors.textDim) }
+                }
                 Spacer(minLength: 0)
                 if selected { Image(systemName: "checkmark").font(.system(size: 16, weight: .semibold)).foregroundStyle(colors.tint) }
             }
             .frame(minHeight: 56)
+            .padding(.vertical, subtitle == nil ? 0 : 8)
             .overlay(alignment: .top) { if topSeparator { Rectangle().fill(colors.separator).frame(height: 1) } }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(title)
+        .accessibilityLabel(subtitle.map { "\(title), \($0)" } ?? title)
         .accessibilityValue(selected ? "Selected" : "Not selected")
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier(accessibilityID ?? "settings-row-\(title.lowercased().replacingOccurrences(of: " ", with: "-"))")

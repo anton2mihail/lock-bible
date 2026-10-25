@@ -162,6 +162,8 @@ Consequences:
 - **D2.** Advent wreath: only a text the Church approves. Yes.
 - **D3.** Library pack downloads only for people who own the library. Yes.
 - **D4.** Keyword field for 2.3.0: swap "widget" for "stations". Yes.
+- **D5.** WEB Catholic Edition stays, labelled "Study translation without Church approval (no imprimatur)".
+- **D6.** Fathers library translations stay.
 
 ## Decisions for Anton (original wording)
 
