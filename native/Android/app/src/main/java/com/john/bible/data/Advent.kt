@@ -105,13 +105,20 @@ object GospelFathers {
         "athan" to "St Athanasius", "basil" to "St Basil", "isidore" to "St Isidore", "anselm" to "St Anselm", "alcuin" to "Alcuin",
         "pseudo-jerome" to "Pseudo-Jerome", "victor" to "Victor of Antioch", "severianus" to "Severian", "dionysius" to "Dionysius",
         "euseb" to "Eusebius", "eusebius" to "Eusebius", "cyprian" to "St Cyprian", "pseudo-origen" to "Pseudo-Origen",
+        "chrysostomus" to "St John Chrysostom", "chyrs" to "St John Chrysostom", "hilarius" to "St Hilary", "beda" to "St Bede",
+        "origenes" to "Origen", "athanasius" to "St Athanasius", "titus" to "Titus of Bostra", "maxim" to "St Maximus",
+        "maximus" to "St Maximus", "max" to "St Maximus", "damascene" to "St John Damascene", "damas" to "St John Damascene",
+        "epiphan" to "St Epiphanius", "didymus" to "Didymus", "haymo" to "Haymo", "pseudo-aug" to "Pseudo-Augustine",
+        "pseudo-basil" to "Pseudo-Basil", "greek" to ANONYMOUS_GREEK,
     )
+    /** "Greek Ex." in the Catena: an unnamed Greek commentator. */
+    const val ANONYMOUS_GREEK = "A Greek commentator"
 
-    /** One comment from a Catena section (paragraph 0 is the Gospel text), preferring a named Father over the Gloss and Pseudo- works. */
+    /** One comment from a Catena section (paragraph 0 is the Gospel text), preferring a named Father over the Gloss, the anonymous Greek commentator and Pseudo- works. */
     fun excerpt(paragraphs: List<String>, limit: Int = 360): Excerpt? {
         if (paragraphs.size < 2) return null
         val candidates = paragraphs.drop(1).mapNotNull { split(it) }
-        val chosen = candidates.firstOrNull { it.third && !it.first.startsWith("Pseudo") && it.first != "The Gloss" } ?: candidates.firstOrNull() ?: return null
+        val chosen = candidates.firstOrNull { it.third && !it.first.startsWith("Pseudo") && it.first != "The Gloss" && it.first != ANONYMOUS_GREEK } ?: candidates.firstOrNull() ?: return null
         return Excerpt(chosen.first, cut(chosen.second, limit))
     }
 

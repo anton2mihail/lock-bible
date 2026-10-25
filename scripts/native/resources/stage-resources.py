@@ -177,7 +177,7 @@ def main() -> None:
     databases = {name: sqlite_metadata(path) for name, path in (("search", "assets/bible/bible-search.db"), ("works", "assets/works/works.db"))}
     if databases["works"]["metadata"].get("schemaVersion") != "2" or databases["works"]["metadata"].get("paragraphEncoding") != "zlib-json":
         raise RuntimeError("unexpected works DB metadata")
-    if databases["works"]["metadata"].get("sectionCount") != "16534":
+    if databases["works"]["metadata"].get("sectionCount") != "16970":
         raise RuntimeError("unexpected works DB section count")
     if databases["search"]["metadata"].get("schema_version") != "1" or "verse_search" not in {table["name"] for table in databases["search"]["tables"]}:
         raise RuntimeError("unexpected search DB metadata")

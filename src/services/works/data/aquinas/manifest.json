@@ -56,5 +56,23 @@
     "words": 139536,
     "book": "MRK",
     "kind": "commentary"
+  },
+  {
+    "id": "catena-aurea-luke",
+    "title": "Catena Aurea: Luke",
+    "order": 8,
+    "sectionCount": 245,
+    "words": 306467,
+    "book": "LUK",
+    "kind": "commentary"
+  },
+  {
+    "id": "catena-aurea-john",
+    "title": "Catena Aurea: John",
+    "order": 9,
+    "sectionCount": 191,
+    "words": 249913,
+    "book": "JHN",
+    "kind": "commentary"
   }
 ]

@@ -67,6 +67,7 @@ class AdventTest {
         assertNull(GospelFathers.excerpt(listOf("1. In the beginning.")))
         assertEquals("St Jerome", GospelFathers.excerpt(listOf("v", "Gloss.: A note.", "Pseudo-Chrys.: Another.", "Jerome: The Father speaks."))?.father)
         assertEquals("The Gloss", GospelFathers.excerpt(listOf("v", "Gloss.: Only a note."))?.father)
+        assertEquals("Titus of Bostra", GospelFathers.excerpt(listOf("v", "Greek Ex: A note.", "Titus Bost: The Father speaks."))?.father)
     }
     @Test fun adventLinkOpensAdvent() { assertEquals("advent", externalRoute("nrsv://advent")) }
 }

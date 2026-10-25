@@ -866,7 +866,7 @@ private fun ApprovedAudio(address:String,title:String) {
 }
 
 
-/** "26 authors, 273 works, 15.7m words" for the unlock page, from the bundled catalogue. */
+/** "26 authors, 275 works, 16.2m words" for the unlock page, from the bundled catalogue. */
 internal fun libraryTotals(repo: JohnRepository): String? = runCatching {
     val authors=repo.workAuthors()
     val works=repo.works()

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Turn the CCEL text of St Thomas Aquinas's Catena Aurea (Matthew, Mark) into library works.
+ * Turn St Thomas Aquinas's Catena Aurea (all four Gospels, Newman's 1841-45 translation) into library works.
  *
  *   bun scripts/build-catena.mjs        # then: bun scripts/build-works-db.mjs
  *
@@ -13,7 +13,12 @@
  * the Fathers' comments. "Chapter N" lines start chapters. Matthew 11 has no heading in the CCEL text, so a verse
  * number that restarts at 1 also starts the next chapter.
  *
- * Output: src/services/works/data/aquinas/catena-aurea-{matthew,mark}.json, the Aquinas manifest entries, and the
+ * Luke and John: .ccel-cache/CALuke.htm and CAJohn.htm from github.com/Geremia/AquinasOperaOmnia (Fr Joseph Kenny,
+ * O.P.'s transcription, Latin beside English). The English is Newman's translation, public domain, "except Prooemium
+ * and bracketed portions by Joseph Kenny, O.P." Those are modern and not public domain, so the script skips the
+ * prooemium (chapter 0), every comment that starts with "[", and every bracketed span longer than three words.
+ *
+ * Output: src/services/works/data/aquinas/catena-aurea-{matthew,mark,luke,john}.json, the Aquinas manifest entries, and the
  * Aquinas chapterIndex.json (one entry per section, with fromVerse and toVerse, so Today can find the section that
  * covers a daily Gospel). The script fails if any chapter is missing or any verse is covered twice.
  */
@@ -27,6 +32,8 @@ const OUT = join(ROOT, "src", "services", "works", "data", "aquinas")
 const BOOKS = [
   { file: "catena1.txt", code: "MAT", name: "Matthew", id: "catena-aurea-matthew", title: "Catena Aurea: Matthew", chapters: 28, order: 6 },
   { file: "catena2.txt", code: "MRK", name: "Mark", id: "catena-aurea-mark", title: "Catena Aurea: Mark", chapters: 16, order: 7 },
+  { file: "CALuke.htm", html: true, code: "LUK", name: "Luke", id: "catena-aurea-luke", title: "Catena Aurea: Luke", chapters: 24, order: 8 },
+  { file: "CAJohn.htm", html: true, code: "JHN", name: "John", id: "catena-aurea-john", title: "Catena Aurea: John", chapters: 21, order: 9 },
 ]
 
 const SEPARATOR = /^\s*_{20,}\s*$/
@@ -37,7 +44,52 @@ const VERSE = /^\s*(?:Ver\.\s*)?(\d[\dl]*|l[\dl]*)(?:\s*[-–]\s*(\d[\dl]*|l[\dl
 const num = (s) => Number(String(s).replace(/l/g, "1"))
 const clean = (s) => s.replace(/\s+/g, " ").replace(/&lt;\.?h\d&gt;/g, "").trim()
 
+const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " }
+const text = (h) => h.replace(/<[^>]+>/g, " ")
+  .replace(/&(#x?[0-9a-f]+|\w+);/gi, (m, e) => e[0] === "#" ? String.fromCodePoint(e[1] === "x" || e[1] === "X" ? parseInt(e.slice(2), 16) : Number(e.slice(1))) : (ENTITIES[e] ?? m))
+  .replace(/\s+/g, " ").trim()
+// Fr Kenny's additions: drop bracketed spans of more than three words. Short glosses ("[be made]") are Newman's style.
+const dropKenny = (s) => s.replace(/\[([^\]]*)\]/g, (m, inner) => inner.trim().split(/\s+/).length > 3 ? "" : m).replace(/\s+([.,;:])/g, "$1").replace(/\s+/g, " ").trim()
+const titleCase = (s) => s.toLowerCase().replace(/(^|[\s.\-])([a-z])/g, (m, a, b) => a + b.toUpperCase())
+
+// Kenny's HTML: <a name="N"> per chapter; each "Lectio" table has one Gospel row (English verses in a
+// <span style="color:red">) and one row per comment ("<b>NAME</b>; text", English in the last cell).
+function parseHtml(book) {
+  const raw = readFileSync(join(ROOT, ".ccel-cache", book.file), "utf8")
+  const anchors = [...raw.matchAll(/name="(\d+)" id="\d+"/g)].map((m) => ({ at: m.index, chapter: Number(m[1]) }))
+  const chapterAt = (pos) => anchors.filter((a) => a.at < pos).at(-1)?.chapter ?? 0
+  const starts = [...raw.matchAll(/<b>Lectio \d+<\/b>/g)].map((m) => m.index)
+  const sections = []
+  starts.forEach((start, i) => {
+    const chapter = chapterAt(start)
+    if (chapter < 1) return
+    const chunk = raw.slice(start, starts[i + 1] ?? raw.length)
+    const rows = chunk.split(/<tr style="text-align:justify" valign="top">/).slice(1).map((r) => r.split("<tr")[0])
+    const cells = (row) => row.split(/<td[^>]*>/).slice(1)
+    const gospelRow = rows.find((r) => /<span style="color:red">/.test(cells(r).at(-1) ?? ""))
+    if (!gospelRow) throw new Error(`${book.name} ${chapter}: lectio ${i + 1} has no Gospel row`)
+    const gospel = dropKenny(text(cells(gospelRow).at(-1)))
+    const verses = [...gospel.matchAll(/(?:^|\s)(\d+)[a-d]?(?:\.\s|\s(?=[A-Z]))/g)].map((m) => Number(m[1]))
+    if (!verses.length) throw new Error(`${book.name} ${chapter}: lectio ${i + 1} has no verse numbers`)
+    const comments = []
+    for (const row of rows.slice(rows.indexOf(gospelRow) + 1)) {
+      const cell = cells(row).at(-1) ?? ""
+      if (!text(cell) || text(cell).startsWith("[")) continue
+      // The Father's name is the bold text at the start: "<b>CHRYS.</b> ...", "<b>EUSEBIUS</b>; ...".
+      const bold = cell.match(/^\s*<b>([^<]{1,50})<\/b>\s*[;:.,]?\s*/)
+      const name = bold ? titleCase(text(bold[1]).replace(/[;:.,\s]+$/, "")) : null
+      const body = dropKenny(text(bold ? cell.slice(bold[0].length) : cell)).replace(/^[;:.,]\s*/, "")
+      if (body) comments.push(name ? `${name}: ${body}` : body)
+    }
+    if (!comments.length) return
+    const from = Math.min(...verses), to = Math.max(...verses)
+    sections.push({ chapter, from, to, title: `${book.name} ${chapter}:${from}${to > from ? `–${to}` : ""}`, paragraphs: [gospel, ...comments] })
+  })
+  return sections
+}
+
 function parse(book) {
+  if (book.html) return parseHtml(book)
   const raw = readFileSync(join(ROOT, ".ccel-cache", book.file), "utf8").replace(/\r/g, "")
   const lines = raw.split("\n")
   // Drop the CCEL header: everything before the first verse line of chapter 1.

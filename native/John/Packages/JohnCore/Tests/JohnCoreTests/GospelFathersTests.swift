@@ -18,6 +18,7 @@ import Testing
 // E3. A comment with no recognised Father loses its text.
 // E4. A section with only the Gospel text produces an empty excerpt.
 // E5. The Gloss or a Pseudo- work is shown although a named Father comments in the same section.
+// E6. The anonymous "Greek Ex." of the Luke and John volumes is shown although a named Father comments.
 
 @Suite("Gospel Fathers")
 struct GospelFathersTests {
@@ -89,6 +90,11 @@ struct GospelFathersTests {
         let e = GospelFathers.excerpt(from: ["v", "Gloss.: A note.", "Pseudo-Chrys.: Another.", "Jerome: The Father speaks."])
         #expect(e?.father == "St Jerome")
         #expect(GospelFathers.excerpt(from: ["v", "Gloss.: Only a note."])?.father == "The Gloss")
+    }
+    @Test("E6") func greekExpositor() {
+        let e = GospelFathers.excerpt(from: ["v", "Greek Ex: A note.", "Titus Bost: The Father speaks."])
+        #expect(e?.father == "Titus of Bostra")
+        #expect(GospelFathers.excerpt(from: ["v", "Greek Ex: Only this."])?.father == GospelFathers.anonymousGreek)
     }
     @Test("E4") func gospelOnly() {
         #expect(GospelFathers.excerpt(from: ["1. In the beginning."]) == nil)

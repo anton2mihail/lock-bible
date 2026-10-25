@@ -24,18 +24,18 @@ step, and is not tied to app versions. It is the wrong tool for this.
 |---|---|---|
 | Fathers library (`works.db`) | 44 MB | Asset pack; a small sample database stays in the app |
 | Bible search index (`bible-search.db`) | 33 MB | Rebuild smaller (the verse text is already in the Bible files) |
-| Widget verse pools in `App/Rotation` | 17 MB | **Duplicate**: the widget has the same files. The app reads the widget's copy |
+| Widget verse pools (`JohnSharedResources` framework) | 17 MB | One copy, shared by the app and the widget (checked 25 Oct; an earlier note here called it a duplicate, which was wrong). Measure whether a compressed format helps |
 | Paintings | 18 MB | Re-encode at the size the screen needs |
 | Bible text (3 editions) | 15 MB | Stays |
 | Calendar, catalogs, fonts | 2.4 MB | Stays |
 
-Target: about 50–60 MB in the app, down from 147 MB.
+Target: about 65–75 MB in the app, down from 147 MB.
 
 ## Releases
 
 | Release | Submit by | Contents |
 |---|---|---|
-| iOS 2.2.1 / Android 1.2.1 | 20 Nov 2026 | Catena Aurea on Luke and John; Advent wreath prayer (only with a public-domain text); remove the 17 MB duplicate |
+| iOS 2.2.1 / Android 1.2.1 | 20 Nov 2026 | Catena Aurea on Luke and John; Advent wreath prayer (only a Church-approved text); content audit fixes; store text ("7 novenas") |
 | iOS 2.3.0 / Android 1.3.0 | 8 Jan 2027 | Lent; smaller download; Mac; the rest of Android parity |
 | iOS 2.4.0 / Android 1.4.0 | 22 Feb 2027 | Spanish, fully |
 
@@ -99,8 +99,8 @@ for a review, so there is no outreach step.
 
 ### 6. Smaller download (2.3.0)
 
-1. Remove the duplicate widget verse pools: the app reads the files inside the widget extension (or the
-   existing `JohnSharedResources` bundle). −17 MB, no download.
+1. Widget verse pools (17 MB) are already a single shared copy. Try a compressed format; keep it only if the
+   widget stays within its memory limit.
 2. Rebuild `bible-search.db` as an external-content FTS index over the Bible text the app already has. Measure;
    keep only if search results and speed do not change (search tests must pass unchanged).
 3. Split the library:
@@ -137,7 +137,33 @@ for a review, so there is no outreach step.
 - One booted simulator or emulator at a time; delete build output after each release.
 - Submission only on Anton's ask.
 
-## Decisions for Anton
+## Content rule (Anton, 25 Oct 2026)
+
+Every prayer and every other religious text in the app must be **approved by the Catholic Church** and
+**written by real people**: saints, popes, priests, religious, or the Church's liturgical books. Acceptable
+evidence, one of: a liturgical book of the Church (Missal, Breviary, Ritual); an imprimatur or nihil obstat in the
+edition quoted; a saint, Doctor or Father of the Church as author; a papal or episcopal text. No prayer text
+written or translated by the app or by an AI. The app's own words are limited to interface text (titles, buttons,
+short explanations of where a text comes from).
+
+Consequences:
+- **Content audit first** (2.2.1): list every prayer, novena, guide and teaching text with its author, the
+  edition quoted, its approval and its copyright status. Anything that fails is replaced from an approved source
+  or removed. Record in `docs/john/content-sources.md`.
+- **Advent wreath prayer:** only a Church-approved text (for example the Sunday Collects of Advent from the Roman
+  Missal, in an English missal with an imprimatur, published before 1931 so it is public domain in the US).
+- **Spanish prayers:** only approved Spanish texts (catechisms of Astete or Ripalda, Spanish missals or
+  devotionals with an imprimatur). No translation by us. Anything without such a source stays in English.
+- **Spanish interface:** translated by us (D1), then a correctness pass.
+
+## Decisions (answered 25 Oct 2026)
+
+- **D1.** Spanish interface: best single translation now, then a correctness pass. (Prayers: see the content rule.)
+- **D2.** Advent wreath: only a text the Church approves. Yes.
+- **D3.** Library pack downloads only for people who own the library. Yes.
+- **D4.** Keyword field for 2.3.0: swap "widget" for "stations". Yes.
+
+## Decisions for Anton (original wording)
 
 - **D1.** Who proofreads the Spanish? (Recommended: one paid native-speaker review of UI and store text.)
 - **D2.** Advent wreath prayer only with a public-domain text, else drop it. (Recommended: yes.)

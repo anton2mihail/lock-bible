@@ -52,15 +52,23 @@ public enum GospelFathers {
         "athan": "St Athanasius", "basil": "St Basil", "isidore": "St Isidore", "anselm": "St Anselm", "alcuin": "Alcuin",
         "pseudo-jerome": "Pseudo-Jerome", "victor": "Victor of Antioch", "severianus": "Severian", "dionysius": "Dionysius",
         "euseb": "Eusebius", "eusebius": "Eusebius", "cyprian": "St Cyprian", "pseudo-origen": "Pseudo-Origen",
+        "chrysostomus": "St John Chrysostom", "chyrs": "St John Chrysostom", "hilarius": "St Hilary", "beda": "St Bede",
+        "origenes": "Origen", "athanasius": "St Athanasius", "titus": "Titus of Bostra", "maxim": "St Maximus",
+        "maximus": "St Maximus", "max": "St Maximus", "damascene": "St John Damascene", "damas": "St John Damascene",
+        "epiphan": "St Epiphanius", "didymus": "Didymus", "haymo": "Haymo", "pseudo-aug": "Pseudo-Augustine",
+        "pseudo-basil": "Pseudo-Basil", "greek": anonymousGreek,
     ]
+    /// "Greek Ex." in the Catena: an unnamed Greek commentator.
+    static let anonymousGreek = "A Greek commentator"
 
     /// The comment Today shows from a Catena section (paragraph 0 is the Gospel text). It prefers the first comment by a
-    /// named Father; the Gloss and works only attributed to a Father ("Pseudo-") are used when no other comment exists.
+    /// named Father; the Gloss, the anonymous Greek commentator and works only attributed to a Father ("Pseudo-") are
+    /// used when no other comment exists.
     /// "Aug., de Cons. Ev., ii, 1: ..." becomes father "St Augustine" and the text after the colon, cut near [limit].
     public static func excerpt(from paragraphs: [String], limit: Int = 360) -> Excerpt? {
         guard paragraphs.count > 1 else { return nil }
         let candidates = paragraphs.dropFirst().compactMap { split($0) }
-        let preferred = candidates.first { $0.named && !$0.father.hasPrefix("Pseudo") && $0.father != "The Gloss" }
+        let preferred = candidates.first { $0.named && !$0.father.hasPrefix("Pseudo") && $0.father != "The Gloss" && $0.father != anonymousGreek }
         guard let chosen = preferred ?? candidates.first else { return nil }
         return Excerpt(father: chosen.father, text: cut(chosen.body, limit: limit))
     }
