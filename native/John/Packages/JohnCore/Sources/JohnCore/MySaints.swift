@@ -78,7 +78,7 @@ public struct SaintWidgetContent: Codable, Hashable, Identifiable, Sendable {
         monthDay = observance.monthDay; calendarName = observance.calendarName
         // This response is already in the app's sourced St. Joseph novena.
         text = saint.id == "st-joseph"
-            ? "St. Joseph, Patron of departing souls, pray for us. Amen"
+            ? "St. Joseph, model and patron of those who love the Sacred Heart of Jesus, pray for us."
             : observance.account
         source = saint.id == "st-joseph" ? "Novena to St. Joseph · EWTN" : observance.calendarName
     }

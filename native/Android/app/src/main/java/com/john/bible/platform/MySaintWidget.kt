@@ -59,7 +59,7 @@ class MySaintWidget:AppWidgetProvider() {
                             views.setTextViewText(R.id.saint_widget_caption,when {
                                 saint==null->"Open John 1:1"
                                 today->"Remembered today"
-                                wide&&!quiet&&saint.id=="st-joseph"->"Novena to St. Joseph · EWTN"
+                                wide&&!quiet&&saint.id=="st-joseph"->"Novena to St. Joseph · Lasance, 1906"
                                 wide->saint.observance(profile).calendarName
                                 else->"Open prayers and life"
                             })

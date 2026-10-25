@@ -81,6 +81,17 @@ fun AdventScreen(repo: JohnRepository, navigate: (String)->Unit, back: ()->Unit)
             SelectionContainer { JohnText(rorate ?: "Drop down dew, ye heavens, from above, and let the clouds rain the just: let the earth be opened, and bud forth a saviour.", serif = true, size = 20) }
             JohnText("Isaiah 45:8 · Douay-Rheims", dim = true, size = 14)
         }
+        val collect = AdventCalendar.collect(date)
+        if (week != null && collect != null) {
+            Box(Modifier.testTag("advent-wreath")) {
+                JohnPanel {
+                    Eyebrow("THE ADVENT WREATH")
+                    JohnText("${listOf("First", "Second", "Third", "Fourth")[week - 1]} candle: the Collect of the ${listOf("first", "second", "third", "fourth")[week - 1]} Sunday of Advent", size = 15)
+                    SelectionContainer { JohnText(collect, serif = true, size = 20) }
+                    JohnText(AdventCalendar.COLLECT_SOURCE, dim = true, size = 14)
+                }
+            }
+        }
         JohnText("The O Antiphons", size = 20)
         JohnText("Sung at Vespers on the seven evenings before Christmas Eve, from 17 December.", dim = true, size = 14)
         AdventCalendar.antiphons.forEach { antiphon ->

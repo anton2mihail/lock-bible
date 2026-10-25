@@ -10,6 +10,7 @@ import Testing
 // A4. The local date is taken in UTC, so a late-evening date in Toronto moves a day.
 // O1. 17–23 December do not each have their own antiphon, in order.
 // O2. 16 or 24 December, or another month's 17th, gets an antiphon.
+// W1. A week of Advent shows another Sunday's Collect, or a day outside Advent shows one.
 
 @Suite("Advent calendar")
 struct AdventCalendarTests {
@@ -49,6 +50,13 @@ struct AdventCalendarTests {
         #expect(AdventCalendar.antiphons.map(\.day) == Array(17...23))
         #expect(AdventCalendar.antiphon(on: day(2026, 12, 17), timeZone: toronto)?.title == "O Wisdom")
         #expect(AdventCalendar.antiphon(on: day(2026, 12, 23), timeZone: toronto)?.title == "O Emmanuel")
+    }
+    @Test("W1") func wreathCollect() {
+        #expect(AdventCalendar.sundayCollects.count == 4)
+        #expect(AdventCalendar.collect(on: day(2026, 11, 29), timeZone: toronto)?.hasPrefix("Stir up thy might") == true)
+        #expect(AdventCalendar.collect(on: day(2026, 12, 13), timeZone: toronto)?.hasPrefix("Incline thine ear") == true)
+        #expect(AdventCalendar.collect(on: day(2026, 12, 24), timeZone: toronto)?.hasPrefix("Stir up, O Lord, we pray thee") == true)
+        #expect(AdventCalendar.collect(on: day(2026, 11, 28), timeZone: toronto) == nil)
     }
     @Test("O2") func noAntiphon() {
         #expect(AdventCalendar.antiphon(on: day(2026, 12, 16), timeZone: toronto) == nil)

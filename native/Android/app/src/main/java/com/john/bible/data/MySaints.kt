@@ -15,7 +15,7 @@ data class SaintObservance(val id:String,val tradition:String,val entryID:String
 }
 data class PersonalSaint(val id:String,val name:String,val subtitle:String,val artwork:String?,val artworkCredit:String?,val novenaID:String?,val commemorations:List<SaintObservance>) {
     fun observance(profile:SaintProfile)=commemorations.firstOrNull { it.id==profile.observanceID } ?: commemorations.first()
-    fun widgetText(profile:SaintProfile)=if(id=="st-joseph") "St. Joseph, Patron of departing souls, pray for us. Amen" else observance(profile).account
+    fun widgetText(profile:SaintProfile)=if(id=="st-joseph") "St. Joseph, model and patron of those who love the Sacred Heart of Jesus, pray for us." else observance(profile).account
 }
 data class SaintNote(val id:String=UUID.randomUUID().toString(),val text:String,val createdAt:Long=System.currentTimeMillis())
 data class SaintProfile(val saved:Boolean=false,val reason:String="",val notes:List<SaintNote> = emptyList(),val observanceID:String?=null,

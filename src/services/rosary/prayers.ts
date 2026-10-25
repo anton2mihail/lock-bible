@@ -7,31 +7,40 @@ import type {
   SevenSorrowsDevotion,
 } from "./types"
 
+/**
+ * Sources (all checked against the page scans; see docs/john/content-sources.md):
+ * Sign of the Cross: Marchant, Life of St. Jude Thaddeus (1929, Imprimatur Mundelein), p. 19.
+ * Creed, Our Father, Hail Mary, Glory Be: Lasance, With God (1911, Imprimatur Farley), pp. 153–154, 514.
+ * Hail, Holy Queen: A Manual of Prayers (Third Plenary Council of Baltimore, 1889), pp. 79–80.
+ * Rosary collect: The Missal (Burns Oates; B. Herder, 1926 printing; Imprimatur Westminster 1921), p. 695.
+ * Seven Sorrows: The Raccolta (1910, tr. Ambrose St. John), nos. 230 and 232.
+ * The Fatima prayer is awaiting a decision (no approved English text before 1931 was found).
+ */
 export const ROSARY_PRAYERS: Readonly<Record<RosaryPrayerId, RosaryPrayer>> = {
   "sign-of-the-cross": {
     id: "sign-of-the-cross",
     title: "The Sign of the Cross",
-    text: "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.",
+    text: "In the Name of the Father, and of the Son, and of the Holy Ghost. Amen.",
   },
   "apostles-creed": {
     id: "apostles-creed",
     title: "The Apostles’ Creed",
-    text: "I believe in God, the Father almighty, Creator of heaven and earth, and in Jesus Christ, his only Son, our Lord, who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died and was buried; he descended into hell; on the third day he rose again from the dead; he ascended into heaven, and is seated at the right hand of God the Father almighty; from there he will come to judge the living and the dead. I believe in the Holy Spirit, the holy catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and life everlasting. Amen.",
+    text: "I believe in God, the Father Almighty, Creator of heaven and earth; and in Jesus Christ, His only Son, our Lord: Who was conceived by the Holy Ghost, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died, and was buried. He descended into hell; the third day He rose again from the dead; He ascended into heaven, sitteth at the right hand of God, the Father Almighty; from thence He shall come to judge the living and dead. I believe in the Holy Ghost, the holy Catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and the life everlasting. Amen.",
   },
   "our-father": {
     id: "our-father",
     title: "Our Father",
-    text: "Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.",
+    text: "Our Father, Who art in heaven, hallowed be Thy name. Thy kingdom come; Thy will be done on earth, as it is in heaven. Give us this day our daily bread; and forgive us our trespasses, as we forgive those who trespass against us. And lead us not into temptation; but deliver us from evil. Amen.",
   },
   "hail-mary": {
     id: "hail-mary",
     title: "Hail Mary",
-    text: "Hail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",
+    text: "Hail, Mary, full of grace; the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",
   },
   "glory-be": {
     id: "glory-be",
     title: "Glory Be",
-    text: "Glory be to the Father, and to the Son, and to the Holy Spirit, as it was in the beginning, is now, and ever shall be, world without end. Amen.",
+    text: "Glory be to the Father, and to the Son, and to the Holy Ghost; as it was in the beginning, is now, and ever shall be, world without end. Amen.",
   },
   "fatima-prayer": {
     id: "fatima-prayer",
@@ -41,27 +50,27 @@ export const ROSARY_PRAYERS: Readonly<Record<RosaryPrayerId, RosaryPrayer>> = {
   "hail-holy-queen": {
     id: "hail-holy-queen",
     title: "Hail, Holy Queen",
-    text: "Hail, holy Queen, Mother of mercy, our life, our sweetness, and our hope. To thee do we cry, poor banished children of Eve. To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then, most gracious advocate, thine eyes of mercy toward us, and after this our exile show unto us the blessed fruit of thy womb, Jesus. O clement, O loving, O sweet Virgin Mary. Pray for us, O holy Mother of God, that we may be made worthy of the promises of Christ.",
+    text: "Hail, holy Queen, Mother of mercy; our life, our sweetness, and our hope. To thee do we cry, poor banished children of Eve; to thee do we send up our sighs, mourning and weeping in this valley of tears. Turn, then, most gracious Advocate, thine eyes of mercy towards us; and after this our exile, show unto us the blessed fruit of thy womb, Jesus; O clement, O pious, O sweet Virgin Mary.\nV. Pray for us, O holy Mother of God.\nR. That we may be made worthy of the promises of Christ.",
   },
   "closing-prayer": {
     id: "closing-prayer",
     title: "Closing Prayer",
-    text: "O God, whose only-begotten Son, by His life, death and resurrection, has purchased for us the rewards of eternal life; grant, we beseech Thee, that, meditating upon these mysteries of the Most Holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.",
+    text: "O God, whose only-begotten Son by his life, death and resurrection hath purchased for us the rewards of eternal salvation; grant, we beseech thee, that, meditating upon these mysteries in the most holy Rosary of the blessed Virgin Mary, we may both imitate what they contain, and obtain what they promise. Through the same.",
   },
   "sorrows-opening": {
     id: "sorrows-opening",
-    title: "Offering of the Rosary",
-    text: "My God, I offer you this Rosary in honour of the seven principal Sorrows of Mary, for your greatest glory, for my conversion and that of all people through your beloved Son, Jesus Christ, our salvation and our unique way to come to you, in union with the Holy Ghost for ever and ever. Amen!",
+    title: "Opening Versicle",
+    text: "V. O God, come to my assistance.\nR. O Lord, make haste to help me.\nGlory be to the Father, and to the Son, and to the Holy Ghost; as it was in the beginning, is now, and ever shall be, world without end. Amen.",
   },
   "sorrows-versicle": {
     id: "sorrows-versicle",
     title: "Pray for Us",
-    text: "Pray for us, O Virgin most sorrowful, that we may be made worthy of the promises of Christ.",
+    text: "V. Pray for us, Virgin most sorrowful.\nR. That we may be made worthy of the promises of Christ.",
   },
   "sorrows-closing-prayer": {
     id: "sorrows-closing-prayer",
     title: "Closing Prayer",
-    text: "Let intercession be made for us, we beseech You, O Lord Jesus Christ, now and at the Hour of our death, before the throne of Your mercy, by the Blessed Virgin Mary, Your Mother, whose most holy soul was pierced by a sword of sorrow in the hour of Your bitter Passion. Through You, O Jesus Christ, Savior of the world, Who with the Father and the Holy Spirit lives and reigns world without end. Amen.",
+    text: "Grant, we beseech Thee, O Lord Jesus Christ, that the most blessed Virgin Mary, thy Mother, may intercede for us before the throne of thy mercy, now and at the hour of our death, whose most holy soul was transfixed with the sword of sorrow in the hour of thine own Passion. Through Thee, Jesus Christ, Saviour of the world, who livest and reignest, etc. Amen.",
   },
 }
 

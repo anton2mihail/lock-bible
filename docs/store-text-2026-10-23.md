@@ -68,7 +68,7 @@ THE BIBLE
 PRAYER
 • The Rosary with all four sets of mysteries, each with a public-domain painting
 • The Rosary of the Seven Sorrows and the Chaplet of Divine Mercy
-• 27 novenas with sources, nine-day progress and your intentions
+• 7 novenas from approved prayer books, with nine-day progress and your intentions
 • A library of everyday prayers: Morning Offering, Angelus, Regina Caeli, Anima Christi, St. Michael, St. Patrick's Breastplate and more
 • A guided Lectio Divina and an examination of conscience for Confession (your notes clear when you leave)
 

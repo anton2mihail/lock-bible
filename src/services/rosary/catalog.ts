@@ -118,56 +118,56 @@ export const SEVEN_SORROWS: SevenSorrowsDevotion = {
   title: "The Seven Sorrows of Mary",
   shortTitle: "Seven Sorrows",
   customaryDays: "Fridays, Lent & September 15",
-  description: "The Servite Rosary of the Seven Sorrows of the Blessed Virgin Mary.",
+  description: "The Servite Rosary of the Seven Sorrows of the Blessed Virgin Mary, with the prayers of The Raccolta (1910), nos. 230 and 232.",
   sorrows: [
     {
       title: "The Prophecy of Simeon",
       scriptureReference: "Luke 2:25–35",
       grace: "Humility",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the affliction of thy tender heart at the prophecy of the holy and aged Simeon. Dear Mother, by thy heart so afflicted, obtain for me the virtue of humility and the gift of the holy fear of God.",
+        "I compassionate thee, sorrowing Mary, in the affliction of thy tender heart at the prophecy of the holy old man Simeon. Dear Mother, by thy heart then so afflicted, obtain for me the virtue of humility and the gift of holy fear of God.",
     },
     {
       title: "The Flight into Egypt",
       scriptureReference: "Matthew 2:13–15",
-      grace: "Generosity",
+      grace: "Liberality",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the anguish of thy most affectionate heart during the flight into Egypt and thy sojourn there. Dear Mother, by thy heart so troubled, obtain for me the virtue of generosity, especially toward the poor, and the gift of piety.",
+        "I compassionate thee, sorrowing Mary, in the anxiety which thy sensitive heart underwent in the flight and sojourn in Egypt. Dear Mother, by thy heart then made so anxious, obtain for me the virtue of liberality, especially towards the poor, and the gift of pity.",
     },
     {
       title: "The Loss of the Child Jesus in the Temple",
       scriptureReference: "Luke 2:41–50",
       grace: "Chastity",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in those anxieties which tried thy troubled heart at the loss of thy dear Jesus. Dear Mother, by thy heart so full of anguish, obtain for me the virtue of chastity and the gift of knowledge.",
+        "I compassionate thee, sorrowing Mary, in the trouble of thy anxious heart, when thou didst lose thy dear Son Jesus. Dear Mother, by thy heart then so troubled, obtain for me the virtue of holy chastity and the gift of knowledge.",
     },
     {
       title: "Mary Meets Jesus on the Way to Calvary",
       scriptureReference: "Luke 23:27–31",
       grace: "Patience",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the consternation of thy heart at meeting Jesus as He carried His cross. Dear Mother, by thy heart so troubled, obtain for me the virtue of patience and the gift of fortitude.",
+        "I compassionate thee, sorrowing Mary, in the shock thy maternal heart underwent when Jesus met thee carrying his Cross. Dear Mother, by thy loving heart then so overwhelmed, obtain for me the virtue of patience and the gift of fortitude.",
     },
     {
       title: "The Crucifixion and Death of Jesus",
       scriptureReference: "John 19:25–30",
       grace: "Temperance",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the martyrdom which thy generous heart endured in standing near Jesus in His agony. Dear Mother, by thy afflicted heart, obtain for me the virtue of temperance and the gift of counsel.",
+        "I compassionate thee, sorrowing Mary, in the martyrdom thy generous heart bore so nobly whilst thou didst stand by Jesus in his agony. Dear Mother, by thy heart then so martyred, obtain for me the virtue of temperance and the gift of counsel.",
     },
     {
       title: "Mary Receives the Body of Jesus",
       scriptureReference: "John 19:38–40",
       grace: "Fraternal charity",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, in the wounding of thy compassionate heart, when the side of Jesus was struck by the lance and His Heart was pierced before His body was removed from the Cross. Dear Mother, by thy heart thus transfixed, obtain for me the virtue of fraternal charity and the gift of understanding.",
+        "I compassionate thee, sorrowing Mary, in the wound of thy tender heart when the sacred Side of Jesus was pierced with the lance. Dear Mother, by thy heart then so transfixed, obtain for me the virtue of fraternal charity and the gift of understanding.",
     },
     {
       title: "The Burial of Jesus",
       scriptureReference: "John 19:41–42",
       grace: "Diligence",
       invocation:
-        "I grieve for thee, O Mary most sorrowful, for the pangs that wrenched thy most loving heart at the burial of Jesus. Dear Mother, by thy heart sunk in the bitterness of desolation, obtain for me the virtue of diligence and the gift of wisdom.",
+        "I compassionate thee, sorrowing Mary, in the pang felt by thy loving heart when the Body of Jesus was buried in the grave. Dear Mother, by all the bitterness of desolation thou didst then experience, obtain for me the virtue of diligence and the gift of wisdom.",
     },
   ],
 }

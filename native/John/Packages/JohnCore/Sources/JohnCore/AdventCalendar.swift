@@ -38,6 +38,22 @@ public enum AdventCalendar {
                  english: "O Emmanuel, our King and Lawgiver, the Expectation and Saviour of the nations! come and save us, O Lord our God!"),
     ]
 
+
+    /// The Advent wreath: the Collect of each Sunday of Advent, one candle per week, quoted from The Missal
+    /// (Burns Oates; B. Herder, 1926 printing; Imprimatur Westminster, 1921), pp. 50, 54, 56, 69, endings as printed.
+    public static let collectSource = "The Missal, compiled by lawful authority from the Missale Romanum (Burns Oates; B. Herder, 1926 printing; Imprimatur Westminster, 1921)"
+    public static let sundayCollects: [String] = [
+        "Stir up thy might, O Lord, we beseech thee, and come; that by thy protection we may deserve to be rescued from the threatening dangers of our sins and saved by thy deliverance: who livest and reignest with God the Father in the unity of the Holy Ghost, God, world without end. Amen.",
+        "Stir up our hearts, O Lord, to prepare the ways of thine only-begotten Son; that through his coming we may be worthy to serve thee with purified minds: who liveth.",
+        "Incline thine ear, O Lord, we beseech thee, to our prayers; and enlighten the darkness of our mind by the grace of thy visitation: who livest.",
+        "Stir up, O Lord, we pray thee, thy power, and come, and with great might succour us; that, by the help of thy grace, that which our sins impede may be hastened by thy merciful forgiveness: who livest and reignest with God the Father.",
+    ]
+
+    /// The Collect for the week of Advent containing `date` (week 1 = first Sunday), else nil.
+    public static func collect(on date: Date, timeZone: TimeZone) -> String? {
+        week(on: date, timeZone: timeZone).map { sundayCollects[$0 - 1] }
+    }
+
     private static func calendar(_ zone: TimeZone) -> Calendar {
         var c = Calendar(identifier: .gregorian); c.timeZone = zone; return c
     }

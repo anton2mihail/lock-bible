@@ -127,6 +127,22 @@ struct AdventView: View {
                     .textSelection(.enabled)
                 ContentMutedText(text: "Isaiah 45:8 · Douay-Rheims")
             }
+            if let week, let collect = AdventCalendar.collect(on: now, timeZone: timeZone) {
+                ContentPanel {
+                    Text("THE ADVENT WREATH")
+                        .font(JohnTypography.sans(11, weight: .medium)).tracking(2).foregroundStyle(colors.tint)
+                    Text("\(["First", "Second", "Third", "Fourth"][week - 1]) candle: the Collect of the \(["first", "second", "third", "fourth"][week - 1]) Sunday of Advent")
+                        .font(JohnTypography.sans(15, weight: .medium)).foregroundStyle(colors.text)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(collect)
+                        .font(JohnTypography.serif(20))
+                        .foregroundStyle(colors.text)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
+                    ContentMutedText(text: AdventCalendar.collectSource)
+                }
+                .accessibilityIdentifier("advent-wreath")
+            }
             ContentSectionTitle(title: "The O Antiphons")
             ContentMutedText(text: "Sung at Vespers on the seven evenings before Christmas Eve, from 17 December.")
             ForEach(AdventCalendar.antiphons, id: \.day) { antiphon in

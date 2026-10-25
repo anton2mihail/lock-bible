@@ -8,8 +8,8 @@ export const stJosephNovena = {
   patronage: "The universal Church, families, fathers, workers, and a happy death",
   traditionalStart: "March 10",
   feastDay: "March 19",
-  sourceName: "EWTN",
-  sourceUrl: "https://www.ewtn.com/catholicism/library/novena-to-st-joseph-11865",
+  sourceName: "F. X. Lasance, The Catholic Girl's Guide (Benziger, 1906), pp. 598–599 · Imprimatur: John M. Farley, Archbishop of New York",
+  sourceUrl: "https://archive.org/details/TheCatholicGirlsGuide/page/n606/mode/1up",
   searchTerms: [
     "Joseph",
     "Holy Family",
@@ -22,13 +22,16 @@ export const stJosephNovena = {
   ],
   sections: [
     {
-      paragraphs: [
-        "Oh St. Joseph whose protection is so great, so strong, so prompt before the Throne of God, I place in you all my interests and desires.",
-        "Oh St. Joseph do assist me by your powerful intercession and obtain for me from your Divine Son all spiritual blessings through Jesus Christ, Our Lord; so that having engaged here below your Heavenly power I may offer my Thanksgiving and Homage to the Loving of Fathers.",
-        "Oh St. Joseph, I never weary contemplating you and Jesus asleep in your arms. I dare not approach while He reposes near your heart.",
-        "Press Him in my name and kiss His fine Head for me, and ask Him to return the kiss when I draw my dying breath.",
-      ],
-      response: "St. Joseph, Patron of departing souls, pray for us. Amen",
+      "title": "Ejaculation",
+      "paragraphs": [
+        "St. Joseph, model and patron of those who love the Sacred Heart of Jesus, pray for us."
+      ]
     },
+    {
+      "title": "Prayer",
+      "paragraphs": [
+        "Remember, O most pure spouse of the Blessed Virgin Mary, my sweet protector St. Joseph! that no one ever had recourse to thy protection or implored thy aid without obtaining relief. Confiding therefore in thy goodness, I come before thee, and humbly supplicate thee. Oh, despise not my petitions, foster-father of the Redeemer, but graciously receive them. Amen."
+      ]
+    }
   ],
 } satisfies Novena

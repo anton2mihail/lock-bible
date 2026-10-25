@@ -40,6 +40,18 @@ object AdventCalendar {
             "O Emmanuel, our King and Lawgiver, the Expectation and Saviour of the nations! come and save us, O Lord our God!"),
     )
 
+    /** The Advent wreath: the Collect of each Sunday of Advent, as printed in The Missal (1926 printing), pp. 50, 54, 56, 69. */
+    const val COLLECT_SOURCE = "The Missal, compiled by lawful authority from the Missale Romanum (Burns Oates; B. Herder, 1926 printing; Imprimatur Westminster, 1921)"
+    val sundayCollects = listOf(
+        "Stir up thy might, O Lord, we beseech thee, and come; that by thy protection we may deserve to be rescued from the threatening dangers of our sins and saved by thy deliverance: who livest and reignest with God the Father in the unity of the Holy Ghost, God, world without end. Amen.",
+        "Stir up our hearts, O Lord, to prepare the ways of thine only-begotten Son; that through his coming we may be worthy to serve thee with purified minds: who liveth.",
+        "Incline thine ear, O Lord, we beseech thee, to our prayers; and enlighten the darkness of our mind by the grace of thy visitation: who livest.",
+        "Stir up, O Lord, we pray thee, thy power, and come, and with great might succour us; that, by the help of thy grace, that which our sins impede may be hastened by thy merciful forgiveness: who livest and reignest with God the Father.",
+    )
+
+    /** The Collect for the week of Advent containing [date], else null. */
+    fun collect(date: LocalDate): String? = week(date)?.let { sundayCollects[it - 1] }
+
     /** The first Sunday of Advent of [year]: the fourth Sunday before Christmas. */
     fun firstSunday(year: Int): LocalDate =
         LocalDate.of(year, 12, 25).with(TemporalAdjusters.previous(DayOfWeek.SUNDAY)).minusWeeks(3)

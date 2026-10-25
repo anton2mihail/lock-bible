@@ -69,7 +69,7 @@ class MySaintWidgetTest {
             refresh(360)
             compose.waitUntil(10_000) { view.findViewById<TextView>(R.id.saint_widget_prayer)?.text?.contains("pray for us") == true }
             compose.runOnIdle {
-                assertEquals("Novena to St. Joseph · EWTN", view.findViewById<TextView>(R.id.saint_widget_caption).text)
+                assertEquals("Novena to St. Joseph · Lasance, 1906", view.findViewById<TextView>(R.id.saint_widget_caption).text)
                 assertFalse(view.findViewById<TextView>(R.id.saint_widget_prayer).text.contains("Private widget test note"))
             }
             val monitor = instrumentation.addMonitor(MainActivity::class.java.name, null, false)

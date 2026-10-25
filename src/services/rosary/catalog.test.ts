@@ -62,7 +62,7 @@ describe("Seven Sorrows devotion", () => {
   test("gives every sorrow a reference, an invocation and a grace", () => {
     for (const sorrow of SEVEN_SORROWS.sorrows) {
       expect(sorrow.scriptureReference).toMatch(/^[1-3]? ?[A-Za-z]+ \d+:\d+/)
-      expect(sorrow.invocation).toContain("I grieve for thee, O Mary most sorrowful")
+      expect(sorrow.invocation).toContain("I compassionate thee, sorrowing Mary")
       expect(sorrow.grace.length).toBeGreaterThan(0)
     }
   })

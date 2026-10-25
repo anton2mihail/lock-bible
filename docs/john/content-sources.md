@@ -18,42 +18,36 @@ current text or translation does not meet the rule. **Decide** = needs Anton.
 | Clementine Vulgate | OK | The Church's Latin Bible |
 | World English Bible, Catholic Edition | Kept, labelled (D5) | Modern public-domain translation by a private editor; **no imprimatur**. Labelled in Settings and in its attribution line as "Study translation without Church approval (no imprimatur)" |
 
-## Prayers (prayer library, 28)
+## Prayers, Rosary and novenas (updated 25 Oct 2026 for 2.2.1)
 
-| Prayer | Current source | Status |
+Every replacement text below was checked word for word against the page scan. Exact texts, pages and scan links:
+`docs/john/approved-prayer-texts.md`.
+
+| Item | Source now | Status |
 |---|---|---|
-| Night Prayer | Roman Breviary, Compline, tr. Marquess of Bute (1879) | OK |
-| Grace after meals | Lasance, *Prayer-Book for Religious* (1904) | OK |
-| Memorare; Sub tuum; Miraculous Medal; Spiritual Communion (St Alphonsus); Prayer before study (St Thomas); Responsory of St Anthony | *The Raccolta* (1910), the Church's official collection of indulgenced prayers | OK |
-| Prayer to St Michael | Pope Leo XIII, via Lasance (1904) | OK |
-| Anima Christi | *A Manual of Prayers* (Third Plenary Council of Baltimore) | OK |
-| Suscipe | St Ignatius, tr. Elder Mullan, S.J. (1914) | OK |
-| We adore Thee | St Francis, tr. Paschal Robinson, O.F.M. (1905) | OK |
-| Prayers of the Angel of Fatima | Sister Lúcia; Shrine of Fatima (approved apparitions) | OK |
-| Morning Offering; Come, Holy Spirit | "text as published by EWTN" | Re-source (Raccolta / Manual of Prayers) |
-| Grace before meals; Angelus; Regina Caeli; Our Father; Hail Mary; Glory Be; Act of Contrition; For the faithful departed | "historic English wording" | Re-source (Baltimore Catechism 1891 / Raccolta / Manual of Prayers) |
-| Our hearts are restless; Too late did I love Thee | St Augustine, tr. Pilkington (NPNF, a non-Catholic series) | Replace translation (Catholic translation with imprimatur, e.g. Matthew–Hudleston, 1923) |
-| Let nothing disturb thee | St Teresa, tr. H. W. Longfellow (a Protestant poet) | Replace translation (Catholic prayer book with imprimatur) |
-| Christ with me (St Patrick) | tr. Kuno Meyer (scholar), "traditionally attributed" | Replace (Catholic prayer book with imprimatur) |
-| Lead, Kindly Light | St John Henry Newman, written 1833 as an Anglican | Replace with a prayer Newman wrote as a Catholic (*Meditations and Devotions*, 1893) |
-
-## Rosary
-
-| Item | Status | Note |
-|---|---|---|
-| Rosary prayers (Sign of the Cross, Creed, Our Father, Hail Mary, Glory Be, Fatima prayer, Hail Holy Queen, closing prayer) | Re-source | Current wording is the modern US liturgical English (Creed: "descended into hell"). Approved, but the Creed wording is © ICEL. Either name it with permission or use *A Manual of Prayers* (1896) wording ("Holy Ghost") |
-| Mystery descriptions | OK | Quote St John Paul II, *Rosarium Virginis Mariae* |
-| Seven Sorrows invocations and prayers | Re-source | Servite chaplet; quote from the Raccolta (1910) |
-| Videos | OK | Bishop Robert Barron (Word on Fire), links only |
-
-## Novenas (7)
-
-| Novena | Current source | Status |
-|---|---|---|
-| St Padre Pio | novenaprayer.com (no author) | Replace (e.g. the Efficacious Novena to the Sacred Heart that Padre Pio prayed daily, by St Margaret Mary) |
-| St Jude; St Peregrine; St Joseph; Our Lady of Perpetual Help | EWTN web pages | Re-source (pre-1931 prayer book with imprimatur; Perpetual Help from a Redemptorist manual) |
-| St Thérèse rose novena | Society of the Little Flower (Carmelites) | OK pending the edition (Fr Putigan, S.J., 1925) |
-| Divine Mercy | Diary of St Faustina, 476 | Approved; **copyright**: the English Diary is © Marian Press. Check permission or quote the novena from an approved public-domain text |
+| Morning Offering | Lasance, *My Prayer-Book* (1908, Imprimatur Farley), p. 149 | OK |
+| Grace before and after meals | *My Prayer-Book* (1908), p. 218 | OK |
+| Angelus, Regina Caeli | *The Raccolta* (1910), no. 182 | OK |
+| Our Father, Hail Mary, Glory Be, Come Holy Ghost, Eternal rest | Lasance, *With God* (1911, Imprimatur Farley) | OK |
+| Act of Contrition (also the confession guide) | *A Manual of Prayers* (Baltimore, 1889), p. 54 | OK |
+| Memorare, Sub tuum, Miraculous Medal, Spiritual Communion, Prayer before study, Responsory of St Anthony | *The Raccolta* (1910) | OK |
+| Night Prayer; St Michael; Anima Christi; Suscipe; We adore Thee | Roman Breviary (Bute 1879); Lasance 1904; Manual of Prayers; Mullan, S.J.; Robinson, O.F.M. | OK |
+| Our hearts are restless; Too late have I loved Thee | Short quotations in *My Prayer-Book* (1908) and Forbes, *Life of St Monica* (Imprimatur 1915). No full Catholic translation before 1931 is scanned | OK (shortened) |
+| Let nothing disturb thee | *With God* (1911), p. 156 | OK |
+| St Patrick's Breastplate | *Prayers of the Gael* (1915, Imprimatur Edinburgh 1914), stanza 8 | OK |
+| Newman | "Lead, Kindly Light" (Anglican, 1833) replaced by "Stay with me", *Meditations and Devotions* (1893) | OK |
+| Rosary: Sign of the Cross, Creed, Our Father, Hail Mary, Glory Be | Marchant 1929; *With God* (1911) | OK |
+| Rosary: Hail, Holy Queen; Rosary collect | *Manual of Prayers* (1889); *The Missal* (1926 printing, Imprimatur 1921), ending "Through the same." as printed | OK |
+| Seven Sorrows: opening, seven invocations, versicle, collect | *The Raccolta* (1910), nos. 230, 232 ("I compassionate thee, sorrowing Mary") | OK |
+| St Joseph novena | Lasance, *The Catholic Girl's Guide* (1906), pp. 598–599 | OK |
+| St Jude novena | Marchant, O.P., *Life of St. Jude Thaddeus* (Chicago, 1929, Imprimatur Mundelein), pp. 19–21. One misprint corrected: "they aid" → "thy aid" | OK |
+| Our Lady of Perpetual Help novena | *With God* (1911), p. 685 | OK |
+| St Peregrine | No approved novena before 1931; the Collect of his feast from *The Missal* (1926), p. 1207, prayed for nine days | OK |
+| St Thérèse rose novena | Society of the Little Flower | Edition to confirm |
+| Advent wreath | The four Sunday Collects of Advent, *The Missal* (1926), pp. 50, 54, 56, 69 | OK (new) |
+| **Fatima prayer** (Rosary decades) and **Prayers of the Angel of Fatima** | Approved devotion, but no approved English text before 1931 exists (apparitions approved 1930) | **Decide (D7)** |
+| **St Padre Pio novena** | Website, no author. No approved public-domain novena exists (canonized 2002) | **Decide (D7)** |
+| **Divine Mercy novena** | St Faustina's *Diary*; the English text is © Marian Press | **Decide (D7)** |
 
 ## Guides and teaching
 
@@ -76,6 +70,13 @@ current text or translation does not meet the rule. **Decide** = needs Anton.
 ## Store text
 
 - The App Store description says "27 novenas"; the app has **7**. Fix in the 2.2.1 description.
+
+## Decision still open
+
+- **D7.** The Fatima prayers, the Padre Pio novena and the Divine Mercy novena have no approved English text in
+  the public domain. Options: (a) remove them; (b) keep them with the text of a modern approved edition, under a
+  licence from its publisher (Marian Press for Divine Mercy; a Capuchin or diocesan edition for Padre Pio; the
+  Shrine of Fatima for the Fatima prayers).
 
 ## Decisions (Anton, 25 Oct 2026)
 

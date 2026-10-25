@@ -33,6 +33,13 @@ class AdventTest {
         assertNull(AdventCalendar.antiphon(d(2026, 12, 16))); assertNull(AdventCalendar.antiphon(d(2026, 12, 24))); assertNull(AdventCalendar.antiphon(d(2026, 11, 17)))
     }
 
+    @Test fun w1WreathCollect() {
+        assertEquals(4, AdventCalendar.sundayCollects.size)
+        assertTrue(AdventCalendar.collect(d(2026, 11, 29))!!.startsWith("Stir up thy might"))
+        assertTrue(AdventCalendar.collect(d(2026, 12, 13))!!.startsWith("Incline thine ear"))
+        assertTrue(AdventCalendar.collect(d(2026, 12, 24))!!.startsWith("Stir up, O Lord, we pray thee"))
+        assertNull(AdventCalendar.collect(d(2026, 11, 28)))
+    }
     @Test fun pParse() {
         assertEquals(GospelFathers.Reference("MAT", 9, 35), GospelFathers.parse("Matthew 9:35–10:1, 5a, 6-8"))
         assertEquals(GospelFathers.Reference("LUK", 7, 18), GospelFathers.parse("Luke 7:18b-23"))
