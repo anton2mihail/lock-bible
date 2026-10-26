@@ -13,8 +13,8 @@
    "season": "christmas",
    "feast": "Mary, Mother of God",
    "author": "The Didache",
-   "work": "The Teaching of the Twelve Apostles",
-   "title": "The Teaching of the Twelve Apostles, Chapters I–VI",
+   "work": "The Didache",
+   "title": "Chapters I–VI",
    "words": 1346,
    "minutes": 7,
    "readings": [
@@ -67,8 +67,8 @@
    "date": "2027-01-02",
    "season": "christmas",
    "author": "The Didache",
-   "work": "The Teaching of the Twelve Apostles",
-   "title": "The Teaching of the Twelve Apostles, Chapters VII–XV",
+   "work": "The Didache",
+   "title": "Chapters VII–XV",
    "words": 1405,
    "minutes": 7,
    "readings": [
@@ -132,9 +132,9 @@
    "day": 3,
    "date": "2027-01-03",
    "season": "christmas",
-   "author": "The Didache; The Letter to Diognetus",
-   "work": "The Teaching of the Twelve Apostles; The Letter to Diognetus",
-   "title": "The Teaching of the Twelve Apostles, Chapter XVI; The Letter to Diognetus, Chapters I–II",
+   "author": "The Apostolic Fathers",
+   "work": "The Didache; The Letter to Diognetus",
+   "title": "The Didache, chapter XVI; The Letter to Diognetus, chapters I–II",
    "words": 1418,
    "minutes": 7,
    "readings": [
@@ -170,7 +170,7 @@
    "season": "christmas",
    "author": "The Letter to Diognetus",
    "work": "The Letter to Diognetus",
-   "title": "The Letter to Diognetus, Chapters III–VII",
+   "title": "Chapters III–VII",
    "words": 1552,
    "minutes": 8,
    "readings": [
@@ -212,7 +212,7 @@
    "season": "christmas",
    "author": "The Letter to Diognetus",
    "work": "The Letter to Diognetus",
-   "title": "The Letter to Diognetus, Chapters VIII–XI",
+   "title": "Chapters VIII–XI",
    "words": 1490,
    "minutes": 7,
    "readings": [
@@ -246,9 +246,9 @@
    "day": 6,
    "date": "2027-01-06",
    "season": "christmas",
-   "author": "The Letter to Diognetus; St Polycarp",
+   "author": "The Apostolic Fathers",
    "work": "The Letter to Diognetus; Letter to the Philippians",
-   "title": "The Letter to Diognetus, Chapter XII; Letter to the Philippians, Chapters I–V",
+   "title": "The Letter to Diognetus, chapter XII; St Polycarp, Letter to the Philippians, chapters I–V",
    "words": 1298,
    "minutes": 6,
    "readings": [
@@ -302,7 +302,7 @@
    "season": "christmas",
    "author": "St Polycarp",
    "work": "Letter to the Philippians",
-   "title": "Letter to the Philippians, Chapters VI–XIV",
+   "title": "Letter to the Philippians, chapters VI–XIV",
    "words": 1292,
    "minutes": 6,
    "readings": [
@@ -1384,7 +1384,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter I",
+   "title": "Concerning Repentance, Book I, chapter I",
    "words": 514,
    "minutes": 3,
    "readings": [
@@ -1414,7 +1414,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter II",
+   "title": "Concerning Repentance, Book I, chapter II",
    "words": 787,
    "minutes": 4,
    "readings": [
@@ -1432,7 +1432,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter III",
+   "title": "Concerning Repentance, Book I, chapter III",
    "words": 885,
    "minutes": 4,
    "readings": [
@@ -1450,7 +1450,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter IV",
+   "title": "Concerning Repentance, Book I, chapter IV",
    "words": 629,
    "minutes": 3,
    "readings": [
@@ -1468,7 +1468,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter V",
+   "title": "Concerning Repentance, Book I, chapter V",
    "words": 1114,
    "minutes": 6,
    "readings": [
@@ -1486,7 +1486,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapters VI–VII",
+   "title": "Concerning Repentance, Book I, chapters VI–VII",
    "words": 927,
    "minutes": 5,
    "readings": [
@@ -1510,7 +1510,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter VIII",
+   "title": "Concerning Repentance, Book I, chapter VIII",
    "words": 859,
    "minutes": 4,
    "readings": [
@@ -1528,7 +1528,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapters IX–X",
+   "title": "Concerning Repentance, Book I, chapters IX–X",
    "words": 1195,
    "minutes": 6,
    "readings": [
@@ -1552,7 +1552,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XI",
+   "title": "Concerning Repentance, Book I, chapter XI",
    "words": 799,
    "minutes": 4,
    "readings": [
@@ -1570,7 +1570,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XII",
+   "title": "Concerning Repentance, Book I, chapter XII",
    "words": 738,
    "minutes": 4,
    "readings": [
@@ -1588,7 +1588,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XIII",
+   "title": "Concerning Repentance, Book I, chapter XIII",
    "words": 1055,
    "minutes": 5,
    "readings": [
@@ -1606,7 +1606,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XIV",
+   "title": "Concerning Repentance, Book I, chapter XIV",
    "words": 1608,
    "minutes": 8,
    "readings": [
@@ -1624,7 +1624,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XV",
+   "title": "Concerning Repentance, Book I, chapter XV",
    "words": 1074,
    "minutes": 5,
    "readings": [
@@ -1642,7 +1642,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XVI",
+   "title": "Concerning Repentance, Book I, chapter XVI",
    "words": 538,
    "minutes": 3,
    "readings": [
@@ -1660,7 +1660,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book I, Chapter XVII – Book II, Chapter I",
+   "title": "Concerning Repentance, Book I, chapter XVII – Book II, chapter I",
    "words": 1175,
    "minutes": 6,
    "readings": [
@@ -1684,7 +1684,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter II",
+   "title": "Concerning Repentance, Book II, chapter II",
    "words": 1071,
    "minutes": 5,
    "readings": [
@@ -1702,7 +1702,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter III",
+   "title": "Concerning Repentance, Book II, chapter III",
    "words": 702,
    "minutes": 4,
    "readings": [
@@ -1720,7 +1720,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter IV",
+   "title": "Concerning Repentance, Book II, chapter IV",
    "words": 1124,
    "minutes": 6,
    "readings": [
@@ -1738,7 +1738,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter V",
+   "title": "Concerning Repentance, Book II, chapter V",
    "words": 1229,
    "minutes": 6,
    "readings": [
@@ -1756,7 +1756,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter VI",
+   "title": "Concerning Repentance, Book II, chapter VI",
    "words": 1195,
    "minutes": 6,
    "readings": [
@@ -1774,7 +1774,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter VII",
+   "title": "Concerning Repentance, Book II, chapter VII",
    "words": 1538,
    "minutes": 8,
    "readings": [
@@ -1792,7 +1792,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter VIII",
+   "title": "Concerning Repentance, Book II, chapter VIII",
    "words": 1604,
    "minutes": 8,
    "readings": [
@@ -1810,7 +1810,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter IX",
+   "title": "Concerning Repentance, Book II, chapter IX",
    "words": 892,
    "minutes": 4,
    "readings": [
@@ -1828,7 +1828,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter X",
+   "title": "Concerning Repentance, Book II, chapter X",
    "words": 847,
    "minutes": 4,
    "readings": [
@@ -1846,7 +1846,7 @@
    "season": "lent",
    "author": "St Ambrose of Milan",
    "work": "Concerning Repentance",
-   "title": "Concerning Repentance, Book II, Chapter XI",
+   "title": "Concerning Repentance, Book II, chapter XI",
    "words": 1014,
    "minutes": 5,
    "readings": [
@@ -1922,7 +1922,7 @@
    "feast": "Wednesday of Holy Week",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On the Lord's Passion IV",
+   "title": "On the Passion, IV",
    "words": 1331,
    "minutes": 7,
    "readings": [
@@ -2144,7 +2144,7 @@
    "season": "easter",
    "author": "St Ambrose of Milan",
    "work": "On the Mysteries",
-   "title": "On the Mysteries, Chapters I–II",
+   "title": "On the Mysteries, chapters I–II",
    "words": 617,
    "minutes": 3,
    "readings": [
@@ -2168,7 +2168,7 @@
    "season": "easter",
    "author": "St Ambrose of Milan",
    "work": "On the Mysteries",
-   "title": "On the Mysteries, Chapter III",
+   "title": "On the Mysteries, chapter III",
    "words": 1221,
    "minutes": 6,
    "readings": [
@@ -2186,7 +2186,7 @@
    "season": "easter",
    "author": "St Ambrose of Milan",
    "work": "On the Mysteries",
-   "title": "On the Mysteries, Chapters IV–V",
+   "title": "On the Mysteries, chapters IV–V",
    "words": 1310,
    "minutes": 7,
    "readings": [
@@ -2210,7 +2210,7 @@
    "season": "easter",
    "author": "St Ambrose of Milan",
    "work": "On the Mysteries",
-   "title": "On the Mysteries, Chapters VI–VII",
+   "title": "On the Mysteries, chapters VI–VII",
    "words": 1471,
    "minutes": 7,
    "readings": [
@@ -2234,7 +2234,7 @@
    "season": "easter",
    "author": "St Ambrose of Milan",
    "work": "On the Mysteries",
-   "title": "On the Mysteries, Chapter VIII",
+   "title": "On the Mysteries, chapter VIII",
    "words": 918,
    "minutes": 5,
    "readings": [
@@ -2252,7 +2252,7 @@
    "season": "easter",
    "author": "St Ambrose of Milan",
    "work": "On the Mysteries",
-   "title": "On the Mysteries, Chapter IX",
+   "title": "On the Mysteries, chapter IX",
    "words": 1543,
    "minutes": 8,
    "readings": [
@@ -2908,7 +2908,7 @@
    "feast": "Pentecost",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On Whitsuntide, I",
+   "title": "On Pentecost (Whitsuntide), I",
    "words": 1569,
    "minutes": 8,
    "readings": [
@@ -2926,7 +2926,7 @@
    "season": "ordinary",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On Whitsuntide, III",
+   "title": "On Pentecost (Whitsuntide), III",
    "words": 1643,
    "minutes": 8,
    "readings": [
@@ -3214,7 +3214,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Preface – Birth and beginnings of Antony",
+   "title": "Life of St Antony, part 1 of 27",
    "words": 891,
    "minutes": 4,
    "readings": [
@@ -3238,7 +3238,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His early ascetic life",
+   "title": "Life of St Antony, part 2 of 27",
    "words": 555,
    "minutes": 3,
    "readings": [
@@ -3256,7 +3256,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Early conflicts with the devil",
+   "title": "Life of St Antony, part 3 of 27",
    "words": 729,
    "minutes": 4,
    "readings": [
@@ -3274,7 +3274,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Details of his life at this time",
+   "title": "Life of St Antony, part 4 of 27",
    "words": 572,
    "minutes": 3,
    "readings": [
@@ -3292,7 +3292,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His life in the tombs, and combats with demons there – He goes to the desert and overcomes temptations on the way",
+   "title": "Life of St Antony, part 5 of 27",
    "words": 1059,
    "minutes": 5,
    "readings": [
@@ -3316,7 +3316,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How Antony took up his abode in a ruined fort across the Nile, and… – How he left the fort, and how monasticism began to flourish in Egypt.…",
+   "title": "Life of St Antony, part 6 of 27",
    "words": 956,
    "minutes": 5,
    "readings": [
@@ -3340,7 +3340,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 1 of 6)",
+   "title": "Life of St Antony, part 7 of 27",
    "words": 1404,
    "minutes": 7,
    "readings": [
@@ -3358,7 +3358,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 2 of 6)",
+   "title": "Life of St Antony, part 8 of 27",
    "words": 1081,
    "minutes": 5,
    "readings": [
@@ -3376,7 +3376,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 3 of 6)",
+   "title": "Life of St Antony, part 9 of 27",
    "words": 1124,
    "minutes": 6,
    "readings": [
@@ -3394,7 +3394,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 4 of 6)",
+   "title": "Life of St Antony, part 10 of 27",
    "words": 1256,
    "minutes": 6,
    "readings": [
@@ -3412,7 +3412,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 5 of 6)",
+   "title": "Life of St Antony, part 11 of 27",
    "words": 1270,
    "minutes": 6,
    "readings": [
@@ -3430,7 +3430,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 6 of 6)",
+   "title": "Life of St Antony, part 12 of 27",
    "words": 1052,
    "minutes": 5,
    "readings": [
@@ -3448,7 +3448,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, The growth of the monastic life at this time – How he lived at this time",
+   "title": "Life of St Antony, part 13 of 27",
    "words": 951,
    "minutes": 5,
    "readings": [
@@ -3484,7 +3484,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How he delivered a woman from an evil spirit – How at this time he betook himself to his 'inner mountain.'",
+   "title": "Life of St Antony, part 14 of 27",
    "words": 866,
    "minutes": 4,
    "readings": [
@@ -3508,7 +3508,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How he there combated the demons – Of the miraculous spring, and how he edified the monks of the 'outer'…",
+   "title": "Life of St Antony, part 15 of 27",
    "words": 799,
    "minutes": 4,
    "readings": [
@@ -3532,7 +3532,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How humanely he counselled those who resorted to him",
+   "title": "Life of St Antony, part 16 of 27",
    "words": 700,
    "minutes": 4,
    "readings": [
@@ -3550,7 +3550,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Of the case of Fronto, healed by faith and prayer – Of the two brethren, and how one perished of thirst",
+   "title": "Life of St Antony, part 17 of 27",
    "words": 584,
    "minutes": 3,
    "readings": [
@@ -3580,7 +3580,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Of the death of Amun, and Antony's vision thereof – Of Count Archelaus and the virgin Polycration",
+   "title": "Life of St Antony, part 18 of 27",
    "words": 708,
    "minutes": 4,
    "readings": [
@@ -3604,7 +3604,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Strange tales of the casting out of demons – Of Antony's vision concerning the forgiveness of his sins",
+   "title": "Life of St Antony, part 19 of 27",
    "words": 694,
    "minutes": 3,
    "readings": [
@@ -3628,7 +3628,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Of the passage of souls, and how some were hindered of Satan – How Antony reverenced all ordained persons",
+   "title": "Life of St Antony, part 20 of 27",
    "words": 683,
    "minutes": 3,
    "readings": [
@@ -3652,7 +3652,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How he rejected the schism of Meletius and the heresies of Manes and… – How he visited Alexandria, and healed and converted many, and how…",
+   "title": "Life of St Antony, part 21 of 27",
    "words": 629,
    "minutes": 3,
    "readings": [
@@ -3682,7 +3682,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How he reasoned with divers Greeks and philosophers at the 'outer'…",
+   "title": "Life of St Antony, part 22 of 27",
    "words": 1652,
    "minutes": 8,
    "readings": [
@@ -3700,7 +3700,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How he confuted the philosophers by healing certain vexed with demons – How the Emperors wrote to Antony, and of his answer",
+   "title": "Life of St Antony, part 23 of 27",
    "words": 548,
    "minutes": 3,
    "readings": [
@@ -3724,7 +3724,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How he saw in a vision the present doings of the Arians – That his healings were done by Christ alone, through prayer",
+   "title": "Life of St Antony, part 24 of 27",
    "words": 870,
    "minutes": 4,
    "readings": [
@@ -3748,7 +3748,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How wisely he answered a certain duke – Of his discernment, and how he was a counsellor to all",
+   "title": "Life of St Antony, part 25 of 27",
    "words": 828,
    "minutes": 4,
    "readings": [
@@ -3784,7 +3784,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, How, when now 105 years old, he counselled the monks, and gave advice… – Of his sickness and his last will",
+   "title": "Life of St Antony, part 26 of 27",
    "words": 922,
    "minutes": 5,
    "readings": [
@@ -3808,7 +3808,7 @@
    "season": "ordinary",
    "author": "St Athanasius",
    "work": "Life of St Antony",
-   "title": "Life of St Antony, Of Antony's death – The end",
+   "title": "Life of St Antony, part 27 of 27",
    "words": 634,
    "minutes": 3,
    "readings": [
@@ -4596,7 +4596,7 @@
    "feast": "St Lawrence",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On the Feast of S. Laurence the Martyr",
+   "title": "On the Feast of St Lawrence the Martyr",
    "words": 909,
    "minutes": 5,
    "readings": [
@@ -5285,7 +5285,7 @@
    "feast": "Ember Friday",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On the Fast of Seventh Month, V",
+   "title": "On the Fast of the Seventh Month, V",
    "words": 1360,
    "minutes": 7,
    "readings": [
@@ -5394,7 +5394,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters I–III",
+   "title": "The Commonitory, chapters I–III",
    "words": 1341,
    "minutes": 7,
    "readings": [
@@ -5430,7 +5430,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters IV–V",
+   "title": "The Commonitory, chapters IV–V",
    "words": 1107,
    "minutes": 6,
    "readings": [
@@ -5454,7 +5454,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters VI–VII",
+   "title": "The Commonitory, chapters VI–VII",
    "words": 1347,
    "minutes": 7,
    "readings": [
@@ -5478,7 +5478,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters VIII–X",
+   "title": "The Commonitory, chapters VIII–X",
    "words": 1356,
    "minutes": 7,
    "readings": [
@@ -5508,7 +5508,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XI–XII",
+   "title": "The Commonitory, chapters XI–XII",
    "words": 1525,
    "minutes": 8,
    "readings": [
@@ -5532,7 +5532,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XIII–XIV",
+   "title": "The Commonitory, chapters XIII–XIV",
    "words": 1522,
    "minutes": 8,
    "readings": [
@@ -5556,7 +5556,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XV–XVI",
+   "title": "The Commonitory, chapters XV–XVI",
    "words": 970,
    "minutes": 5,
    "readings": [
@@ -5580,7 +5580,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XVII–XVIII",
+   "title": "The Commonitory, chapters XVII–XVIII",
    "words": 1568,
    "minutes": 8,
    "readings": [
@@ -5604,7 +5604,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XIX–XXII",
+   "title": "The Commonitory, chapters XIX–XXII",
    "words": 1577,
    "minutes": 8,
    "readings": [
@@ -5640,7 +5640,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XXIII–XXIV",
+   "title": "The Commonitory, chapters XXIII–XXIV",
    "words": 1881,
    "minutes": 9,
    "readings": [
@@ -5664,7 +5664,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XXV–XXVII",
+   "title": "The Commonitory, chapters XXV–XXVII",
    "words": 1592,
    "minutes": 8,
    "readings": [
@@ -5694,7 +5694,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XXVIII–XXIX",
+   "title": "The Commonitory, chapters XXVIII–XXIX",
    "words": 1726,
    "minutes": 9,
    "readings": [
@@ -5718,7 +5718,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapters XXX–XXXII",
+   "title": "The Commonitory, chapters XXX–XXXII",
    "words": 1163,
    "minutes": 6,
    "readings": [
@@ -5748,7 +5748,7 @@
    "season": "ordinary",
    "author": "St Vincent of Lérins",
    "work": "The Commonitory",
-   "title": "The Commonitory, Chapter XXXIII",
+   "title": "The Commonitory, chapter XXXIII",
    "words": 1651,
    "minutes": 8,
    "readings": [
@@ -7128,7 +7128,7 @@
    "day": 320,
    "date": "2027-11-16",
    "season": "ordinary",
-   "author": "St Augustine of Hippo; St Cyprian of Carthage",
+   "author": "St Augustine of Hippo and St Cyprian of Carthage",
    "work": "On Care to Be Had for the Dead; On the Mortality",
    "title": "On Care to Be Had for the Dead, chapter 23; On the Mortality (part 1 of 6)",
    "words": 1091,
@@ -7786,7 +7786,7 @@
    "feast": "Ember Wednesday of Advent",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On the Fast of The Tenth Month, I",
+   "title": "On the Fast of the Tenth Month, I",
    "words": 1521,
    "minutes": 8,
    "readings": [
@@ -7840,7 +7840,7 @@
    "season": "advent",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On the Fast of the Ten Month, VIII",
+   "title": "On the Fast of the Tenth Month, VIII",
    "words": 1136,
    "minutes": 6,
    "readings": [
@@ -8075,7 +8075,7 @@
    "season": "christmas",
    "author": "St Leo the Great",
    "work": "Sermons",
-   "title": "On the Festival of the Nativity, VIII",
+   "title": "On the Feast of the Nativity, VIII",
    "words": 2014,
    "minutes": 10,
    "readings": [

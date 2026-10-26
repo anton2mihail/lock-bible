@@ -46,6 +46,10 @@ be live by 17 Dec. Ash Wednesday is 10 Feb 2027 and Easter 28 Mar 2027.
 Internet Publishing License. Anton chose to leave China mainland: it was removed from App Availability on 26 Oct
 (174 countries or regions). The rejected version was renamed 2.2.1 with build 32 (What's New updated, "7 novenas" fixed) and resubmitted on 26 Oct with the In-App Event and the 5 product pages; 2.2.0 (31) will never ship. Android 1.2.1 (7) follows once 1.2.0 is approved.
 
+**Store text for 2.3.0:** in What's New, write the wreath line as "The Advent wreath: each week of Advent, the
+Collect of its Sunday from the Roman Missal" (2.2.1 says "on each week of Advent", which reads badly; it was in
+review and could not change).
+
 ## Tier 1 — what is left
 
 ### 1. Catena Aurea on Luke and John (2.2.1)

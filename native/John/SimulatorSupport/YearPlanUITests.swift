@@ -17,7 +17,7 @@ final class YearPlanUITests: XCTestCase {
         let app = launch(date: "2026-12-20T17:00:00Z", access: "locked")
         let card = element(app, "today-year-plan")
         scrollTo(card, in: app)
-        XCTAssertTrue(card.label.contains("Begin the year with the Fathers"), card.label)
+        XCTAssertTrue(card.label.contains("Begins 1 January"), card.label)
         card.tap()
         XCTAssertTrue(element(app, "year-remind-january").waitForExistence(timeout: 10))
         attach(app, "year-start-december")
@@ -30,7 +30,10 @@ final class YearPlanUITests: XCTestCase {
         let mark = element(app, "year-mark-read")
         scrollTo(mark, in: app)
         mark.tap()
-        XCTAssertTrue(app.buttons["Read · Mark as not read"].waitForExistence(timeout: 5))
+        XCTAssertTrue(element(app, "year-read-state").waitForExistence(timeout: 5))
+        XCTAssertTrue(element(app, "year-mark-unread").exists)
+        // One reading: the page title is not repeated as a heading.
+        XCTAssertEqual(app.staticTexts.matching(NSPredicate(format: "label == %@", "Chapters I–VI")).count, 1)
         attach(app, "year-day-1-read")
     }
 
@@ -51,6 +54,8 @@ final class YearPlanUITests: XCTestCase {
         element(app, "year-read-today").tap()
         XCTAssertTrue(element(app, "year-day-text").waitForExistence(timeout: 10), "Day 41 did not read")
         XCTAssertTrue(app.staticTexts["On Lent, I"].exists)
+        XCTAssertFalse(app.staticTexts["On Lent, I."].exists, "The section title repeats the page title")
+        XCTAssertTrue(app.staticTexts["DAY 41 · ASH WEDNESDAY"].exists)
     }
 
     func testDayEightNeedsTheLibrary() {

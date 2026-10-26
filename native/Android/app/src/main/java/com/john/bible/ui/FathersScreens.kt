@@ -31,7 +31,7 @@ internal fun Context.findActivity(): Activity? {
  * The one purchase page (Android 1.1.0, matching iOS 2.1.0). The reader shows it in place of a locked section;
  * Settings and the library card open it too. The price always comes from Google Play.
  */
-@Composable internal fun FathersUnlockPanel(sampleNotice: String? = null, totals: String? = null) {
+@Composable internal fun FathersUnlockPanel(sampleNotice: String? = null, totals: String? = null, title: String? = null) {
     val context = LocalContext.current
     val billing = remember { FathersBilling.get(context) }
     val colors = LocalJohnColors.current
@@ -44,7 +44,7 @@ internal fun Context.findActivity(): Activity? {
         }
         JohnText("THE FATHERS & DOCTORS", size = 12)
         sampleNotice?.let { JohnText(it, size = 14, dim = true) }
-        Text(if (billing.isUnlocked) "The whole library is yours" else "Read the whole library", fontFamily = SpaceGrotesk,
+        Text(if (billing.isUnlocked) "The whole library is yours" else title ?: "Read the whole library", fontFamily = SpaceGrotesk,
             fontSize = 28.sp, lineHeight = 34.sp, fontWeight = FontWeight.Bold, color = colors.text)
         JohnText((totals?.let { "$it, offline. " } ?: "") + "Augustine complete, the Summa of St Thomas Aquinas, Chrysostom, Jerome, Ambrose, Athanasius and more. The first part of every work, the Apostolic Fathers and the Confessions are free to read.")
         when (billing.access) {

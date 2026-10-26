@@ -7,6 +7,8 @@ import JohnCore
 struct FathersUnlockPanel: View {
     /// Shown above the title when the reader reached the end of a free sample.
     var sampleNotice: String?
+    /// Replaces "Read the whole library" where the page has its own purpose ("Continue the year").
+    var title: String?
 
     @Environment(JohnRuntime.self) private var runtime
     @Environment(SharedPreferencesModel.self) private var preferences
@@ -27,7 +29,7 @@ struct FathersUnlockPanel: View {
                     .foregroundStyle(colors.textDim)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Text(store.isUnlocked ? "The whole library is yours" : "Read the whole library")
+            Text(store.isUnlocked ? "The whole library is yours" : (title ?? "Read the whole library"))
                 .font(JohnTypography.sans(28, weight: .bold))
                 .foregroundStyle(colors.text)
                 .fixedSize(horizontal: false, vertical: true)

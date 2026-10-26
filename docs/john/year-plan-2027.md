@@ -9,10 +9,10 @@ Feasts are in bold.
 
 | Days | Dates | Reading |
 |---|---|---|
-| 1–2 | 1 Jan – 2 Jan | The Didache · The Teaching of the Twelve Apostles |
-| 3 | 3 Jan | The Didache; The Letter to Diognetus · The Teaching of the Twelve Apostles; The Letter to Diognetus |
+| 1–2 | 1 Jan – 2 Jan | The Didache |
+| 3 | 3 Jan | The Apostolic Fathers · The Didache; The Letter to Diognetus |
 | 4–5 | 4 Jan – 5 Jan | The Letter to Diognetus |
-| 6 | 6 Jan | The Letter to Diognetus; St Polycarp · The Letter to Diognetus; Letter to the Philippians |
+| 6 | 6 Jan | The Apostolic Fathers · The Letter to Diognetus; Letter to the Philippians |
 | 7 | 7 Jan | St Polycarp · Letter to the Philippians |
 | 8–11 | 8 Jan – 11 Jan | St Leo the Great · Sermons |
 | 12–40 | 12 Jan – 9 Feb | St Athanasius · On the Incarnation |
@@ -44,7 +44,7 @@ Feasts are in bold.
 | 280–304 | 7 Oct – 31 Oct | St Augustine of Hippo · The Enchiridion |
 | 305 | 1 Nov | St Leo the Great · Sermons (**All Saints**) |
 | 306–319 | 2 Nov – 15 Nov | St Augustine of Hippo · On Care to Be Had for the Dead |
-| 320 | 16 Nov | St Augustine of Hippo; St Cyprian of Carthage · On Care to Be Had for the Dead; On the Mortality |
+| 320 | 16 Nov | St Augustine of Hippo and St Cyprian of Carthage · On Care to Be Had for the Dead; On the Mortality |
 | 321–325 | 17 Nov – 21 Nov | St Cyprian of Carthage · On the Mortality |
 | 326–331 | 22 Nov – 27 Nov | St Cyprian of Carthage · On the Advantage of Patience |
 | 332–348 | 28 Nov – 14 Dec | St Thomas Aquinas · Catena Aurea |
@@ -54,13 +54,13 @@ Feasts are in bold.
 
 ## January
 
-- 1 Jan · Day 1 — **Mary, Mother of God** · The Didache, *The Teaching of the Twelve Apostles, Chapters I–VI* · 7 min
-- 2 Jan · Day 2 · The Didache, *The Teaching of the Twelve Apostles, Chapters VII–XV* · 7 min
-- 3 Jan · Day 3 · The Didache; The Letter to Diognetus, *The Teaching of the Twelve Apostles, Chapter XVI; The Letter to Diognetus, Chapters I–II* · 7 min
-- 4 Jan · Day 4 · The Letter to Diognetus, *The Letter to Diognetus, Chapters III–VII* · 8 min
-- 5 Jan · Day 5 · The Letter to Diognetus, *The Letter to Diognetus, Chapters VIII–XI* · 7 min
-- 6 Jan · Day 6 · The Letter to Diognetus; St Polycarp, *The Letter to Diognetus, Chapter XII; Letter to the Philippians, Chapters I–V* · 6 min
-- 7 Jan · Day 7 · St Polycarp, *Letter to the Philippians, Chapters VI–XIV* · 6 min
+- 1 Jan · Day 1 — **Mary, Mother of God** · The Didache, *Chapters I–VI* · 7 min
+- 2 Jan · Day 2 · The Didache, *Chapters VII–XV* · 7 min
+- 3 Jan · Day 3 · The Apostolic Fathers, *The Didache, chapter XVI; The Letter to Diognetus, chapters I–II* · 7 min
+- 4 Jan · Day 4 · The Letter to Diognetus, *Chapters III–VII* · 8 min
+- 5 Jan · Day 5 · The Letter to Diognetus, *Chapters VIII–XI* · 7 min
+- 6 Jan · Day 6 · The Apostolic Fathers, *The Letter to Diognetus, chapter XII; St Polycarp, Letter to the Philippians, chapters I–V* · 6 min
+- 7 Jan · Day 7 · St Polycarp, *Letter to the Philippians, chapters VI–XIV* · 6 min
 - 8 Jan · Day 8 · St Leo the Great, *On the Feast of the Epiphany, I* · 5 min
 - 9 Jan · Day 9 · St Leo the Great, *On the Feast of the Epiphany, III* · 8 min
 - 10 Jan · Day 10 · St Leo the Great, *On the Feast of the Epiphany, IV* · 11 min
@@ -111,38 +111,38 @@ Feasts are in bold.
 - 21 Feb · Day 52 · St Cyril of Jerusalem, *Catechetical Lectures, Lecture II, On Repentance (part 3 of 3)* · 7 min
 - 22 Feb · Day 53 · St Cyril of Jerusalem, *Catechetical Lectures, Lecture III, On Baptism (part 1 of 2)* · 9 min
 - 23 Feb · Day 54 · St Cyril of Jerusalem, *Catechetical Lectures, Lecture III, On Baptism (part 2 of 2)* · 8 min
-- 24 Feb · Day 55 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter I* · 3 min
-- 25 Feb · Day 56 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter II* · 4 min
-- 26 Feb · Day 57 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter III* · 4 min
-- 27 Feb · Day 58 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter IV* · 3 min
-- 28 Feb · Day 59 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter V* · 6 min
+- 24 Feb · Day 55 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter I* · 3 min
+- 25 Feb · Day 56 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter II* · 4 min
+- 26 Feb · Day 57 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter III* · 4 min
+- 27 Feb · Day 58 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter IV* · 3 min
+- 28 Feb · Day 59 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter V* · 6 min
 
 ## March
 
-- 1 Mar · Day 60 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapters VI–VII* · 5 min
-- 2 Mar · Day 61 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter VIII* · 4 min
-- 3 Mar · Day 62 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapters IX–X* · 6 min
-- 4 Mar · Day 63 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XI* · 4 min
-- 5 Mar · Day 64 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XII* · 4 min
-- 6 Mar · Day 65 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XIII* · 5 min
-- 7 Mar · Day 66 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XIV* · 8 min
-- 8 Mar · Day 67 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XV* · 5 min
-- 9 Mar · Day 68 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XVI* · 3 min
-- 10 Mar · Day 69 · St Ambrose of Milan, *Concerning Repentance, Book I, Chapter XVII – Book II, Chapter I* · 6 min
-- 11 Mar · Day 70 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter II* · 5 min
-- 12 Mar · Day 71 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter III* · 4 min
-- 13 Mar · Day 72 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter IV* · 6 min
-- 14 Mar · Day 73 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter V* · 6 min
-- 15 Mar · Day 74 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter VI* · 6 min
-- 16 Mar · Day 75 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter VII* · 8 min
-- 17 Mar · Day 76 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter VIII* · 8 min
-- 18 Mar · Day 77 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter IX* · 4 min
-- 19 Mar · Day 78 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter X* · 4 min
-- 20 Mar · Day 79 · St Ambrose of Milan, *Concerning Repentance, Book II, Chapter XI* · 5 min
+- 1 Mar · Day 60 · St Ambrose of Milan, *Concerning Repentance, Book I, chapters VI–VII* · 5 min
+- 2 Mar · Day 61 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter VIII* · 4 min
+- 3 Mar · Day 62 · St Ambrose of Milan, *Concerning Repentance, Book I, chapters IX–X* · 6 min
+- 4 Mar · Day 63 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XI* · 4 min
+- 5 Mar · Day 64 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XII* · 4 min
+- 6 Mar · Day 65 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XIII* · 5 min
+- 7 Mar · Day 66 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XIV* · 8 min
+- 8 Mar · Day 67 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XV* · 5 min
+- 9 Mar · Day 68 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XVI* · 3 min
+- 10 Mar · Day 69 · St Ambrose of Milan, *Concerning Repentance, Book I, chapter XVII – Book II, chapter I* · 6 min
+- 11 Mar · Day 70 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter II* · 5 min
+- 12 Mar · Day 71 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter III* · 4 min
+- 13 Mar · Day 72 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter IV* · 6 min
+- 14 Mar · Day 73 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter V* · 6 min
+- 15 Mar · Day 74 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter VI* · 6 min
+- 16 Mar · Day 75 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter VII* · 8 min
+- 17 Mar · Day 76 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter VIII* · 8 min
+- 18 Mar · Day 77 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter IX* · 4 min
+- 19 Mar · Day 78 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter X* · 4 min
+- 20 Mar · Day 79 · St Ambrose of Milan, *Concerning Repentance, Book II, chapter XI* · 5 min
 - 21 Mar · Day 80 — **Palm Sunday** · St Leo the Great, *On the Passion, III* · 8 min
 - 22 Mar · Day 81 — **Monday of Holy Week** · St Leo the Great, *On the Passion, VII* · 10 min
 - 23 Mar · Day 82 — **Tuesday of Holy Week** · St Leo the Great, *On the Passion, XI* · 7 min
-- 24 Mar · Day 83 — **Wednesday of Holy Week** · St Leo the Great, *On the Lord's Passion IV* · 7 min
+- 24 Mar · Day 83 — **Wednesday of Holy Week** · St Leo the Great, *On the Passion, IV* · 7 min
 - 25 Mar · Day 84 — **Holy Thursday** · St Leo the Great, *On the Passion, VIII* · 11 min
 - 26 Mar · Day 85 — **Good Friday** · St Leo the Great, *On the Passion, XII* · 9 min
 - 27 Mar · Day 86 — **Holy Saturday** · St Leo the Great, *On the Lord's Resurrection, I* · 9 min
@@ -157,12 +157,12 @@ Feasts are in bold.
 - 2 Apr · Day 92 · St Cyril of Jerusalem, *Lectures on the Mysteries, V, On the Liturgy (part 1 of 2)* · 6 min
 - 3 Apr · Day 93 · St Cyril of Jerusalem, *Lectures on the Mysteries, V, On the Liturgy (part 2 of 2)* · 6 min
 - 4 Apr · Day 94 — **Second Sunday of Easter** · St Gregory Nazianzen, *Oration I, On Easter* · 6 min
-- 5 Apr · Day 95 · St Ambrose of Milan, *On the Mysteries, Chapters I–II* · 3 min
-- 6 Apr · Day 96 · St Ambrose of Milan, *On the Mysteries, Chapter III* · 6 min
-- 7 Apr · Day 97 · St Ambrose of Milan, *On the Mysteries, Chapters IV–V* · 7 min
-- 8 Apr · Day 98 · St Ambrose of Milan, *On the Mysteries, Chapters VI–VII* · 7 min
-- 9 Apr · Day 99 · St Ambrose of Milan, *On the Mysteries, Chapter VIII* · 5 min
-- 10 Apr · Day 100 · St Ambrose of Milan, *On the Mysteries, Chapter IX* · 8 min
+- 5 Apr · Day 95 · St Ambrose of Milan, *On the Mysteries, chapters I–II* · 3 min
+- 6 Apr · Day 96 · St Ambrose of Milan, *On the Mysteries, chapter III* · 6 min
+- 7 Apr · Day 97 · St Ambrose of Milan, *On the Mysteries, chapters IV–V* · 7 min
+- 8 Apr · Day 98 · St Ambrose of Milan, *On the Mysteries, chapters VI–VII* · 7 min
+- 9 Apr · Day 99 · St Ambrose of Milan, *On the Mysteries, chapter VIII* · 5 min
+- 10 Apr · Day 100 · St Ambrose of Milan, *On the Mysteries, chapter IX* · 8 min
 - 11 Apr · Day 101 · St Augustine of Hippo, *Homilies on the First Epistle of John, Prologue – Homily I (part 1 of 4)* · 10 min
 - 12 Apr · Day 102 · St Augustine of Hippo, *Homilies on the First Epistle of John, Homily I (part 2 of 4)* · 9 min
 - 13 Apr · Day 103 · St Augustine of Hippo, *Homilies on the First Epistle of John, Homily I (part 3 of 4)* · 8 min
@@ -201,8 +201,8 @@ Feasts are in bold.
 - 13 May · Day 133 · St Augustine of Hippo, *Homilies on the First Epistle of John, Homily X (part 1 of 3)* · 11 min
 - 14 May · Day 134 · St Augustine of Hippo, *Homilies on the First Epistle of John, Homily X (part 2 of 3)* · 9 min
 - 15 May · Day 135 · St Augustine of Hippo, *Homilies on the First Epistle of John, Homily X (part 3 of 3)* · 9 min
-- 16 May · Day 136 — **Pentecost** · St Leo the Great, *On Whitsuntide, I* · 8 min
-- 17 May · Day 137 · St Leo the Great, *On Whitsuntide, III* · 8 min
+- 16 May · Day 136 — **Pentecost** · St Leo the Great, *On Pentecost (Whitsuntide), I* · 8 min
+- 17 May · Day 137 · St Leo the Great, *On Pentecost (Whitsuntide), III* · 8 min
 - 18 May · Day 138 · St Gregory Nazianzen, *Oration XLI, On Pentecost (part 1 of 4)* · 7 min
 - 19 May · Day 139 · St Gregory Nazianzen, *Oration XLI, On Pentecost (part 2 of 4)* · 7 min
 - 20 May · Day 140 · St Gregory Nazianzen, *Oration XLI, On Pentecost (part 3 of 4)* · 8 min
@@ -221,33 +221,33 @@ Feasts are in bold.
 ## June
 
 - 1 Jun · Day 152 · St Cyril of Jerusalem, *Catechetical Lectures, Lecture XVII, On the Holy Ghost (part 6 of 6)* · 8 min
-- 2 Jun · Day 153 · St Athanasius, *Life of St Antony, Preface – Birth and beginnings of Antony* · 4 min
-- 3 Jun · Day 154 · St Athanasius, *Life of St Antony, His early ascetic life* · 3 min
-- 4 Jun · Day 155 · St Athanasius, *Life of St Antony, Early conflicts with the devil* · 4 min
-- 5 Jun · Day 156 · St Athanasius, *Life of St Antony, Details of his life at this time* · 3 min
-- 6 Jun · Day 157 · St Athanasius, *Life of St Antony, His life in the tombs, and combats with demons there – He goes to the desert and overcomes temptations on the way* · 5 min
-- 7 Jun · Day 158 · St Athanasius, *Life of St Antony, How Antony took up his abode in a ruined fort across the Nile, and… – How he left the fort, and how monasticism began to flourish in Egypt.…* · 5 min
-- 8 Jun · Day 159 · St Athanasius, *Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 1 of 6)* · 7 min
-- 9 Jun · Day 160 · St Athanasius, *Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 2 of 6)* · 5 min
-- 10 Jun · Day 161 · St Athanasius, *Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 3 of 6)* · 6 min
-- 11 Jun · Day 162 · St Athanasius, *Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 4 of 6)* · 6 min
-- 12 Jun · Day 163 · St Athanasius, *Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 5 of 6)* · 6 min
-- 13 Jun · Day 164 · St Athanasius, *Life of St Antony, His address to monks, rendered from Coptic, exhorting them to… (part 6 of 6)* · 5 min
-- 14 Jun · Day 165 · St Athanasius, *Life of St Antony, The growth of the monastic life at this time – How he lived at this time* · 5 min
-- 15 Jun · Day 166 · St Athanasius, *Life of St Antony, How he delivered a woman from an evil spirit – How at this time he betook himself to his 'inner mountain.'* · 4 min
-- 16 Jun · Day 167 · St Athanasius, *Life of St Antony, How he there combated the demons – Of the miraculous spring, and how he edified the monks of the 'outer'…* · 4 min
-- 17 Jun · Day 168 · St Athanasius, *Life of St Antony, How humanely he counselled those who resorted to him* · 4 min
-- 18 Jun · Day 169 · St Athanasius, *Life of St Antony, Of the case of Fronto, healed by faith and prayer – Of the two brethren, and how one perished of thirst* · 3 min
-- 19 Jun · Day 170 · St Athanasius, *Life of St Antony, Of the death of Amun, and Antony's vision thereof – Of Count Archelaus and the virgin Polycration* · 4 min
-- 20 Jun · Day 171 · St Athanasius, *Life of St Antony, Strange tales of the casting out of demons – Of Antony's vision concerning the forgiveness of his sins* · 3 min
-- 21 Jun · Day 172 · St Athanasius, *Life of St Antony, Of the passage of souls, and how some were hindered of Satan – How Antony reverenced all ordained persons* · 3 min
-- 22 Jun · Day 173 · St Athanasius, *Life of St Antony, How he rejected the schism of Meletius and the heresies of Manes and… – How he visited Alexandria, and healed and converted many, and how…* · 3 min
-- 23 Jun · Day 174 · St Athanasius, *Life of St Antony, How he reasoned with divers Greeks and philosophers at the 'outer'…* · 8 min
-- 24 Jun · Day 175 · St Athanasius, *Life of St Antony, How he confuted the philosophers by healing certain vexed with demons – How the Emperors wrote to Antony, and of his answer* · 3 min
-- 25 Jun · Day 176 · St Athanasius, *Life of St Antony, How he saw in a vision the present doings of the Arians – That his healings were done by Christ alone, through prayer* · 4 min
-- 26 Jun · Day 177 · St Athanasius, *Life of St Antony, How wisely he answered a certain duke – Of his discernment, and how he was a counsellor to all* · 4 min
-- 27 Jun · Day 178 · St Athanasius, *Life of St Antony, How, when now 105 years old, he counselled the monks, and gave advice… – Of his sickness and his last will* · 5 min
-- 28 Jun · Day 179 · St Athanasius, *Life of St Antony, Of Antony's death – The end* · 3 min
+- 2 Jun · Day 153 · St Athanasius, *Life of St Antony, part 1 of 27* · 4 min
+- 3 Jun · Day 154 · St Athanasius, *Life of St Antony, part 2 of 27* · 3 min
+- 4 Jun · Day 155 · St Athanasius, *Life of St Antony, part 3 of 27* · 4 min
+- 5 Jun · Day 156 · St Athanasius, *Life of St Antony, part 4 of 27* · 3 min
+- 6 Jun · Day 157 · St Athanasius, *Life of St Antony, part 5 of 27* · 5 min
+- 7 Jun · Day 158 · St Athanasius, *Life of St Antony, part 6 of 27* · 5 min
+- 8 Jun · Day 159 · St Athanasius, *Life of St Antony, part 7 of 27* · 7 min
+- 9 Jun · Day 160 · St Athanasius, *Life of St Antony, part 8 of 27* · 5 min
+- 10 Jun · Day 161 · St Athanasius, *Life of St Antony, part 9 of 27* · 6 min
+- 11 Jun · Day 162 · St Athanasius, *Life of St Antony, part 10 of 27* · 6 min
+- 12 Jun · Day 163 · St Athanasius, *Life of St Antony, part 11 of 27* · 6 min
+- 13 Jun · Day 164 · St Athanasius, *Life of St Antony, part 12 of 27* · 5 min
+- 14 Jun · Day 165 · St Athanasius, *Life of St Antony, part 13 of 27* · 5 min
+- 15 Jun · Day 166 · St Athanasius, *Life of St Antony, part 14 of 27* · 4 min
+- 16 Jun · Day 167 · St Athanasius, *Life of St Antony, part 15 of 27* · 4 min
+- 17 Jun · Day 168 · St Athanasius, *Life of St Antony, part 16 of 27* · 4 min
+- 18 Jun · Day 169 · St Athanasius, *Life of St Antony, part 17 of 27* · 3 min
+- 19 Jun · Day 170 · St Athanasius, *Life of St Antony, part 18 of 27* · 4 min
+- 20 Jun · Day 171 · St Athanasius, *Life of St Antony, part 19 of 27* · 3 min
+- 21 Jun · Day 172 · St Athanasius, *Life of St Antony, part 20 of 27* · 3 min
+- 22 Jun · Day 173 · St Athanasius, *Life of St Antony, part 21 of 27* · 3 min
+- 23 Jun · Day 174 · St Athanasius, *Life of St Antony, part 22 of 27* · 8 min
+- 24 Jun · Day 175 · St Athanasius, *Life of St Antony, part 23 of 27* · 3 min
+- 25 Jun · Day 176 · St Athanasius, *Life of St Antony, part 24 of 27* · 4 min
+- 26 Jun · Day 177 · St Athanasius, *Life of St Antony, part 25 of 27* · 4 min
+- 27 Jun · Day 178 · St Athanasius, *Life of St Antony, part 26 of 27* · 5 min
+- 28 Jun · Day 179 · St Athanasius, *Life of St Antony, part 27 of 27* · 3 min
 - 29 Jun · Day 180 — **Ss Peter and Paul** · St Leo the Great, *On the Feast of the Apostles Peter and Paul* · 7 min
 - 30 Jun · Day 181 · St Augustine of Hippo, *Confessions, Book I (part 1 of 7)* · 5 min
 
@@ -296,7 +296,7 @@ Feasts are in bold.
 - 7 Aug · Day 219 · St Augustine of Hippo, *Confessions, Book VII (part 3 of 7)* · 6 min
 - 8 Aug · Day 220 · St Augustine of Hippo, *Confessions, Book VII (part 4 of 7)* · 8 min
 - 9 Aug · Day 221 · St Augustine of Hippo, *Confessions, Book VII (part 5 of 7)* · 6 min
-- 10 Aug · Day 222 — **St Lawrence** · St Leo the Great, *On the Feast of S. Laurence the Martyr* · 5 min
+- 10 Aug · Day 222 — **St Lawrence** · St Leo the Great, *On the Feast of St Lawrence the Martyr* · 5 min
 - 11 Aug · Day 223 · St Augustine of Hippo, *Confessions, Book VII (part 6 of 7)* · 6 min
 - 12 Aug · Day 224 · St Augustine of Hippo, *Confessions, Book VII (part 7 of 7)* · 7 min
 - 13 Aug · Day 225 · St Augustine of Hippo, *Confessions, Book VIII (part 1 of 7)* · 5 min
@@ -337,29 +337,29 @@ Feasts are in bold.
 - 14 Sep · Day 257 · St Augustine of Hippo, *Confessions, Book X (part 18 of 18)* · 4 min
 - 15 Sep · Day 258 — **Ember Wednesday** · St Leo the Great, *On the Fast of the Seventh Month, III* · 6 min
 - 16 Sep · Day 259 — **Ss Cornelius and Cyprian** · St Cyprian of Carthage, *On the Lord's Prayer (part 1 of 5)* · 9 min
-- 17 Sep · Day 260 — **Ember Friday** · St Leo the Great, *On the Fast of Seventh Month, V* · 7 min
+- 17 Sep · Day 260 — **Ember Friday** · St Leo the Great, *On the Fast of the Seventh Month, V* · 7 min
 - 18 Sep · Day 261 — **Ember Saturday** · St Leo the Great, *On the Fast of the Seventh Month, VI* · 4 min
 - 19 Sep · Day 262 · St Cyprian of Carthage, *On the Lord's Prayer (part 2 of 5)* · 9 min
 - 20 Sep · Day 263 · St Cyprian of Carthage, *On the Lord's Prayer (part 3 of 5)* · 9 min
 - 21 Sep · Day 264 · St Cyprian of Carthage, *On the Lord's Prayer (part 4 of 5)* · 10 min
 - 22 Sep · Day 265 · St Cyprian of Carthage, *On the Lord's Prayer (part 5 of 5)* · 9 min
-- 23 Sep · Day 266 · St Vincent of Lérins, *The Commonitory, Chapters I–III* · 7 min
-- 24 Sep · Day 267 · St Vincent of Lérins, *The Commonitory, Chapters IV–V* · 6 min
-- 25 Sep · Day 268 · St Vincent of Lérins, *The Commonitory, Chapters VI–VII* · 7 min
-- 26 Sep · Day 269 · St Vincent of Lérins, *The Commonitory, Chapters VIII–X* · 7 min
-- 27 Sep · Day 270 · St Vincent of Lérins, *The Commonitory, Chapters XI–XII* · 8 min
-- 28 Sep · Day 271 · St Vincent of Lérins, *The Commonitory, Chapters XIII–XIV* · 8 min
-- 29 Sep · Day 272 · St Vincent of Lérins, *The Commonitory, Chapters XV–XVI* · 5 min
-- 30 Sep · Day 273 · St Vincent of Lérins, *The Commonitory, Chapters XVII–XVIII* · 8 min
+- 23 Sep · Day 266 · St Vincent of Lérins, *The Commonitory, chapters I–III* · 7 min
+- 24 Sep · Day 267 · St Vincent of Lérins, *The Commonitory, chapters IV–V* · 6 min
+- 25 Sep · Day 268 · St Vincent of Lérins, *The Commonitory, chapters VI–VII* · 7 min
+- 26 Sep · Day 269 · St Vincent of Lérins, *The Commonitory, chapters VIII–X* · 7 min
+- 27 Sep · Day 270 · St Vincent of Lérins, *The Commonitory, chapters XI–XII* · 8 min
+- 28 Sep · Day 271 · St Vincent of Lérins, *The Commonitory, chapters XIII–XIV* · 8 min
+- 29 Sep · Day 272 · St Vincent of Lérins, *The Commonitory, chapters XV–XVI* · 5 min
+- 30 Sep · Day 273 · St Vincent of Lérins, *The Commonitory, chapters XVII–XVIII* · 8 min
 
 ## October
 
-- 1 Oct · Day 274 · St Vincent of Lérins, *The Commonitory, Chapters XIX–XXII* · 8 min
-- 2 Oct · Day 275 · St Vincent of Lérins, *The Commonitory, Chapters XXIII–XXIV* · 9 min
-- 3 Oct · Day 276 · St Vincent of Lérins, *The Commonitory, Chapters XXV–XXVII* · 8 min
-- 4 Oct · Day 277 · St Vincent of Lérins, *The Commonitory, Chapters XXVIII–XXIX* · 9 min
-- 5 Oct · Day 278 · St Vincent of Lérins, *The Commonitory, Chapters XXX–XXXII* · 6 min
-- 6 Oct · Day 279 · St Vincent of Lérins, *The Commonitory, Chapter XXXIII* · 8 min
+- 1 Oct · Day 274 · St Vincent of Lérins, *The Commonitory, chapters XIX–XXII* · 8 min
+- 2 Oct · Day 275 · St Vincent of Lérins, *The Commonitory, chapters XXIII–XXIV* · 9 min
+- 3 Oct · Day 276 · St Vincent of Lérins, *The Commonitory, chapters XXV–XXVII* · 8 min
+- 4 Oct · Day 277 · St Vincent of Lérins, *The Commonitory, chapters XXVIII–XXIX* · 9 min
+- 5 Oct · Day 278 · St Vincent of Lérins, *The Commonitory, chapters XXX–XXXII* · 6 min
+- 6 Oct · Day 279 · St Vincent of Lérins, *The Commonitory, chapter XXXIII* · 8 min
 - 7 Oct · Day 280 · St Augustine of Hippo, *The Enchiridion, chapters 1–7* · 6 min
 - 8 Oct · Day 281 · St Augustine of Hippo, *The Enchiridion, chapters 8–11* · 6 min
 - 9 Oct · Day 282 · St Augustine of Hippo, *The Enchiridion, chapters 12–15* · 7 min
@@ -403,7 +403,7 @@ Feasts are in bold.
 - 13 Nov · Day 317 · St Augustine of Hippo, *On Care to Be Had for the Dead, chapters 17–18* · 4 min
 - 14 Nov · Day 318 · St Augustine of Hippo, *On Care to Be Had for the Dead, chapters 19–20* · 4 min
 - 15 Nov · Day 319 · St Augustine of Hippo, *On Care to Be Had for the Dead, chapters 21–22* · 6 min
-- 16 Nov · Day 320 · St Augustine of Hippo; St Cyprian of Carthage, *On Care to Be Had for the Dead, chapter 23; On the Mortality (part 1 of 6)* · 5 min
+- 16 Nov · Day 320 · St Augustine of Hippo and St Cyprian of Carthage, *On Care to Be Had for the Dead, chapter 23; On the Mortality (part 1 of 6)* · 5 min
 - 17 Nov · Day 321 · St Cyprian of Carthage, *On the Mortality (part 2 of 6)* · 5 min
 - 18 Nov · Day 322 · St Cyprian of Carthage, *On the Mortality (part 3 of 6)* · 5 min
 - 19 Nov · Day 323 · St Cyprian of Carthage, *On the Mortality (part 4 of 6)* · 5 min
@@ -435,10 +435,10 @@ Feasts are in bold.
 - 12 Dec · Day 346 · St Thomas Aquinas, *Catena Aurea, on Luke 1:65–71* · 5 min
 - 13 Dec · Day 347 · St Thomas Aquinas, *Catena Aurea, on Luke 1:72–76* · 7 min
 - 14 Dec · Day 348 · St Thomas Aquinas, *Catena Aurea, on Luke 1:77–80* · 6 min
-- 15 Dec · Day 349 — **Ember Wednesday of Advent** · St Leo the Great, *On the Fast of The Tenth Month, I* · 8 min
+- 15 Dec · Day 349 — **Ember Wednesday of Advent** · St Leo the Great, *On the Fast of the Tenth Month, I* · 8 min
 - 16 Dec · Day 350 · St Leo the Great, *On the Fast of the Tenth Month* · 10 min
 - 17 Dec · Day 351 · St Leo the Great, *On the Fast of the Tenth Month, VI* · 6 min
-- 18 Dec · Day 352 · St Leo the Great, *On the Fast of the Ten Month, VIII* · 6 min
+- 18 Dec · Day 352 · St Leo the Great, *On the Fast of the Tenth Month, VIII* · 6 min
 - 19 Dec · Day 353 · St Thomas Aquinas, *Catena Aurea, on Matthew 1:18* · 11 min
 - 20 Dec · Day 354 · St Thomas Aquinas, *Catena Aurea, on Matthew 1:19* · 5 min
 - 21 Dec · Day 355 · St Thomas Aquinas, *Catena Aurea, on Matthew 1:20* · 8 min
@@ -451,4 +451,4 @@ Feasts are in bold.
 - 28 Dec · Day 362 · St Leo the Great, *On the Feast of the Nativity, IV* · 10 min
 - 29 Dec · Day 363 · St Leo the Great, *On the Feast of the Nativity, VI* · 10 min
 - 30 Dec · Day 364 · St Leo the Great, *On the Feast of the Nativity, VII* · 10 min
-- 31 Dec · Day 365 · St Leo the Great, *On the Festival of the Nativity, VIII* · 10 min
+- 31 Dec · Day 365 · St Leo the Great, *On the Feast of the Nativity, VIII* · 10 min

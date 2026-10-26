@@ -48,6 +48,14 @@ const CYRIL = "cyril-jerusalem.the-catechetical-lectures-of-s-cyril"
 const NAZIANZEN = "gregory-nazianzen.select-orations-of-saint-gregory-nazianzen"
 const CYPRIAN = "cyprian.the-treatises-of-cyprian"
 
+/** The library's section titles for St Leo, with the editor's slips corrected for display. */
+const LEO_TITLES = {
+  176: "On the Fast of the Tenth Month, I", 179: "On the Fast of the Tenth Month, VIII",
+  186: "On the Feast of the Nativity, VIII", 198: "On the Passion, IV", 209: "On Pentecost (Whitsuntide), I",
+  210: "On Pentecost (Whitsuntide), III", 214: "On the Feast of St Lawrence the Martyr",
+  216: "On the Fast of the Seventh Month, V",
+}
+
 const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i)
 
 /**
@@ -57,9 +65,9 @@ const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from
  */
 const STREAMS = [
   { days: "1-7", parts: [
-    { work: "apostolic-fathers.the-teaching-of-the-twelve-apostles", author: "The Didache", label: "The Teaching of the Twelve Apostles", sections: range(0, 16) },
+    { work: "apostolic-fathers.the-teaching-of-the-twelve-apostles", author: "The Didache", label: "The Didache", sections: range(0, 16) },
     { work: "apostolic-fathers.epistle-to-diognetus", author: "The Letter to Diognetus", label: "The Letter to Diognetus", sections: range(0, 12) },
-    { work: "apostolic-fathers.epistle-to-the-philippians", author: "St Polycarp", label: "Letter to the Philippians", sections: range(0, 14), titles: { 0: "Greeting" } },
+    { work: "apostolic-fathers.epistle-to-the-philippians", author: "St Polycarp", label: "Letter to the Philippians", mixedLabel: "St Polycarp, Letter to the Philippians", sections: range(0, 14), titles: { 0: "Greeting" } },
   ] },
   { days: "8-11", parts: [{ work: LEO, sections: range(187, 190) }] },
   { days: "12-40", parts: [{ work: "athanasius.the-incarnation-of-the-word", label: "On the Incarnation", sections: range(0, 56), chapterOffset: 1 }] },
@@ -96,7 +104,8 @@ const STREAMS = [
   { days: "138-141", parts: [{ work: NAZIANZEN, label: "Oration XLI, On Pentecost", sections: [20] }] },
   { days: "142-152", parts: [{ work: CYRIL, label: "Catechetical Lectures", sections: [27, 28],
     titles: { 27: "Lecture XVI, On the Holy Ghost", 28: "Lecture XVII, On the Holy Ghost" } }] },
-  { days: "153-179", parts: [{ work: "athanasius.life-of-antony-vita-antoni", label: "Life of St Antony", sections: range(1, 45), titles: { 1: "Preface" } }] },
+  // The sections carry the translator's long summaries as titles, so the days are numbered instead.
+  { days: "153-179", parts: [{ work: "athanasius.life-of-antony-vita-antoni", label: "Life of St Antony", sections: range(1, 45), numberDays: true }] },
   { days: "180", parts: [{ work: LEO, sections: [212] }] },
   // Ends on 27 August, St Monica, with Book IX, where she dies.
   { days: "181-221,223-239", parts: [{ work: "augustine.the-confessions", label: "Confessions", sections: range(0, 8) }] },
@@ -211,7 +220,7 @@ function main() {
     const cuts = split(units, days.length, stream.days)
     cuts.forEach(([from, to], k) => {
       const slice = units.slice(from, to)
-      planned.set(days[k], { slice })
+      planned.set(days[k], { slice, index: k, count: days.length })
     })
   }
 
@@ -280,7 +289,7 @@ function split(units, n, label) {
   return cuts
 }
 
-function describe(day, { slice }, sectionDays) {
+function describe(day, { slice, index, count }, sectionDays) {
   const readings = []
   for (const u of slice) {
     const last = readings.at(-1)
@@ -293,15 +302,19 @@ function describe(day, { slice }, sectionDays) {
     groups.at(-1).units.push(u)
   }
   const authors = [...new Set(groups.map((g) => g.part.author ?? g.units[0].collection.author))]
+  const apostolic = groups.every((g) => g.units[0].work.id.startsWith("apostolic-fathers."))
+  const author = authors.length > 1 && apostolic ? "The Apostolic Fathers" : authors.join(" and ")
+  const context = { day, sectionDays, alone: groups.length === 1, index, count }
   const words = slice.reduce((a, u) => a + u.words, 0)
   return {
     day,
     date: dateOfDay(day),
     season: seasonOf(day),
     ...(FEASTS[day] ? { feast: FEASTS[day] } : {}),
-    author: authors.join("; "),
+    author,
     work: [...new Set(groups.map((g) => g.part.label ?? "Sermons"))].join("; "),
-    title: groups.map((g) => groupTitle(g, day, sectionDays)).join("; "),
+    // "Book I, chapter V": a chapter after a comma is lower case; a title that starts with it keeps its capital.
+    title: groups.map((g) => groupTitle(g, context)).join("; ").replace(/, Chapter/g, ", chapter"),
     words,
     minutes: Math.max(1, Math.round(words / 200)),
     readings,
@@ -310,6 +323,7 @@ function describe(day, { slice }, sectionDays) {
 
 function sectionName(part, u) {
   if (part.titles?.[u.section]) return part.titles[u.section]
+  if (part.work === LEO && LEO_TITLES[u.section]) return LEO_TITLES[u.section]
   if (part.chapterOffset !== undefined) return `${u.section + part.chapterOffset}`
   return [u.book, shortTitle(u.title)].filter(Boolean).join(", ")
 }
@@ -320,8 +334,10 @@ function partOf(u, day, sectionDays) {
   return days.length > 1 ? ` (part ${days.indexOf(day) + 1} of ${days.length})` : ""
 }
 
-function groupTitle({ part, units }, day, sectionDays) {
-  const label = part.label ?? null
+function groupTitle({ part, units }, { day, sectionDays, alone, index, count }) {
+  // The author line already names a work like the Didache; alone it needs only the chapters.
+  const label = alone && part.author && part.label === part.author ? null : (alone ? part.label : part.mixedLabel ?? part.label) ?? null
+  if (part.numberDays) return `${label}, part ${index + 1} of ${count}`
   if (part.catena) {
     const ref = (t) => t.match(/^(\w+) (\d+):(\d+)(?:–(\d+))?/)
     const a = ref(units[0].title), b = ref(units.at(-1).title)
