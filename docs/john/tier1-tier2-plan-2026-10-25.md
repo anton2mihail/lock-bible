@@ -44,7 +44,7 @@ be live by 17 Dec. Ash Wednesday is 10 Feb 2027 and Easter 28 Mar 2027.
 
 **26 Oct 2026:** Apple rejected 2.2.0 (Guideline 2.1): the app has book content and China mainland needs an
 Internet Publishing License. Anton chose to leave China mainland: it was removed from App Availability on 26 Oct
-(174 countries or regions). The 2.2.0 submission (version, In-App Event, 5 product pages) waits for resubmission.
+(174 countries or regions). The rejected version was renamed 2.2.1 with build 32 (What's New updated, "7 novenas" fixed) and resubmitted on 26 Oct with the In-App Event and the 5 product pages; 2.2.0 (31) will never ship. Android 1.2.1 (7) follows once 1.2.0 is approved.
 
 ## Tier 1 — what is left
 
