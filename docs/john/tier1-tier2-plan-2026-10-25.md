@@ -42,6 +42,10 @@ Target: about 65–75 MB in the app, down from 147 MB.
 Advent starts 29 Nov. Luke 1 is the Gospel from 17 to 24 Dec and John 1 on Christmas Day, so Luke and John must
 be live by 17 Dec. Ash Wednesday is 10 Feb 2027 and Easter 28 Mar 2027.
 
+**26 Oct 2026:** Apple rejected 2.2.0 (Guideline 2.1): the app has book content and China mainland needs an
+Internet Publishing License. Anton chose to leave China mainland: it was removed from App Availability on 26 Oct
+(174 countries or regions). The 2.2.0 submission (version, In-App Event, 5 product pages) waits for resubmission.
+
 ## Tier 1 — what is left
 
 ### 1. Catena Aurea on Luke and John (2.2.1)
