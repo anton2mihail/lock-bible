@@ -1,5 +1,9 @@
 # Lent, Holy Week, the Little Office and "A Year with the Fathers" — detailed plan (25 October 2026)
 
+**Status 27 Oct 2026:** §1 Lent, §2 Holy Week and §4 the year plan are built on iOS and Android (branch
+`release/2.3.0`); see `release-2.3.0.md`. Readings for 2028 wait for the source (it has 2025–2027 only). The Little
+Office (§3) is still planned for 2.5.0.
+
 Four features for John 1:1 (iOS and Android). Rules that apply to all of them:
 
 - **Content rule:** every prayer and religious text is approved by the Church and written by real people (a
