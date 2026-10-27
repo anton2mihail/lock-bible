@@ -99,6 +99,8 @@ private val tabs=listOf(JohnTab("Today",Icons.Outlined.WbSunny),JohnTab("Read",I
         val wide=maxWidth>=840.dp
         Row(Modifier.fillMaxSize()) {
             if(wide && !immersive) NavigationRail(containerColor=c.card) {
+                // 1.3.0, as the iOS 2.1.1 iPad sidebar: the app's name at the top.
+                Text("John 1:1",fontFamily=Lora,fontSize=20.sp,color=c.text,modifier=Modifier.padding(top=20.dp))
                 Spacer(Modifier.height(20.dp))
                 tabs.forEachIndexed { index,tab -> NavigationRailItem(selected=selected==index,onClick={if(index==selected)backToRoot(index,paths) { paths=it } else selected=index},icon={Icon(tab.icon,tab.title)},label={Text(tab.title,fontFamily=SpaceGrotesk)}) }
             }
@@ -117,6 +119,9 @@ private val tabs=listOf(JohnTab("Today",Icons.Outlined.WbSunny),JohnTab("Read",I
                             route.startsWith("share-card/") -> ScriptureCardScreen(route,repo,store,back)
                             route=="verse" -> VerseScreen(repo,store,navigate,back)
                             route=="widget-help" -> WidgetHelpScreen(back)
+                            route=="settings-verse" -> SettingsVerseScreen(store,back)
+                            route=="settings-read-aloud" -> SettingsReadAloudScreen(store,back)
+                            route=="settings-about" -> SettingsAboutScreen(back)
                             else -> DevotionalScreen(route,repo,store,navigate,back)
                         }
                     } else when(selected) {

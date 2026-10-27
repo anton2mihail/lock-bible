@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -85,6 +86,8 @@ val SpaceGrotesk = FontFamily(Font(R.font.space_grotesk_regular),Font(R.font.spa
         HorizontalDivider(color=c.separator,thickness=0.5.dp)
     }
 }
+/** The chevron at the end of a row that opens another screen (as iOS RowChevron, 2.1.1). */
+@Composable fun RowChevron() = Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight,contentDescription=null,tint=LocalJohnColors.current.tint,modifier=Modifier.size(24.dp))
 @Composable fun JohnButton(text:String,onClick:()->Unit) {
     val c=LocalJohnColors.current
     OutlinedButton(onClick=onClick,modifier=Modifier.fillMaxWidth().heightIn(min=56.dp),shape=RoundedCornerShape(4.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.border),colors=ButtonDefaults.outlinedButtonColors(contentColor=c.text,containerColor=c.card)) {

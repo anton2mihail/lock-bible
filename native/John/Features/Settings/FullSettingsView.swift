@@ -9,7 +9,8 @@ enum SettingsPage: String, Hashable, Sendable {
 
     var title: String {
         switch self {
-        case .verse: "Verse & Lock Screen"
+        // 2.3.0: the iPad app on a Mac has no Lock Screen.
+        case .verse: ProcessInfo.processInfo.isiOSAppOnMac ? "Verse of the Moment" : "Verse & Lock Screen"
         case .progress: "Reading Progress"
         case .readAloud: "Read Aloud"
         case .about: "About John 1:1"
@@ -125,7 +126,7 @@ struct FullSettingsView: View {
         section("More") {
             Button { onOpenPage(.verse) } label: {
                 navigationRow(symbol: "lock.rectangle", title: SettingsPage.verse.title,
-                              detail: "Verse pool, how often it changes, and widgets")
+                              detail: ProcessInfo.processInfo.isiOSAppOnMac ? "Verse pool and how often it changes" : "Verse pool, how often it changes, and widgets")
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("settings-page-verse")
@@ -191,12 +192,12 @@ struct FullSettingsView: View {
                 .font(JohnTypography.sans(12)).foregroundStyle(colors.textDim).padding(.bottom, 12)
         }
 
-        section("Add a Lock Screen widget") {
+        if !ProcessInfo.processInfo.isiOSAppOnMac { section("Add a Lock Screen widget") {
             widgetStep(1, symbol: "hand.tap", "Touch and hold your Lock Screen, then tap Customize.")
             widgetStep(2, symbol: "rectangle.dashed", "Tap the box under the clock and choose John 1:1.")
             widgetStep(3, symbol: "text.quote", "Choose Daily Verse for rotating Scripture, or Daily Reading for today’s Gospel. You can add both. Verse Countdown shows the time to the next verse.")
             widgetStep(4, symbol: "rectangle.portrait", "Pick the wide size for full text, or the small size for a short view.")
-        }
+        } }
     }
 
     @ViewBuilder private var progressContent: some View {
