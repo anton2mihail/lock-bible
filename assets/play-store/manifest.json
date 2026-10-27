@@ -13,7 +13,7 @@
     },
     {
       "path": "docs/android-play/store-listing.md",
-      "sha256": "9436ffb3f935c8f8eae800bf7e8a23fea431207dbc377cf381bbdffd13eae38e"
+      "sha256": "e33f717c7b7fcaa7e58f1040fea68a10671bfc3c858a6963146d994a8d5d4dd9"
     }
   ],
   "outputs": [
@@ -29,58 +29,66 @@
     },
     {
       "path": "listing-en-US.json",
-      "bytes": 2866,
-      "sha256": "e01a9fa3867714a92c81dc71c65de20944271f74665ac5720f885b3e151195e6"
+      "bytes": 2592,
+      "sha256": "61677b551e5a67796e575b1d058975958de7ab597705473d49af6424edbd16ab"
     }
   ],
   "screenshots": [
     {
-      "path": "screenshots/01-reader-pages.png",
+      "path": "screenshots/01-today-fathers.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "a65045e869f6d1323286f4c18b2734c16422ee4bbda332123b23249091f92cd0"
+      "sha256": "96a56575567af41db39c59a69ac7fbed5038f221c1fd1ef8a69b8a9f36fffb9f"
     },
     {
-      "path": "screenshots/02-today.png",
+      "path": "screenshots/02-reader.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "dca2c9521538209c5d9f0620fe5fd7e14b73975aeee130bf0893dbf3bdff322c"
+      "sha256": "f0788c5d8e3f2650852938bf15e3051c0714d8d8fbb260e712ba8836078a2460"
     },
     {
-      "path": "screenshots/03-read.png",
+      "path": "screenshots/03-library.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "9e4fb97113380150f626a606491368a1514d25c4ea3f6112073d534d14b69d4b"
+      "sha256": "10edad2241ff514786485e195e200d3ee5a1d7b486aa8367340a1ab8d5ef9e06"
     },
     {
-      "path": "screenshots/04-prayer.png",
+      "path": "screenshots/04-rosary-3.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "b8fb8b24ece90189a36d7caf9b95760255ab64e2528befec96d2da2591db14c7"
+      "sha256": "60ccc6aaa49c30ad5c70485601d4fcccc8aad7a33327f3dc303016732e0f66c6"
     },
     {
-      "path": "screenshots/05-saved.png",
+      "path": "screenshots/05-advent-wreath.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "486f627023620639af3a6e2ce21941071a864d33ecd664e55f07ed8a75787136"
+      "sha256": "b9c66ed1c86faba7e4acda876626e64d99fcf9c1299f0c9db4c05da15ad613b0"
     },
     {
-      "path": "screenshots/06-settings.png",
+      "path": "screenshots/06-today.png",
       "size": [
         1080,
         1920
       ],
-      "sha256": "7900ddf09509ce21b399d3ea93113cdeb0855afa153d25d474955e77aa603f69"
+      "sha256": "906d6db9deb80af2218856f056597d69ffa0f49deff976f71965e1441234ec17"
+    },
+    {
+      "path": "screenshots/07-no-account.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "9760546edda008ddaa13ac81e07b7051e6dfd00d5650f1ca950c38664d7d392c"
     }
   ]
 }

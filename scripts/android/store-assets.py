@@ -49,7 +49,7 @@ def listing_fields() -> dict:
         **fields,
         "characterCounts": {key: len(value) for key, value in fields.items()},
         "settings": {"appType": "app", "category": "BOOKS_AND_REFERENCE", "free": True,
-                     "containsAds": False, "inAppPurchases": False,
+                     "containsAds": False, "inAppPurchases": True,
                      "supportEmail": "contact@north.boutique"},
     }
 

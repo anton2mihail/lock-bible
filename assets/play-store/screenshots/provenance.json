@@ -1,123 +1,81 @@
 {
-  "capture_date": "2026-10-16",
-  "capture_method": "Per-image methods recorded below",
+  "capture_date": "2026-10-27",
+  "capture_method": "adb exec-out screencap after deep links and taps, framed by marketing/frame-play.py",
   "device": {
-    "avd": "layr_api36",
-    "viewport": "wm size 1080x1920, wm density 420 (restored after the run to 1170x2532 and 480)",
-    "status_bar": "System UI demo mode: clock 09:41, battery 100%, Wi-Fi 4 bars, mobile hidden, notifications hidden (demo mode turned off after the run)",
+    "avd": "Pixel_8",
+    "size": "1080x2400",
+    "status_bar": "System UI demo mode: clock 09:41, battery 100%, Wi-Fi 4 bars, mobile hidden, notifications hidden",
     "appearance": "light",
-    "reader_mode": "pages",
+    "feature_date": "2026-12-05 (johnFeatureDate), library access purchased (johnFathersAccess)",
     "app_data": "cleared with pm clear before the run"
   },
+  "source": "debug build of release/2.2.1 at 8872664 (Android 1.2.1 code, no unreleased features)",
+  "apk_sha256": "c3cfa82681ccca18f9e805cab71955ba0ae8ad6e96ae00760f0d69f99943fda3",
   "artwork": "Only public-domain paintings (see assets/CREDITS.md). No generated artwork.",
+  "raw": "marketing/screenshots/raw-play-1.2",
   "screenshots": [
     {
-      "filename": "01-reader-pages.png",
-      "shows": "Bible reader in Pages mode (the default), first page of John 1, bars hidden",
-      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
-      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
-      "package": "com.john.bible",
-      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
-      "raw_sha256": "26c5718d10071fb7a3079b56e1bce9fbe80761f76fb1a019b0c43a0a7116b2b9",
-      "sha256": "a65045e869f6d1323286f4c18b2734c16422ee4bbda332123b23249091f92cd0",
-      "rgb_pixels_sha256": "2fd9581ec40b0f12246b0447e584db6cc97340096889e400f4520b62d73bfd44",
+      "filename": "01-today-fathers.png",
+      "shows": "Today, 5 Dec 2026: the Advent row and a Catena Aurea comment on the day's Gospel",
       "size": [
         1080,
         1920
       ],
-      "mode": "RGB",
-      "bytes": 190426,
-      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
+      "sha256": "96a56575567af41db39c59a69ac7fbed5038f221c1fd1ef8a69b8a9f36fffb9f"
     },
     {
-      "filename": "02-today.png",
-      "shows": "Today: date, daily readings card with Bloemaert's The Four Evangelists (public domain)",
-      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
-      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
-      "package": "com.john.bible",
-      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
-      "raw_sha256": "b48c7b996e9d6bcff2d7dc61e6938b5a147e86a23419192277028a08f45136cd",
-      "sha256": "dca2c9521538209c5d9f0620fe5fd7e14b73975aeee130bf0893dbf3bdff322c",
-      "rgb_pixels_sha256": "d87d4f73a0c0d84757cffb9941c3c05199ae8df9355fb9ba03a7e57bbe0f07db",
+      "filename": "02-reader.png",
+      "shows": "Bible reader, Pages mode, John 1 in the Douay-Rheims",
       "size": [
         1080,
         1920
       ],
-      "mode": "RGB",
-      "bytes": 840949,
-      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
+      "sha256": "f0788c5d8e3f2650852938bf15e3051c0714d8d8fbb260e712ba8836078a2460"
     },
     {
-      "filename": "03-read.png",
-      "shows": "Bible library: Continue reading, The Fathers and Doctors, Old Testament",
-      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
-      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
-      "package": "com.john.bible",
-      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
-      "raw_sha256": "57cac1b4c28937d9ec3835173950524071eec8a44dab04d02d41a449621f9a24",
-      "sha256": "9e4fb97113380150f626a606491368a1514d25c4ea3f6112073d534d14b69d4b",
-      "rgb_pixels_sha256": "3092071b88d48af174a7d228b561683e82a1cb571e746c2a7d4d2e5d76bdf4cc",
+      "filename": "03-library.png",
+      "shows": "The Fathers & Doctors library: 26 authors, 275 works",
       "size": [
         1080,
         1920
       ],
-      "mode": "RGB",
-      "bytes": 104973,
-      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
+      "sha256": "10edad2241ff514786485e195e200d3ee5a1d7b486aa8367340a1ab8d5ef9e06"
     },
     {
-      "filename": "04-prayer.png",
-      "shows": "Prayer library: Pray the Rosary card with Sassoferrato's The Virgin in Prayer (public domain)",
-      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
-      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
-      "package": "com.john.bible",
-      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
-      "raw_sha256": "35c55434dbc5e810b84405c8d2300ec43c0b9667de17df0ab94ff36645e471af",
-      "sha256": "b8fb8b24ece90189a36d7caf9b95760255ab64e2528befec96d2da2591db14c7",
-      "rgb_pixels_sha256": "fe580f5becd1b2ea0effa2c9ec8a066af21d86f7cf89b47b7e8ce076202f23b5",
+      "filename": "04-rosary-3.png",
+      "shows": "Rosary guide, Sorrowful Mysteries, first decade, with El Greco's Agony in the Garden",
       "size": [
         1080,
         1920
       ],
-      "mode": "RGB",
-      "bytes": 559346,
-      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
+      "sha256": "60ccc6aaa49c30ad5c70485601d4fcccc8aad7a33327f3dc303016732e0f66c6"
     },
     {
-      "filename": "05-saved.png",
-      "shows": "Saved: one John 1:1 bookmark made in the paged Reader",
-      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
-      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
-      "package": "com.john.bible",
-      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
-      "raw_sha256": "856df98b77dc8fa68ca84d0cb4174e6281cb93d55066393d341362431b5455db",
-      "sha256": "486f627023620639af3a6e2ce21941071a864d33ecd664e55f07ed8a75787136",
-      "rgb_pixels_sha256": "69f1e238c2ae7a5d553f0610fc683befa5e7c4e831bb94e13876557c87335676",
+      "filename": "05-advent-wreath.png",
+      "shows": "Advent page: Rorate caeli and the Advent wreath with the Collect of the first Sunday",
       "size": [
         1080,
         1920
       ],
-      "mode": "RGB",
-      "bytes": 141626,
-      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
+      "sha256": "b9c66ed1c86faba7e4acda876626e64d99fcf9c1299f0c9db4c05da15ad613b0"
     },
     {
-      "filename": "06-settings.png",
-      "shows": "Settings: Reading mode Pages/Scroll, text size, line spacing, typeface",
-      "source": "debug build of the app (com.john.bible) from commit 712f174 plus the capture-test change, on the existing layr_api36 emulator (API 36)",
-      "capture_method": "StoreCaptureTest (instrumentation arg storeCaptures=true): Compose test navigation, UiAutomation.takeScreenshot",
-      "package": "com.john.bible",
-      "apk_sha256": "fa3a49da3b78e7cd7843edcdb0b1adaa38a0f07e09e2fab504053ab917a8f1ff",
-      "raw_sha256": "1d113aaf28e4dcdde57a2866f3e88caef1bb3211a72f2a08018c47d23e5b3d1c",
-      "sha256": "7900ddf09509ce21b399d3ea93113cdeb0855afa153d25d474955e77aa603f69",
-      "rgb_pixels_sha256": "d4fe7ef7af5d26dd714dc426d08425f44312d2ae92819102a3b121b82e442f1f",
+      "filename": "06-today.png",
+      "shows": "Today, 5 Dec 2026: Saturday of the 1st week of Advent",
       "size": [
         1080,
         1920
       ],
-      "mode": "RGB",
-      "bytes": 119914,
-      "transform": "Lossless PNG re-encode (Pillow optimize); pixels identical to the raw capture; no crop, resize, or pixel change"
+      "sha256": "906d6db9deb80af2218856f056597d69ffa0f49deff976f71965e1441234ec17"
+    },
+    {
+      "filename": "07-no-account.png",
+      "shows": "Text slide (no capture)",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "9760546edda008ddaa13ac81e07b7051e6dfd00d5650f1ca950c38664d7d392c"
     }
   ]
 }

@@ -1,47 +1,42 @@
 # Google Play listing: John 1:1
 
-Prepared for a new app in an organization account. The owner approved a free app,
-with no ads or purchases, and `contact@north.boutique` as the public support email.
+Prepared for a new app in an organization account. Updated 27 Oct 2026 for 1.2.x: a free app with no ads and one
+optional purchase (the Fathers library), and `contact@north.boutique` as the public support email.
 This file contains the English (United States) listing.
 
 ## App name
 
 ```text
-John 1:1
+John 1:1 – Catholic Bible
 ```
 
 ## Short description
 
 ```text
-Offline Catholic Bible, prayer guides, and works of the Fathers and Doctors
+Catholic Bible, Rosary, daily readings and the Church Fathers. Offline, no ads.
 ```
 
 ## Full description
 
 ```text
-John 1:1 brings Scripture, Catholic prayer, and the writings of the Fathers and Doctors into one quiet place for daily reading.
+John 1:1 is a Catholic Bible and prayer app for every day: Scripture, the Rosary, the readings of the day, the saints, and the writings of the Fathers and Doctors of the Church. It works offline, with no account and no ads.
 
-READ SCRIPTURE OFFLINE
-Read all 73 books in three complete editions: the World English Bible, Catholic Edition; the Douay-Rheims; and the Latin Vulgate. Search for a word, phrase, or Bible reference. Open a passage in its chapter and keep track of the chapters you have read.
+ADVENT WITH THE FATHERS
+From the first Sunday of Advent, Today shows the week of Advent and a Father's comment on the day's Gospel from the Catena Aurea of St Thomas Aquinas. The Advent page has the Advent wreath with the Collect of each Sunday from the Roman Missal, Rorate caeli, and the O Antiphons in Latin and English from 17 December.
 
-KEEP WHAT YOU READ
-Save bookmarks and highlights. Add written or drawn notes to a passage. Return to your saved verses in the Library. Share a passage as text or as a Scripture card.
+THE FATHERS AND DOCTORS
+An offline library of 275 works by 26 authors: St Augustine, St John Chrysostom, St Ambrose, St Athanasius, St Leo the Great, St Thomas Aquinas and more. The Catena Aurea on all four Gospels sets the Fathers beside every Gospel of the year. The first part of every work, the Apostolic Fathers and the Confessions of St Augustine are free to read. One optional purchase unlocks the whole library.
 
-PRAY WITH A GUIDE
-Follow the Rosary one step at a time. Use traditional prayers and prayers of the saints, with their sources. Save favorite prayers. Follow nine-day novenas and record your intention and completed days. Use guides for lectio divina and preparation for confession.
+THE BIBLE
+All 73 books in three complete editions: the Douay-Rheims, the Latin Vulgate, and the World English Bible, Catholic Edition (a study translation). Search every verse offline. Save bookmarks, highlights and notes, and share a passage as a Scripture card.
 
-READ THE FATHERS AND DOCTORS
-Explore an offline library of works from 26 authors, including St Augustine, St John Chrysostom, and St Thomas Aquinas. Browse works and sections, save your place, and open the Scripture references you find.
+PRAYER
+The Rosary step by step, with a painting for each mystery. Seven novenas, traditional prayers and prayers of the saints, each shown with its source. Lectio divina and a guide to prepare for Confession.
 
-BUILD A DAILY PRACTICE
-Use reading plans, personal reflections, optional reminders, and home screen widgets. Choose light or dark appearance and adjust reading text to suit you. Listen to Bible passages through your device's text-to-speech service when a suitable offline voice is installed.
+EVERY DAY
+The calendar and reading references of the Roman Rite in the United States, the saints of the day, reading plans, reminders and home screen widgets.
 
-CALENDAR AND READING REFERENCES
-Browse the United States Roman Rite calendar and the reading references available in the app. Open readings in the offline Bible or use the link to the official readings. Calendar coverage is limited to the dates included in the app. The offline Bible wording and verse divisions can differ from those proclaimed at Mass.
-
-The bundled Bible editions, works, prayers, and prayer guides are available offline. External websites and publisher media links need an internet connection. Read aloud requires an installed offline voice. Voice availability depends on your device.
-
-John 1:1 is free, with no ads or in-app purchases. No app account is required.
+John 1:1 is free, with no ads and no account. One optional in-app purchase unlocks the full Fathers library. The Bible, the Rosary, prayers, readings and saints stay free.
 
 Support: contact@north.boutique
 ```
@@ -55,7 +50,7 @@ Support: contact@north.boutique
 | Category | Books & Reference |
 | Price | Free |
 | Contains ads | No |
-| In-app purchases | No |
+| In-app purchases | Yes: one optional purchase, the Fathers library (`com.nrsv.verse.fathers`) |
 | Support email | `contact@north.boutique` |
 | Website | `https://anton2mihail.github.io/lock-bible/` |
 | Privacy policy | `https://anton2mihail.github.io/lock-bible/privacy.html` |
