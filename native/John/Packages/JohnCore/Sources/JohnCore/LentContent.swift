@@ -31,6 +31,8 @@ public struct LentContent: Decodable, Sendable {
         public let rubrics: [String]?
         public let pages: [Int]
         public let scans: [String]
+        /// The app's own short note on the section (the Solemn Prayers: which prayers are left out and why).
+        public let note: String?
     }
 
     public struct HolyWeekDay: Decodable, Sendable, Equatable, Identifiable {

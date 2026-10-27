@@ -61,7 +61,7 @@ data class LentContent(
     val penitentialPsalms: List<Int>,
 ) {
     data class Collect(val title: String, val text: String, val page: Int, val scan: String, val book: String?)
-    data class Section(val id: String, val title: String, val kind: String, val paragraphs: List<String>, val rubrics: List<String>, val pages: List<Int>)
+    data class Section(val id: String, val title: String, val kind: String, val paragraphs: List<String>, val rubrics: List<String>, val pages: List<Int>, val note: String?)
     data class HolyWeekDay(val key: String, val title: String, val sections: List<Section>)
     data class Part(val title: String, val paragraphs: List<String>, val pages: List<Int>)
     data class Station(val number: Int, val title: String, val versicle: String, val response: String, val meditation: String,
@@ -84,7 +84,7 @@ data class LentContent(
             val holyWeek = objects(json.getJSONArray("holyWeek")).map { day ->
                 HolyWeekDay(day.getString("key"), day.getString("title"), objects(day.getJSONArray("sections")).map {
                     Section(it.getString("id"), it.getString("title"), it.getString("kind"), strings(it.getJSONArray("paragraphs")),
-                        strings(it.optJSONArray("rubrics")), ints(it.getJSONArray("pages")))
+                        strings(it.optJSONArray("rubrics")), ints(it.getJSONArray("pages")), it.optString("note").ifBlank { null })
                 })
             }
             val stations = json.getJSONObject("stations")

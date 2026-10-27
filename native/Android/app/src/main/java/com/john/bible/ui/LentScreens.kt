@@ -82,7 +82,7 @@ fun LentTodayRow(repo: JohnRepository, date: java.time.LocalDate, navigate: (Str
 /** A quoted text: an eyebrow, the paragraphs, and its book and page. Long texts show "Read all" first. */
 @Composable
 private fun LentTextPanel(eyebrow: String, paragraphs: List<String>, source: String, heading: String? = null,
-                          rubrics: List<String> = emptyList(), collapseAfter: Int = Int.MAX_VALUE) {
+                          rubrics: List<String> = emptyList(), collapseAfter: Int = Int.MAX_VALUE, note: String? = null) {
     var expanded by remember { mutableStateOf(false) }
     val collapsed = !expanded && paragraphs.size > collapseAfter
     val c = LocalJohnColors.current
@@ -97,6 +97,7 @@ private fun LentTextPanel(eyebrow: String, paragraphs: List<String>, source: Str
         }
         if (collapsed) Text("Read all", Modifier.clickable { expanded = true }.heightIn(min = 44.dp).padding(vertical = 10.dp),
             fontFamily = SpaceGrotesk, fontSize = 15.sp, color = c.tint)
+        note?.let { JohnText(it, dim = true, size = 14) }
         JohnText(source, dim = true, size = 14)
     }
 }
@@ -164,7 +165,7 @@ fun HolyWeekScreen(repo: JohnRepository, navigate: (String) -> Unit, back: () ->
             if (day.key == "good-fri") JohnRow("The Stations of the Cross", "St Alphonsus Liguori", image = "stations-12") { navigate("stations") }
             day.sections.forEach { section ->
                 Box(Modifier.testTag("holy-week-${day.key}-${section.id}")) {
-                    LentTextPanel(section.title, section.paragraphs, "${LentText.MISSAL}, ${LentText.pages(section.pages)}", rubrics = section.rubrics, collapseAfter = 3)
+                    LentTextPanel(section.title, section.paragraphs, "${LentText.MISSAL}, ${LentText.pages(section.pages)}", rubrics = section.rubrics, collapseAfter = 3, note = section.note)
                 }
             }
         }

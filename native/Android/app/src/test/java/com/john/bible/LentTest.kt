@@ -89,5 +89,8 @@ class LentTest {
         assertEquals((1..14).toList(), lent.stations.map { it.number })
         assertTrue(lent.stations.all { it.painting == "stations-%02d".format(it.number) && it.verse.size == 4 })
         assertEquals(listOf(6, 31, 37, 50, 101, 129, 142), lent.penitentialPsalms)
+        val solemn = lent.holyWeekDay("good-fri")!!.sections.first { it.kind == "solemn-prayers" }
+        assertTrue(solemn.paragraphs.none { "emperor" in it || "perfidious" in it })
+        assertTrue(solemn.note!!.contains("The Church has since revised them"))
     }
 }

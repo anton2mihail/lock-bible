@@ -42,7 +42,11 @@ struct LentContentTests {
             }
         }
         let good = try #require(lent.holyWeekDay("good-fri"))
-        #expect(good.sections.contains { $0.kind == "solemn-prayers" })
+        let solemn = try #require(good.sections.first { $0.kind == "solemn-prayers" })
+        // Anton, 27 Oct 2026: the prayers for the emperor and for the Jews in the pre-1959 wording are left out, with a note.
+        #expect(!solemn.paragraphs.contains { $0.contains("emperor") || $0.contains("perfidious") })
+        #expect(solemn.paragraphs.count == 21)
+        #expect(solemn.note?.contains("The Church has since revised them") == true)
         #expect(good.sections.contains { $0.kind == "reproaches" })
         #expect(try #require(lent.holyWeekDay("holy-sat")).sections.contains { $0.id == "exsultet" })
         #expect(try #require(lent.holyWeekDay("easter-sun")).sections.contains { $0.kind == "sequence" })

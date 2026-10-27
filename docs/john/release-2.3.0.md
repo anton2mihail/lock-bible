@@ -24,11 +24,12 @@ Not in this release:
 - **Readings for 2028:** the source (catholic-readings-api) has 2025–2027 only. Add 2028 in a 2027 update, before
   Ash Wednesday 2028 (1 March 2028).
 
-## Decision for Anton: two Good Friday prayers
+## Good Friday: two prayers left out (Anton, 27 Oct 2026)
 
-The 1926 Missal prints nine Solemn Prayers. Two are the pre-1955 texts that the Church has since changed: the prayer
-for the emperor, and the prayer for the Jews in its pre-1959 wording ("perfidious"). They are **held back** in
-`lent.json` until Anton decides. The Exsultet keeps its petition for the emperor inside its last paragraph.
+The 1926 Missal prints nine Solemn Prayers. The app shows seven. It leaves out the prayer for the emperor and the
+prayer for the Jews in its pre-1959 wording, and says so under the prayers: "Two prayers of the 1926 Missal are not
+shown: the prayer for the emperor, and the prayer for the Jews in its pre-1959 wording. The Church has since revised
+them." The Exsultet keeps its petition for the emperor inside its last paragraph.
 
 ## Store text (drafts)
 
@@ -80,7 +81,7 @@ keyword "stations"). **Play:** custom listing "Search: Stations of the Cross".
 
 ## To ship
 
-1. Anton decides the two Good Friday prayers.
+1. Done: the two Good Friday prayers are left out with a note.
 2. `scripts/native/release-testflight.sh 2.3.0 33`; Android: `ANDROID_RELEASE_VERSION_CODE=8 ANDROID_RELEASE_VERSION_NAME=1.3.0 python3 scripts/android/release/build-bundle.py`.
 3. Mac: install the TestFlight build on this Mac; check the reader with keyboard and trackpad, window sizes, the
    purchase and restore, read aloud, notifications. Then mark the app verified for Mac in App Store Connect.

@@ -57,6 +57,7 @@ private struct LentTextPanel: View {
     var heading: String?
     let paragraphs: [String]
     var rubrics: [String] = []
+    var note: String?
     let source: String
     /// More paragraphs than this show "Read all" first.
     var collapseAfter = Int.max
@@ -95,6 +96,7 @@ private struct LentTextPanel: View {
                     .foregroundStyle(colors.tint)
                     .frame(minHeight: 44)
             }
+            if let note { ContentMutedText(text: note) }
             ContentMutedText(text: source)
         }
     }
@@ -216,7 +218,7 @@ struct HolyWeekView: View {
                                      imageName: "stations-12") { router.push(.companion(.stations)) }
                 }
                 ForEach(day.sections) { section in
-                    LentTextPanel(eyebrow: section.title, paragraphs: section.paragraphs, rubrics: section.rubrics ?? [],
+                    LentTextPanel(eyebrow: section.title, paragraphs: section.paragraphs, rubrics: section.rubrics ?? [], note: section.note,
                                   source: "\(LentText.missalShort), \(LentText.pages(section.pages))",
                                   collapseAfter: 3)
                         .accessibilityIdentifier("holy-week-\(day.key)-\(section.id)")
