@@ -19,7 +19,7 @@ a sending address). Exact texts: `docs/john/outbox/`.
 |---|---|---|
 | NRSV Catholic Edition | NCCrights@petradirights.com | Sent; automatic reply 25 Oct, waiting |
 | RSV Second Catholic Edition | laurap@ignatius.com | Sent, waiting |
-| Divine Mercy novena | editorial@marian.org | **Replied 27 Oct** (Tad Floridis, Copyrights Dept., tfloridis@marian.org): fill in the Permissions Request Form and return it to him. See below |
+| Divine Mercy novena | editorial@marian.org | **Replied 27 Oct** (Tad Floridis, Copyrights Dept.). Form sent 27 Oct 11:37 to tfloridis@marian.org, cc copyrights@marian.org, for Diary 476 (the Chaplet, in the app now) and 1209–1229 (the full novena). Waiting, about 10 business days |
 | St Padre Pio novena | info@padrepio.foundation | Sent, waiting |
 | Fatima prayers | liturgia@fatima.pt, cc reitoria@fatima.pt | Sent, waiting |
 | Catholic American Bible (CCD) | Postal letter, Washington DC | Not sent: Anton posts it later |
