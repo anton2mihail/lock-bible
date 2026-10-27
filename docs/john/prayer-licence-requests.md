@@ -17,9 +17,9 @@ a sending address). Exact texts: `docs/john/outbox/`.
 
 | Request | To | Status |
 |---|---|---|
-| NRSV Catholic Edition | NCCrights@petradirights.com | Sent, waiting |
+| NRSV Catholic Edition | NCCrights@petradirights.com | Sent; automatic reply 25 Oct, waiting |
 | RSV Second Catholic Edition | laurap@ignatius.com | Sent, waiting |
-| Divine Mercy novena | editorial@marian.org | Sent, waiting (address from 2022; if it bounces, call 1-800-462-7426) |
+| Divine Mercy novena | editorial@marian.org | **Replied 27 Oct** (Tad Floridis, Copyrights Dept., tfloridis@marian.org): fill in the Permissions Request Form and return it to him. See below |
 | St Padre Pio novena | info@padrepio.foundation | Sent, waiting |
 | Fatima prayers | liturgia@fatima.pt, cc reitoria@fatima.pt | Sent, waiting |
 | Catholic American Bible (CCD) | Postal letter, Washington DC | Not sent: Anton posts it later |
@@ -29,6 +29,20 @@ a sending address). Exact texts: `docs/john/outbox/`.
 | Divine Mercy novena (Diary of St Faustina, 1209–1229) | Congregation of Marians of the Immaculate Conception (Marian Press), the English translation | Marian Press, Eden Hill, Stockbridge, MA 01263, USA; phone 1-800-462-7426; editorial@marian.org (from a 2022 magazine; confirm). marian.org blocks automated access, so its contact form must be checked by hand | The Polish original is © Congregation of the Sisters of Our Lady of Mercy (Kraków); the English translation is the Marians' |
 | St Padre Pio novena | Capuchin Friars of San Giovanni Rotondo, "Voce di Padre Pio" Foundation | info@padrepio.foundation | The app's current text comes from a website with no author. Ask the friars for their own approved text and permission to use it |
 | Fatima prayers (Pardon prayer, Angel's prayers, the decade prayer "O my Jesus") | Shrine of Our Lady of Fátima | liturgia@fatima.pt (Liturgy Department), copy reitoria@fatima.pt (Rectory) | Ask for the Shrine's official English text and permission |
+
+## Divine Mercy: reply of 27 October 2026
+
+Dr. Joe McAleer (Marian Press) forwarded the request to Tad Floridis, Copyrights Dept. (tfloridis@marian.org), who
+asks for the completed **Permissions Request Form**, returned to him by email. Their guidelines
+(https://marian.org/house/copyright) say:
+
+- Apps, free or paid, need written permission and "may require a license and royalty payment".
+- The Diary text must be used verbatim, "including capitalization and punctuation", with bold and italics as in the
+  Diary. Before the licence, check the app's novena text word for word against the Marian Press edition.
+- The credit line must read exactly: "Used with permission of the Marian Fathers of the Immaculate Conception of
+  the B.V.M."
+- Answer within about ten business days of receiving the form; longer for larger projects.
+- Form: https://images.marianweb.net/archives/downloads/CopyrightRequestForm.doc (Word file, not yet downloaded).
 
 ## Draft A — Divine Mercy novena (email or letter)
 

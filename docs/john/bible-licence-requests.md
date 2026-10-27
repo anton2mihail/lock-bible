@@ -10,9 +10,9 @@ a sending address). Exact texts: `docs/john/outbox/`.
 
 | Request | To | Status |
 |---|---|---|
-| NRSV Catholic Edition | NCCrights@petradirights.com | Sent, waiting |
+| NRSV Catholic Edition | NCCrights@petradirights.com | Sent; automatic reply 25 Oct, waiting |
 | RSV Second Catholic Edition | laurap@ignatius.com | Sent, waiting |
-| Divine Mercy novena | editorial@marian.org | Sent, waiting (address from 2022; if it bounces, call 1-800-462-7426) |
+| Divine Mercy novena | editorial@marian.org | **Replied 27 Oct** (Tad Floridis, Copyrights Dept., tfloridis@marian.org): fill in the Permissions Request Form and return it to him. See below |
 | St Padre Pio novena | info@padrepio.foundation | Sent, waiting |
 | Fatima prayers | liturgia@fatima.pt, cc reitoria@fatima.pt | Sent, waiting |
 | Catholic American Bible (CCD) | Postal letter, Washington DC | Not sent: Anton posts it later |
