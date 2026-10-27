@@ -1,7 +1,9 @@
 # iOS 2.3.0 / Android 1.3.0 — A Year with the Fathers, Lent, Holy Week, the Stations
 
-**Status (27 Oct 2026):** built and tested on branch `release/2.3.0`. Not uploaded, not submitted. Submit by
-**Friday 4 December 2026** (plan: approved and released by 18 December). Store submission only on Anton's ask.
+**Status (27 Oct 2026):** iOS 2.3.0 (33) uploaded to App Store Connect (TestFlight) from branch `release/2.3.0`.
+Android 1.3.0 (8) bundle built and verified: `~/.local/share/john-android/releases/com.john.bible-8-9fa67f46d3c3.aab`
+(14 Stations etchings, `lent.json` with the Good Friday note). Neither is submitted. Submit by **Friday 4 December
+2026**. Store submission only on Anton's ask. Play: 1.2.0 and 1.2.1 come first.
 
 ## In this release
 
@@ -82,7 +84,7 @@ keyword "stations"). **Play:** custom listing "Search: Stations of the Cross".
 ## To ship
 
 1. Done: the two Good Friday prayers are left out with a note.
-2. `scripts/native/release-testflight.sh 2.3.0 33`; Android: `ANDROID_RELEASE_VERSION_CODE=8 ANDROID_RELEASE_VERSION_NAME=1.3.0 python3 scripts/android/release/build-bundle.py`.
+2. Done 27 Oct: `scripts/native/release-testflight.sh 2.3.0 33`; Android: `ANDROID_RELEASE_VERSION_CODE=8 ANDROID_RELEASE_VERSION_NAME=1.3.0 python3 scripts/android/release/build-bundle.py`.
 3. Mac: install the TestFlight build on this Mac; check the reader with keyboard and trackpad, window sizes, the
    purchase and restore, read aloud, notifications. Then mark the app verified for Mac in App Store Connect.
 4. On Anton's ask: create version 2.3.0, attach build 33, What's New, keywords, events, product pages; submit.
