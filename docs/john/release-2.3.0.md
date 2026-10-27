@@ -1,9 +1,15 @@
 # iOS 2.3.0 / Android 1.3.0 — A Year with the Fathers, Lent, Holy Week, the Stations
 
-**Status (27 Oct 2026):** iOS 2.3.0 (33) uploaded to App Store Connect (TestFlight) from branch `release/2.3.0`.
-Android 1.3.0 (8) bundle built and verified: `~/.local/share/john-android/releases/com.john.bible-8-9fa67f46d3c3.aab`
-(14 Stations etchings, `lent.json` with the Good Friday note). Neither is submitted. Submit by **Friday 4 December
-2026**. Store submission only on Anton's ask. Play: 1.2.0 and 1.2.1 come first.
+**Status (27 Oct 2026, 14:13):** submitted to App Review on Anton's ask: iOS 2.3.0 (33) with the three In-App Events
+below (4 items, release automatically after approval). Mac: compatibility verified in Pricing and Availability
+(Anton: assume Mac tested). Version text: What's New as below, keywords with "stations" in place of "widget", three
+new lines in the description (A Year with the Fathers; Lent and Holy Week; the Stations), reviewer notes for 2.3.0.
+
+**Play:** production release draft "8 (1.3.0) — A Year with the Fathers and Lent" saved with the release notes
+below. It has no bundle yet: the browser upload limit is 10 MB, so **Anton uploads**
+`~/.local/share/john-android/releases/com.john.bible-8-9fa67f46d3c3.aab` (Production → the draft → Upload), then
+Next → Save → Publishing overview → Send changes for review. 1.2.0 (6) is still in review; sending 1.3.0 restarts
+that review with 1.3.0 in its place.
 
 ## In this release
 
@@ -61,17 +67,26 @@ The Stations of the Cross by St Alphonsus Liguori, with Tiepolo's etchings.
 
 **In-App Events (create with 2.3.0; an event lasts at most 31 days):**
 
-| Event | Badge | Event dates | Publish from | Deep link | Card art |
+| Event (id) | Badge | Event dates (Toronto) | Publish from | Deep link | Images (`marketing/events/`) |
 |---|---|---|---|---|---|
-| A Year with the Fathers begins | Special Event | 1 – 31 Jan 2027 | 18 Dec 2026 | `nrsv://year` | El Greco (`sorrowful-1`) or a Fathers image |
-| Lent with the Fathers | Special Event | 10 Feb – 12 Mar 2027 | 27 Jan 2027 | `nrsv://lent` | Tiepolo, Station 1 |
-| Holy Week with the Fathers | Special Event | 21 – 28 Mar 2027 | 10 Mar 2027 | `nrsv://holyweek` | Tiepolo, Station 12 |
+| A Year with the Fathers begins (6827675499) | Special Event | 1 Jan 00:00 – 31 Jan 2027 23:59 | 18 Dec 2026 | `nrsv://year` | `year-2027/`: Michael Pacher, *Altarpiece of the Church Fathers* (1471–75) |
+| Lent with the Fathers (6827676614) | Special Event | 10 Feb 00:00 – 12 Mar 2027 23:59 | 27 Jan 2027 | `nrsv://lent` | `lent-2027/`: El Greco, *Agony in the Garden* |
+| Holy Week with the Fathers (6827678051) | Special Event | 21 Mar 00:00 – 28 Mar 2027 23:59 | 7 Mar 2027 | `nrsv://holyweek` | `holy-week-2027/`: Giovanni Bellini, *Calvary* (Louvre) |
+
+All three: access "In-App Purchase Not Required", purpose "Appropriate for all users", normal priority. Long
+descriptions: "One reading a day from the Fathers of the Church through 2027, following the Church's year. The first 7
+days are free." / "From Ash Wednesday: the Collect of each day, the Fathers on the Gospel, St Leo on Lent and the
+Stations of the Cross." / "Palm Sunday to Easter: the Missal's prayers for each day, the Fathers on the Passion and
+the Stations of the Cross." The images are public domain (Wikimedia Commons, checked with the
+`scripts/fetch-artwork.py` licence rules) with metadata stripped: App Store Connect rejected the first details upload
+as "wrong format".
 
 Short descriptions (≤ 50 characters): "One reading from the Fathers each day of 2027" (45); "The Collect, the Fathers and the Stations" (41);
 "The Missal's prayers from Palm Sunday to Easter" (47).
 
-**Custom product pages:** "A Year with the Fathers" (`nrsv://year`) and "Stations of the Cross" (`nrsv://stations`,
-keyword "stations"). **Play:** custom listing "Search: Stations of the Cross".
+**Custom product pages (not made yet):** "A Year with the Fathers" (`nrsv://year`) and "Stations of the Cross"
+(`nrsv://stations`, keyword "stations"); they need new framed screenshots. **Play:** custom listing "Search: Stations
+of the Cross".
 
 ## Checks
 
