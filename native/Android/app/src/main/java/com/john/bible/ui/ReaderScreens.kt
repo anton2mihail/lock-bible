@@ -1,5 +1,10 @@
 package com.john.bible.ui
 
+import androidx.compose.ui.draw.clip
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.onGloballyPositioned
 import android.content.Intent
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
@@ -134,7 +139,10 @@ internal fun shareText(hit: SearchHit) = "${hit.text}\n\n${hit.bookName} ${hit.c
         SearchHit(edition, book.code, book.name, chapter, label, verses.subList(lower, upper + 1).joinToString(" ") { it.text })
     } else null
     if (bookCode.isEmpty()) {
-        ReadingPage("Read the Bible") {
+        val listScroll = rememberScrollState()
+        val headingY = remember { mutableStateMapOf<String, Int>() }
+        val jumpScope = rememberCoroutineScope()
+        ReadingPage("Read the Bible", scroll = listScroll) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { ReaderButton("Search") { navigate("search") }; ReaderButton(editionShort(edition)) { goTo = true } }
             if (store.readerBook.isNotEmpty()) {
                 val previous = books.firstOrNull { it.code == store.readerBook }
@@ -142,12 +150,14 @@ internal fun shareText(hit: SearchHit) = "${hit.text}\n\n${hit.bookName} ${hit.c
             }
             JohnText("The Church Fathers", dim = true, size = 13)
             JohnPanel { JohnRow("The Fathers and Doctors", "Works available offline") { navigate("works") } }
+            // 1.3.0, as iOS 2.1.1: jump to a part of the Bible. All 73 books stay in one list. The scroll answers a tap.
+            TestamentJumpBar { testament -> headingY[testament]?.let { y -> jumpScope.launch { listScroll.animateScrollTo(y) } } }
             if (loading) JohnText("Opening Scripture…", dim = true)
             error?.let { JohnText(it) }
             listOf("OT" to "Old Testament", "deutero" to "Deuterocanonical books", "NT" to "New Testament").forEach { (testament, title) ->
                 val group = books.filter { it.testament.equals(testament, true) }
                 if (group.isNotEmpty()) {
-                    JohnText(title, size = 13, dim = true)
+                    Box(Modifier.onGloballyPositioned { headingY[testament] = it.positionInParent().y.toInt() }) { JohnText(title, size = 13, dim = true) }
                     group.forEach { b -> JohnRow(b.name, "${b.chapters} chapters") { bookCode = b.code; chapter = 0 } }
                 }
             }
@@ -329,6 +339,19 @@ internal class ReaderSpeech private constructor(context: android.content.Context
     val colors = LocalJohnColors.current
     OutlinedButton(onClick = onClick, modifier = Modifier.heightIn(min = 44.dp), shape = RoundedCornerShape(8.dp), border = androidx.compose.foundation.BorderStroke(1.dp, colors.border), colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.tint)) {
         Text(text, fontFamily = SpaceGrotesk, fontSize = 14.sp)
+    }
+}
+
+/** Old Testament, Deuterocanon, New Testament: three equal buttons under the Fathers card (iOS testamentJumpBar). */
+@Composable private fun TestamentJumpBar(jump: (String) -> Unit) {
+    val colors = LocalJohnColors.current
+    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).clip(RoundedCornerShape(12.dp)).border(1.dp, colors.border, RoundedCornerShape(12.dp)).testTag("reader-testament-jump")) {
+        listOf("OT" to "Old Testament", "deutero" to "Deuterocanon", "NT" to "New Testament").forEachIndexed { index, (testament, title) ->
+            if (index > 0) Box(Modifier.width(1.dp).fillMaxHeight().background(colors.border))
+            Box(Modifier.weight(1f).heightIn(min = 48.dp).clickable { jump(testament) }.padding(horizontal = 6.dp, vertical = 10.dp), contentAlignment = Alignment.Center) {
+                Text(title, fontFamily = SpaceGrotesk, fontWeight = FontWeight.Medium, fontSize = 13.sp, lineHeight = 17.sp, color = colors.tint, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+            }
+        }
     }
 }
 

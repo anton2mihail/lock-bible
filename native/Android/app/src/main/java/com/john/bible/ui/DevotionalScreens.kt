@@ -1,5 +1,9 @@
 package com.john.bible.ui
 
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.Icons
+import androidx.compose.ui.platform.testTag
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.pager.HorizontalPager
@@ -108,7 +112,7 @@ private fun NovenaLibraryCard(item:JSONObject,completed:Set<Int>,onClick:()->Uni
                 JohnText(item.str("subtitle"),dim=true,size=14)
                 JohnText("Patronage · ${item.str("patronage")}",dim=true,size=12)
             }
-            JohnText("›",size=24)
+            RowChevron()
         }
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             (1..9).forEach { day -> Box(Modifier.size(10.dp).clip(CircleShape).background(if(day in completed) colors.tint else colors.background).border(1.dp,if(day in completed) colors.tint else colors.border,CircleShape)) }
@@ -139,6 +143,7 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
         JohnArtCard(seasonArt(season), title, "${seasonName(season)} · Today’s readings") { navigate("daily/$now") }
         JohnText("United States · Roman Rite", dim=true, size=14)
         AdventTodayRow(now,navigate)
+        LentTodayRow(repo,now,navigate)
         YearPlanTodayRow(repo,store,now,navigate)
         GospelFathersPanel(repo,readings,navigate)
         JohnRow("Saints & feast days", "Vatican News · Byzantine Catholic · Lives of the saints") { navigate("saints") }
@@ -200,7 +205,8 @@ private fun TodayReadingCard(repo:JohnRepository,store:JohnStore,navigate:(Strin
             JohnButton(if(day>=days) "Finish plan" else "Stop plan") { store.startPlan(null) }
         }
     }
-    JohnPanel {
+    // 1.3.0, as iOS 2.1.1: the rings show only after a plan starts or a chapter is read, so a new reader sees no "0%".
+    if(store.planId!=null || read>0) JohnPanel {
         Row(horizontalArrangement=Arrangement.spacedBy(24.dp)) {
             listOf(Triple("All books",read,total),Triple("John",john,21)).forEach { (title,count,maximum) ->
                 Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
@@ -224,7 +230,8 @@ fun PrayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit)
     val reminder=rosaryReminderSummary()
     JohnPage("Prayer","PRAYER LIBRARY","Everyday prayer, the Rosary, and Catholic novenas. A little space to be with God.",sansTitle=true) {
         JohnArtCard("mary","Pray the Rosary","${mysteryTitle(com.john.bible.data.CompanionCalendar.rosarySet(LocalDate.now()))} · $reminder") { navigate("rosary") }
-        JohnRow("Our Lady of Sorrows","The Servite Rosary of the Seven Sorrows") { navigate("rosary/seven-sorrows") }
+        JohnRow("Our Lady of Sorrows","The Servite Rosary of the Seven Sorrows",image="sorrows-6") { navigate("rosary/seven-sorrows") }
+        Box(Modifier.testTag("pray-stations")) { JohnRow("The Stations of the Cross","St Alphonsus Liguori · Fourteen stations",image="stations-01") { navigate("stations") } }
         JohnRow("My Saints","Your saints, prayers, and feast days") { navigate("my-saints") }
         JohnRow("Everyday prayers","Traditional prayers and prayers of the saints") { navigate("prayers") }
         JohnRow("Pray with Scripture","A quiet guide to lectio divina") { navigate("lectio") }
@@ -266,6 +273,9 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
         "novena" -> NovenaDetail(parts.getOrNull(1).orEmpty(),catalog,store,back)
         "works" -> WorksLibrary(parts.getOrNull(1),repo,store,navigate,back)
         "advent" -> AdventScreen(repo,navigate,back)
+        "lent" -> LentScreen(repo,navigate,back)
+        "holy-week" -> HolyWeekScreen(repo,navigate,back)
+        "stations" -> StationsScreen(repo,back)
         "year" -> YearPlanScreen(repo,store,navigate,back)
         "year-day" -> YearDayScreen(parts.getOrNull(1)?.toIntOrNull() ?: 1,repo,store,navigate,back)
         "fathers-unlock" -> FathersUnlockScreen(libraryTotals(repo),back)
@@ -369,7 +379,7 @@ private fun RosarySetCard(image:String,set:JSONObject,onClick:()->Unit) {
             Text(set.str("customaryDays"),fontFamily=SpaceGrotesk,fontWeight=FontWeight.SemiBold,fontSize=12.sp,color=colors.tint)
             JohnText(set.str("description"),dim=true,size=14)
         }
-        JohnText("›",size=24)
+        RowChevron()
     }
 }
 
@@ -537,12 +547,14 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
     val billing=remember { com.john.bible.platform.FathersBilling.get(workContext) }
     LaunchedEffect(Unit) { billing.start() }
     // 2.1.0 parity: a locked section is never read from the database. The unlock page shows in its place.
-    val locked=work!=null && sections.isNotEmpty() && !billing.isUnlocked && !com.john.bible.data.FathersAccess.isSectionFree(id,section.coerceIn(0,sections.lastIndex))
+    // 1.3.0: Leo's sermons on Lent and the Passion read free from Ash Wednesday to Easter Sunday.
+    val locked=work!=null && sections.isNotEmpty() && !billing.isUnlocked && !com.john.bible.data.FathersAccess.isSectionFree(id,section.coerceIn(0,sections.lastIndex),com.john.bible.data.FeatureClock.today())
     val selected=remember(id,section,locked) { if(work!=null && sections.isNotEmpty() && !locked) repo.workSection(id,section.coerceIn(0,sections.lastIndex)) else null }
     val colors=LocalJohnColors.current
     val density=LocalDensity.current
     val measurer=rememberTextMeasurer()
     var previousSection by remember { mutableStateOf<Int?>(null) }
+    val credit=remember(work) { work?.let { w -> repo.workAuthors().firstOrNull { it.id==w.collectionId }?.attribution?.ifBlank { null } } }
     if(work!=null && locked) {
         Column(Modifier.fillMaxSize().background(LocalJohnColors.current.background).padding(horizontal=24.dp)) {
             Row(Modifier.fillMaxWidth().heightIn(min=52.dp),horizontalArrangement=Arrangement.SpaceBetween) {
@@ -555,13 +567,17 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
                 FathersUnlockPanel(sampleNotice="You have read the free part of ${work.title}.",totals=libraryTotals(repo))
             }
             Row(Modifier.fillMaxWidth().height(60.dp),horizontalArrangement=Arrangement.SpaceBetween) {
-                TextButton(onClick={ if(section>0) section-- },enabled=section>0) { Text("Previous") }
+                IconButton(onClick={ if(section>0) section-- },enabled=section>0) { Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft,"Previous section",tint=if(section>0) colors.tint else colors.border) }
                 Box(Modifier.padding(top=18.dp)) { JohnText("${section+1} of ${sections.size} · In the full library",size=12,dim=true) }
-                TextButton(onClick={},enabled=false) { Text("Next") }
+                IconButton(onClick={},enabled=false) { Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight,"Next section",tint=colors.border) }
             }
         }
         if(contents) AlertDialog(onDismissRequest={contents=false},title={JohnText("Contents",size=20)},text={
-            Column(Modifier.heightIn(max=450.dp).verticalScroll(rememberScrollState())) { sections.forEach { item -> JohnRow(item.title,"Section ${item.index+1}") { section=item.index;contents=false } } }
+            Column(Modifier.heightIn(max=450.dp).verticalScroll(rememberScrollState())) {
+            sections.forEach { item -> JohnRow(item.title,"Section ${item.index+1}") { section=item.index;contents=false } }
+            // 1.3.0, as iOS 2.1.1: the translation credit lives here, so the reader's footer is one line.
+            credit?.let { Box(Modifier.padding(top=12.dp).testTag("works-translation-credit")) { JohnText(it,size=12,dim=true) } }
+        }
         },confirmButton={TextButton(onClick={contents=false}) { Text("Close") }})
         return
     }
@@ -569,7 +585,8 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
     BoxWithConstraints(Modifier.fillMaxSize().background(colors.background)) {
         val font=if(store.fontFamily=="sans") SpaceGrotesk else Lora
         val style=TextStyle(fontFamily=font,fontSize=store.textSize.sp,lineHeight=(store.textSize*store.lineSpacing).sp,color=colors.text)
-        val textWidth=with(density) { (maxWidth-48.dp).roundToPx() }.coerceAtLeast(1)
+        val columnWidth=minOf(maxWidth,728.dp)
+        val textWidth=with(density) { (columnWidth-48.dp).roundToPx() }.coerceAtLeast(1)
         val workTitleHeight=measurer.measure(AnnotatedString(work.title),TextStyle(fontFamily=SpaceGrotesk,fontSize=12.sp,lineHeight=18.sp),constraints=Constraints(maxWidth=textWidth)).size.height
         val sectionTitleHeight=measurer.measure(AnnotatedString(selected.title),TextStyle(fontFamily=Lora,fontSize=22.sp,lineHeight=33.sp),constraints=Constraints(maxWidth=textWidth)).size.height
         val textHeight=(with(density) { (maxHeight-130.dp).roundToPx() }-workTitleHeight-sectionTitleHeight).coerceAtLeast(60)
@@ -611,7 +628,7 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
         val scope=rememberCoroutineScope()
         LaunchedEffect(section,pages) { if(previousSection!=null && previousSection!=section) pager.scrollToPage(0);previousSection=section;store.saveWorkLocation(id,section) }
         LaunchedEffect(pager.currentPage,pages) { val page=pages[pager.currentPage.coerceIn(0,pages.lastIndex)];store.saveWorkParagraph(id,page.paragraph);store.saveWorkOffset(id,page.offset) }
-        Column(Modifier.fillMaxSize().padding(horizontal=24.dp)) {
+        Column(Modifier.fillMaxHeight().width(columnWidth).align(Alignment.TopCenter).padding(horizontal=24.dp)) {
             Row(Modifier.fillMaxWidth().heightIn(min=52.dp),horizontalArrangement=Arrangement.SpaceBetween) {
                 TextButton(onClick=back) { Text("Back",fontFamily=SpaceGrotesk) }
                 TextButton(onClick={contents=true}) { Text("Contents",fontFamily=SpaceGrotesk) }
@@ -623,14 +640,24 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
                 SelectionContainer { Text(pages[page].text,style=style,modifier=Modifier.fillMaxSize()) }
             }
             Row(Modifier.fillMaxWidth().height(60.dp),horizontalArrangement=Arrangement.SpaceBetween) {
-                TextButton(onClick={ if(pager.currentPage>0) scope.launch { pager.animateScrollToPage(pager.currentPage-1) } else if(section>0) section-- },enabled=section>0 || pager.currentPage>0) { Text("Previous") }
-                Box(Modifier.padding(top=18.dp)) { JohnText("${pager.currentPage+1} / ${pages.size}",size=12,dim=true) }
-                TextButton(onClick={ if(pager.currentPage<pages.lastIndex) scope.launch { pager.animateScrollToPage(pager.currentPage+1) } else if(section<sections.lastIndex) section++ },enabled=section<sections.lastIndex || pager.currentPage<pages.lastIndex) { Text("Next") }
+                val canBack=section>0 || pager.currentPage>0
+                val canForward=section<sections.lastIndex || pager.currentPage<pages.lastIndex
+                IconButton(onClick={ if(pager.currentPage>0) scope.launch { pager.animateScrollToPage(pager.currentPage-1) } else if(section>0) section-- },enabled=canBack) {
+                    Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft,"Previous page",tint=if(canBack) colors.tint else colors.border)
+                }
+                Box(Modifier.padding(top=18.dp)) { JohnText("${section+1} of ${sections.size} · Page ${pager.currentPage+1} of ${pages.size}",size=12,dim=true) }
+                IconButton(onClick={ if(pager.currentPage<pages.lastIndex) scope.launch { pager.animateScrollToPage(pager.currentPage+1) } else if(section<sections.lastIndex) section++ },enabled=canForward) {
+                    Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight,"Next page",tint=if(canForward) colors.tint else colors.border)
+                }
             }
         }
     }
     if(contents) AlertDialog(onDismissRequest={contents=false},title={JohnText("Contents",size=20)},text={
-        Column(Modifier.heightIn(max=450.dp).verticalScroll(rememberScrollState())) { sections.forEach { item -> JohnRow(item.title,"Section ${item.index+1}") { section=item.index;contents=false } } }
+        Column(Modifier.heightIn(max=450.dp).verticalScroll(rememberScrollState())) {
+            sections.forEach { item -> JohnRow(item.title,"Section ${item.index+1}") { section=item.index;contents=false } }
+            // 1.3.0, as iOS 2.1.1: the translation credit lives here, so the reader's footer is one line.
+            credit?.let { Box(Modifier.padding(top=12.dp).testTag("works-translation-credit")) { JohnText(it,size=12,dim=true) } }
+        }
     },confirmButton={TextButton(onClick={contents=false}) { Text("Close") }})
 }
 
@@ -817,7 +844,7 @@ private fun RosaryMedia(initial:String?,catalog:JSONObject,back:()->Unit) {
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(colors.card).border(1.dp,if(item.str("id")==selected) colors.tint else colors.card,RoundedCornerShape(16.dp)).clickable { selected=item.str("id");feedback="" }.padding(12.dp),horizontalArrangement=Arrangement.spacedBy(12.dp),verticalAlignment=Alignment.CenterVertically) {
                 Box(Modifier.size(38.dp).clip(CircleShape).background(if(item.str("id")==selected) colors.tint else colors.background),contentAlignment=Alignment.Center) { Text("%02d".format(index+1),fontFamily=SpaceGrotesk,fontSize=12.sp,color=if(item.str("id")==selected) colors.card else colors.text) }
                 Column(Modifier.weight(1f)) { JohnText(item.str("title"),size=14);JohnText(item.str("subtitle"),size=12,dim=true) }
-                JohnText("›",size=20)
+                RowChevron()
             }
         }
         JohnButton("Watch on the official site") { open(episode.str("officialUrl")) }

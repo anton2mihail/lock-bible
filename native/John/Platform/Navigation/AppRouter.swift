@@ -175,6 +175,11 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
         NSLog("John Reader request created id=%@ kind=chapter", latestChapterRequest!.id.uuidString)
         #endif
     }
+    /// Pushes a Reader for a whole chapter on the selected tab's stack (the Penitential Psalms, 2.3.0).
+    func pushChapter(bookCode: String, chapter: Int, translation: TranslationID) {
+        paths[selectedTab, default: []].append(.reader(ReaderChapterRequest(bookCode: bookCode, chapter: chapter, translationID: translation),
+                                                       sourceID: nil))
+    }
     /// Pushes a Reader for `passage` on the selected tab's stack. Back returns to the list that opened it.
     func pushReader(passage: PassageSelection, sourceID: String? = nil) {
         let request = ReaderChapterRequest(bookCode: passage.bookCode.rawValue, chapter: passage.chapter,
@@ -237,6 +242,18 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable, Sendable {
             select(.today)
             paths[.today] = [.companion(.yearPlan)]
             markRoutedByCode(.today)
+        case .lent:
+            select(.today)
+            paths[.today] = [.companion(.lent)]
+            markRoutedByCode(.today)
+        case .holyWeek:
+            select(.today)
+            paths[.today] = [.companion(.holyWeek)]
+            markRoutedByCode(.today)
+        case .stations:
+            select(.pray)
+            paths[.pray] = [.companion(.stations)]
+            markRoutedByCode(.pray)
         case .lectio:
             select(.pray)
             paths[.pray] = [.companion(.lectio(nil))]

@@ -146,6 +146,9 @@ class JohnRepository(context: Context) : AutoCloseable {
     /** "A Year with the Fathers" (1.3.0). Null when the file is missing or damaged; Today then shows no row. */
     fun yearPlan(): YearPlan? = yearPlanCache ?: runCatching { YearPlan.parse(jsonObject("Catalogs/year-plan.json", cache = false)) }.getOrNull()?.also { yearPlanCache = it }
     private var yearPlanCache: YearPlan? = null
+    /** Lent, Holy Week and the Stations (1.3.0). Null when the file is missing or damaged; the Lent rows then stay hidden. */
+    fun lent(): LentContent? = lentCache ?: runCatching { LentContent.parse(jsonObject("Catalogs/lent.json", cache = false)) }.getOrNull()?.also { lentCache = it }
+    private var lentCache: LentContent? = null
     fun resolveReference(reference: String, edition: String = "web-ce"): SearchHit? = search(edition, reference).firstOrNull()
     fun commentary(bookCode: String, chapter: Int): List<JSONObject> = catalog().optJSONObject("commentary")?.optJSONObject(bookCode)?.optJSONArray(chapter.toString())?.objects() ?: emptyList()
     fun readings(date: String): JSONObject? = jsonObject("Calendar/readings-us.json").optJSONObject(date)

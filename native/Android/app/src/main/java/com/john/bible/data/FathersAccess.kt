@@ -34,6 +34,11 @@ object FathersAccess {
         return collection in freeCollectionIds
     }
 
+    /** [isSectionFree], plus St Leo's sermons on Lent and the Passion from Ash Wednesday to Easter Sunday (1.3.0). */
+    fun isSectionFree(workId: String, index: Int, date: java.time.LocalDate): Boolean =
+        isSectionFree(workId, index) ||
+            (workId == LentCalendar.LEO_WORK_ID && index in LentCalendar.leoSections && LentCalendar.isLeoSeason(date))
+
     fun isWorkFree(workId: String, sectionCount: Int): Boolean =
         sectionCount <= SAMPLE_SECTION_COUNT || isSectionFree(workId, SAMPLE_SECTION_COUNT)
 

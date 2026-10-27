@@ -1,0 +1,1046 @@
+{
+  "formatVersion": 1,
+  "missal": {
+    "title": "The Missal, compiled by lawful authority from the Missale Romanum (Burns Oates; B. Herder, St Louis; 5th edition, 10th impression, 1926)",
+    "approval": "Nihil obstat F. Thomas Bergh, O.S.B., Censor Deputatus. Imprimatur Edm. Can. Surmont, Vic. Gen., Westminster, 2 December 1921.",
+    "url": "https://archive.org/details/missal0000vari"
+  },
+  "massEveryDay": {
+    "title": "The Roman Missal (The Mass Every Day of the Year), translated by Edward A. Pace and John J. Wynne, S.J. (New York: The Home Press, 1916)",
+    "approval": "Nihil obstat Remigius Lafort, S.T.D., Censor. Imprimatur John Cardinal Farley, Archbishop of New York, 17 October 1916.",
+    "url": "https://archive.org/details/TheMassEveryDayOfTheYear"
+  },
+  "manual": {
+    "title": "A Manual of Prayers for the Use of the Catholic Laity (Third Plenary Council of Baltimore; New York: The Catholic Publication Society Co., 1888)",
+    "approval": "Approved by James Cardinal Gibbons, Archbishop of Baltimore, 17 May 1889. Imprimatur + Michael Augustinus, Archbishop of New York.",
+    "url": "https://archive.org/details/manualofprayersf00cath"
+  },
+  "collects": {
+    "ash-fri": {
+      "title": "Friday after Ash Wednesday",
+      "text": "Pursue with thy gracious kindness, we beseech thee, O Lord, the fast which we have begun; that the observance which we keep with our body, we may be able also to exercise with sincere minds. Through.",
+      "page": 134,
+      "scan": "https://archive.org/details/missal0000vari/page/n203/mode/1up"
+    },
+    "ash-sat": {
+      "title": "Saturday after Ash Wednesday",
+      "text": "Give ear, O Lord, to our supplications; and grant that we may celebrate with devout service this solemn fast, which thou hast ordained as a salutary remedy both for our souls and bodies. Through.",
+      "page": 136,
+      "scan": "https://archive.org/details/missal0000vari/page/n205/mode/1up"
+    },
+    "ash-thu": {
+      "title": "Thursday after Ash Wednesday",
+      "text": "O God, who by sin art offended and by penance pacified, mercifully regard the prayers of thy suppliant people, and turn away the scourges of thy wrath, which we deserve for our sins. Through.",
+      "page": 131,
+      "scan": "https://archive.org/details/missal0000vari/page/n200/mode/1up"
+    },
+    "ash-wed": {
+      "title": "Ash Wednesday",
+      "text": "Grant to thy faithful, O Lord, that they may begin the venerable solemnities of fasting with suitable piety, and perform them with tranquil devotion. Through our Lord.",
+      "page": 127,
+      "scan": "https://archive.org/details/missal0000vari/page/n196/mode/1up"
+    },
+    "easter-sun": {
+      "title": "Easter Sunday",
+      "text": "O God, who on this day, through thine only-begotten Son, didst overcome death and open unto us the gate of everlasting life; as by thy preventing grace thou dost breathe on the desires of our hearts, so do thou ever accompany them with thy help. Through the same Lord.",
+      "page": 339,
+      "scan": "https://archive.org/details/missal0000vari/page/n406/mode/1up"
+    },
+    "good-fri": {
+      "title": "Good Friday",
+      "text": "O God, from whom Judas received the punishment of his guilt, and the good thief the reward of his confession; grant us the effect of thy clemency, that as our Lord Jesus Christ, in his passion, gave to each a different retribution according to his desert, so he would deliver us from our old sins, and grant us the grace of his resurrection: who liveth.",
+      "page": 290,
+      "scan": "https://archive.org/details/missal0000vari/page/n357/mode/1up"
+    },
+    "holy-mon": {
+      "title": "Monday of Holy Week",
+      "text": "Grant, we beseech thee, almighty God, that we who fail, through our infirmity, in so many difficulties, may be relieved by the passion of thy Son interceding for us: who liveth.",
+      "page": 262,
+      "scan": "https://archive.org/details/missal0000vari/page/n329/mode/1up"
+    },
+    "holy-sat": {
+      "title": "Holy Saturday",
+      "text": "O God, who dost illustrate this most holy night by the glory of our Lord’s resurrection; preserve in the new progeny of thy family the spirit of adoption which thou hast given; that, renewed in body and mind, they may exhibit in thy sight a pure service. Through the same Lord.",
+      "page": 336,
+      "scan": "https://archive.org/details/missal0000vari/page/n403/mode/1up"
+    },
+    "holy-thu": {
+      "title": "Holy Thursday",
+      "text": "O God, from whom Judas received the punishment of his guilt, and the good thief the reward of his confession; grant us the effect of thy clemency, that as our Lord Jesus Christ, in his passion, gave to each a different retribution according to his desert, so he would deliver us from our old sins, and grant us the grace of his resurrection: who liveth and reigneth.",
+      "page": 282,
+      "scan": "https://archive.org/details/missal0000vari/page/n349/mode/1up"
+    },
+    "holy-tue": {
+      "title": "Tuesday of Holy Week",
+      "text": "O Almighty and everlasting God, grant us so to celebrate the mysteries of our Lord’s passion, that we may deserve to receive thy pardon. Through the same our Lord Jesus Christ.",
+      "page": 264,
+      "scan": "https://archive.org/details/missal0000vari/page/n331/mode/1up"
+    },
+    "holy-wed": {
+      "title": "Wednesday of Holy Week",
+      "text": "O God, who wast pleased that thy Son should undergo for us the ignominy of the cross, that thou mightest drive away from us the power of the enemy; grant to us thy servants that we may obtain the grace of resurrection. Through the same Lord.",
+      "page": 273,
+      "scan": "https://archive.org/details/missal0000vari/page/n340/mode/1up"
+    },
+    "lent1-fri": {
+      "title": "Friday in Ember Week",
+      "text": "Be merciful, O Lord, to thy people; and as thou makest them devout to thee, in thy mercy cherish them by thy kind help. Through our Lord.",
+      "page": 152,
+      "scan": "https://archive.org/details/missal0000vari/page/n221/mode/1up"
+    },
+    "lent1-mon": {
+      "title": "Monday after First Sunday in Lent",
+      "text": "Convert us, O God, our Saviour: and that the fast of Lent may profit us, instruct our minds with its heavenly discipline. Through our Lord.",
+      "page": 142,
+      "scan": "https://archive.org/details/missal0000vari/page/n211/mode/1up"
+    },
+    "lent1-sat": {
+      "title": "Ember Saturday in Lent",
+      "text": "Look down, we beseech thee, O Lord, with favor upon thy people; and mercifully turn away from us the scourges of thy wrath. Through Jesus Christ, thy Son our Lord, who liveth and reigneth with thee in the unity of the Holy Ghost, God world without end.",
+      "page": 219,
+      "scan": "https://archive.org/details/TheMassEveryDayOfTheYear/page/n226/mode/1up",
+      "book": "massEveryDay"
+    },
+    "lent1-sun": {
+      "title": "First Sunday in Lent",
+      "text": "O God, who dost purify thy church by the yearly fast of Lent; grant to thy household that what we strive to obtain from thee by abstinence, we may secure by good works. Through our Lord.",
+      "page": 139,
+      "scan": "https://archive.org/details/missal0000vari/page/n208/mode/1up"
+    },
+    "lent1-thu": {
+      "title": "Thursday after I. Sunday in Lent",
+      "text": "Mercifully look down, we beseech thee, O Lord, upon the devotion of thy people, that they, whose bodies are mortified by fasting, may, through the fruit of good works, be refreshed in mind. Thro’ our Lord.",
+      "page": 150,
+      "scan": "https://archive.org/details/missal0000vari/page/n219/mode/1up"
+    },
+    "lent1-tue": {
+      "title": "Tuesday after First Sunday in Lent",
+      "text": "Look down, O Lord, upon thy family, and grant that our minds, which are chastened by the mortification of the flesh, may glow with desire of thee. Through our Lord.",
+      "page": 145,
+      "scan": "https://archive.org/details/missal0000vari/page/n214/mode/1up"
+    },
+    "lent1-wed": {
+      "title": "Wednesday in Ember Week",
+      "text": "Mercifully hear our prayers, we beseech thee, O Lord; and stretch forth the right hand of thy majesty against all our adversaries. Through our Lord.",
+      "page": 147,
+      "scan": "https://archive.org/details/missal0000vari/page/n216/mode/1up"
+    },
+    "lent2-fri": {
+      "title": "Friday after II. Sunday in Lent",
+      "text": "Grant, we beseech thee, almighty God, that we may be cleansed by holy fasting and by thy grace may be brought with pure hearts to the holy season that is to come. Through our Lord.",
+      "page": 172,
+      "scan": "https://archive.org/details/missal0000vari/page/n239/mode/1up"
+    },
+    "lent2-mon": {
+      "title": "Monday after II. Sunday in Lent",
+      "text": "Grant, we beseech thee, almighty God, that thy family who afflict the flesh by fasting from food, may follow justice and abstain from sin. Through.",
+      "page": 162,
+      "scan": "https://archive.org/details/missal0000vari/page/n229/mode/1up"
+    },
+    "lent2-sat": {
+      "title": "Saturday after II. Sunday in Lent",
+      "text": "Grant, we beseech thee, O Lord, a salutary effect to our fasts; that the chastisement of the flesh, which we have taken upon us, may promote the vigour of our souls. Through our Lord.",
+      "page": 175,
+      "scan": "https://archive.org/details/missal0000vari/page/n242/mode/1up"
+    },
+    "lent2-sun": {
+      "title": "Second Sunday in Lent",
+      "text": "O God, who seest that we are wholly without strength, keep us both inwardly and outwardly, that we may be defended in body from all adversities, and cleansed in mind from evil thoughts. Thro’ our Lord.",
+      "page": 160,
+      "scan": "https://archive.org/details/missal0000vari/page/n227/mode/1up"
+    },
+    "lent2-thu": {
+      "title": "Thursday after II. Sunday in Lent",
+      "text": "Grant us, we beseech thee, O Lord, the help of thy grace; that duly applying ourselves to fastings and prayers, we may be delivered from all enemies of mind and body. Through our Lord.",
+      "page": 169,
+      "scan": "https://archive.org/details/missal0000vari/page/n236/mode/1up"
+    },
+    "lent2-tue": {
+      "title": "Tuesday after II. Sunday in Lent",
+      "text": "Perfect within us, we beseech thee, O Lord, in thy mercy, the benefits of this holy observance: that those things which thou hast appointed for us to do, we may by thy assistance be enabled to fulfil. Through our Lord.",
+      "page": 164,
+      "scan": "https://archive.org/details/missal0000vari/page/n231/mode/1up"
+    },
+    "lent2-wed": {
+      "title": "Wednesday after II. Sunday in Lent",
+      "text": "Favourably regard thy people, we beseech thee, O Lord; and grant that we, whom thou commandest to abstain from carnal food, may also cease from noxious vices. Through our Lord.",
+      "page": 167,
+      "scan": "https://archive.org/details/missal0000vari/page/n234/mode/1up"
+    },
+    "lent3-fri": {
+      "title": "Friday after III. Sunday in Lent",
+      "text": "Pursue, O Lord, we beseech thee, our fasting with thy merciful favour: that we who abstain from food for the body, may fast from vice in our mind. Through our Lord.",
+      "page": 192,
+      "scan": "https://archive.org/details/missal0000vari/page/n259/mode/1up"
+    },
+    "lent3-mon": {
+      "title": "Monday after III. Sunday in Lent",
+      "text": "Pour forth in thy mercy, we beseech thee, O Lord, thy grace into our hearts, that as we abstain from flesh, we may also restrain our senses from all hurtful excess. Through our Lord.",
+      "page": 182,
+      "scan": "https://archive.org/details/missal0000vari/page/n249/mode/1up"
+    },
+    "lent3-sat": {
+      "title": "Saturday after III. Sunday in Lent",
+      "text": "Grant, we beseech thee, almighty God, that they who in afflicting their flesh, abstain from food, may, by following justice, fast from sin. Thro’ our Lord.",
+      "page": 196,
+      "scan": "https://archive.org/details/missal0000vari/page/n263/mode/1up"
+    },
+    "lent3-sun": {
+      "title": "Third Sunday in Lent",
+      "text": "We beseech thee, almighty God, regard the desires of the humble, and stretch forth the right hand of thy majesty to be our defence. Through our Lord.",
+      "page": 179,
+      "scan": "https://archive.org/details/missal0000vari/page/n246/mode/1up"
+    },
+    "lent3-thu": {
+      "title": "Thursday after III. Sunday in Lent",
+      "text": "May the blessed solemnity of thy saints Cosmas and Damian magnify thee, O Lord; by which thou hast both granted eternal glory to them, and help to us by thy ineffable providence. Through.",
+      "page": 190,
+      "scan": "https://archive.org/details/missal0000vari/page/n257/mode/1up"
+    },
+    "lent3-tue": {
+      "title": "Tuesday after III. Sunday in Lent",
+      "text": "Graciously hear us, O almighty and merciful God; and favourably grant to us the gifts of salutary temperance. Through our Lord.",
+      "page": 185,
+      "scan": "https://archive.org/details/missal0000vari/page/n252/mode/1up"
+    },
+    "lent3-wed": {
+      "title": "Wednesday after III. Sunday in Lent",
+      "text": "Grant us, we beseech thee, O Lord, that, taught by wholesome fasting, and abstaining from noxious vices, we may more readily obtain thy mercy. Through our Lord.",
+      "page": 187,
+      "scan": "https://archive.org/details/missal0000vari/page/n254/mode/1up"
+    },
+    "lent4-fri": {
+      "title": "Friday after IV. Sunday in Lent",
+      "text": "O God, who renewest the world by unspeakable mysteries, grant, we beseech thee, that thy church may profit by thy eternal institutions, and not be deprived of temporal help. Through our Lord.",
+      "page": 216,
+      "scan": "https://archive.org/details/missal0000vari/page/n283/mode/1up"
+    },
+    "lent4-mon": {
+      "title": "Monday after IV. Sunday in Lent",
+      "text": "Grant, we beseech thee, almighty God, that, celebrating with yearly devotion these sacred fasts, we may please thee both in body and mind. Through our Lord.",
+      "page": 203,
+      "scan": "https://archive.org/details/missal0000vari/page/n270/mode/1up"
+    },
+    "lent4-sat": {
+      "title": "Saturday after IV. Sunday in Lent",
+      "text": "May the affection of our devotion be made fruitful by thy grace, we beseech thee, O Lord; for then will our fasts avail us, when they are pleasing to thy mercy. Through our Lord.",
+      "page": 220,
+      "scan": "https://archive.org/details/missal0000vari/page/n287/mode/1up"
+    },
+    "lent4-sun": {
+      "title": "Fourth Sunday in Lent",
+      "text": "Grant, we beseech thee, almighty God, that we who justly suffer for our deeds may be relieved by the consolation of thy grace. Through our Lord.",
+      "page": 201,
+      "scan": "https://archive.org/details/missal0000vari/page/n268/mode/1up"
+    },
+    "lent4-thu": {
+      "title": "Thursday after IV. Sunday in Lent",
+      "text": "Grant, we beseech thee, almighty God, that we who are chastised by the fasts we have undertaken, may rejoice with holy devotion; that our earthly affections being weakened, we may more easily grasp heavenly things. Through our Lord.",
+      "page": 213,
+      "scan": "https://archive.org/details/missal0000vari/page/n280/mode/1up"
+    },
+    "lent4-tue": {
+      "title": "Tuesday after IV. Sunday in Lent",
+      "text": "We beseech thee, O Lord, that the fasts of this holy observance may make us to grow in holy conversation, and procure us the continual aid of thy loving-kindness. Through our Lord.",
+      "page": 206,
+      "scan": "https://archive.org/details/missal0000vari/page/n273/mode/1up"
+    },
+    "lent4-wed": {
+      "title": "Wednesday after IV. Sunday in Lent",
+      "text": "O God, who grantest the reward of their merits to the just, and pardon to sinners through their fasts; have mercy on thy suppliants, that the confession of our guilt may prepare us to receive the forgiveness of our sins. Through our Lord.",
+      "page": 209,
+      "scan": "https://archive.org/details/missal0000vari/page/n276/mode/1up"
+    },
+    "lent5-fri": {
+      "title": "Friday in Passion Week",
+      "text": "Mercifully infuse thy grace into our hearts, we beseech thee, O Lord; that refraining from sin by voluntary chastisement, we may be rather afflicted in time than condemned to punishment for eternity. Through our Lord.",
+      "page": 236,
+      "scan": "https://archive.org/details/missal0000vari/page/n303/mode/1up"
+    },
+    "lent5-mon": {
+      "title": "Monday in Passion Week",
+      "text": "Sanctify our fasts, we beseech thee, O Lord; and mercifully bestow upon us the pardon of all our faults. Through our Lord.",
+      "page": 225,
+      "scan": "https://archive.org/details/missal0000vari/page/n292/mode/1up"
+    },
+    "lent5-sat": {
+      "title": "Saturday in Passion Week",
+      "text": "May the people, we beseech thee, O Lord, who are dedicated to thee increase in the affections of pious devotion; that, being taught by holy actions, they may increase the more in gifts, according as they become more pleasing in the sight of thy majesty. Through our Lord.",
+      "page": 239,
+      "scan": "https://archive.org/details/missal0000vari/page/n306/mode/1up"
+    },
+    "lent5-sun": {
+      "title": "Passion Sunday",
+      "text": "We beseech thee, almighty God, graciously to look upon thy family; that by thy bounty it may be governed in body, and by thy protection be guarded in mind. Through our Lord.",
+      "page": 223,
+      "scan": "https://archive.org/details/missal0000vari/page/n290/mode/1up"
+    },
+    "lent5-thu": {
+      "title": "Thursday in Passion Week",
+      "text": "Grant, we beseech thee, almighty God, that the dignity of human nature, which has been impaired by intemperance, may be restored by the practice of salutary self-denial. Through our Lord.",
+      "page": 233,
+      "scan": "https://archive.org/details/missal0000vari/page/n300/mode/1up"
+    },
+    "lent5-tue": {
+      "title": "Tuesday in Passion Week",
+      "text": "May our fasts be acceptable to thee, O Lord; and by expiating our sins render us worthy of thy grace, and conduct us at last to eternal remedies. Through our Lord.",
+      "page": 228,
+      "scan": "https://archive.org/details/missal0000vari/page/n295/mode/1up"
+    },
+    "lent5-wed": {
+      "title": "Wednesday in Passion Week",
+      "text": "We beseech thee, O God, by the sanctification of this fast, mercifully to enlighten the hearts of thy faithful; and grant unto those upon whom thou bestowest the grace of devotion a favourable hearing when they call upon thee. Through our Lord.",
+      "page": 230,
+      "scan": "https://archive.org/details/missal0000vari/page/n297/mode/1up"
+    },
+    "palm-sun": {
+      "title": "Palm Sunday",
+      "text": "Almighty and everlasting God, who didst cause our Saviour to take upon him our flesh, and to suffer death upon the cross, that all mankind should imitate the example of his humility; mercifully grant that we may deserve both to keep in mind the lessons of his patience, and also to be made partakers of his resurrection. Through the same Lord.",
+      "page": 252,
+      "scan": "https://archive.org/details/missal0000vari/page/n319/mode/1up"
+    }
+  },
+  "holyWeek": [
+    {
+      "key": "palm-sun",
+      "title": "Palm Sunday",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "Almighty and everlasting God, who didst cause our Saviour to take upon him our flesh, and to suffer death upon the cross, that all mankind should imitate the example of his humility; mercifully grant that we may deserve both to keep in mind the lessons of his patience, and also to be made partakers of his resurrection. Through the same Lord."
+          ],
+          "pages": [
+            252
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n319/mode/1up"
+          ]
+        },
+        {
+          "id": "blessing-of-palms",
+          "title": "The blessing of the palms",
+          "kind": "prayer",
+          "paragraphs": [
+            "Increase the faith of those that hope in thee, O God, and mercifully hear the prayers of thy suppliants: let thy multiplied mercy descend upon us; may these branches of palm or olive be ✠ blessed: and, as in a figure of thy church thou didst multiply Noe going forth out of the ark, and Moses going out of Egypt with the children of Israel; so may we go forth to meet Christ with good works, bearing palms and branches of olive; and through him may we enter into eternal joy: who liveth and reigneth with thee.",
+            "World without end. R. Amen."
+          ],
+          "pages": [
+            244
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n311/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "holy-mon",
+      "title": "Monday of Holy Week",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "Grant, we beseech thee, almighty God, that we who fail, through our infirmity, in so many difficulties, may be relieved by the passion of thy Son interceding for us: who liveth."
+          ],
+          "pages": [
+            262
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n329/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "holy-tue",
+      "title": "Tuesday of Holy Week",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "O Almighty and everlasting God, grant us so to celebrate the mysteries of our Lord’s passion, that we may deserve to receive thy pardon. Through the same our Lord Jesus Christ."
+          ],
+          "pages": [
+            264
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n331/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "holy-wed",
+      "title": "Wednesday of Holy Week",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "O God, who wast pleased that thy Son should undergo for us the ignominy of the cross, that thou mightest drive away from us the power of the enemy; grant to us thy servants that we may obtain the grace of resurrection. Through the same Lord."
+          ],
+          "pages": [
+            273
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n340/mode/1up"
+          ]
+        },
+        {
+          "id": "prayer-after-kyrie",
+          "title": "The prayer after the Kyrie",
+          "kind": "prayer",
+          "paragraphs": [
+            "Let us pray. Let us kneel. R. Arise.",
+            "Grant, we beseech thee, almighty God, that we who are continually afflicted through our excesses, may be delivered by the passion of thy only-begotten Son: who liveth."
+          ],
+          "pages": [
+            272
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n339/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "holy-thu",
+      "title": "Holy Thursday",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "O God, from whom Judas received the punishment of his guilt, and the good thief the reward of his confession; grant us the effect of thy clemency, that as our Lord Jesus Christ, in his passion, gave to each a different retribution according to his desert, so he would deliver us from our old sins, and grant us the grace of his resurrection: who liveth and reigneth."
+          ],
+          "pages": [
+            282
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n349/mode/1up"
+          ]
+        },
+        {
+          "id": "mandatum-new-commandment",
+          "title": "At the washing of feet: A new commandment",
+          "kind": "antiphon",
+          "paragraphs": [
+            "A new commandment I give unto you, that you love one another as I have loved you, saith the Lord.",
+            "Blessed are the undefiled in the way, who walk in the law of the Lord."
+          ],
+          "pages": [
+            286
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n353/mode/1up"
+          ]
+        },
+        {
+          "id": "mandatum-ubi-caritas",
+          "title": "At the washing of feet: Ubi caritas",
+          "kind": "antiphon",
+          "paragraphs": [
+            "Where charity and love is, there God is.",
+            "V. The love of Christ hath gathered us together in one.",
+            "V. Let us rejoice and be glad in him.",
+            "V. Let us fear and love the living God.",
+            "V. And let us love him with a sincere heart.",
+            "Where charity and love is, there God is.",
+            "V. When therefore we are gathered together in one.",
+            "V. Let us take heed not to be divided in mind.",
+            "V. Let malignant quarrels cease, let all strife cease.",
+            "V. And let Christ our God be in the midst of us.",
+            "Where charity and love are, there God is.",
+            "V. Together also with the blessed may we see,",
+            "V. Thy face in glory, Christ our God:",
+            "V. A joy that is immense and good,",
+            "V. for endless ages. Amen."
+          ],
+          "pages": [
+            288
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n355/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "good-fri",
+      "title": "Good Friday",
+      "sections": [
+        {
+          "id": "prayer-after-first-lesson",
+          "title": "The prayer after the first lesson",
+          "kind": "prayer",
+          "paragraphs": [
+            "Let us pray. Let us kneel. Arise.",
+            "O God, from whom Judas received the punishment of his guilt, and the good thief the reward of his confession; grant us the effect of thy clemency, that as our Lord Jesus Christ, in his passion, gave to each a different retribution according to his desert, so he would deliver us from our old sins, and grant us the grace of his resurrection: who liveth."
+          ],
+          "pages": [
+            290
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n357/mode/1up"
+          ]
+        },
+        {
+          "id": "solemn-prayers",
+          "title": "The Solemn Prayers",
+          "kind": "solemn-prayers",
+          "paragraphs": [
+            "Let us pray, dearly beloved, for the holy church of God, that our Lord and God would vouchsafe to pacify, unite, and keep it, throughout the world; subjecting to it principalities and powers: and that he may grant us to lead a peaceful life, and to glorify God the Father almighty.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, who hast revealed thy glory to all nations in Christ, watch over the works of thy mercy: that thy church, spread over the whole world, may persevere with steadfast faith in the confession of thy name. Thro’ the same our Lord. R. Amen.",
+            "Let us pray also for our most holy Pope N., that our God and Lord, who chose him to the pontifical order, may preserve him safe to his holy church, that he may govern the holy people of God.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, by whose judgment all things are established, mercifully regard our prayers, and in thy clemency preserve to us the chief bishop whom thou hast chosen, that the Christian people, who are governed under authority from thee, may under so great a pontiff increase in the merits of their faith. Through our Lord. R. Amen.",
+            "Let us pray also for all bishops, priests, deacons, subdeacons, acolytes, exorcists, lectors, porters, confessors, virgins, widows and for all the holy people of God.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, by whose spirit the whole body of the church is sanctified and governed, graciously hear our supplications for all orders thereof; that, by the gift of thy grace, all in their several degrees may faithfully serve thee. Through our Lord. R. Amen.",
+            "Let us pray also for our catechumens, that our God and Lord would open the ears of their hearts and the gate of mercy; that by the laver of regeneration having received the remission of all their sins, they too may abide in Christ Jesus our Lord.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, who ever makest thy church fruitful with a new progeny, increase the faith and understanding of our catechumens; that, being born again in the font of baptism, they may be joined to the children of thy adoption. Through our Lord. R. Amen.",
+            "Let us, dearly beloved, beseech God the Father almighty to purge the world from all errors; to take away diseases; to keep off famine; to open prisons; to loose chains; to grant to travellers return; to the sick health; to mariners a port of safety.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, the consolation of the sorrowful, the support of the afflicted, may the prayers of those that cry to thee in any tribulation reach thy ears; that all may rejoice that thy mercy helped them in their need. Through our Lord. R. Amen.",
+            "Let us pray also for heretics and schismatics, that our God and Lord would deliver them from all errors, and vouchsafe to call them back to our holy mother, the catholic and apostolic church.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, who savest all, and wouldst not that any should perish, look down upon those souls who are deceived by the deceit of the devil; that, laying aside all the wickedness of heresy, the hearts of those who have gone astray may repent, and return to the unity of thy truth. Through our Lord. R. Amen.",
+            "Let us pray also for the pagans, that God almighty would remove iniquity from their hearts; that, forsaking their idols, they may be converted to the living and true God, and his only Son, Jesus Christ, our God and Lord.",
+            "Let us pray. Let us kneel. R. Arise.",
+            "Almighty and everlasting God, who ever seekest not the death but the life of sinners, mercifully receive our prayer; deliver them from the worship of idols, and join them to thy holy church, to the praise and glory of thy name. Through our Lord. R. Amen."
+          ],
+          "pages": [
+            297,
+            298,
+            299
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n364/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n365/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n366/mode/1up"
+          ],
+          "note": "Two prayers of the 1926 Missal are not shown: the prayer for the emperor, and the prayer for the Jews in its pre-1959 wording. The Church has since revised them."
+        },
+        {
+          "id": "reproaches",
+          "title": "The Reproaches",
+          "kind": "reproaches",
+          "paragraphs": [
+            "V. O my people, what have I done to thee? or in what have I grieved thee? answer me.",
+            "V. Because I led thee out of the land of Egypt, thou hast prepared a cross for thy Saviour.",
+            "O holy God.",
+            "O holy God",
+            "O holy strong one.",
+            "O holy strong one.",
+            "O holy immortal one, have mercy upon us.",
+            "O holy immortal one, have mercy upon us.",
+            "V. Because I led thee out through the desert during forty years, and fed thee with manna, and brought thee into a land exceeding good, thou hast prepared a cross for thy Saviour.",
+            "V. What more ought I to have done for thee that I have not done? I planted thee for my fairest vineyard: and thou hast turned exceeding bitter to me; for thou gavest me vinegar to drink in my thirst, and pierced with a lance thy Saviour’s side.",
+            "V. For thy sake I scourged Egypt with its first-born: and thou didst scourge me and deliver me up.",
+            "V. I led thee out of Egypt, drowning Pharao in the Red Sea: and thou didst deliver me to the chief priests.",
+            "V. I opened the sea before thee: and thou didst open my side with a spear.",
+            "V. I went before thee in a pillar of cloud: and thou ledst me to the judgment-hall of Pilate.",
+            "V. I fed thee with manna through the desert: and thou struckest me with blows and scourges.",
+            "V. I gave thee to drink the water of salvation from the rock: and thou gavest me gall and vinegar.",
+            "V. For thy sake I struck down the kings of the Canaanites: and thou struckest my head with a reed.",
+            "V. I gave thee a royal sceptre: and thou gavest a crown of thorns to my head.",
+            "V. I lifted thee up with great power: and thou didst hang me upon the gibbet of the cross.",
+            "We worship thy cross, O Lord, and praise and glorify thy holy resurrection; for behold, by the wood of the cross came joy into the whole world.",
+            "May God have mercy on us, and bless us:",
+            "May he cause the light of his countenance to shine upon us, and may he have mercy on us."
+          ],
+          "pages": [
+            300,
+            301,
+            302,
+            303
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n367/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n368/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n369/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n370/mode/1up"
+          ]
+        },
+        {
+          "id": "crux-fidelis",
+          "title": "Faithful Cross (Pange lingua)",
+          "kind": "hymn",
+          "paragraphs": [
+            "Faithful Cross, O tree all beauteous,\nTree all peerless and divine!\nNot a grove on earth can show us\nSuch a flower and leaf as thine.\nSweet the nails and sweet the wood\nLaden with so sweet a load.",
+            "Sing, my tongue, the Saviour’s glory,\nTell his triumph far and wide;\nTell aloud the famous story\nOf his body crucified:\nHow upon the Cross a victim,\nVanquishing in death, he died.",
+            "V. Eating of the tree forbidden,\nMan had sunk in Satan’s snare,\nWhen our pitying Creator\nDid this second Tree prepare;\nDestined many ages later,\nThat first evil to repair.",
+            "V. Such the order God appointed\nWhen for sin he would atone;\nTo the serpent thus opposing\nSchemes yet deeper than his own.\nThence the remedy procuring,\nWhence the fatal wound had grown.",
+            "V. So when now at length the fulness\nOf the sacred time drew nigh,\nThen the Son, the world’s Creator,\nLeft his Father’s throne on high;\nFrom a Virgin’s womb appearing,\nClothed in our mortality.",
+            "V. All within a lowly manger,\nLo, a tender babe he lies!\nSee his gentle Virgin mother\nLull to sleep his infant cries!\nWhile the limbs of God Incarnate\nRound with swathing bands she ties.",
+            "V. Thus did Christ to perfect manhood\nIn our mortal flesh attain:\nThen of his free choice he goeth\nTo a death of bitter pain;\nAnd as a lamb, upon the altar\nOf the Cross, for us is slain.",
+            "V. Lo, with gall his thirst he quenches!\nSee the thorns upon his brow!\nNails his tender flesh are rending!\nSee, his side is opened now!\nWhence, to cleanse the whole creation\nStreams of blood and water flow.",
+            "V. Lofty Tree, bend down thy branches,\nTo embrace thy sacred load;\nOh, relax the native tension\nOf that all too rigid wood;\nGently, gently bear the members\nOf thy dying King and God.",
+            "V. Tree, which solely wast found worthy\nThe world’s great Victim to sustain;\nHarbour from the raging tempest!\nArk, that saved the world again!\nTree, with sacred Blood anointed\nOf the Lamb for sinners slain.",
+            "V. Blessing, honour everlasting,\nTo the immortal Deity:\nTo the Father, Son, and Spirit,\nEqual praises ever be:\nGlory through the earth and heaven\nTo Trinity in Unity. Amen."
+          ],
+          "pages": [
+            303,
+            304,
+            305,
+            306
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n370/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n371/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n372/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n373/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "holy-sat",
+      "title": "Holy Saturday",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "O God, who dost illustrate this most holy night by the glory of our Lord’s resurrection; preserve in the new progeny of thy family the spirit of adoption which thou hast given; that, renewed in body and mind, they may exhibit in thy sight a pure service. Through the same Lord."
+          ],
+          "pages": [
+            336
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n403/mode/1up"
+          ]
+        },
+        {
+          "id": "exsultet",
+          "title": "The Exsultet",
+          "kind": "prayer",
+          "paragraphs": [
+            "Let the angelic choirs of heaven now rejoice; let the divine mysteries rejoice; and let the trumpet of salvation sound for the victory of so great a King. Let the earth also rejoice, made radiant by such splendour; and, enlightened with the brightness of the eternal King, let it know that the whole world’s darkness is scattered. Let mother church too rejoice, adorned with the brightness of so great a light; and may this temple resound with the loud voices of the people. Wherefore, I beseech you, most dear brethren, who are here present in the wonderful brightness of this holy light, to invoke with me the mercy of almighty God. That he who hath vouchsafed to number me among the levites without any merit of mine, would pour forth his brightness upon me, and enable me to perfect the praise of this light. Through Jesus Christ our Lord, his Son: who liveth and reigneth with him in the unity of the Holy Spirit, God. World without end. R. Amen.",
+            "V. The Lord be with you.",
+            "R. And with thy spirit.",
+            "V. Raise up you hearts.",
+            "R. We have lifted them up to the Lord.",
+            "V. Let us give thanks to the Lord our God.",
+            "R. It is meet and just.",
+            "It is truly meet and right to proclaim with all affection of heart and mind and by the service of our voice the God invisible, the Father everlasting, and his only-begotten Son, our Lord Jesus Christ, who for us repaid to his eternal Father the debt of Adam, and by the pitiful shedding of his blood cancelled our ancient bond of sin. For this is the festival of the pasch, in which is slain that true Lamb by whose blood the doorposts of the faithful are hallowed. This is the night in which thou didst first bring out of Egypt our fathers the children of Israel, and lead them dry foot through the Red Sea. This then is the night which cleansed the darkness of sin by the light of the pillar. This is the night which at this season throughout the whole world restores to grace and yokes to holiness those that believe in Christ, detaching them from worldly vice and the foulness of sin. This is the night in which Christ burst through the bonds of death and rose victorious from hell. For it would have been no boon to be born had we not had the boon of being redeemed. How wonderful the condescension of thy mercy towards us! How incomparable the predilection of thy love! That thou mightest ransom thy slave, thou gavest up thine own Son! Oh, truly necessary was Adam’s sin, that was blotted out by the death of Christ! Oh, happy was his fault, that was worthy of so great a Redeemer! Oh, how blessed is this night which alone was worthy to know the season and the hour in which Christ rose again from hell! This is the night of which it was written: And the night shall be enlightened as the day: and the night is my light in my enjoyments. Therefore does the holiness of this night banish crime, wash away sin, and restore innocence to those that have fallen and gladness to those that are sad. It drives forth hate; it brings peace; it curbs haughtiness.",
+            "In the grace of this night, then, O my Father, receive for an evening sacrifice this incense, which holy church renders unto thee in the solemn offering of this candle of wax, wrought by bees, at the hand of her ministers. Now we know the glory of this column which God’s bright flame kindles.",
+            "Though divided into parts, yet it suffers no loss from the light which it imparts. For it is fed from the melted wax which the mother bee wrought for the substance of this precious lamp.",
+            "O truly blessed is the night which despoiled the Egyptians and enriched the Hebrews! the night in which things of heaven are joined to those of earth, things of God to those of man! We therefore pray thee, O Lord, that this candle, which is hallowed in honour of thy name, may avail and fail not to scatter the darkness of this night. May it be received as a sweet savour and be mingled with the lights of heaven. May the morning star find its flame alight: that morning star which knows no setting; which came back from hell and shed its kindly light upon mankind. We therefore beseech thee, O Lord, grant a season of peace at this time of Easter gladness to us thy servants, and to all the clergy, to thy devout people, and especially to our most blessed pope N. and to N. our bishop; and ever rule and guide and keep them under thy protection. Look down also upon our most devoted emperor (if he is not crowned, say: emperor elect N., and as thou, O God, foreknowest his desires by the unthinkable gift of thy loving kindness and mercy, grant him, with all his people, the rest of everlasting peace and a heavenly victory. Through the same Lord Jesus Christ thy Son, who liveth and reigneth with thee in the unity of the Holy Ghost, God, for ever and ever. R. Amen."
+          ],
+          "pages": [
+            310,
+            311,
+            312,
+            313
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n377/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n378/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n379/mode/1up",
+            "https://archive.org/details/missal0000vari/page/n380/mode/1up"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "easter-sun",
+      "title": "Easter Sunday",
+      "sections": [
+        {
+          "id": "collect",
+          "title": "The Collect",
+          "kind": "collect",
+          "paragraphs": [
+            "O God, who on this day, through thine only-begotten Son, didst overcome death and open unto us the gate of everlasting life; as by thy preventing grace thou dost breathe on the desires of our hearts, so do thou ever accompany them with thy help. Through the same Lord."
+          ],
+          "pages": [
+            339
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n406/mode/1up"
+          ]
+        },
+        {
+          "id": "sequence",
+          "title": "The Sequence: Victimae paschali",
+          "kind": "sequence",
+          "paragraphs": [
+            "Forth to the paschal Victim, Christians, bring\nYour sacrifice of praise:\nThe Lamb redeems the sheep;\nAnd Christ the sinless One,\nHath to the Father sinners reconciled.\nTogether, death and life\nIn a strange conflict strove.\nThe Prince of life, who died,\nNow lives and reigns.\nWhat thou sawest, Mary, say,\nAs thou wentest on the way.\nI saw the tomb wherein the living one had lain;\nI saw his glory as He rose again;\nNapkin and linen clothes, and angels twain:\nYea, Christ is risen, my hope, and he\nWill go before you into Galilee.\nWe know that Christ indeed has risen from the grave:\nHail, thou King of Victory,\nHave mercy, Lord, and save."
+          ],
+          "pages": [
+            340
+          ],
+          "scans": [
+            "https://archive.org/details/missal0000vari/page/n407/mode/1up"
+          ]
+        }
+      ]
+    }
+  ],
+  "stations": {
+    "opening": {
+      "title": "The Stations of the Cross",
+      "paragraphs": [
+        "My Lord Jesus Christ, Thou hast made this journey to die for me with love unutterable, and I have so many times unworthily abandoned Thee; but now I love Thee with my whole heart, and because I love Thee I repent sincerely for having ever offended Thee. Pardon me, my God, and permit me to accompany Thee on this journey. Thou goest to die for love of me; I wish also, my beloved Redeemer, to die for love of Thee. My Jesus, I will live and die always united to Thee.",
+        "Dear Jesus, Thou dost go to die\nFor very love of me:\nAh! let me bear Thee company;\nI wish to die with Thee."
+      ],
+      "pages": [
+        348,
+        349
+      ],
+      "scans": [
+        "https://archive.org/details/manualofprayersf00cath/page/n361/mode/1up",
+        "https://archive.org/details/manualofprayersf00cath/page/n362/mode/1up"
+      ]
+    },
+    "stations": [
+      {
+        "number": 1,
+        "title": "Jesus is condemned to death",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how Jesus, after having been scourged and crowned with thorns, was unjustly condemned by Pilate to die on the Cross.",
+        "prayer": "My adorable Jesus, it was not Pilate; no, it was my sins that condemned Thee to die. I beseech Thee, by the merits of this sorrowful journey, to assist my soul in her journey towards eternity. I love Thee, my beloved Jesus; I love Thee more than myself; I repent with my whole heart of having offended Thee. Never permit me to separate myself from Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          349,
+          350
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n362/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n363/mode/1up"
+        ],
+        "painting": "stations-01"
+      },
+      {
+        "number": 2,
+        "title": "Jesus is made to bear His Cross",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how Jesus, in making this journey with the Cross on His shoulders, thought of us, and for us offered to His Father the death He was about to undergo.",
+        "prayer": "My most beloved Jesus, I embrace all the tribulations Thou hast destined for me until death. I beseech Thee, by the merits of the pain Thou didst suffer in carrying Thy Cross, to give me the necessary help to carry mine with perfect patience and resignation. I love Thee, Jesus my love; I repent of having offended Thee. Never permit me to separate myself from Thee again. Grant that I may love Thee always, and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          350
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n363/mode/1up"
+        ],
+        "painting": "stations-02"
+      },
+      {
+        "number": 3,
+        "title": "Jesus falls the first time under His Cross",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider this first fall of Jesus under His Cross. His flesh was torn by the scourges, His head crowned with thorns, and He had lost a great quantity of blood. He was so weakened that He could scarcely walk, and yet He had to carry this great load upon His shoulders. The soldiers struck Him rudely, and thus He fell several times in His journey.",
+        "prayer": "My Jesus, it is not the weight of the Cross, but of my sins, which has made Thee suffer so much pain. Ah! by the merits of this first fall, deliver me from the misfortune of falling into mortal sin. I love Thee, O my Jesus, with my whole heart; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always, and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          351
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n364/mode/1up"
+        ],
+        "painting": "stations-03"
+      },
+      {
+        "number": 4,
+        "title": "Jesus meets His afflicted Mother",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider the meeting of the Son and the Mother, which took place on this journey. Jesus and Mary looked at each other, and their looks became as so many arrows to wound those hearts which loved each other so tenderly.",
+        "prayer": "My most loving Jesus, by the sorrow that Thou didst experience in this meeting, grant me the grace of a truly devoted love for Thy most holy Mother. And thou, my Queen, who wast overwhelmed with sorrow, obtain for me, by thy intercession, a continual and tender remembrance of the Passion of thy Son. I love Thee, Jesus my love; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee, and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          351,
+          352
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n364/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n365/mode/1up"
+        ],
+        "painting": "stations-04"
+      },
+      {
+        "number": 5,
+        "title": "The Cyrenian helps Jesus to carry His Cross",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how the Jews, seeing that at each step Jesus from weakness was on the point of expiring, and fearing that He would die on the way, when they wished Him to die the ignominious death of the Cross, constrained Simon the Cyrenian to carry the Cross behind our Lord.",
+        "prayer": "My most beloved Jesus, I will not refuse the Cross as the Cyrenian did; I accept it—I embrace it. I accept in particular the death Thou hast destined for me, with all the pains which may accompany it; I unite it to Thy death—I offer it to Thee. Thou hast died for love of me; I will die for love of Thee, and to please Thee. Help me by Thy grace. I love Thee, Jesus my love; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          352,
+          353
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n365/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n366/mode/1up"
+        ],
+        "painting": "stations-05"
+      },
+      {
+        "number": 6,
+        "title": "Veronica wipes the face of Jesus",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how the holy woman named Veronica, seeing Jesus so afflicted, and His face bathed in sweat and blood, presented Him with a towel, with which He wiped His adorable face, leaving on it the impression of His holy countenance.",
+        "prayer": "My most beloved Jesus, Thy face was beautiful before, but in this journey it has lost all its beauty, and wounds and blood have disfigured it. Alas! my soul also was once beautiful, when it received Thy grace in Baptism; but I have disfigured it since by my sins. Thou alone, my Redeemer, canst restore it to its former beauty. Do this by Thy passion, and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          353,
+          354
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n366/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n367/mode/1up"
+        ],
+        "painting": "stations-06"
+      },
+      {
+        "number": 7,
+        "title": "Jesus falls the second time",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider the second fall of Jesus under the Cross—a fall which renews the pain of all the wounds of the head and members of our afflicted Lord.",
+        "prayer": "My most gentle Jesus, how many times Thou hast pardoned me, and how many times have I fallen again, and begun again to offend Thee! Oh! by the merits of this new fall, give me the necessary helps to persevere in Thy grace until death. Grant that in all temptations which assail me I may always commend myself to Thee. I love Thee, Jesus my love, with my whole heart; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          354
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n367/mode/1up"
+        ],
+        "painting": "stations-07"
+      },
+      {
+        "number": 8,
+        "title": "Jesus speaks to the women of Jerusalem",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how those women wept with compassion at seeing Jesus in such a pitiable state, streaming with blood, as He walked along. But Jesus said to them: Weep not for Me, but for your children.",
+        "prayer": "My Jesus, laden with sorrows, I weep for the offences I have committed against Thee, because of the pains they have deserved, and still more because of the displeasure they have caused Thee, who hast loved me so much. It is Thy love, more than the fear of hell, which causes me to weep for my sins. My Jesus, I love Thee more than myself; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          355
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n368/mode/1up"
+        ],
+        "painting": "stations-08"
+      },
+      {
+        "number": 9,
+        "title": "Jesus falls the third time",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider the third fall of Jesus Christ. His weakness was extreme, and the cruelty of His executioners excessive, who tried to hasten His steps when He had scarcely strength to move.",
+        "prayer": "Ah, my outraged Jesus, by the merits of the weakness Thou didst suffer in going to Calvary, give me strength sufficient to conquer all human respect, and all my wicked passions, which have led me to despise Thy friendship. I love Thee, Jesus my love, with my whole heart; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          355,
+          356
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n368/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n369/mode/1up"
+        ],
+        "painting": "stations-09"
+      },
+      {
+        "number": 10,
+        "title": "Jesus is stripped of His garments",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider the violence with which the executioners stripped Jesus. His inner garments adhered to His torn flesh, and they dragged them off so roughly that the skin came with them. Compassionate your Saviour thus cruelly treated, and say to Him:",
+        "prayer": "My innocent Jesus, by the merits of the torment Thou has felt, help me to strip myself of all affection to things of earth, in order that I may place all my love in Thee, who art so worthy of my love. I love thee, O Jesus, with my whole heart; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          356,
+          357
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n369/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n370/mode/1up"
+        ],
+        "painting": "stations-10"
+      },
+      {
+        "number": 11,
+        "title": "Jesus is nailed to the Cross",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how Jesus, after being thrown on the Cross, extended His hands, and offered to His Eternal Father the sacrifice of His life for our salvation. These barbarians fastened Him with nails, and then, raising the Cross, allowed Him to die with anguish on this infamous gibbet.",
+        "prayer": "My Jesus! loaded with contempt, nail my heart to Thy feet, that it may ever remain there, to love Thee, and never quit Thee again. I love Thee more than myself; I repent of having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          357
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n370/mode/1up"
+        ],
+        "painting": "stations-11"
+      },
+      {
+        "number": 12,
+        "title": "Jesus dies on the Cross",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how thy Jesus, after three hours’ Agony on the Cross, consumed at length with anguish, abandons Himself to the weight of His body, bows His head and dies.",
+        "prayer": "O my dying Jesus, I kiss devoutly the Cross on which Thou didst die for love of me. I have merited by my sins to die a miserable death, but Thy death is my hope. Ah, by the merits of Thy death, give me grace to die, embracing Thy feet, and burning with love to Thee. I commit my soul into Thy hands. I love Thee with my whole heart; I repent of ever having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          358
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n371/mode/1up"
+        ],
+        "painting": "stations-12"
+      },
+      {
+        "number": 13,
+        "title": "Jesus is taken down from the Cross",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how, after the death of our Lord, two of His disciples, Joseph and Nicodemus, took Him down from the Cross, and placed Him in the arms of His afflicted Mother, who received Him with unutterable tenderness, and pressed Him to her bosom.",
+        "prayer": "O Mother of sorrow, for the love of this Son, accept me for thy servant, and pray to Him for me. And Thou, my Redeemer, since Thou hast died for me, permit me to love Thee; for I wish but Thee, and nothing more. I love Thee, my Jesus, and I repent of ever having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee always; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          358,
+          359
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n371/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n372/mode/1up"
+        ],
+        "painting": "stations-13"
+      },
+      {
+        "number": 14,
+        "title": "Jesus is placed in the sepulchre",
+        "versicle": "We adore Thee, O Christ, and we bless Thee.",
+        "response": "Because by Thy holy Cross Thou hast redeemed the world.",
+        "meditation": "Consider how the disciples carried the body of Jesus to bury it, accompanied by his holy Mother, who arranged it in the sepulchre with her own hands. They then closed the tomb, and all withdrew.",
+        "prayer": "Ah, my buried Jesus, I kiss the stone that encloses Thee. But Thou didst rise again the third day. I beseech Thee by Thy Resurrection, make me rise glorious with Thee at the last day, to be always united with Thee in heaven, to praise Thee and love Thee for ever. I love Thee, and I repent of ever having offended Thee. Never permit me to offend Thee again. Grant that I may love Thee; and then do with me what Thou wilt.",
+        "after": "Our Father. Hail Mary. Glory be to the Father.",
+        "verse": [
+          "Dear Jesus, Thou dost go to die",
+          "For very love of me:",
+          "Ah! let me bear Thee company;",
+          "I wish to die with Thee."
+        ],
+        "pages": [
+          359,
+          360
+        ],
+        "scans": [
+          "https://archive.org/details/manualofprayersf00cath/page/n372/mode/1up",
+          "https://archive.org/details/manualofprayersf00cath/page/n373/mode/1up"
+        ],
+        "painting": "stations-14"
+      }
+    ],
+    "closing": null
+  },
+  "penitentialPsalms": [
+    6,
+    31,
+    37,
+    50,
+    101,
+    129,
+    142
+  ]
+}

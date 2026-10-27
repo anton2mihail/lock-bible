@@ -49,6 +49,7 @@ struct CompanionTodayView: View {
                 .todayZoomSource(.daily(dateKey: dateKey), cornerRadius: 18)
                 ContentMutedText(text: CompanionCalendar.label)
                 AdventTodayCard(now: now, timeZone: timeZone) { onNavigate(.advent) }
+                LentTodayRow(now: now, timeZone: timeZone, onNavigate: onNavigate)
                 YearPlanTodayCard(now: now, timeZone: timeZone, onNavigate: onNavigate)
                 GospelFathersPanel(readings: snapshot.readings)
                 ContentActionRow(title: "Saints & feast days",

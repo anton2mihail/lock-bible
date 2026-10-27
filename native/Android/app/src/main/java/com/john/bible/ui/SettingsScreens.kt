@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
 import com.john.bible.data.*
 
 @Composable internal fun ReadingChoices(store: JohnStore) {
@@ -33,24 +34,37 @@ import com.john.bible.data.*
     ChoiceChips(listOf("system" to "System", "light" to "Light", "dark" to "Dark"), store.appearance) { store.appearance = it }
 }
 
+/**
+ * Settings (1.3.0, as iOS 2.1.1): the root keeps the library purchase, Reading and Translation. Longer, rarely used
+ * sections have their own pages, opened from the rows under "More".
+ */
 @Composable fun SettingsScreen(repo: JohnRepository, store: JohnStore, navigate: (String) -> Unit) {
-    val uri=LocalUriHandler.current
     ReadingPage("Settings") {
         FathersSettingsSection { navigate("fathers-unlock") }
         JohnText("Reading", size = 16, dim = true)
         JohnPanel { ReadingChoices(store) }
-        JohnText("Reading progress", size = 16, dim = true)
-        JohnPanel {
-            JohnRow("Your reading", "${store.readChapterCount()} chapters read · ${store.streak()} day streak") { navigate("progress") }
-            JohnRow("Daily reading reminder", "Choose a delivery time") { navigate("reading-reminder") }
-        }
-        JohnText("Read aloud", size = 16, dim = true)
-        JohnPanel { ReadAloudChoices(store) }
         JohnText("Translation", size = 16, dim = true)
         JohnPanel {
             editionTitles.forEach { (id, title) -> JohnRow(title, listOfNotNull(if (id == "web-ce") "Study translation without Church approval (no imprimatur)" else null, if (store.edition == id) "Selected ✓" else null).joinToString(" · ")) { store.edition = id } }
             JohnText("3 complete Catholic editions are available offline. Your choice also controls the rotating verse and widget.", size = 12, dim = true)
         }
+        JohnText("More", size = 16, dim = true)
+        JohnPanel {
+            JohnRow("Verse & Widgets", "Verse pool, how often it changes, and widgets") { navigate("settings-verse") }
+            JohnRow("Notifications", "Saints, feasts & daily readings") { navigate("calendar-notifications") }
+            JohnRow("Rosary reminder", "Set a daily time for prayer") { navigate("rosary-reminder") }
+            JohnRow("Reading Progress", "${store.readChapterCount()} chapters read · reading plans and reminder") { navigate("progress") }
+            JohnRow("Read Aloud", "Reading speed and voice") { navigate("settings-read-aloud") }
+            JohnRow("About John 1:1", "Sources, credits and privacy") { navigate("settings-about") }
+        }
+    }
+}
+
+/** Verse & Widgets: the verse pool, how often it changes, and how to add a widget. */
+@Composable fun SettingsVerseScreen(store: JohnStore, back: () -> Unit) {
+    val intervals = listOf(10 to "Every 10 minutes", 15 to "Every 15 minutes", 30 to "Every 30 minutes", 60 to "Every hour", 180 to "Every 3 hours", 360 to "Every 6 hours", 720 to "Every 12 hours", 1440 to "Once a day")
+    var open by remember { mutableStateOf(false) }
+    ReadingPage("Verse & Widgets", back = back) {
         JohnText("Verse pool", size = 16, dim = true)
         JohnPanel {
             ChoiceChips(listOf("full" to "Full Bible", "ot" to "Old Testament", "nt" to "New Testament"), store.scope) { store.scope = it }
@@ -58,18 +72,26 @@ import com.john.bible.data.*
         }
         JohnText("Verse rotation", size = 16, dim = true)
         JohnPanel {
-            listOf(10 to "Every 10 minutes", 15 to "Every 15 minutes", 30 to "Every 30 minutes", 60 to "Every hour", 180 to "Every 3 hours", 360 to "Every 6 hours", 720 to "Every 12 hours", 1440 to "Once a day").forEach { (minutes, title) -> JohnRow(title, if (store.intervalMinutes == minutes) "Selected ✓" else "") { store.intervalMinutes = minutes } }
+            Box {
+                JohnRow("Changes", intervals.firstOrNull { it.first == store.intervalMinutes }?.second ?: "Every hour") { open = true }
+                DropdownMenu(open, { open = false }) {
+                    intervals.forEach { (minutes, title) -> DropdownMenuItem(text = { Text(title + if (store.intervalMinutes == minutes) " ✓" else "") }, onClick = { store.intervalMinutes = minutes; open = false }) }
+                }
+            }
             JohnText("How often the Verse of the Moment and your widget change.", size = 12, dim = true)
         }
-        JohnText("Widgets", size = 16, dim = true)
+        JohnText("Add a widget", size = 16, dim = true)
         JohnPanel { JohnText("1. Touch and hold an empty area on your home screen.\n2. Tap Widgets.\n3. Choose John 1:1.\n4. Add Daily Verse or Daily Reading.", size = 15) }
-        JohnText("Notifications", size = 16, dim = true)
-        JohnPanel {
-            JohnRow("Saints, feasts & daily readings", "Choose a delivery time and turn notices on or off") { navigate("calendar-notifications") }
-            JohnRow("Rosary reminder", "Set a daily time for prayer") { navigate("rosary-reminder") }
-        }
-        JohnPanel { JohnRow("Privacy policy", "How John handles your notes and device services") { uri.openUri("https://anton2mihail.github.io/lock-bible/privacy.html") } }
-        JohnText("John 1:1 · Scripture & Prayer", size = 16, dim = true)
+    }
+}
+
+@Composable fun SettingsReadAloudScreen(store: JohnStore, back: () -> Unit) {
+    ReadingPage("Read Aloud", back = back) { JohnPanel { ReadAloudChoices(store) } }
+}
+
+@Composable fun SettingsAboutScreen(back: () -> Unit) {
+    val uri = LocalUriHandler.current
+    ReadingPage("About John 1:1", back = back) {
         JohnPanel {
             JohnText("A little closer to God, every day.")
             JohnText("United States · Roman Rite. Local observances can differ.", size = 14)
@@ -77,6 +99,7 @@ import com.john.bible.data.*
             JohnText("Reading metadata: catholic-readings-api (MIT). Celebration calendar: romcal (MIT). Reflections stay on this device. Confession notes are never saved.", size = 14)
             JohnText("The Douay–Rheims and the Latin Vulgate are approved Catholic texts. The World English Bible Catholic Edition is a study translation without Church approval (no imprimatur). All three are in the public domain.", size = 12, dim = true)
         }
+        JohnPanel { JohnRow("Privacy policy", "How John handles your notes and device services") { uri.openUri("https://anton2mihail.github.io/lock-bible/privacy.html") } }
     }
 }
 
@@ -114,7 +137,7 @@ import com.john.bible.data.*
     if (reset) AlertDialog(onDismissRequest = { reset = false }, title = { JohnText("Reset reading progress?", size = 24) }, text = { JohnText("This clears chapters read and the current reading plan.") }, confirmButton = { TextButton(onClick = { store.resetProgress(); reset = false }) { Text("Reset") } }, dismissButton = { TextButton(onClick = { reset = false }) { Text("Cancel") } })
 }
 
-@Composable private fun ReadAloudChoices(store: JohnStore) {
+@Composable internal fun ReadAloudChoices(store: JohnStore) {
     val context = LocalContext.current
     var voices by remember { mutableStateOf(emptyList<Voice>()) }
     var status by remember { mutableStateOf("Opening installed voices…") }
