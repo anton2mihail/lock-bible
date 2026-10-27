@@ -5,11 +5,9 @@ below (4 items, release automatically after approval). Mac: compatibility verifi
 (Anton: assume Mac tested). Version text: What's New as below, keywords with "stations" in place of "widget", three
 new lines in the description (A Year with the Fathers; Lent and Holy Week; the Stations), reviewer notes for 2.3.0.
 
-**Play:** production release draft "8 (1.3.0) — A Year with the Fathers and Lent" saved with the release notes
-below. It has no bundle yet: the browser upload limit is 10 MB, so **Anton uploads**
-`~/.local/share/john-android/releases/com.john.bible-8-9fa67f46d3c3.aab` (Production → the draft → Upload), then
-Next → Save → Publishing overview → Send changes for review. 1.2.0 (6) is still in review; sending 1.3.0 restarts
-that review with 1.3.0 in its place.
+**Play (27 Oct 2026, 14:3x):** Anton uploaded the 1.3.0 (8) bundle; production release "8 (1.3.0) — A Year with the
+Fathers and Lent" (full rollout) sent for review with the listing changes. This restarted the review: 1.2.0 (6) never
+ships, 1.3.0 contains it. One warning only: no native debug symbols uploaded. Supported phones unchanged (11,471).
 
 ## In this release
 
