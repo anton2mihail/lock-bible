@@ -1,5 +1,6 @@
 package com.john.bible.ui
 
+import androidx.compose.ui.platform.testTag
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.pager.HorizontalPager
@@ -139,6 +140,7 @@ fun TodayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit
         JohnArtCard(seasonArt(season), title, "${seasonName(season)} · Today’s readings") { navigate("daily/$now") }
         JohnText("United States · Roman Rite", dim=true, size=14)
         AdventTodayRow(now,navigate)
+        LentTodayRow(repo,now,navigate)
         YearPlanTodayRow(repo,store,now,navigate)
         GospelFathersPanel(repo,readings,navigate)
         JohnRow("Saints & feast days", "Vatican News · Byzantine Catholic · Lives of the saints") { navigate("saints") }
@@ -225,6 +227,7 @@ fun PrayScreen(repo: JohnRepository, store: JohnStore, navigate: (String)->Unit)
     JohnPage("Prayer","PRAYER LIBRARY","Everyday prayer, the Rosary, and Catholic novenas. A little space to be with God.",sansTitle=true) {
         JohnArtCard("mary","Pray the Rosary","${mysteryTitle(com.john.bible.data.CompanionCalendar.rosarySet(LocalDate.now()))} · $reminder") { navigate("rosary") }
         JohnRow("Our Lady of Sorrows","The Servite Rosary of the Seven Sorrows") { navigate("rosary/seven-sorrows") }
+        Box(Modifier.testTag("pray-stations")) { JohnRow("The Stations of the Cross","St Alphonsus Liguori · Fourteen stations",image="stations-01") { navigate("stations") } }
         JohnRow("My Saints","Your saints, prayers, and feast days") { navigate("my-saints") }
         JohnRow("Everyday prayers","Traditional prayers and prayers of the saints") { navigate("prayers") }
         JohnRow("Pray with Scripture","A quiet guide to lectio divina") { navigate("lectio") }
@@ -266,6 +269,9 @@ fun DevotionalScreen(route: String, repo: JohnRepository, store: JohnStore, navi
         "novena" -> NovenaDetail(parts.getOrNull(1).orEmpty(),catalog,store,back)
         "works" -> WorksLibrary(parts.getOrNull(1),repo,store,navigate,back)
         "advent" -> AdventScreen(repo,navigate,back)
+        "lent" -> LentScreen(repo,navigate,back)
+        "holy-week" -> HolyWeekScreen(repo,navigate,back)
+        "stations" -> StationsScreen(repo,back)
         "year" -> YearPlanScreen(repo,store,navigate,back)
         "year-day" -> YearDayScreen(parts.getOrNull(1)?.toIntOrNull() ?: 1,repo,store,navigate,back)
         "fathers-unlock" -> FathersUnlockScreen(libraryTotals(repo),back)
@@ -537,7 +543,8 @@ private fun WorkReader(id:String,initialSection:Int?,repo:JohnRepository,store:J
     val billing=remember { com.john.bible.platform.FathersBilling.get(workContext) }
     LaunchedEffect(Unit) { billing.start() }
     // 2.1.0 parity: a locked section is never read from the database. The unlock page shows in its place.
-    val locked=work!=null && sections.isNotEmpty() && !billing.isUnlocked && !com.john.bible.data.FathersAccess.isSectionFree(id,section.coerceIn(0,sections.lastIndex))
+    // 1.3.0: Leo's sermons on Lent and the Passion read free from Ash Wednesday to Easter Sunday.
+    val locked=work!=null && sections.isNotEmpty() && !billing.isUnlocked && !com.john.bible.data.FathersAccess.isSectionFree(id,section.coerceIn(0,sections.lastIndex),com.john.bible.data.FeatureClock.today())
     val selected=remember(id,section,locked) { if(work!=null && sections.isNotEmpty() && !locked) repo.workSection(id,section.coerceIn(0,sections.lastIndex)) else null }
     val colors=LocalJohnColors.current
     val density=LocalDensity.current

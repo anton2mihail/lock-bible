@@ -388,5 +388,173 @@
       1024
     ],
     "output": "john-adaptive-background.png"
+  },
+  "stations-01": {
+    "subject": "Station 1: Jesus is condemned to death",
+    "file": "File:Print, Via Crucis - Station I, Jesus Condemmed to Death, ca. 1749 (CH 18328435).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-02": {
+    "subject": "Station 2: Jesus is made to bear His Cross",
+    "file": "File:Print, Via Crucis - Station II, He takes the Cross on His Shoulders, ca. 1749 (CH 18328437).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-03": {
+    "subject": "Station 3: Jesus falls the first time under His Cross",
+    "file": "File:Print, Via Crucis - Station III, He Falls Beneath the Cross the First Time, ca. 1749 (CH 18328441).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-04": {
+    "subject": "Station 4: Jesus meets His afflicted Mother",
+    "file": "File:Print, Via Crucis - Station IV, He Meets His Mother, ca. 1749 (CH 18328443).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-05": {
+    "subject": "Station 5: The Cyrenian helps Jesus to carry His Cross",
+    "file": "File:Print, Via Crucis - Station V, Simon of Cyrene Helps Him to Carry the Cross, ca. 1749 (CH 18328445).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-06": {
+    "subject": "Station 6: Veronica wipes the face of Jesus",
+    "file": "File:Print, Via Crucis - Station VI, Saint Veronica Wipes His Face with a Veil, ca. 1749 (CH 18328447).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-07": {
+    "subject": "Station 7: Jesus falls the second time",
+    "file": "File:Print, Via Crucis - Station VII, He falls Beneath the Cross the Second Time, ca. 1749 (CH 18328451).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-08": {
+    "subject": "Station 8: Jesus speaks to the women of Jerusalem",
+    "file": "File:Print, Via Crucis - Station VIII, He Consoles the Weeping Women, ca. 1749 (CH 18328455).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-09": {
+    "subject": "Station 9: Jesus falls the third time",
+    "file": "File:Print, Via Crucis - Station IX, He Falls Beneath the Cross the Third Time, ca. 1749 (CH 18328457).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-10": {
+    "subject": "Station 10: Jesus is stripped of His garments",
+    "file": "File:Print, Via Crucis - Station X, Jesus Despoiled, ca. 1749 (CH 18328459).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-11": {
+    "subject": "Station 11: Jesus is nailed to the Cross",
+    "file": "File:Print, Via Crucis - Station XI, Jesus is Nailed to the Cross, ca. 1749 (CH 18328463).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-12": {
+    "subject": "Station 12: Jesus dies on the Cross",
+    "file": "File:Print, Via Crucis - Station XII, The Crucifixion, ca. 1749 (CH 18328465).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-13": {
+    "subject": "Station 13: Jesus is taken down from the Cross",
+    "file": "File:Print, Via Crucis - Station XIII, The Deposition, ca. 1749 (CH 18328467).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
+  },
+  "stations-14": {
+    "subject": "Station 14: Jesus is placed in the sepulchre",
+    "file": "File:Print, Via Crucis - Station XIV, The Entombment, ca. 1749 (CH 18328471).jpg",
+    "artist": "Giovanni Domenico Tiepolo",
+    "year": "c. 1749",
+    "top": 0.0,
+    "bottom": 1.0,
+    "size": [
+      800,
+      1200
+    ]
   }
 }

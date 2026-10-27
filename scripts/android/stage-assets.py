@@ -100,6 +100,7 @@ def main() -> None:
         ("assets/works/works.db", "Databases/works.db"),
         ("src/services/works/data/catalog.json", "Catalogs/works-catalog.json"),
         ("src/services/works/data/year-plan.json", "Catalogs/year-plan.json"),
+        ("src/services/lent/data/lent.json", "Catalogs/lent.json"),
         ("src/services/companion/data/readings-us.json", "Calendar/readings-us.json"),
         ("src/services/companion/data/celebrations-us.json", "Calendar/celebrations-us.json"),
         ("src/services/companion/data/my-saints.json", "Calendar/my-saints.json"),

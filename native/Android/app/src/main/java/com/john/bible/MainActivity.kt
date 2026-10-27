@@ -84,7 +84,7 @@ private val tabs=listOf(JohnTab("Today",Icons.Outlined.WbSunny),JohnTab("Read",I
             when(it) {
                 "saved" -> { selected=2;paths=paths.mapIndexed { index,p -> if(index==2)emptyList() else p } }
                 "read" -> { selected=1;paths=paths.mapIndexed { index,p -> if(index==1)emptyList() else p } }
-                else -> { selected=when { it.startsWith("reader/")->1;it.startsWith("rosary") || it.startsWith("lectio")->3;else->0 }; paths=paths.mapIndexed { i,p -> if(i==selected)listOf(it) else p } }
+                else -> { selected=when { it.startsWith("reader/")->1;it.startsWith("rosary") || it.startsWith("lectio") || it=="stations"->3;else->0 }; paths=paths.mapIndexed { i,p -> if(i==selected)listOf(it) else p } }
             }
             consume()
         }

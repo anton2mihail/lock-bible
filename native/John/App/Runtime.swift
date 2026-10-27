@@ -908,9 +908,10 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         return GospelFathersCard(reference: reference, entry: entry, excerpt: excerpt, author: author)
     }
 
-    /// True when the reader may open this section now: the free sample, a purchase, or a grandfathered install.
+    /// True when the reader may open this section now: the free sample, Leo's Lent sermons in Lent, a purchase,
+    /// or a grandfathered install.
     func isWorkSectionReadable(workID: String, index: Int) -> Bool {
-        fathers.isUnlocked || FathersLibraryAccess.isSectionFree(workID: workID, index: index)
+        fathers.isUnlocked || FathersLibraryAccess.isSectionFree(workID: workID, index: index, on: featureNow(), timeZone: featureTimeZone)
     }
 
     func workSectionSummaries(workID: String) async throws -> [WorkSectionSummary] {
@@ -1125,6 +1126,18 @@ enum AppearanceMode: String, CaseIterable, Identifiable, Hashable {
         try await progressStore.setReminder(saved)
         progressRevision += 1
         return saved
+    }
+
+    // MARK: Lent, Holy Week and the Stations of the Cross (2.3.0)
+
+    @ObservationIgnored private var loadedLent: LentContent?
+
+    /// The texts from `Catalogs/lent.json`. Nil when the file is missing or damaged; the Lent rows then stay hidden.
+    func lentContent() -> LentContent? {
+        if let loadedLent { return loadedLent }
+        guard let root = appResourceRoot else { return nil }
+        loadedLent = try? LentContent.load(from: root.appendingPathComponent("Catalogs/lent.json", isDirectory: false))
+        return loadedLent
     }
 
     // MARK: A Year with the Fathers (2.3.0)

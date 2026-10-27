@@ -48,6 +48,12 @@ struct PrayerHomeView: View {
                                  imageName: "sorrows-6") {
                     onNavigate(.rosaryGuide(set: "seven-sorrows"))
                 }
+                ContentActionRow(title: "The Stations of the Cross",
+                                 subtitle: "St Alphonsus Liguori · Fourteen stations",
+                                 imageName: "stations-01") {
+                    onNavigate(.stations)
+                }
+                .accessibilityIdentifier("pray-stations")
                 ContentActionRow(title: "Everyday prayers",
                                  subtitle: "Traditional prayers and prayers of the saints") {
                     onNavigate(.prayers)

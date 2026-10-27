@@ -27,6 +27,9 @@ fun externalRoute(value:String?,defaultEdition:String="web-ce"):String? {
             "rosary" -> "rosary"
             "advent" -> "advent"
             "year" -> "year"
+            "lent" -> "lent"
+            "holyweek" -> "holy-week"
+            "stations" -> "stations"
             else -> null
         }
     }.getOrNull()
